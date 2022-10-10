@@ -1,0 +1,337 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: qc_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>qc_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/qc_pt.c">qc_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">qc_pt</span> - use L.S model
+  regression to determine point target quality and point mask</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>qc_pt &lt;plist&gt; &lt;pmask_in&gt; &lt;pmask_out&gt;
+  &lt;pSLC_par&gt; &lt;itab&gt; &lt;pbase&gt; &lt;base_flag&gt;
+  &lt;pdiff&gt; [type]</b></code>
+  <code><b>[sigma_max]</b></code><code><b>[psigma] [dh_max]
+  [def_min] [def_max] [model] [bmax] [dtmax]
+  [radius]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list of candidate points (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask_in&gt;</td>
+
+        <td>(input) point mask for input data (uchar, set to - to
+        accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask_out&gt;</td>
+
+        <td>(output) point data stack of mask values resulting from
+        phase quality check (uchar)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are:&nbsp; pSLC_rec1&nbsp; pSLC_rec2&nbsp;
+        itab_rec_num&nbsp; switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of interferogram baselines (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;base_flag&gt;</td>
+
+        <td>baseline flag (0:initial baseline 1:precision
+        baseline)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff&gt;</td>
+
+        <td>(input) point data stack of differential interferogram
+        (float or fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type of pdiff (0=float (unwrapped phase),
+        1=fcomplex, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[sigma_max]</td>
+
+        <td>threshold for maximum phase standard deviation (enter -
+        for default) (radians):&nbsp; 0.70</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[psigma]<br></td>
+
+        <td style="vertical-align: top;">(output) point data stack
+        of phase standard deviation from fit (enter - for
+        none)(float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><code>[dh_max]</code></td>
+
+        <td style="vertical-align: top;">maximum height difference
+        for initial search (enter - for default) (m):
+        30.000<br></td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;[def_min]</td>
+
+        <td>minimum defomration rate for initial search (enter -
+        for default) (m/year): -0.005</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">
+        <code>[def_max]</code></td>
+
+        <td style="vertical-align: top;">&nbsp;maximum deformation
+        rate for initial search (enter - for default) (m/year):
+        0.005<br></td>
+      </tr>
+
+      <tr>
+        <td>[model]</td>
+
+        <td>phase regression model:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: a0 + a1*bperp[i]&nbsp;&nbsp;&nbsp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: a0 + a1*bperp[i] + a2*delta_t[i]) (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3: a1*bperp[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4: a1*bperp[i] + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5: a0 + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6: a2*delta_t[i]</td>
+      </tr>
+
+      <tr>
+        <td>[bmax]</td>
+
+        <td>maximum perp. baseline (m) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+
+      <tr>
+        <td>[dtmax]</td>
+
+        <td>maximum time interval (days) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+
+      <tr>
+        <td>[radius]</td>
+
+        <td>radius in pixels used to search for points in the local
+        region (default 24)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>qc_pt&nbsp;plist pmask_in pmask_out
+  SLC_par&nbsp;itab&nbsp;pbase 0&nbsp;pdiff 1 1.1</samp></p>
+
+  <p>For the point list (plist) the quality of each point is
+  evaluated based on the phase standard deviation of the
+  differential interferometric phase (pdiff) from the selected 2-D
+  regression model of pairs of nearby points. Good/bad points, i.e.
+  points with a phase standard deviation smaller/larger than the
+  indicated threshold, are accepted/rejected by setting the
+  corresponding mask values in&nbsp;pmask_out to 1/0. &nbsp;Only
+  points that are not masked out in pmask_in (set to 0) are
+  considered for quality evaluation. If pmask_in is set to -, then
+  all points in plist are evaluated.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p><span style="font-style: italic;">qc_pt</span> supports the
+  validation of the quality of the points of an existing point
+  list. The main input used for this step includes an existing
+  point list and the related point data stack of differential
+  interferograms. This input list shall include a significant
+  fraction of good points as well as other points. <span style=
+  "font-style: italic;">qc_pt</span> determines the validity of
+  these candidate points using the phase standard deviation of a
+  regression model as the quality criteria. The robustness and
+  efficiency of the quality assessment is lower than the one of
+  <span style="font-style: italic;">expand_pt</span>, but no list
+  of validated point is required.</p>
+
+  <p>The candidate point list is defined through the point list,
+  plist, the point data stack of mask values, pmask, the stack of
+  SLC parameters, pSLC_par, the interferogram table, itab, and the
+  stack of interferogram baselines, pbase. The corresponding
+  differential interferogram values are in the point data stack
+  pdiff.&nbsp; If the differential interferometric data are in
+  fcomplex form the phase of the data in the pdiff&nbsp; must be
+  unwrapped. An initial search of the possible parameter values is
+  performed to unwrap the data. These parameters include the
+  differential height, deformation rate, and phase
+  constant.&nbsp;</p>
+
+  <p>The command line parameters def_max and dh_max determine the
+  range of values for the initial search. The search range for the
+  differential height between the reference point and the test
+  point is +/- def_max meters.&nbsp; Similarly, the range of
+  deformation rates is +/- def_max meters/year. The processing time
+  of the program strongly depends on the range of values used for
+  the test.&nbsp; If the terrain is known to be relatively flat,
+  then dh_max can be reduced. Similarly, if the expected
+  deformation rate between the reference point and the test point
+  is expected to exceed 5mm/year, then the value of def_max can be
+  increased.&nbsp; For the program qc_pt the reference point is
+  chosen to be as close as possible to the&nbsp; test points and
+  the values of the&nbsp; parameters can be adjusted. to speed up
+  processing&nbsp;</p>
+
+  <p><span style="font-style: italic;">qc_pt</span> goes through
+  the candidate point list and determines for each point a quality
+  measure based on a phase regression analysis (using a one or two
+  dimensional regression model) for pairs of nearby points. While a
+  high quality indicates that both points are of "good points" a
+  low quality indicates that one or the other or both points are
+  "bad points". Therefore, for a specific point all possible
+  partner points up to a certain distance (radius) are checked
+  until a high quality is found for a specific pair. The quality of
+  the points can be optionally written to the file specified by the
+  psigma parameter.</p>
+
+  <p>The regression analysis can be restricted to shorter baselines
+  and/or shorter time intervals only. The baseline considered is
+  the absolute value of the perpendicular component. The time
+  interval considered is the absolute value of the acquisition time
+  difference between the reference and slave SLC. The search radius
+  can be indicated on the command line in number of pixels. For
+  areas with a low points density it is important that the search
+  area is big enough to include a sufficient number of other
+  points.</p>
+
+  <p>Chances to identify "good" points increase if the differential
+  interferogram is of high quality, which is assured by subtracting
+  a high quality simulated phase. Topographic, deformation, and
+  atmospheric phase terms should be modeled as good as possible,
+  which means the most accurate terrain height estimates,
+  baselines, deformation models, and atmospheric phase terms should
+  be used. On the other hand the chances are also increased by
+  using very local reference, as correction terms (height
+  corrections, relative deformation, relative atmospheric
+  difference) remain small over short distances. Furthermore, not
+  just one, but all possible references within an indicated radius
+  are tested. This, and the factor that no pre-existing list of
+  validated points is used make <span style=
+  "font-style: italic;">qc_pt</span> the tool for the generation of
+  an initial validated point list which can then later on be
+  expanded using expand_pt.</p>
+
+  <p>The point data stacks of differential interferograms can be
+  provided in fcomplex or float (unwrapped phases) format.</p>
+
+  <p>Initial or precision baseline estimates can be used.</p>
+
+  <p>As phase regression models there are several options:<br>
+  1. 1-d model depending on height differentials alone<br>
+  2. 1-d model depending on deformation rate alone<br>
+  3. 2-d model depending on both height differentials and
+  deformation rate<br>
+  Each of these three models can include an optional phase constant
+  parameter. The phase constant is required if a single SLC used as
+  the reference for all interferograms. If there are different SLCs
+  are used as the reference for the for the interferograms in the
+  stack the phase constant is 0.0 and does not need to be
+  estimated. Use of the one-dimensional regression models
+  constrains the regression and gives better results for small
+  stacks or early on in the analysis when large height corrections
+  are expected.</p>
+
+  <p>Programs to generate new point lists (e.g. the candidate point
+  list) are <span style="font-style: italic;">image2pt, mkgrid,
+  merge_pt, prox_pt, pwr_stat</span>, and <span style=
+  "font-style: italic;">sp_stat</span>.</p>
+
+  <p>Programs to validate existing point lists are <span style=
+  "font-style: italic;">qc_pt</span> and <span style=
+  "font-style: italic;">expand_pt</span>. The funcitionality of
+  <span style="font-style: italic;">qc_pt</span> is similar to the
+  one of <span style="font-style: italic;">expand_pt</span> in the
+  sense that a mask is generated for a candidate list based on a
+  quality measure. <span style="font-style: italic;">qc_pt</span>
+  differs from <span style="font-style: italic;">expand_pt</span>
+  in that it does not require a validated list of good points which
+  permits a wider application but at a significantly lower
+  efficiency.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="expand_pt.html">expand_pt</a>, <a href=
+  "image2pt.html">image2pt</a>,<a href=
+  "merge_pt.html">merge_pt</a>, <a href="mkgrid.html">mkgrid</a>,
+  <a href="prox_pt.html">prox_pt</a>, <a href=
+  "pwr_stat.html">pwr_stat</a>,<a href="sp_stat.html">sp_stat</a>,
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 21-Nov-2006
+</body>
+</html>

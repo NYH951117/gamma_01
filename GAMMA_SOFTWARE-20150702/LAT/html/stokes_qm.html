@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: stokes_qm</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>stokes_qm</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/stokes_qm.c">stokes_qm.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  stokes_qm - Calculate quantitative measures derived from Stokes
+  parameters (e.g. degree of polarization)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>stokes_qm &lt;S&gt; &lt;S_par&gt; [m] [s2chi] [s2psi]
+  [m_l] [m_c] [lp_ratio] [cp_ratio] [mu] [rphase] [alpha]
+  [phi]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;S&gt;</td>
+
+        <td>(input) root file name of 4 Stokes parameter files with
+        extensions .s0, .s1, .s2, .s3 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;S_par&gt;</td>
+
+        <td>(input) image parameter file associated with the Stokes
+        parameter data files (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;m&gt;</td>
+
+        <td>(output) degree of polarization: sqrt(s1**2 + s2**2 +
+        s3**2)/s0 (enter - for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;s2chi&gt;</td>
+
+        <td>(output) sine of the latitude of the Stokes vector on
+        the Poincare sphere: sin(2*chi) = -s3/(m*s0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;s2psi&gt;</td>
+
+        <td>(output) sine of the longitude of the Stokes vector on
+        the Poincare sphere: sin(2*psi) = s2/sqrt(s1**2 +
+        s2**2))</td>
+      </tr>
+
+      <tr>
+        <td>&lt;m_l&gt;</td>
+
+        <td style="height: 19px;">(output) degree of linear
+        polarization: sqrt(s1**2 + s2**2)/s0&nbsp; (enter - for
+        none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;m_c&gt;</td>
+
+        <td>(output) degree of circular polarization: s3/s0 (enter
+        - for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lp_ratio&gt;</td>
+
+        <td>(output) linear polarization ratio: (s0 - s1)/(s0 + s1)
+        0 &lt;= lp_ratio (enter - for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;cp_ratio&gt;</td>
+
+        <td>(output) circular polarization ratio: (s0 - s3)/(s0 +
+        s3) 0 &lt;= cp_ratio (enter - for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mu&gt;</td>
+
+        <td>(output) coherency parameter |mu|: sqrt(s2**2 +
+        s3**2)/sqrt(s0**2 - s1**2) (enter - for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;delta&gt;</td>
+
+        <td>(output) relative H and V phase difference atan(s3/s2)
+        (enter - for none) (radians, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;alpha&gt;</td>
+
+        <td>(output) alpha parameter in the compact H/alpha
+        decomposition: 0.5*atan(sqrt(s1**2 + s2**2)/s3) (enter -
+        for none)(radians, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phi&gt;<br></td>
+
+        <td>(output)&nbsp; longitude of Stokes vector 2*psi:&nbsp;
+        atan(s2/s1) (enter - for none) (radians, float)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>stokes_qm 20080409_HH_HV 20080409_HH_HV.mli.par m s2chi
+  s2psi m_l m_c lp_ratio cp_ratio mu delta alpha phi</samp></p>
+
+  <p>generates the different measures derived from the Stokes
+  vectors files: <code>20080409_HH_HV.s0, 20080409_HH_HV.s1,
+  20080409_HH_HV.s2, 20080409_HH_HV.s3</code></p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p>This program takes as input the Stokes parameters calculated
+  with the program <a href=
+  "file:///home/cw/gamma_software/LAT/html/stokes.html">stokes</a>
+  and&nbsp; calculates a number of parameters the characterize the
+  measured field. The total incident field can be decomposed into
+  the sum of polarized and an unpolarized components. The four
+  Stokes parameters describe the both the unpolarized and polarized
+  components. The first parameter S<sub>0</sub> is total power of
+  the field and is the sum of each of the orthogonal polarization
+  channels, for example the H and V receiver channels. The other 3
+  Stokes parameters measure the difference in power for 3
+  orthogonal polarization basis: H and V, 45 and -45 degrees
+  linear, and RCP/LCP circular.</p>
+
+  <p>The degree of polarization of the field denoted <span style=
+  "font-style: italic;">m</span> is the ratio between the power in
+  the polarized component and the total power:</p>
+
+  <p>m = (S<sub>1</sub><sup>2</sup> + S<sub>2</sub><sup>2</sup> +
+  S<sub>3</sub><sup>2</sup>)<sup>1</sup><sup>/2</sup> /
+  S<sub>0</sub></p>
+
+  <p>where (S<sub>1</sub><sup>2</sup> + S<sub>2</sub><sup>2</sup> +
+  S<sub>3</sub><sup>2</sup>)<sup>1</sup><sup>/2&nbsp;</sup> is the
+  power of the polarized components of the field.</p>
+
+  <p>Other values derived from the Stokes parameters are calculated
+  including, degree of circularity, degree of linearity, sine of
+  the latitude and longitude of the polarized component of the
+  Stokes vector on the Poincare sphere, coherency parameter, phase
+  difference between the H and V channels, scattering parameter
+  alpha, and phase angle defined by atan(s2/s1) as described in
+  references [1], [2], [3]. These parameters are used in
+  calculation of various polarimetric decompositions for compact
+  polarimetry including the <a href="./m-chi.html">m-chi</a>,
+  <a href=
+  "file:///home/cw/gamma_software/LAT/html/m-alpha.html">m-alpha</a>,
+  and <a href=
+  "file:///home/cw/gamma_software/LAT/html/m-delta.html">m-delta</a>
+  decompositions.</p>
+
+  <p>[1] Raney, R. K., "Dual-Polarized SAR and Stokes Parameters,",
+  <span style="font-style: italic;">IEEE Geoscience and Remote
+  Sensing Letters</span>, Vol. 3, no. 3. pp. 317-319, July
+  2006.</p>
+
+  <p>[2] Raney, R. K. et al. "The Lunar Mini-RF Radars: Hybrid
+  Polarimetric Architecture and Initial Results," Proceedings of
+  the IEEE, Vol. 99, no.5, pp 808-823, May, 2011.</p>
+
+  <p>[3] Cloude, S. R, et al.m "Compact Decomposition Theory,"
+  <span style="font-style: italic;">IEEE Geoscience and Remote
+  Sensing Letters</span>, Vol. 9, no. 1. pp. 28-32, January
+  2012.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "stokes.html">stokes</a>, <a href="m-chi.html">m-chi</a>,
+  <a href="m-alpha.html">m-alpha</a>, <a href=
+  "m-delta.html">m-delta</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change 7-Jun-2013
+</body>
+</html>

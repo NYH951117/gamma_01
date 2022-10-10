@@ -1,0 +1,179 @@
+#! /bin/csh -fe
+
+echo "RAW_TO_SLC_CS_AF: Script to process COSMO-SkyMed raw data (HDF5) to SLC data v1.2 17-Nov-2014 of,uw"
+echo " "
+if ($#argv < 5)then
+  echo "usage: RAW_TO_SLC_CS <HDF5> <SLC> <SLC_par> <RLK> <AZLK> [RC_dir] [AZ_PATCH] [SLC_FORMAT] [near_range_ext] [far_range_ext] [dop_bw] [num_cpu]"
+  echo "       HDF5            (input) SCS data file in HDF5 format"
+  echo "       SLC             (output) SLC filename"
+  echo "       SLC_par         (output) filename of SLC parameter file"
+  echo "       RLK             number of range looks in the multilook intensity (MLI) image"
+  echo "       AZLK            number of azimuth looks in the MLI image"
+  echo "       RC_dir          range compressed data file directory (enter . for current directory)"
+  echo "       AZ_PATCH        azimuth patch size: 4096, 6144, 8192 (default=4096)"
+  echo "       SLC_FORMAT      0=FCOMPLEX,  1=SCOMPLEX, default: SCOMPLEX"
+  echo "       near_range_ext  number of pixels (usually 0.5 time the chirp length in pixels)"
+  echo "       far_range_ext   number of pixels (usually 0.5 time the chirp length in pixels)"
+  echo "       dop_bw          Doppler bandwidth relative to PRF (default = 0.8)"
+  echo "       num_cpu         number of CPUs used during azimuth focusing (default = 1)"
+  exit
+endif
+
+set RAW_dir = "."
+
+#defaults for input parameters
+set RC_dir = "."
+set AZ_PATCH = 4096
+set SLC_FORMAT = 1
+set near_range_ext = 0
+set far_range_ext = 0
+set dop_bw = 0.8
+set num_cpu = 1
+set AZ_PROC = az_proc
+
+if ($#argv >= 6) set RC_dir = $6
+if ($#argv >= 7) set AZ_PATCH = $7
+if ($#argv >= 8) set SLC_FORMAT = $8
+if ($#argv >= 9) set near_range_ext = $9
+if ($#argv >= 10) set far_range_ext = $10
+if ($#argv >= 11) set dop_bw = $11
+if ($#argv >= 12) set num_cpu = $12
+
+if ($num_cpu > 1) then
+  set AZ_PROC = az_proc_mp
+  setenv OMP_NUM_THREADS $num_cpu
+endif
+
+echo "test if required input/output files and directories exist"
+if (-e "$1" == 0) then 
+  echo "ERROR: HDF5 raw file ($1) does not exist"; exit(-1)
+endif 
+if (($#argv >= 6) && (-e "$6" == 0)) then 
+  echo "ERROR: RC_dir ($6) does not exist"; exit(-1)
+endif 
+
+# reading mandatory command line arguments
+set HDF5RAW = $1
+set SLC = $2
+set SLC_par = $3
+set RLK = $4
+set AZLK = $5
+
+set DECIM = 1
+set AMB_FLAG = 1		#use value from Doppler ambiguity resolver
+set NSUB = 12
+set AUTOF_SNR_MIN = 2.0
+
+
+# Derived filenames:
+set SAR_par =  $RAW_dir/$2.raw.sar_par
+set PROC_par = $RAW_dir/$2.raw.proc_par
+set RAW_DATA = $RAW_dir/$2.raw
+set RC =  $RC_dir/$2.rc
+set MLI = $2.mli
+set MLI_par = $2.mli.par
+set LOG = $2'_MSP.log'
+
+set AUTOF = $RAW_dir/$2.raw.autof
+set RSPEC = $RAW_dir/$2.raw.rspec
+set AZSP = $RAW_dir/$2.raw.azsp
+set MLFB = $RAW_dir/$2.raw.mlfb
+set DOP = $RAW_dir/$2.raw.dop
+
+echo " "
+echo "COSMO-SkyMed raw data file: $RAW_DATA"
+echo "COSMO-SkyMed sensor file:   $SAR_par"
+echo "MSP SLC proc. parameters:   $PROC_par"
+echo "range-compressed data:      $RC"
+echo "SLC image:                  $SLC"
+echo "SLC parameter file:         $SLC_par"
+echo "number of range looks:      $RLK"
+echo "number of azimuth looks:    $AZLK"
+echo "MSP MLI proc. parameters:   $MLI_par"
+echo "Multi-Look Intensity file:  $MLI"
+echo "MLI Sun raster format file: $MLI.ras"
+echo "minimum autofocus SNR:      $AUTOF_SNR_MIN"
+echo "azimuth patch size (lines): $AZ_PATCH"
+echo "range compressed data:      $RC"
+echo "azimuth spectrum:           $AZSP"
+echo "range spectrum:             $RSPEC"
+echo "autofocus correlation:      $AUTOF"
+echo "MSP processing log file:    $LOG"
+echo " "
+
+
+switch( $SLC_FORMAT )
+  case 0: 
+  echo "SLC data format:  FCOMPLEX"; breaksw
+  case 1:
+  echo "SLC data format:  SCOMPLEX"; breaksw
+  default:
+  echo "ERROR: invalid value for SLC_FORMAT: $SLC_FORMAT"; exit
+endsw
+echo "MLI data format:     FLOAT"
+echo " "
+
+echo "CS_proc $HDF5RAW $SAR_par $PROC_par $RAW_DATA"
+CS_proc $HDF5RAW $SAR_par $PROC_par $RAW_DATA > $LOG
+
+set CAL_FACT = `awk '$1 == "calibration_gain:" {print $2} ' $PROC_par`
+echo "Initial calibration gain (dB): $CAL_FACT"
+#echo "$PROC_par"
+if ($SLC_FORMAT == "1") set CAL_FACT = `echo $CAL_FACT 60.0 |awk '{print $1+$2}'`
+echo "Azimuth compression calibration factor (dB): $CAL_FACT"
+echo " "
+
+set ANTENNA = `awk '$1 == "antenna_pattern_filename:" {print $2} ' $SAR_par`
+echo "antenna pattern filename:   $ANTENNA"
+
+set YEAR =  `awk '$1 == "date:" {print $2}' $PROC_par`
+set MONTH =  `awk '$1 == "date:" {print $3}' $PROC_par`
+set DAY =  `awk '$1 == "date:" {print $4}' $PROC_par`
+echo "year:  $YEAR"
+echo "month: $MONTH"
+echo "day:   $DAY"
+
+echo "azsp_IQ $SAR_par $PROC_par $RAW_DATA $AZSP - - $NSUB $AMB_FLAG"
+azsp_IQ $SAR_par $PROC_par $RAW_DATA $AZSP - - $NSUB $AMB_FLAG >> $LOG
+
+echo "doppler $SAR_par $PROC_par $RAW_DATA $DOP 0 12 0"
+doppler $SAR_par $PROC_par $RAW_DATA $DOP 0 12 0 >> $LOG 
+
+echo "rspec_IQ $SAR_par $PROC_par $RAW_DATA $RSPEC "
+rspec_IQ $SAR_par $PROC_par $RAW_DATA $RSPEC >> $LOG
+
+echo "pre_rc $SAR_par $PROC_par $RAW_DATA $RC $DECIM - - - 2.12 8 $near_range_ext $far_range_ext "
+pre_rc $SAR_par $PROC_par $RAW_DATA $RC $DECIM - - - 2.12 8 $near_range_ext $far_range_ext  >> $LOG
+
+echo "$AZ_PROC $SAR_par $PROC_par $RC $SLC $AZ_PATCH $SLC_FORMAT"
+$AZ_PROC $SAR_par $PROC_par $RC $SLC $AZ_PATCH $SLC_FORMAT >> $LOG
+
+echo "af $SAR_par $PROC_par $SLC"
+af $SAR_par $PROC_par $SLC >> $LOG
+
+echo "$AZ_PROC $SAR_par $PROC_par $RC $SLC $AZ_PATCH $SLC_FORMAT"
+$AZ_PROC $SAR_par $PROC_par $RC $SLC $AZ_PATCH $SLC_FORMAT >> $LOG
+
+echo "af $SAR_par $PROC_par $SLC"
+af $SAR_par $PROC_par $SLC >> $LOG
+
+echo "$AZ_PROC $SAR_par $PROC_par $RC $SLC $AZ_PATCH $SLC_FORMAT $CAL_FACT"
+$AZ_PROC $SAR_par $PROC_par $RC $SLC $AZ_PATCH $SLC_FORMAT $CAL_FACT >> $LOG
+
+echo "par_MSP $SAR_par $PROC_par $SLC_par"
+par_MSP $SAR_par $PROC_par $SLC_par >> $LOG
+
+echo "multi_look $SLC $SLC_par $MLI $MLI_par $RLK $AZLK 0 -"
+multi_look $SLC $SLC_par $MLI $MLI_par $RLK $AZLK 0 - >> $LOG
+
+# get number of range pixels from 
+set WIDTH = `awk '$1 == "range_samples:" {print $2}' $MLI_par`
+
+echo "raspwr $MLI $WIDTH 1 0 1 1 1. .35 1"
+raspwr $MLI $WIDTH 1 0 1 1 1. .35 1 >> $LOG
+
+#echo "/bin/rm $RC"
+#/bin/rm $RC
+
+date
+date >> $LOG

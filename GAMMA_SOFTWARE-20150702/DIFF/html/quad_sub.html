@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF Reference Manual: quad_sub</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>quad_sub</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/diff_ls_unw.c">quad_sub.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  quad_sub - &nbsp;Subtract quadratic model phase function from a
+  differential interferogram</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>quad_sub &lt;int-1&gt; &lt;DIFF_par&gt; &lt;int-2&gt;
+  [int_type] [mode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;int-1&gt;</td>
+
+        <td>(input) differential interferogram (float or
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input) DIFF processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;int-2&gt;</td>
+
+        <td>(output) output interferogram (same format as
+        input)</td>
+      </tr>
+
+      <tr>
+        <td>[int_type]</td>
+
+        <td>interferogram type:<br>
+        &nbsp; 0: unwrapped interferometric phase (float)<br>
+        &nbsp; 1: fcomplex interferogram</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>add or subtract phase model:<br>
+        &nbsp;&nbsp; 0: subtract phase model from DIFF_par
+        (default)<br>
+        &nbsp;&nbsp; 1: add phase model from DIFF_par</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <code><samp>quad_sub 20120429.TSX_HH_20120429.TDX_HH.adf.diff
+  20120429.TSX_HH_20120429.TDX_HH.diff_par
+  20120429.TSX_HH_20120429.TDX_HH.adf.qs_diff 1 0</samp></code></p>
+
+  <p>input interferogram is fcomplex format. Subtracting the
+  polynomial phase model stored in the
+  DIFF_par<code><samp><br></samp></code></p><span style=
+  "font-weight: bold;">DESCRIPTION</span><br>
+  <span style="font-style: italic;">quad_sub</span> subtracts a 2D
+  quadratic phase unction from either an unwrapped or wrapped
+  interferogram. The 2D quadratic phase function parameters are
+  stored in the DIFF_par parameter file. These parameters are
+  estimated using the <a href="quad_fit.html">quad_fit</a>&nbsp;
+  program that requires an unwrapped interferogram as input. The
+  phase model function has 3 possible forms depending on the model
+  option used with&nbsp;<a href="quad_fit.html">quad_fit</a> .<br>
+  <br>
+  <code>model 0:&nbsp; a0 &nbsp;+ &nbsp;a1*x &nbsp; + &nbsp;a2*y
+  &nbsp; +&nbsp; a3*x*y&nbsp; + &nbsp;a4*x^2 &nbsp;+ &nbsp;a5 *y^2
+  : linear and quadratic phase ramps in range and azimuth<br>
+  model 1: &nbsp;a0 &nbsp;+ &nbsp;a4*x^2 + &nbsp;a5*y^2
+  &nbsp;&nbsp;a1 = 0.0, a2 = 0.0, a3 = 0.0 &nbsp; : quadratic phase
+  ramp in range and azimuth<br>
+  model 2: &nbsp;a0 &nbsp;+ &nbsp;a1*x &nbsp; + &nbsp;a2*y &nbsp;
+  &nbsp;&nbsp;a2 = 0.0, a4 = 0.0, a5 = 0.0 &nbsp; : linear phase
+  ramp in range and azimuth</code> <code><br></code><br>
+  The user has the option of &nbsp;either adding or subtracting the
+  phase model from the interferogram.<br>
+  <br>
+  The data format of the output interferogram is the same as the
+  input interferogram<br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="quad_fit.html">quad_fit</a>, <a href=
+  "sub_phase.html">sub_phase</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 23-Aug-2013
+</body>
+</html>

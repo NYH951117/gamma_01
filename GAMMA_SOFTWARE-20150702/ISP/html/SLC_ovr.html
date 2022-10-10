@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pwr_stat</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric SAR Processor: Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>SLC_ovr</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ovr_samp.c">SLC_ovr.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_ovr - oversample or subsample SLC data in range<br></p>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  SLC_ovr &lt;SLC&gt; &lt;SLC_par&gt; &lt;SLC_ovr&gt;
+  &lt;SLC_ovr_par&gt; &lt;r_ovr&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input) SLC file (fcomplex or scomplex)&nbsp;<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of SLC file and point list
+        coordinates<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_ovr&gt;</td>
+
+        <td>(output) SLC file (fcomplex or scomplex)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_ovr_par&gt;</td>
+
+        <td>(output) SLC parameter file of SLC file and point list
+        coordinates<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_ovr&gt;<br></td>
+
+        <td>integer range oversampling factor (2 --&gt; 16)<br>
+        if r_ovr &lt; 0, the SLC will be subsampled integer range
+        subsampling factor (-2 --&gt; -16)<br>
+        <br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC_ovr 09042.slc 09042.slc.par 09042_2.slc 09042_2.slc.par
+  2<br></samp></p>
+
+  <p>Obtain a range oversampled version of 09042.slc with an
+  oversampling factor of 2. The output is stored in 09042_2.slc and
+  the associated parameter file in 09042_2.slc.par<br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code SLC_ovr.c in $ISP_HOME/src, executable version
+  SLC_ovr in $ISP_HOME/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  Range oversampling has several advantages for interferometric
+  processing. In situations where a range spectrum shift has
+  occurred due to high deskew, oversampling is required to ensure
+  that the baseband SINC interpolation used in the ISP programs
+  <a href="./SLC_interp.html">SLC_interp</a>, <a href=
+  "./SLC_interp_map.html">SLC_interp_map</a>,<a href=
+  "./interf_SLC.html">interf_SLC.c</a> functions optimally. In any
+  case, range oversampling prior to resampling the images for
+  interferogram generation is expected to improve the performance
+  of the SINC interpolation. The valid range of oversampling
+  factors is integer values between 2 and 16.</p>
+
+  <p>Range oversampling is performed using an FFT combined with a
+  bandpass filter centered on the range frequency centroid.
+  Nominally this is a DC (f =0), but when the image has been
+  deskewed, the image is no longer at baseband and requires a
+  bandpass interpolation rather than a lowpass response.<br></p>
+
+  <p>Output SLC image parameters are also adjusted including the
+  effective range pixel spacing, number&nbsp; range samples, and
+  effective ADC rate. The range pixel spacing and the number of
+  range pixels in output SLC image parameter file are adjusted for
+  the range oversampling factor entered on the command
+  line.<br></p>
+
+  <p>For most applications range oversampling of 2 is recommended.
+  For IPTA,&nbsp; range oversampling helps in obtaining improved
+  localization of the point targets within the resolution
+  element.<br></p>
+
+  <p>If the range oversampling factor is set to a negative integer
+  the data are subsampled by that factor.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><span style=
+  "text-decoration: underline;"><span style=
+  "text-decoration: underline;"><br></span></span><a href=
+  "SLC_interp.html">SLC_interp</a>, <a href=
+  ".SLC_interp_map.html">SLC_interp_map</a>, <a href=
+  "interf_SLC.html">interf_SLC.c</a><span style=
+  "text-decoration: underline;"><span style=
+  "text-decoration: underline;"><br></span></span></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 10-Aug-2004.</p>
+</body>
+</html>

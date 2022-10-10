@@ -1,0 +1,190 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+ 
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2011, Gamma Remote Sensing, v1.0 27-Oct-2011 clw ***
+*** Calculate orbital baselines and print out list of perpendicular baselines ***
+
+usage: $0 <RSLC_tab> <itab> <diff_dir> <bperp_file>
+
+  SLC_tab     (input) two column list of SLC files and SLC parameter files (including paths) (text)
+                1. SLC filename  (includes path)
+                2. SLC parameter filename (includes path)
+  itab        (input) table associating interferogram stack records with pairs of SLC stack records (text)
+                1. row number in SLC_tab of the reference SLC 
+                2. row number in SLC_tab of SLC-2 of the interferogram
+                3. line number in the itab
+                4. flag used to indicate if this interferogram is used for IPTA processing (0:not used  1:used) 
+  diff_dir    directory to contain the baseline files calculated by base_orbit 
+  bperp_file  (output) list of dates, bperp and delta_T for interferogram pairs in the itab (text)
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of resampled SLC images and parameter files does not exist: $ARGV[0]\n\n";
+print "resampled SLC images and parameter files: $ARGV[0]\n"; 
+print "ITAB file: $ARGV[1]\n";
+print "directory for baseline files: $ARGV[2]\n";
+print "output list of baselines: $ARGV[3]\n";
+
+$itab = $ARGV[1];
+open(ITAB, "<$itab") or die "ERROR $0: cannot open itab file: $itab\n";
+
+$diff_dir = $ARGV[2];
+unless (-d $diff_dir) {
+  print "creating diff directory: $diff_dir\n";
+  $exit = system("mkdir $diff_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $diff_dir\n"
+}
+
+$bpf = $ARGV[3];
+open(BP,">$bpf") or die "ERROR $0: cannot open output baseline file: $bpf\n";
+$log = "$diff_dir/mk_base_orbit.log"; 
+ 
+print "log file: $log\n\n";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush; 
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+
+$i = 1;
+LINE: while (<SLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $slc[$i] = $fields[0];
+  $slc_par[$i] = $fields[1];
+  -e $slc_par[$i] or die "ERROR $0: ISP image parameter file does not exist: $slc_par[$i]\n";
+#  printf "%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  printf LOG "%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  $i++;
+} 
+
+$nc = 1;
+LINE: while (<ITAB>) {		#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+#  print "ITAB line: @fields\n";
+  next LINE if ($fields[3] == 0);  #skip if the itab column flag = 0
+  $slc1 = $slc[$fields[0]];
+  $slc1_par = $slc_par[$fields[0]];
+#  print "index: $fields[0]   slc1: $slc1\n";
+  my ($s1, $dir1, $ext1) = fileparse($slc1, qr/\.[^.]*/); #extension is the last bit after the last period   
+
+  $slc2 = $slc[$fields[1]];
+  $slc2_par = $slc_par[$fields[1]];
+  my ($s2, $dir2, $ext2) = fileparse($slc2, qr/\.[^.]*/); #extension is the last bit after the last period   
+  $fn = $diff_dir."/".$s1."_".$s2;
+
+  $base = $fn.".base"; 
+  @slc1_date = extract_param($slc1_par,"date:");
+  @slc2_date = extract_param($slc2_par,"date:");
+  $jd1 = julday($slc1_date[1], $slc1_date[2], $slc1_date[3]);
+  $jd2 = julday($slc2_date[1], $slc2_date[2], $slc2_date[3]);
+#  print "SLC-1 date: $slc1_date   julian day: $jd1\n";
+#  print "SLC-2 date: $slc2_date   julian day: $jd2\n";
+  $delta_t = $jd2 - $jd1;
+#  print "interferogram delta_t (days): $delta_t\n";
+
+  $borb = `base_orbit $slc1_par $slc2_par $base`;
+  print LOG "base_orbit $slc1_par $slc2_par base.out\n";
+  print LOG $borb, "\n";
+  @lines = split /^/m, $borb;	#split base_orbit output into lines
+
+  foreach $l1 (@lines) {	#examine each line
+    chomp $l1;
+    @tok = split /:/, $l1;	#break line on semicolon and check if "base perpendicular" is in th line
+    if (@tok[0] =~ m/baseline perpendicular/) {
+      $bperp = @tok[1];	#save bperp values
+    }
+  }
+
+  printf BP "%5d  %4d%02d%02d  %4d%02d%02d%  12.5f %12.5f\n",$nc, $slc1_date[1], $slc1_date[2], $slc1_date[3], $slc2_date[1], $slc2_date[2], $slc2_date[3], $delta_t, $bperp;
+printf "%5d  %4d%02d%02d  %4d%02d%02d%  12.5f %12.5f\n",$nc, $slc1_date[1], $slc1_date[2], $slc1_date[3], $slc2_date[1], $slc2_date[2], $slc2_date[3], $delta_t, $bperp;
+  $nc++;
+}
+
+$time = localtime;
+print "\n*** processing completed: $time ***\n";
+print LOG "*** processing completed: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log  command: $command\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log  command: $command\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub julday {
+##################################
+# Julian Day from Gregorian Date #
+##################################
+
+use integer;
+my ( $y, $m, $d) = @_;
+#print "y,m,d: $y $m $d\n";
+my $jd = (1461 * ($y + 4800 + 
+($m - 14) / 12)) / 4 + (367 * 
+($m - 2 - 12 * (($m - 14) / 12))) 
+/ 12 - (3 * (($y + 4900 + ($m - 14)
+/ 12) / 100)) / 4 + $d - 32075;
+return $jd;
+};
+
+sub caldat {
+##################################
+# Gregorian Date from Julian Day #
+##################################
+
+use integer;
+my ($d,$i,$j,$jd,$l,$m,$n,$y);
+$jd = shift;
+$l = $jd + 68569;
+$n = ( 4 * $l ) / 146097;
+$l = $l - ( 146097 * $n + 3 ) / 4;
+$i = ( 4000 * ( $l + 1 ) ) / 1461001;
+$l = $l - ( 1461 * $i ) / 4 + 31;
+$j = ( 80 * $l ) / 2447;
+$d = $l - ( 2447 * $j ) / 80;
+$l = $j / 11;
+$m = $j + 2 - ( 12 * $l );
+$y = 100 * ( $n - 49 ) + $i + $l;
+return ($y,$m,$d);
+};
+
+=pod
+
+Algorithms taken from Peter Meyer´s web site
+hermetic.magnet.ch/cal_stud/cal_art.htm
+
+Test numbers: 
+Given $y = 1; $m = 1; $d = 1;   $jd == 1721426;
+Given $y = -4713; $m = 11; $d = 24;  $jd == 0;
+Given $y = 1858; $m = 11; $d = 16;   $jd == 2400000;
+
+$jd = julday(1858,11,16);
+printf "julian day 16-Nov-1858: %d\n", $jd;
+printf "date of julian day %d: %d %d %d\n\n",$jd, caldat($jd);
+
+=cut

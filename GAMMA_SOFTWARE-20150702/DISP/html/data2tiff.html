@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: data2geotiff</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>data2tiff</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/data2geotiff.c">data2tiff.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>data2tiff</i> - data2tiff is an universal data (short, float,
+  complex, sun raster, BMP) to geotiff converter. It's use is to
+  convert GAMMA results into GeoTIFF, an universal GIS data
+  exchange format.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>data2tiff &lt;data&gt; &lt;width&gt; &lt;type&gt;
+  &lt;TIFF&gt; [nodata] [xspacing] [yspacing]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tr>
+      <td>&lt;data&gt;</td>
+
+      <td>(input) data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>input data file width</td>
+    </tr>
+
+    <tr>
+      <td>&lt;type&gt;</td>
+
+      <td>input data type:<br>
+      0: Sun raster or BMP image<br>
+      1: short data<br>
+      2: float data<br>
+      3: scomplex data<br>
+      4: fcomplex data(input) polygon point file, format: x-coord
+      y-coord index text</td>
+    </tr>
+
+    <tr>
+      <td>&lt;TIFF&gt;</td>
+
+      <td>(output) TIFF file (.tif is the recommended
+      extension)</td>
+    </tr>
+
+    <tr>
+      <td>[nodata]</td>
+
+      <td>image width (overruled by dem_par width if
+      applicable)</td>
+    </tr>
+
+    <tr>
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>[xspacing]</td>
+
+      <td>pixel spacing in x-direction (ignored if omitted)</td>
+    </tr>
+
+    <tr>
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>[yspacing]</td>
+
+      <td>pixel spacing in x-direction (ignored if omitted,
+      default=xspacing)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>data2tiff srtm3_seg.dem 1800 2 srtm3_seg.dem.tif -1</tt></p>
+
+  <p>Converts the float data file srtm3_seg.dem with width 1800
+  into TIFF format, and sets -1 values to no data.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>data2tiff</i> TIFF is an universal GIS data exchange format
+  including geospatial metadata. This programs allows convert
+  binary and image data into TIFF format. The programs depends on
+  the geospatial abstraction library GDAL.<br></p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="data2geotiff.html">data2geotiff</a> that allows to
+  preserve the projection information from a DEM_par
+  file.</p><a href=
+  "http://www.remotesensing.org/geotiff/geotiff.html">Website with
+  information and links about the GeoTIFF data format.</a>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  awi, last change 11-Mar-2008.
+</body>
+</html>

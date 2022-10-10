@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: set_value</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>set_value</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/set_value.c">set_value.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  set_value - Set new value in a keyword based parameter file.</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code style="font-weight: normal;">set_value &lt;PAR_in&gt;
+  &lt;PAR_out&gt; &lt;keyword&gt; &lt;value&gt;
+  [new_key]</code><strong><br></strong></p>
+
+  <table border="1" cellpadding="7" cellspacing="2">
+    <tbody>
+      <tr>
+        <td>&lt;PAR_in&gt;</td>
+
+        <td>input keyword:value based parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PAR_out&gt;</td>
+
+        <td>output keyword:value based parameter file (can be the
+        same file as PAR_in)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;keyword&gt;</td>
+
+        <td>search keyword of keyword:value pair</td>
+      </tr>
+
+      <tr>
+        <td>&lt;value&gt;</td>
+
+        <td>new value (note: delimit value with double quotes if it
+        contains spaces or punctuation)</td>
+      </tr>
+
+      <tr>
+        <td>[new_key]</td>
+
+        <td>0=default: new keyword:value pair not permitted
+        1:insert new keyword:value pair (default:0=entire
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong> <samp>set_value 05263.slc.par
+  05263.slc.par image_format SCOMPLEX 1</samp></p>
+
+  <p>appends the keyword:value pair</p><em>image_format:
+  SCOMPLEX</em>
+
+  <p>to parameter file 05263.slc.par</p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>set_value</em> reads the
+  input <em>keyword: value</em> organized parameter file a line at
+  a time searching for the <em>keyword</em>. A semicolon is used to
+  denote the end of a keyword and a newline denotes the end of a
+  line. If the <em>keyword</em> is found then the <em>value</em> is
+  updated to the new <em>value</em> given on the command line. If
+  the keyword is not found, the current line is copied to the
+  output buffer and the scan continues through the file. After the
+  scan is completed and the keyword has not been found, then a new
+  <em>keyword: value</em> pair is appended at the end of the
+  parameter file given that the value of <em>new_key</em> is 1.
+  Otherwise, the input and output files are identical.</p>
+
+  <p>The input file and output file can have identical names
+  because the output is stored in a temporary buffer until the
+  search is completed. The keyword and value arguments can have
+  embedded spaces if they are enclosed in double quotes.</p>
+  <hr align="left">
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 11-Apr-2006.</p>
+</body>
+</html>

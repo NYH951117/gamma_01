@@ -1,0 +1,90 @@
+#! /bin/csh -fe
+
+echo "make_tab: Script to generate table from list v1.0 7-Feb-2012 uw"
+echo " "
+if ($#argv < 3 )then
+  echo "usage: make_tab <list> <tab> <definition>"
+  echo "       list         (input) list file (ascii)"
+  echo "       tab          (output) table file (ascii)"
+  echo "       definition   definition used to generate line of output table"
+  echo "                    (example 1: '"'$1'".slc "'$1'".slc.par')"
+  echo "                    (example 2: '"'$1'"_"'$2'".base "'$1'"_"'$2'".off')"
+  exit
+endif
+
+
+#command line parameters
+set list=$1
+set tab=$2
+set definition="$3"
+
+if (-e $tab) then
+  /bin/rm $tab
+endif
+
+#determine number of rows of list file
+set tmp=`echo "$list"  | awk '(NR>=1){print NF}' $1 `
+set nrows=`echo "$tmp" | awk '(NR==1){print NF}'`
+echo "nrows: $nrows"
+
+#determine number of colums of list file
+set ncols=`echo "$list"  | awk '(NR==1){print NF}' $1`
+echo "ncols: $ncols"
+
+#display definition
+echo "definition:" $definition
+
+#search parameters used in definition
+set j="1"
+while ( "$j" <= "$ncols" )
+  set b = `echo "$definition" | grep '$'"$j" | awk '{print $0}'`
+  #echo "$j $b"
+  if ( "$b" != "" ) then
+    #echo "$j exists"
+    set jmax = "$j"
+  endif
+  set j = `echo "$j" | awk '{printf "%d", $1+1}'`
+end
+echo "jmax: $jmax"
+echo ""
+
+set i="1"
+while ( "$i" <= "$nrows" )
+  set row = "$i"
+  set col = "1"
+
+  #extract from list file the value for row 3 col 1
+  #set command='set x = `awk'" '"'(NR=='"$row"'){print $'"$col"'}'"'"" $list"'`'
+  set command='set x = `awk'" '"'(NR=='"$row"'){print $0}'"'"" $list"'`'
+  #echo "command: $command"
+  echo "#! /bin/csh -fe" >! command_file;\
+  echo '#echo "test command"' >> command_file;\
+  echo "$command" >> command_file;\
+  echo 'echo "$x"' >> command_file;\
+  echo 'exit' >> command_file;\
+  chmod 777 command_file;\
+  ./command_file !> value_file;\
+  #set value=`awk '(NR==1){print $1}' value_file`;\
+  set value=`awk '(NR==1){print $0}' value_file`;\
+  /bin/rm command_file value_file
+
+#  echo "$i $value"
+
+  #define and run script to write the definition with the parameters replaced
+  set command='echo "'"$definition"'"'
+  #echo "command: $command"
+  
+  echo "#! /bin/csh -fe" >! command_file;\
+  echo "$command" >> command_file;\
+  echo 'exit' >> command_file;\
+  chmod 777 command_file;\
+  ./command_file $value >> $tab;\
+  /bin/rm command_file
+
+  set i = `echo "$i" | awk '{printf "%d", $1+1}'`
+end
+
+#display output file
+
+exit
+

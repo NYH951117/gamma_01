@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: ave2pwr</title>
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+  <!-- uw961216 -->
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ave2pwr</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ave2pwr.c"><i>ave2pwr.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  ave2pwr - Averages two registered backscatter intensity
+  images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ave2pwr &lt;pwr1&gt; &lt;pwr2&gt; &lt;pwr_out&gt;
+  &lt;width&gt; [scale_factor]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;pwr1&gt;</td>
+
+      <td>intensity image 1 (float values)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr2&gt;</td>
+
+      <td>intensity image 2 (float values)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr_out&gt;</td>
+
+      <td>output file (float): (pwr1+scale_factor*pwr2)/2</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[scale_factor]</td>
+
+      <td>scale factor for image 2 (absolute value, not
+      dB)(default: 1.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ave2pwr 1352_1610.pwr1 1352_1610.pwr2 1352_1610.pwr
+  2500</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code ave2pwr.c in ./src. For compilation adjust and use
+  Makefile: Executable version ave2pwr in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  ave2pwr reads the two backscatter intensity images (or other
+  files of type float) and calculates for each pixel the average of
+  the two images. Image 2 may be scaled with a userdefined factor.
+  <code><em>result</em></code><code>=
+  (</code><code><em>pwr1</em></code><code>+</code><code><em>scale_factor</em></code><code>*</code><code><em>pwr2</em></code><code>)/2</code>.
+  The program assumes that the two input images are registered to
+  the same geometry (as it is the case for example for the two
+  backscatter images of an interferometric pair. Averaging two
+  backscatter intensity images allows to reduce the speckle noise
+  and therby improve the spatial/radiometric resolution. The
+  averaged data are written as the output file
+  <em>&lt;pow_out&gt;</em> of type float.Format and size of the
+  output file corresponds to the input files. The display and
+  generation of hard copies of the resulting averaged image and the
+  image intensities is supported by special programs allowing the
+  generation of SUN raster or BMP format image files, a format
+  accepted by most image processing software packages.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Image 2 may be scaled using the user defined scale factor (linear
+  scale, not dB values are used).</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "lin_comb.html">lin_comb</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

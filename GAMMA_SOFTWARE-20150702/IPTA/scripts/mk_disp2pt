@@ -1,0 +1,55 @@
+#!/usr/bin/perl
+#program to extract deformation histories at a set of points in a point list and store in a stack
+#17-Nov-2008
+
+if (($#ARGV + 1) < 5){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2008, Gamma Remote Sensing, v1.1 17-Nov-2008 clw ***
+*** extract deformation or unwrapped phase from a set of float images at a set of points and store in a stack ***
+
+usage: $0 <DISP_tab> <pt> <width> <rlks> <azlks> <pdata>
+
+    DISP_tab  (input) list of displacement or unwrapped phase files using rasdt_pwr24
+    pt        (input) point list of locations in the the geometry of the files of the DISP_tab
+    width     unwraped phase or displacement image width
+    rlks      range looks of input data relative to the point list coordinates
+    azlks     azimuth looks of input data relative to point list coordinates
+    pdata     (output) point data stack (same type as f_in)
+
+EOS
+
+$disp_tab =  $ARGV[0];
+open(DISP_TAB, "<$ARGV[0]") or die "\nERROR $0: table of displacement or unwrapped phase files does not exist: $ARGV[0]\n\n";
+print "DISP_tab: $ARGV[0]\n"; 
+
+$pt = $ARGV[1];
+$width = $ARGV[2];
+$rlks =   $ARGV[3];
+$azlks =  $ARGV[4];
+$pdata =  $ARGV[5];
+
+($rlks >= 1) or die "\nERROR $0: range looks < 1 : $sc\n";
+($azlks >= 1) or die "\nERROR $0: azimuth looks < 1 : $exp\n";
+
+print "displacement table: $disp_tab\n";
+print "point list: $pt\n";
+print "image width (samples): $width\n";
+print "range looks: $rlks\n";
+print "azimuth looks: $azlks\n";
+print "point data file: $pdata\n";
+
+$rn = 1;
+LINE: while (<DISP_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+ 
+  $disp = $fields[0];
+  $cmd = "d2pt $disp $width $pt $rlks $azlks $pdata $rn 2";
+  printf "%s\n\n", $cmd;
+  $exit = system "$cmd";
+  $rn++;
+}
+
+exit(0);

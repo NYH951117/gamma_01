@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw961216 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: soil_moisture</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>soil_moisture</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/soil_moisture.c">soil_moisture.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  soil_moisture - Soil moisture retrieval algorithm (using
+  reference function).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>soil_moisture &lt;pwr&gt; &lt;pwr_ref&gt; &lt;mv_ref&gt;
+  &lt;mv_out&gt; &lt;width&gt; [dB_flag] [start] [nlines] [param_a]
+  [param_b]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;pwr&gt;</td>
+
+      <td>backscatter intensity image (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr_ref&gt;</td>
+
+      <td>reference backscatter intensity image (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mv_ref&gt;</td>
+
+      <td>reference volumetric soil moisture (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mv_out&gt;</td>
+
+      <td>output volumetric soil moisture map (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[dB_flag]</td>
+
+      <td>flag indicating if pwr values are in dB<br>
+      (default:0=linear scale, 1=dB values)</td>
+    </tr>
+
+    <tr>
+      <td>[start]</td>
+
+      <td>starting line (default = 1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to process (default: 0=to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[param_a]</td>
+
+      <td>model parameter a (default = 8.56)</td>
+    </tr>
+
+    <tr>
+      <td>[param_b]</td>
+
+      <td>model parameter b (default = 1.56)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>soil_moisture 13258_13387.pwr1 pow_ref mv_ref
+  13258_13387.mv1 2500 0 1 0 8.56 1.56</samp></p>For the reference
+  backscatter image pow_ref the soil was frozen and therefore it
+  was possible to estimate the reference soil moisture mv_ref.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code soil_moisture.c in ./src. For compilation adjust and
+  use Makefile: Executable version soil_moisture in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  soil_moisture generates a soil moisture map based on:<br>
+  - backscatter image<br>
+  - reference backscatter image<br>
+  - reference soil moisture map</p>
+
+  <p>The retrieval algorithm used is:</p>
+
+  <p>intercept = (pwr_ref[dB] - 8.56 mv_ref) / (1 - 1.56
+  mv_ref)</p>
+
+  <p>and</p>
+
+  <p>mv = (pwr[dB] - intercept) / (8.56 - 1.56 intercept)</p>
+
+  <p>The input backscatter intensities (pwr, pwr_ref) can be given
+  in linear scale or using dB values.</p>
+
+  <p>The model parameters (8.56, 1.56) describing the relationship
+  between the slope and intercept of the regression between soil
+  moisture and bacskcattering [dB] may be modified (for other
+  sensors, polarizations, soils, etc.)</p>
+
+  <p>Soil moisture (volumetric) values are given in absolute values
+  (typical values look like 0.25 (and not %: 25%)</p>
+
+  <p>Reference for the derivation and description of the soil
+  moisture retrieval algorithm:<br>
+  <i>Wegmuller et al. 1997 , Final report to ESTEC Contract
+  11740/95/NL/PB(SC)</i></p>
+
+  <p>The soil moisture retrieval algorithm was developed for the
+  retrieval of soil moisture for bare or sparsly vegetated fields
+  from multi-temporal ERS data.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The model parameters may be modified.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  The program soil_moisture may.c may be used as a starting point
+  to develop other retrieval algorithms based.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

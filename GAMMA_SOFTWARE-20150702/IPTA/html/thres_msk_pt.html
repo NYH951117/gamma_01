@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="generator" content="&lt;title">
+
+  <title></title>
+</head>
+
+<body>
+  IPTA Reference Manual: npt
+
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>thres_msk_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/thes_msk_pt.c">thres_msk_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  thres_msk_pt- generate a point mask based on thresholds of values
+  of a layer of a point data stack</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>thes_msk_pt &lt;plist&gt; &lt;pmask&gt; &lt;pdata&gt;
+  &lt;rec_num&gt; &lt;t_min&gt; [t_max]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>[pmask]</td>
+
+        <td>(input) point data stack of mask values (uchar,
+        pmask[i]=0 excludes point i)<br>
+        (enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pdata]<br></td>
+
+        <td style="vertical-align: top;">(input) point data stack
+        (must be float)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">rec_num<br></td>
+
+        <td style="vertical-align: top;">record number in input
+        point data stack (starting with 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">t_min</td>
+
+        <td style="vertical-align: top;">minimum threshold value
+        (enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">t_max<br></td>
+
+        <td style="vertical-align: top;">maximum threshold value
+        (enter - for none)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>thres_msk_pt pt msk psigma 1 .5 .9</samp></p>
+
+  <p>Reads the input point list and the floating point data stack
+  psigma, layer 1.&nbsp; All points in the psigma layer 1 with
+  values between 0.5 and 0.9 have the&nbsp; associated mask value
+  set to 1.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code thres_msk_pt.c in ./IPTA/src, executable version npt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This program is used to generate masks based on the floating
+  point values in a layer of a floating point data set. In the
+  example the standard deviation of the fit was used as a criterion
+  for selecting points. Using this mask, only those points that
+  meet the selection critereon can be used in later
+  processing.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================--><a href=
+  "copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 14-Apr-2003.
+</body>
+</html>

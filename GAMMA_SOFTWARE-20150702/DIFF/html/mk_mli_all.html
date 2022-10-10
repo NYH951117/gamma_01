@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF Reference Manual: phase_sim</title>
+  <meta name="GENERATOR" content="LibreOffice 3.3 (Unix)">
+  <style type="text/css">
+      <!--
+                @page { margin: 0.79in }
+                P { margin-bottom: 0.11in; color: #000000; text-align: justify }
+                P.western { font-size: 10pt }
+                P.cjk { font-size: 10pt }
+                P.ctl { font-weight: bold }
+                P.code-western { margin-bottom: 0in; direction: ltr; color: #0000ff; font-family: "Courier", "Courier New", monospace; font-size: 8pt; so-language: en-GB; text-align: left; widows: 0; orphans: 0; page-break-before: auto }
+                P.code-cjk { margin-bottom: 0in; direction: ltr; color: #0000ff; font-family: "Times New Roman", serif; font-size: 8pt; so-language: zh-CN; text-align: left; widows: 0; orphans: 0; page-break-before: auto }
+                P.code-ctl { margin-bottom: 0in; direction: ltr; color: #0000ff; font-family: "Courier", "Courier New", monospace; font-size: 8pt; so-language: ar-SA; font-weight: bold; text-align: left; widows: 0; orphans: 0; page-break-before: auto }
+        -->�
+  </style>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>mk_mli_all<br></h2>
+
+  <p><i>Perl Script: <a href=
+  "../scripts/mk_mli_all">mk_mli_all</a><br></i></p>
+
+  <p><strong>NAME</strong><br>
+  mk_mli_all - Calculate MLI images generate multi-temporal MLI
+  from a set of SLCs</p>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  mk_mli_all &lt;SLC_tab&gt; &lt;MLI_dir&gt; &lt;rlks&gt;
+  &lt;azlks&gt; [sflag] [scale] [exp] [MLI_ave</b></code>]<br></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) two column list of SLC filenames and SLC
+        parameter filenames (including paths) (ascii)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_dir &gt;</td>
+
+        <td>(input) directory to contain MLI images and MLI image
+        parameter files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>range looks for the MLI images<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>azimuth looks for the MLI images<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;sflag&gt;</td>
+
+        <td>MLI image average flag:<br>
+        &nbsp;&nbsp;&nbsp; 0: no&nbsp;&nbsp; (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: yes<br></td>
+      </tr>
+
+      <tr>
+        <td>[scale]</td>
+
+        <td>relative intensity display scale factor (default =
+        0.7)<br></td>
+      </tr>
+
+      <tr>
+        <td>[exp]</td>
+
+        <td>display exponent (default = 0.35)<br></td>
+      </tr>
+
+      <tr>
+        <td>[MLI_ave]</td>
+
+        <td>MLI average image filename (without path), file is
+        copied into the MLI_dir<br></td>
+      </tr>
+
+      <tr>
+        <td>-s scale</td>
+
+        <td>&nbsp;MLI radiometric scale factor, nominal value for
+        calibrated SCOMPLEX HH and VV data: 1.e-6</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <code><br></code></strong> <samp><code style=
+  "color: rgb(204, 51, 204);">mk_mli_all SLC_tab mli_1_5 1_5 0 .7
+  .35&nbsp;</code><br></samp></p>
+
+  <p>Generates a set of mli images from a set of SLC images listed
+  in the SLC_tab file. The multi-look intensity (MLI) images with
+  extension mli are are placed in the mli_1_5 directory. These are
+  produced using the ISP program multi_look.&nbsp;</p>
+
+  <p>A raster image is produced from each mli image. The DISP
+  program raspwr is used to make an 8-bit Sun Raster format image
+  using a relative scale factor of 0.7 and exponent of 0.35.No
+  average mli image is produced.<br></p>
+
+  <p><code><span style="color: rgb(204, 51, 204);">mk_mli_all
+  RSLC_tab rmli_1_5 1_5 1 .7 .35
+  hector_ave.rmli</span><br></code></p>
+
+  <p>Generates a set of <span style=
+  "font-style: italic;">rmli</span> images from a set of
+  coregistered and resampled SLC images listed in the RSLC_tab
+  file. The RMLI images with extension rmli are are placed in the
+  rmli_1_5 directory. These images are produced using the ISP
+  program <a href=
+  "file:///Users/cw/SVN_repos/GAMMA_SOFTWARE/current_version/ISP/html/multi_look.html">
+  multi_look</a>.&nbsp; A radiometric scale factor is applied to
+  the MLI images of 1.e-6 because the input images are SCOMPLEX
+  formation<br></p>
+
+  <p>The DISP program raspwr is used to make an 8-bit raster format
+  (BMP or Sun Raster) using a default relative scale factor of 0.7
+  and exponent of 0.35. The r<span style=
+  "font-style: italic;">mli</span> images are averaged and stored
+  in the file hector_ave.rmli. The average image is produced using
+  the ISP program <a href=
+  "../../ISP/html/ave_image.html">ave_image</a>.<br></p>
+
+  <p></p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p>The Perl script <span style=
+  "font-style: italic;">mk_mli_all</span> takes as input a two
+  column list of SLC images and image parameter files with an
+  example shown below for 2 SLC images.&nbsp;<br></p>
+
+  <p><span style="color: rgb(204, 51, 204);">more
+  SLC_tab</span><br>
+  <span style=
+  "color: rgb(51, 51, 255);">slc/19990915.slc&nbsp;&nbsp;&nbsp;
+  slc/19990915.slc.par</span><br style="color: rgb(51, 51, 255);">
+  <span style=
+  "color: rgb(51, 51, 255);">slc/19991020.slc&nbsp;&nbsp;&nbsp;
+  slc/19991020.slc.par</span><br></p>
+
+  <p>A way to produce this list is to use the DIFF script
+  called&nbsp; <span style="font-style: italic;">mk_tab</span>. As
+  a prerequisite all the SLC images should be located in the same
+  directory.&nbsp; The usage of <span style=
+  "font-style: italic;">mk_tab</span> is:<br></p>
+
+  <p><code><span style="font-family: monospace;">$ <span style=
+  "color: rgb(204, 51, 204);">mk_tab</span></span></code><br style=
+  "font-family: monospace;">
+  <code style="color: rgb(51, 51, 255);"><span style=
+  "font-family: monospace;">*** Copyright 2012, Gamma Remote
+  Sensing, v1.3 23-May-2012 clw ***</span></code><br style=
+  "font-family: monospace; color: rgb(51, 51, 255);">
+  <code style="color: rgb(51, 51, 255);"><span style=
+  "font-family: monospace;">*** Generate SLC_tab, MLI_tab, or
+  RAW_list for processing&nbsp; ***</span></code><br style=
+  "font-family: monospace; color: rgb(51, 51, 255);">
+  <br style="font-family: monospace; color: rgb(51, 51, 255);">
+  <code style="color: rgb(51, 51, 255);"><span style=
+  "font-family: monospace;">usage:
+  /home/cw/GPRI2/trunk/software/mk_tab &lt;dir&gt; &lt;ext-1&gt;
+  &lt;ext-2&gt; &lt;tab&gt;</span></code><br style=
+  "font-family: monospace; color: rgb(51, 51, 255);">
+  <code style="color: rgb(51, 51, 255);"><span style=
+  "font-family: monospace;">&nbsp;&nbsp;&nbsp; dir&nbsp;&nbsp;
+  (input) directory including paths that contain the data files<br>
+  &nbsp;&nbsp;&nbsp; ext-1 (input) pattern to select data files
+  (examples: slc, raw...), (enter - for all files in the
+  directory)<br>
+  &nbsp;&nbsp;&nbsp; ext-2 (input) pattern to select parameter
+  files that match the data (enter -&nbsp; for none, examples:
+  slc.par, raw_par, raw.par)<br>
+  &nbsp;&nbsp;&nbsp; tab&nbsp;&nbsp; (output) list of data
+  filenames and associated parameter files (including paths)
+  (text)</span></code><br style=
+  "color: rgb(51, 51, 255);"></p><code><span style=
+  "color: rgb(51, 51, 255);">&nbsp;&nbsp;&nbsp; NOTE: The current
+  directory is denoted using .</span><br>
+  <br></code> The files listed in column 1 of the output tab file
+  has the extension specified by the <span style=
+  "font-style: italic;">ext-1</span> command line parameter and
+  column 2 has the value specified by the <span style=
+  "font-style: italic;">ext-2</span> parameter. Output is written
+  to the tab file listed on the command line. The output of
+  <span style="font-style: italic;">mk_tab</span> is written to the
+  output tab file. To generate the <span style=
+  "font-style: italic;">SLC_tab</span> in the example<br>
+  <br>
+  <code style="color: rgb(204, 51, 204);">mk_tab slc slc slc.par
+  SLC_tab</code><br>
+  <br>
+  The SLC_tab is then used as input to <span style=
+  "font-style: italic;">mk_mli_all</span>. <span style=
+  "font-style: italic;">mk_mli_all</span> generates multi-look
+  detected images for each SLC listed in the SLC_tab and places
+  them in the <span style="font-style: italic;">MLI_dir</span>
+  specified on the command line. If the MLI_dir does not exist, it
+  is created. The ISP program <a href=
+  "../../ISP/html/multi_look.html">multi_look</a> is used to detect
+  and average the SLC image and produce the MLI image parameter
+  file.<br>
+  <br>
+  A Sun raster image is produced from each of the MLI images in the
+  <span style="font-style: italic;">MLI_dir</span> using the DISP
+  program <a href=
+  "../../DISP/html/DISP_reference_manual.html">raspwr</a>. raspwr
+  receives the scale and exponent parameters to produce the 8-bit
+  Sun raster file output.<br>
+  <br>
+  An average of the MLI images is produced if the average sum flag
+  is set to 1. The name of the output average file is entered on
+  the command line. The average is calculated using the <a href=
+  "../../ISP/html/ave_image.html">ave_image</a> program.<br>
+
+  <p><strong>SEE ALSO</strong></p><a href=
+  "../../ISP/html/multi_look.html">multilook</a>, <a href=
+  "../../ISP/html/ave_image.html">ave_image</a>, and <a href=
+  "../../DISP/html/DISP_reference_manual.html">raspwr</a>
+  <hr>
+  Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jun-2015.
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>IPTA Reference Manual: vu_disp2d</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>vu_disp2d</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/vu_disp2d.c">vu_disp2d.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  vu_disp2d - Display deformation time-series using a raster image
+  for position selection&gt;</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>vu_disp2d &lt;TS_tab&gt; &lt;MLI_tab&gt; &lt;itab_ts&gt;
+  &lt;ref_image&gt; [DEM_par] [scale] [ymin] [ymax] [ylabel]
+  [plabel] [mag] [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;TS_tab&gt;</td>
+
+        <td>(input) list of unwrapped phase or displacement files
+        in the time-series (text)");</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_tab&gt;</td>
+
+        <td>(input) list MLI images and parameter files that are
+        associated with the entries of the DISP_tab<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        NOTE: the number of range and azimuth looks must match the
+        values used for the interferograms</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab_ts&gt;</td>
+
+        <td>(input) single-reference itab describing files in the
+        DISP_tab time-series (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ref_image&gt;</td>
+
+        <td>(input) reference image for selecting the location to
+        extract the time-series data for the plot (SUN *.ras, or
+        BMP *.bmp)</td>
+      </tr>
+
+      <tr>
+        <td>[DEM_par]</td>
+
+        <td>(input) DEM parameter file describing input images when
+        input data are geocoded into map geometry (enter - for
+        none)<br>
+        NOTE: When the DEM_par is not provided, the data are
+        assumed to be in slant-range geometry described in the MLI
+        parameter files</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[scale]</td>
+
+        <td style="vertical-align: top;">deformation scale factor
+        (enter - for default: 1.0)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[ymin]</td>
+
+        <td style="vertical-align: top;">plot display minimum
+        (enter - for default: -0.1)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[ymax]</td>
+
+        <td style="vertical-align: top; height: 19.2px;">plot
+        display minimum (enter - for default: -0.1)</td>
+      </tr>
+
+      <tr>
+        <td>[ylabel]</td>
+
+        <td>label for plot y-axis (enter - for default:
+        "Data")</td>
+      </tr>
+
+      <tr>
+        <td>[plabel]</td>
+
+        <td>plot label (enter - for default: TS_tab)</td>
+      </tr>
+
+      <tr>
+        <td>[mag]</td>
+
+        <td>zoom magnification factor (default: 2)</td>
+      </tr>
+
+      <tr>
+        <td>[win_sz]</td>
+
+        <td>zoom window size before magnification
+        (default:192)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><code>vu_disp2d disp_tab2 RMLI_tab itab_ts
+  diff2_ts/diff2_ts_012.bmp - 1.0 -50 50 "Unwrapped Phase" "Lost
+  Hills"<br></code></p>
+
+  <p>Displays the deformation of data in the slant range SAR
+  geometry.&nbsp; The user selects location using the raster image
+  <code>diff2_ts/diff2_ts_012.bmp</code>.&nbsp; Clicking on a point
+  in the raster image selects a pixel location in the stack of
+  images listed in disp_tab2. The RMLI_tab contains the names of
+  the MLI images with the temporal and geometrical information
+  describing the interferograms. The i<span style=
+  "font-style: italic;">tab_ts</span> describes the output
+  interferograms in the stack and references the entries in the
+  RMLI_tab. The user has selected a data scale factor of 1.0 and
+  the y-axis bounds are from -50 to 50. The y-axis label is&nbsp;
+  specified as"Unwrapped Phase". If the user had specified a DEM
+  parameter file, then the data are assumed to be geocoded in the
+  map projection parameters in the DEM_par.&nbsp; When the DEM_par
+  is specified, the map coordinates for the pixel location are
+  calculated and displayed.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  The Gnuplot program must be installed (version&nbsp; 4.6
+  preferred) to implement plotting.</p>
+
+  <p><strong>DESCRIPTION<br></strong> This program is used
+  primarily to display time-series data produced by the program
+  <a href=
+  "file:///Users/cw/gamma_software/IPTA/html/mb.html">mb</a>. The
+  output of <a href=
+  "file:///Users/cw/gamma_software/IPTA/html/mb.html">mb</a> is a
+  stack of continuous 2D images in float format. Using <span style=
+  "font-style: italic;">vu_disp2d</span> the user can select a
+  location in the image stack, extract the values from all the
+  files in the stack at that location and plot them on the screen.
+  Gnuplot is used to do the actual plotting. The user has the
+  option to perform a linear fit of the times series data. The
+  parameters of the fit and the line are also included in the
+  plot.&nbsp;</p>
+
+  <p>The user can save the plot and a text file containing the
+  time-series by depressing the <span style=
+  "font-style: italic;">write point</span> button. The linear fit
+  can be disabled by deselecting the <span style=
+  "font-style: italic;">linear regression</span> check box.&nbsp;
+  The user can specify the minimum and maximum deformation plot
+  bounds, y-axis label, and the size and magnification of the zoom
+  window by entering the appropriate parameters on the command
+  line.</p>
+
+  <p>By clicking the <span style="font-style: italic;">write
+  point</span> button the user can store the point deformation
+  history, annotation, and a PNG format image of the plot.&nbsp;
+  The columns of the deformation history text file are:</p>
+
+  <ol>
+    <li>Layer counter</li>
+
+    <li>Time specified in ISO8601 format:&nbsp;
+    YYYY-MM-DDTHH:MM:SS.SSS</li>
+
+    <li>Time specified in days since 1-Jan-1970</li>
+
+    <li>Time elapsed since the start of the time series in days.
+    Each day is 86400 seconds</li>
+
+    <li>Data value for the specific layer</li>
+
+    <li>Linear regression value (if the "linear regression"
+    checkbox selected)</li>
+  </ol>
+
+  <p>&nbsp;Parameters such as&nbsp; location and geographic
+  coordinates (if available) are annotated using <span style=
+  "font-style: italic;">keyword: value</span> format.</p>
+
+  <table style=
+  "width: 685px; text-align: left; margin-left: auto; margin-right: auto; height: 530px;"
+  border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"><samp>filename:
+        p169_404.txt<br>
+        x_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 169<br>
+        y_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 404<br>
+        Radarsat-1 Lost Hills<br>
+        slope (units per day):&nbsp;&nbsp;&nbsp; 3.0799e-02<br>
+        intercept (dt=0.0):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6.3578e-01<br>
+        std.
+        deviation:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1.1061e+00<br>
+        &nbsp;&nbsp; 0&nbsp; 2002-02-20T13:59:26.982&nbsp;&nbsp;
+        11738.582951&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0.000000&nbsp;&nbsp;&nbsp; 1.00000e-12&nbsp;&nbsp;&nbsp;
+        6.35784e-01<br>
+        &nbsp;&nbsp; 1&nbsp; 2002-04-09T13:59:22.914&nbsp;&nbsp;
+        11786.582904&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        47.999953&nbsp;&nbsp;&nbsp; 1.31599e+00&nbsp;&nbsp;&nbsp;
+        2.11414e+00<br>
+        &nbsp;&nbsp; 2&nbsp; 2002-05-03T13:59:23.413&nbsp;&nbsp;
+        11810.582910&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        71.999959&nbsp;&nbsp;&nbsp; 3.75701e+00&nbsp;&nbsp;&nbsp;
+        2.85331e+00<br>
+        &nbsp;&nbsp; 3&nbsp; 2002-05-27T13:59:20.941&nbsp;&nbsp;
+        11834.582881&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        95.999930&nbsp;&nbsp;&nbsp; 4.25602e+00&nbsp;&nbsp;&nbsp;
+        3.59249e+00<br>
+        &nbsp;&nbsp; 4&nbsp; 2002-07-14T13:59:19.202&nbsp;&nbsp;
+        11882.582861&nbsp;&nbsp;&nbsp;&nbsp;
+        143.999910&nbsp;&nbsp;&nbsp; 6.54857e+00&nbsp;&nbsp;&nbsp;
+        5.07084e+00<br>
+        &nbsp;&nbsp; 5&nbsp; 2002-08-07T13:59:15.396&nbsp;&nbsp;
+        11906.582817&nbsp;&nbsp;&nbsp;&nbsp;
+        167.999866&nbsp;&nbsp;&nbsp; 7.26044e+00&nbsp;&nbsp;&nbsp;
+        5.81002e+00<br>
+        &nbsp;&nbsp; 6&nbsp; 2002-08-31T13:59:14.404&nbsp;&nbsp;
+        11930.582806&nbsp;&nbsp;&nbsp;&nbsp;
+        191.999854&nbsp;&nbsp;&nbsp; 7.28376e+00&nbsp;&nbsp;&nbsp;
+        6.54919e+00<br>
+        &nbsp;&nbsp; 7&nbsp; 2002-09-24T13:59:12.964&nbsp;&nbsp;
+        11954.582789&nbsp;&nbsp;&nbsp;&nbsp;
+        215.999838&nbsp;&nbsp;&nbsp; 8.37955e+00&nbsp;&nbsp;&nbsp;
+        7.28837e+00<br>
+        &nbsp;&nbsp; 8&nbsp; 2002-10-18T13:59:11.955&nbsp;&nbsp;
+        11978.582777&nbsp;&nbsp;&nbsp;&nbsp;
+        239.999826&nbsp;&nbsp;&nbsp; 8.77419e+00&nbsp;&nbsp;&nbsp;
+        8.02755e+00<br>
+        &nbsp;&nbsp; 9&nbsp; 2002-11-11T13:59: 9.895&nbsp;&nbsp;
+        12002.582753&nbsp;&nbsp;&nbsp;&nbsp;
+        263.999802&nbsp;&nbsp;&nbsp; 8.97837e+00&nbsp;&nbsp;&nbsp;
+        8.76672e+00<br>
+        &nbsp; 10&nbsp; 2002-12-29T13:58:59.573&nbsp;&nbsp;
+        12050.582634&nbsp;&nbsp;&nbsp;&nbsp;
+        311.999683&nbsp;&nbsp;&nbsp; 8.97837e+00&nbsp;&nbsp;&nbsp;
+        1.02451e+01<br>
+        &nbsp; 11&nbsp; 2003-01-22T13:58:56.732&nbsp;&nbsp;
+        12074.582601&nbsp;&nbsp;&nbsp;&nbsp;
+        335.999650&nbsp;&nbsp;&nbsp; 9.63748e+00&nbsp;&nbsp;&nbsp;
+        1.09842e+01<br>
+        &nbsp; 12&nbsp; 2003-03-11T13:58:56.559&nbsp;&nbsp;
+        12122.582599&nbsp;&nbsp;&nbsp;&nbsp;
+        383.999648&nbsp;&nbsp;&nbsp; 1.12571e+01&nbsp;&nbsp;&nbsp;
+        1.24626e+01<br>
+        &nbsp; 13&nbsp; 2003-04-04T13:58:52.595&nbsp;&nbsp;
+        12146.582553&nbsp;&nbsp;&nbsp;&nbsp;
+        407.999602&nbsp;&nbsp;&nbsp; 1.21626e+01&nbsp;&nbsp;&nbsp;
+        1.32018e+01<br>
+        &nbsp; 14&nbsp; 2003-04-28T13:58:49.260&nbsp;&nbsp;
+        12170.582515&nbsp;&nbsp;&nbsp;&nbsp;
+        431.999563&nbsp;&nbsp;&nbsp; 1.18359e+01&nbsp;&nbsp;&nbsp;
+        1.39410e+01<br>
+        &nbsp; 15&nbsp; 2003-05-22T13:58:50.798&nbsp;&nbsp;
+        12194.582532&nbsp;&nbsp;&nbsp;&nbsp;
+        455.999581&nbsp;&nbsp;&nbsp; 1.40918e+01&nbsp;&nbsp;&nbsp;
+        1.46801e+01<br>
+        &nbsp; 16&nbsp; 2003-06-15T13:58:48.641&nbsp;&nbsp;
+        12218.582507&nbsp;&nbsp;&nbsp;&nbsp;
+        479.999556&nbsp;&nbsp;&nbsp; 1.51173e+01&nbsp;&nbsp;&nbsp;
+        1.54193e+01<br>
+        &nbsp; 17&nbsp; 2003-07-09T13:58:42.132&nbsp;&nbsp;
+        12242.582432&nbsp;&nbsp;&nbsp;&nbsp;
+        503.999481&nbsp;&nbsp;&nbsp; 1.45317e+01&nbsp;&nbsp;&nbsp;
+        1.61585e+01<br>
+        &nbsp; 18&nbsp; 2003-08-02T13:58:42.671&nbsp;&nbsp;
+        12266.582438&nbsp;&nbsp;&nbsp;&nbsp;
+        527.999487&nbsp;&nbsp;&nbsp; 1.65434e+01&nbsp;&nbsp;&nbsp;
+        1.68977e+01<br>
+        &nbsp; 19&nbsp; 2003-08-26T13:58:41.441&nbsp;&nbsp;
+        12290.582424&nbsp;&nbsp;&nbsp;&nbsp;
+        551.999473&nbsp;&nbsp;&nbsp; 1.72960e+01&nbsp;&nbsp;&nbsp;
+        1.76368e+01<br>
+        &nbsp; 20&nbsp; 2003-09-19T13:58:39.028&nbsp;&nbsp;
+        12314.582396&nbsp;&nbsp;&nbsp;&nbsp;
+        575.999445&nbsp;&nbsp;&nbsp; 1.78802e+01&nbsp;&nbsp;&nbsp;
+        1.83760e+01<br>
+        &nbsp; 21&nbsp; 2003-10-13T13:58:36.515&nbsp;&nbsp;
+        12338.582367&nbsp;&nbsp;&nbsp;&nbsp;
+        599.999416&nbsp;&nbsp;&nbsp; 1.89139e+01&nbsp;&nbsp;&nbsp;
+        1.91152e+01<br>
+        &nbsp; 22&nbsp; 2003-11-06T13:58:34.050&nbsp;&nbsp;
+        12362.582339&nbsp;&nbsp;&nbsp;&nbsp;
+        623.999387&nbsp;&nbsp;&nbsp; 1.92745e+01&nbsp;&nbsp;&nbsp;
+        1.98544e+01<br>
+        &nbsp; 23&nbsp; 2003-11-30T13:58:33.236&nbsp;&nbsp;
+        12386.582329&nbsp;&nbsp;&nbsp;&nbsp;
+        647.999378&nbsp;&nbsp;&nbsp; 2.10588e+01&nbsp;&nbsp;&nbsp;
+        2.05935e+01<br>
+        &nbsp; 24&nbsp; 2003-12-24T13:58:30.593&nbsp;&nbsp;
+        12410.582299&nbsp;&nbsp;&nbsp;&nbsp;
+        671.999347&nbsp;&nbsp;&nbsp; 2.37051e+01&nbsp;&nbsp;&nbsp;
+        2.13327e+01<br>
+        &nbsp; 25&nbsp; 2004-01-17T13:58:24.933&nbsp;&nbsp;
+        12434.582233&nbsp;&nbsp;&nbsp;&nbsp;
+        695.999282&nbsp;&nbsp;&nbsp; 2.32299e+01&nbsp;&nbsp;&nbsp;
+        2.20719e+01<br>
+        &nbsp; 26&nbsp; 2004-02-10T13:58:22.598&nbsp;&nbsp;
+        12458.582206&nbsp;&nbsp;&nbsp;&nbsp;
+        719.999255&nbsp;&nbsp;&nbsp; 2.44224e+01&nbsp;&nbsp;&nbsp;
+        2.28111e+01<br></samp> <samp><br></samp></td>
+      </tr>
+    </tbody>
+  </table><span style="font-weight: bold;"><br></span>
+
+  <p>The plot produced from this data is shown below<span style=
+  "font-weight: bold;">:</span></p>
+
+  <div style="text-align: center;"><img alt="p169_404.png" src=
+  "p169_404.png"></div><br>
+  The user also has the option to select the starting and ending
+  date for the linear regression using horizontal scale widgets
+  (sliders) to select the starting and ending date for data. The
+  starting and ending dates and the regression parameters are
+  printed in the plot window.<strong>&nbsp;<br></strong>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "dispmap.html">dispmap_pt</a>, <a href=
+  "vu_disp.html">vu_disp</a>, <a href="mb.html">mb</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 5-Apr-2013.
+</body>
+</html>

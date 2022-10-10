@@ -1,0 +1,525 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ASAR raw data processing</title>
+</head>
+
+<body>
+  <h1>ASAR Raw Data Processing</h1>This is a Quickstart guide on
+  how to use the scripts ASAR_pre_proc, ASAR_proc_par, and
+  ASAR_proc_all&nbsp; to automate processing a stack of raw ASAR
+  data sets &nbsp;to generate SLC and MLI image products. The data
+  stack should all cover the same image frame.<br>
+  <br>
+  These scripts are run from the command line. Think of theses
+  scripts as as assistants to help you automate the&nbsp;processing
+  task. To become familiar with them it is suggested that&nbsp; you
+  practice with a a single image 1 or a stack of 2 images to become
+  familiar with the processing flow.&nbsp; Then you will be ready
+  to go and process a much larger stack. The maximum number of
+  images is essentially limited only limited by your available disk
+  space .&nbsp; &nbsp;The script functions are summarized
+  below:<br>
+  <br>
+
+  <table style="text-align: left; width: 70%;" border="1"
+  cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td>ASAR_pre_proc&nbsp;</td>
+
+        <td>extract 8-bit IQ raw data from the ASAR Level 0 data
+        sets, extract antenna pattern information from the ASAR
+        external calibration file,&nbsp; generate MSP processing
+        parameter files, extract precision state vectors, determine
+        Doppler parameters, and generate a&nbsp; processing
+        parameter file used by ASAR_proc_par and ASAR_proc_all</td>
+      </tr>
+
+      <tr>
+        <td>ASAR_proc_par&nbsp;</td>
+
+        <td>select a subset of the raw data for processing and
+        optimize Doppler processing parameters for
+        interferometry&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>ASAR_proc_all</td>
+
+        <td>process the raw data sets and generate SLC and MLI
+        images, generate ISP image parameter files</td>
+      </tr>
+    </tbody>
+  </table><br>
+  ASAR_pre_proc is used to perform various pre-processing functions
+  and generate a text format data file (proc_list)&nbsp; that
+  contains various additional processing parameters that are used
+  by the ASAR_proc_par and ASAR_proc_all scripts.
+  &nbsp;ASAR_proc_all takes the proc list and its command line
+  parameters to calculate a set of SLC images and MLI images from
+  the raw data.&nbsp; The scene specific Doppler parameters and
+  extent both in range and azimuth&nbsp;is specified in the
+  proc_list. The script ASAR_proc_par can be used to optimize the
+  Doppler processing parameters to improve interferometric
+  coherence and also to specify a subset of the scene for
+  processing. More about ASAR_proc_all and ASAR_proc_par is written
+  below.<br>
+
+  <h2>1. Raw data pre-processing using ASAR_pre_proc</h2>To begin
+  processing select or create a directory on the disk where you
+  want the results and have the raw data. The data can be located
+  in different directories, though this is not recommended. You
+  should also have a directory where the DORIS state vectors for
+  Enivsat. The DORIS instrument provides precision state vectors
+  and are available as files covering a 1 day with overlap of 1
+  hour on the day before and after. Access to these state vectors
+  may be requested through the ESA help desk and can be downloaded
+  via FTP. See the documentation on the Gamma program&nbsp;
+  DORIS_proc.<br>
+  Next copy the 3 ASAR processing scripts to the processing
+  directory and run ASAR_pre_proc without arguments to get the
+  following screen output:<code><br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  ***&nbsp;ASAR_pre_proc<br>
+  *** Copyright 2006, Gamma Remote Sensing, v1.2 29-Jan-2006 clw
+  ***<br>
+  *** ASAR raw data pre-processing ***<br>
+  <br>
+  usage: ./ASAR_pre_proc &lt;ASAR_list&gt; &lt;DORIS_path&gt;
+  &lt;RAW_dir&gt; &lt;log&gt; &lt;proc_list&gt; &lt;mode&gt;
+  [keyword] [value]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; ASAR_list&nbsp;&nbsp; (input) list of ASAR raw
+  and associated calibration data sets with 4 columns/entry<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. Level 0 ASAR raw data set (ASA_IM__0)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. ASAR instrument characterization data file (ASA_INS)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. ASAR external calibration data file (ASA_XCA)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. DORIS state vector file (DOR_VOR_AXVF)<br>
+  &nbsp;&nbsp;&nbsp; DORIS_path&nbsp; path to DORIS orbit data
+  (example: /usr/local/data/DORIS/vor)<br>
+  &nbsp;&nbsp;&nbsp; RAW_dir&nbsp;&nbsp;&nbsp;&nbsp; directory for
+  output unpacked raw data files and processing parameter files<br>
+  &nbsp;&nbsp;&nbsp;
+  log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (output)
+  ASAR_pre_proc processing log file<br>
+  &nbsp;&nbsp;&nbsp; proc_list&nbsp;&nbsp; (output) processing list
+  for use by ASAR_proc_all<br>
+  &nbsp;&nbsp;&nbsp; mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  processing mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: create processing parameter files and unpack raw data<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: extract and interpolate DORIS state vectors and update MSP
+  processing parameter files<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: estimate Doppler centroid<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4: set a value in the processing parameter files for a
+  keyword:value pair (optional)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5: generate processing list for use by ASAR_proc_par and
+  ASAR_proc_all<br>
+  &nbsp;&nbsp;&nbsp; keyword&nbsp;&nbsp;&nbsp;&nbsp; (mode 4 only)
+  search keyword in the MSP processing parameter file (example:
+  doppler_polynomial)<br>
+  &nbsp;&nbsp;&nbsp; value&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (mode 4 only) new value delimited by double quotes (example:
+  "317.0 0. 0. 0.")</code><br>
+  <br>
+  The modes specified in the call to ASAR_pre_proc accomplish
+  different preprocessing steps that must be performed in order
+  (e.g. running mode 2 cannot precede mode 1). &nbsp; ASAR_pre_proc
+  generates a set of MSP processing parameter files, scans the raw
+  data for missing lines, range aligns the echoes, extracts and
+  interpolates the DORIS state vectors, estimates the Doppler
+  ambiguity and centroid, and generates the process list (called a
+  proc_list) in mode 5 used as input to the scripts ASAR_proc_par
+  and ASAR_proc_all scripts.&nbsp;<br>
+  <br style="font-family: monospace;">
+  To use ASAR_pre_proc, you need to create a ASAR_list in a text
+  editor which is as file with 4 columns, one line for each ASAR
+  data set you want to process. The first column is the Level 0
+  ASAR raw data set as obtained from ESA with a designation
+  ASA_IM_0..., though Level 0 ASAR data from the WinSAR archive
+  have a different naming convention. &nbsp;The second column is
+  the ASAR instrument characterization data file that has a
+  designation that begins with ASA_INS. &nbsp;The instrument
+  characterization file contains information on the block adaptive
+  quantization (BAQ) constants used by ASAR and is used in
+  unpacking the BAQ data recorded by ASAR. In column 3 is the ASAR
+  external calibration data file <span style=
+  "font-family: Times New Roman,Times,serif;">(</span><code style=
+  "font-family: Times New Roman,Times,serif;">ASA_XCA...) that
+  contains the antenna pattern data for the ASAR instrument.</code>
+  <code style="font-family: Times New Roman,Times,serif;">The INS,
+  XCA, and DORIS files all have the starting and ending dates where
+  they apply in the data file name. &nbsp;For example the INS
+  file</code> <big style=
+  "font-family: Times New Roman,Times,serif;"><code><small>ASA_INS_AXVIEC20041215_180208_20030211_000000_20051231_000000
+  applies for the period 20030211 to
+  20051231.&nbsp;</small></code></big><br>
+  <code style="font-family: Times New Roman,Times,serif;"><br>
+  <a href=
+  "http://earth.esa.int/services/auxiliary_data/asar/"></a></code><big style="font-family: Times New Roman,Times,serif;"><code><small><big><span style="font-family: Times New Roman,Times,serif;">Complete
+  information on the different Enivsat ASAR data&nbsp;and auxiliary
+  data sets are available in the ASAR Product Handbook available
+  from ESA at</span></big> <a href=
+  "http://envisat.esa.int/dataproducts/asar/CNTR.htm">http://envisat.esa.int/dataproducts/asar/CNTR.htm</a>.</small></code></big>
+  <code style="font-family: Times New Roman,Times,serif;">The
+  instrument characterization and external calibration files can be
+  downloaded from the ESA server at <a href=
+  "http://earth.esa.int/services/auxiliary_data/asar/">http://earth.esa.int/services/auxiliary_data/asar/.</a></code><br>
+
+  <code style="font-family: Times New Roman,Times,serif;"><br>
+  In column 4 is the DORIS state vector file for the date of the
+  data acquisition.&nbsp;</code><big style=
+  "font-family: Times New Roman,Times,serif;"><code><small>The
+  DORIS state vectors cover a single day plus an hour on the
+  previous day and an hour on the following day. Hence the data
+  coverage dates bracket the day that they
+  apply.</small></code></big><br>
+  <br>
+  The individual Level 0 data sets should be copied into disk
+  directories with names derived from the numerical date of
+  acquisition with the form YYYYMMDD (all numbers). By using this
+  naming convention the directories are in time order when
+  listed.<br>
+  <br>
+  An example ASAR_list is shown below (because of the long file
+  names, the lines wrap around):<br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  <code><small>20041121/ENV1_6179_369_14261.baq
+  ASA_INS_AXVIEC20041215_180208_20030211_000000_20051231_000000
+  ASA_XCA_AXVIEC20041027_164238_20040412_000000_20051231_000000
+  DOR_VOR_AXVF-P20041222_154000_20041120_215528_20041122_002328<br>
+  20050130/ENV1_6179_369_15263.baq
+  ASA_INS_AXVIEC20041215_180208_20030211_000000_20051231_000000
+  ASA_XCA_AXVIEC20041027_164238_20040412_000000_20051231_000000
+  DOR_VOR_AXVF-P20050314_134600_20050129_215528_20050131_002328<br></small></code><br style="font-family: monospace;">
+
+  ASAR_pre_proc is called up several times stepping through the
+  modes and &nbsp;performing each of the raw data pre-processing
+  steps in sequence.<br style="font-family: monospace;">
+
+  <h4>1. Read and convert the the ASAR raw data set, extract the
+  antenna pattern from the external calibration file,&nbsp;
+  generate and initialize the MSP processing parameter
+  files:</h4><code>ASAR_pre_proc ASAR_list . . ASAR_pre_proc_1.log
+  proc_list 1</code><br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  The processing parameter files are all placed in the current
+  directory. The text format log file is specified as
+  ASAR_pre_proc_1.log and contains the MSP commands and screen
+  output from running those commands. The processing parameter
+  files have names of the form pYYYYMMDD.slc.par.<br style=
+  "font-family: monospace;">
+
+  <h4>2. Extract and interpolate the precision DORIS state
+  vectors</h4><code>ASAR_pre_proc ASAR_list . . ASAR_pre_proc_2.log
+  proc_list 2<br style="font-family: monospace;"></code><br style=
+  "font-family: monospace;">
+  The DORIS state vector data sets are in the current directory
+  denoted by . The interpolated state vectors are written to the
+  processing parameter files.<br style="font-family: monospace;">
+
+  <h4>3. Determine the Doppler centroid:</h4>The next step runs the
+  program azsp_IQ to estimate the Doppler centroid<code><br>
+  &nbsp;<br>
+  ASAR_pre_proc ASAR_list . . ASAR_pre_proc_2.log proc_list
+  3</code><br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  The Doppler centroid values are written into the MSP processing
+  parameter files<br style="font-family: monospace;">
+
+  <h4>5. Generate the proc_list file used by ASAR_proc_par and
+  ASAR_proc_all&nbsp;</h4>The proc_list has 8 columns, 1 line per
+  scene and contains information on the &nbsp;scene root file name
+  (YYYYMMDD),&nbsp; and Doppler processing parameters:<br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp;&nbsp; 1. scene_identifier (example:
+  19960816)<br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;2. offset in echoes to start of
+  processed data (enter - for default)<br style=
+  "font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;3. number of echoes to process (enter -
+  for default)<br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;4. range offset in samples (enter - for
+  default)<br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;5. number of range samples to process
+  (enter - for default)<br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;6. Doppler centroid for scene
+  (Hz)<br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;7. Doppler slope for scene
+  (Hz/m)<br style="font-family: monospace;">
+  &nbsp;&nbsp;&nbsp; &nbsp;8. azimuth processing bandwidth fraction
+  for scene (0 --&gt; 1.0, default: .9)<br style=
+  "font-family: monospace;">
+  <br>
+  This is done using mode 5 of ASAR_pre_proc:<br>
+  <br style="font-family: monospace;">
+  <code>SAR_pre_proc ASAR_list . . ASAR_pre_proc_5.log proc_list
+  5</code><br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  An example proc_list &nbsp;file for the pair of frames is shown
+  below:<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  20041121 - - - -&nbsp;&nbsp; -553.8 0.0 0.9<br>
+  20050130 - - - -&nbsp;&nbsp; -571.0 0.0 0.9<br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  The Doppler centroids are close to one another and the processing
+  bandwidth fraction is set to 0.8. The processing bandwidth
+  fraction is the fraction of the total signal azimuth bandwidth
+  used to generate the SLC image and should not be greater than .9
+  to avoid excessive azimuth ambiguities in the final SAR image.
+  The dashes in the other fields specify default processing extents
+  in range and azimuth and results in processing of the full
+  frame.<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  <code>ASAR_proc_all proc_list . . slc mli_1_3 1 3 1 6144
+  0.0</code><br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  Generally you will only need to run mode 4 if you want to change
+  some default value in the processing parameter files and this is
+  not generally necessary.&nbsp;<br style=
+  "font-family: monospace;">
+
+  <h2>2. Using ASAR_proc_par to specify Doppler parameters
+  and&nbsp; raw data subset (Optional)</h2>ASAR_proc_par is used to
+  modify the proc_list to modify the Doppler parameters and
+  optionally to select a segment of the raw data for processing.
+  For interferometric processing, sharing a common Doppler centroid
+  for the scenes improves the interferometric correlation.
+  ASAR_proc_par calculates the processing bandwidth given the
+  desired common Doppler and the actual Doppler centroid of the
+  scene.&nbsp; Running ASAR_proc_par without parameters shows the
+  command line argument list:<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  <code>*** ./ASAR_proc_par<br>
+  *** Copyright 2006, Gamma Remote Sensing, v1.7 29-Jan-2006 clw
+  ***<br>
+  *** setup ASAR MSP processing parameters for interferometry
+  ***<br>
+  <br>
+  usage:&nbsp;ASAR_proc_par &lt;proc_list_in&gt;
+  &lt;proc_list_out&gt; &lt;dir_in&gt; &lt;dop_cen&gt;
+  &lt;dop_slope&gt; &lt;pbw0&gt; &lt;pbw_min&gt; &lt;ro<br>
+  &nbsp;&lt;log&gt;<br>
+  &nbsp;&nbsp;&nbsp; proc_list_in&nbsp;&nbsp; (input) processing
+  list (8 columns):<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. scene_identifier (example: 19960816)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. offset in echoes to start of processed data (enter - for
+  default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. number of echoes to process (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. range offset in samples (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5. number of range samples to process (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6. Doppler centroid for scene (Hz)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7. Doppler slope for scene (Hz/m)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8. azimuth processing bandwidth fraction for scene<br>
+  &nbsp;&nbsp;&nbsp; proc_list_out&nbsp; (output) ASAR processing
+  list with 8 columns including Doppler processing parameters<br>
+  &nbsp;&nbsp;&nbsp;
+  dir_in&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; directory
+  containing input MSP processing parameter files<br>
+  &nbsp;&nbsp;&nbsp;
+  dop_cen&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; common Doppler
+  centroid value (Hz)<br>
+  &nbsp;&nbsp;&nbsp; dop_slope&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; common
+  Doppler slope as a function of slant range (Hz/m)<br>
+  &nbsp;&nbsp;&nbsp;
+  pbw_max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maximum
+  processing bandwidth fraction (valid range .4 --&gt;.9)<br>
+  &nbsp;&nbsp;&nbsp;
+  pbw_min&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; minimum
+  processing acceptable processing bandwidth fraction (nominal
+  .5)<br>
+  &nbsp;&nbsp;&nbsp;
+  roff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  offset to starting range sample (default=0)<br>
+  &nbsp;&nbsp;&nbsp;
+  nr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  number of range samples (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;
+  loff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  offset in echoes to start of processed data (enter - for
+  default)<br>
+  &nbsp;&nbsp;&nbsp;
+  nl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  number of echoes to process (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;
+  log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  log file for ./ASAR_proc_par_060129<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; Note: current directory is denoted by
+  .<br></code><br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  The <span style="font-style: italic;">proc_list_in</span> is the
+  input proc_list and <span style=
+  "font-style: italic;">proc_list_out</span> has the modified
+  values. The directory containing the MSP processing parameter
+  files must be specified on the command line. This was the raw
+  directory give in ASAR_pre_proc. The Doppler processing
+  parameters for each scene are calculated from the command line
+  parameters dop_cen, dop_slope, pbw_max and pbw_min along with the
+  actual centroid values determined in the pre processing and
+  stored in the MSP processing parameter files.<br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  The parameters <span style="font-style: italic;">dop_cen</span>
+  and <span style="font-style: italic;">dop_slope</span> are the
+  Doppler centroid and <span style=
+  "font-style: italic;">dop_slope</span> chosen for the processed
+  data set. For ERS, <span style=
+  "font-style: italic;">dop_slope</span> should be 0.0 so that a
+  constant Doppler value is used across the swath. The reference
+  value should be close to the average of all the scenes, excluding
+  those that have radically different values due to increased
+  pointing satellite pointing errors. Recent values of the
+  centroids from ERS-2 can have a very large variation over 1000's
+  of Hz. Generally the Doppler centroids of ERS-1 and ERS-2 data
+  are similar within a few hundred Hz. The failure of gyroscopes on
+  ERS-2 has led to the large variation in Doppler
+  centroids<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  The pbw_max and pbw_min parameters specify the minimum and
+  maximum processing bandwidth. The processing bandwidth is
+  determined in ASAR_proc_par by the fraction of the scene
+  bandwidth that lies within +/- <span style=
+  "font-style: italic;">pbw_max</span>/2 of the value of
+  <span style="font-style: italic;">dop_cen</span>. If that
+  fractional bandwidth is less than <span style=
+  "font-style: italic;">pbw_min</span>, the scene is not entered
+  into <span style="font-style: italic;">proc_list_out</span>. This
+  approach to setting the Doppler centroid and processing bandwidth
+  is designed for IPTA applications where it is expected that there
+  is azimuth coherence despite a minimal difference in Doppler
+  spectra.<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  It is also possible to specify on the command line of&nbsp;
+  ASAR_proc_par the parameters <span style=
+  "font-style: italic;">roff, nr, loff, nl</span> which specify the
+  starting range sample, number of range samples, starting echo,
+  and number of echoes to process in the raw data. Accepting the
+  default values already in the MSP processing parameter files
+  requires entering either a 0 &nbsp;or - as required on the
+  command line<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  If all the individual scene centroids are within 100 Hz, then
+  ASAR_proc_par is not required.<br style=
+  "font-family: monospace;">
+
+  <h2>3. Using ASAR_proc_all to process raw data to SLC and MLI
+  images</h2>ASAR_proc_all uses the proc_list and fixed raw data to
+  generate processing SLC and MLI images.<br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  <code>*** ./ASAR_proc_all<br>
+  *** Copyright 2006, Gamma Remote Sensing, v2.6 29-Jan-2006 clw
+  ***<br>
+  *** ASAR processing from RAW data ***<br>
+  <br>
+  usage: ./ASAR_proc_all &lt;proc_list&gt; &lt;RAW_dir&gt;
+  &lt;rc_dir&gt; &lt;SLC_dir&gt; &lt;MLI_dir&gt; &lt;rlks&gt;
+  &lt;azlks&gt; &lt;slc_format&gt; [az_patch] [autof_min]<br>
+  &nbsp;&nbsp;&nbsp; proc_list&nbsp;&nbsp; (input) processing list
+  generated by ASAR_pre_proc or ASAR_proc_par (8 columns):<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. scene_identifier (example: 19960816)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. offset in echoes to start of processed data (enter - for
+  default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. number of echoes to process (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. range offset in samples (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5. number of range samples to process (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6. Doppler centroid for scene (Hz)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7. Doppler slope for scene (Hz/m)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8. azimuth processing bandwidth fraction<br>
+  &nbsp;&nbsp;&nbsp; RAW_dir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; data
+  directory containing ASAR raw data files<br>
+  &nbsp;&nbsp;&nbsp; rc_dir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  directory to temporarily store intermediate range compressed data
+  (example: /temp)<br>
+  &nbsp;&nbsp;&nbsp; SLC_dir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  directory to store output SLC data<br>
+  &nbsp;&nbsp;&nbsp; MLI_dir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  directory to store multilook intensity (MLI) files derived from
+  the slc data<br>
+  &nbsp;&nbsp;&nbsp;
+  rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  range looks to generate MLI images&nbsp;&nbsp; (nominal: 1)<br>
+  &nbsp;&nbsp;&nbsp;
+  azlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of azimuth
+  looks to generate MLI images (nominal: 5)<br>
+  &nbsp;&nbsp;&nbsp; slc_format&nbsp;&nbsp; desired output SLC
+  image format (0=FCOMPLEX,&nbsp; 1=SCOMPLEX)<br>
+  &nbsp;&nbsp;&nbsp; az_patch&nbsp;&nbsp;&nbsp;&nbsp; azimuth patch
+  size (default= 6144)<br>
+  &nbsp;&nbsp;&nbsp; autof_min&nbsp;&nbsp;&nbsp; minimum SNR
+  threshold for autofocus, 0.0 for no autofocus (default = 5)<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; NOTE: current directory is denoted by .<br>
+  <br style="font-family: monospace;"></code> On the command line
+  you must specify the directory where the parameter files and raw
+  data reside, the directories for output SLC and MLI images, the
+  number of range and azimuth looks for the MLI images, the format
+  of the SLC images, the size of the azimuth patch and the minimum
+  SNR threshold for autofocus.<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  The autofocus step may not be able to evaluate the focus error if
+  the image has no contrast, such as over the ocean. In this case
+  it is usually safe to turn off autofocus because the use of the
+  precision state vectors usually assures excellent image focus. In
+  the case where autofocus is not able to evaluate the focus error
+  it can be disabled by entering 0.0 for the autof_min command line
+  parameter and the reprocessing.<br style=
+  "font-family: monospace;">
+  <br style="font-family: monospace;">
+  The nominal number of range and azimuth looks for the multi-look
+  intensity images is 1 look in range and 5 in azimuth. In addition
+  to the MLI images, Sun raster images of the MLI data are produced
+  and written into the MLI directory. To look at these images use
+  xv or other image display tool. Be sure to examine all the output
+  images to see if they are focused and otherwise
+  acceptable.<br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  Log files from processing each of the scenes is generated and
+  stored in the SLC directory under names YYYYMMDD_MSP.log<br>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  &nbsp;<a href="charles_werner.html">CW</a>, <a href=
+  "urs_wegmuller.html">UW</a>,&nbsp;<a href=
+  "tazio_strozzi.html">TS</a> last change 29-Jan-2006.
+</body>
+</html>

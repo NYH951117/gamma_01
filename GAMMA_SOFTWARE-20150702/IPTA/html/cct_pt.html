@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: cct_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>cct_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/cct_pt.c">cct_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cct_pt - spatial filter and reference point bias removal for
+  point data (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>cct_pt &lt;plist&gt; &lt;pmask&gt; &lt;SLC_par&gt;
+  &lt;pdata_in&gt; &lt;pcct&gt; [type] [r_max] [w_func]
+  [np_min]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pint&gt;</td>
+
+        <td>(input) point data stack (float or fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pccs&gt;</td>
+
+        <td>(output) spatial interferometric correlation
+        estimate<br></td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type (0:fcomplex&nbsp; 2:float, default -:
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum radius used to search for points(range samples,
+        default: 8)</td>
+      </tr>
+
+      <tr>
+        <td>[w_func]</td>
+
+        <td>radial weighting function used to determine local
+        average&nbsp; (0: 1.0&nbsp; default=1:
+        1.0-radius/r_max)</td>
+      </tr>
+
+      <tr>
+        <td>[np_min]</td>
+
+        <td>minimum number of points in the corelation estimate
+        (default = 5)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>cct_pt pt pmask0 08256.rslc.par pdiff2 pccs2 0
+  8<br></samp></p><strong>INSTALLATION</strong><br>
+
+  <p>Source code cct_pt.c in ./IPTA/src, executable version cct_pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">cct_pt</span> estimates the
+  temporal phase coherence of point data stacks. Data can either be
+  in fcomplex or float format. If in float format it is assumed
+  that the data are<br>
+  unwrapped phase and are converted to complex unit vectors&nbsp;
+  where re = cos(phase), imagi = sin(phase). For fcomplex data the
+  values are normalized to unit magnitude. The correlation
+  estimate<br>
+  is the magnitude of the sum of the point interferogram values
+  through the stack divided by the number of points and varies
+  between 0, and 1.0.<br></p>
+
+  <p>&nbsp;In order to compare the values between the stack layers,
+  the local average phase of each layer is subtracted&nbsp; from
+  that layer. The local average is determined from a weighted
+  average of points within a specified radius of the point.&nbsp;
+  The user can specify the radial diameter (nominally 8) of the
+  search region to evalutate the local average If insufficient
+  points are found, the correlation value for that point is set to
+  0.&nbsp; The command line parameter np_min sets the minimum
+  number of points within the search region required to return a
+  correlation estimate. The local average is a weighted sum using
+  either a constant or triangular weighting function.&nbsp; (set
+  via the w_func command line parameter).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.<br></p>
+
+  <p><strong>SEE ALSO<br></strong></p>cc_wave (in the ISP
+  documentation), <a href="ccs_pt.html">ccs_pt</a>.
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 16-Aug-2004.</p>
+</body>
+</html>

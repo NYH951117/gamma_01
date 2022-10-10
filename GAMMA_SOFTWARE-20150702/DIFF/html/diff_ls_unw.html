@@ -1,0 +1,135 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing --><!-- cw 20-Aug-2003 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: diff_ls_unw</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>diff_ls_unw</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/diff_ls_unw.c">diff_ls_unw.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  diff_ls_unw - generate differential interferogram using the least
+  squares derived functional relationship between interferograms to
+  scale and subtract one from the other.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>diff_ls_unw &lt;int-1&gt; &lt;unw-2&gt; &lt;DIFF_par&gt;
+  &lt;diff_inr&gt; [int_type] [ph_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;int-1&gt;</td>
+
+        <td>(input) complex or unwrapped interferogram 1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;unw-2&gt;</td>
+
+        <td>(input) unwrapped phase 2 (topographic phase)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input/output) DIFF processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;diff_int&gt;</td>
+
+        <td>(output) difference of interferograms (int-1 -
+        scaled(unw-2))</td>
+      </tr>
+
+      <tr>
+        <td>[int_type]</td>
+
+        <td>&nbsp;int-1 type: 0=unwrapped phase, 1=complex
+        interferogram (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>&nbsp;phase conjugation flag: 0=normal, 1=conjugate
+        phase (default=0)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>diff_ls_unw i1.unw.reramp i2.unw.reramp i1_i2.diff_par
+  i1_i2.unw.diff 0</samp><br>
+  <samp>diff_ls_unw i1.int i2.unw.reramp i1_i2.diff_par
+  i1_i2.int.diff 1 0</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <a href="diff_ls_unw.html">diff_ls_unw</a> reads two unwrapped
+  interferometric phase images, estimating the phase of the first
+  image by a evaluating a quadratic function of the phase in the
+  second interferogram. The estimate is then subtracted from the
+  phase of the first interferogram and stored in the result. The
+  coefficients of the quadratic function are evaluated using a
+  least squares fit in program <a href=
+  "diff_ls_fit.html">diff_ls_fit</a> and stored in the DIFF
+  parameter file.</p>
+
+  <p>The first interferogram can be either complex valued or
+  real-valued unwrapped phase. In the case where the input is
+  complex valued, the differential interferogram will also be
+  complex valued. The advantage of this is that there will be no
+  unwrapping errors in the result, nor will any areas be excluded.
+  No unwrapping will be required of the result if the phase
+  signature has a magnitude less than PI. The user has the option
+  of conjugating the output phase. This is useful if the
+  interferogram is made in time reversed order, i.e. the reference
+  SLC is acquired after the second SLC used to make the
+  interferogram. In this way all the differential phase shifts have
+  the same relationship with respect to motion towards or away the
+  radar.</p>
+
+  <p>It is preferred that the baseline of the second interferogram
+  is sufficiently large. Using the phase of an interferogram with a
+  very short baseline as a reference for the topographic phase
+  usually leads to poor results because of the up-scaling of
+  non-topographic phase components. Be sure to use the same
+  interferograms that were used to estimate the coefficients of the
+  quadratic function and stored in the DIFF parameter file.</p>
+
+  <p><a href="diff_ls_unw.html">diff_ls_unw</a> requires that
+  interferograms have the original phase trend and therefore are
+  not flattened. The program ph_slope_base may be used to add back
+  the phase trend removed when flattening the interferogram using
+  an ellipsoidal Earth model. <a href=
+  "diff_ls_unw.html">diff_ls_unw</a> may be used for 2-pass,
+  3-pass, and 4-pass differential interferometry.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="diff_ls_fit.html">diff_ls_unw</a>, <a href=
+  "sub_phase.html">sub_phase</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Nov-2008.</p>
+</body>
+</html>

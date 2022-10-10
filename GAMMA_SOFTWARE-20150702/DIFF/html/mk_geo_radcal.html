@@ -1,0 +1,902 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>Terrain Geocoding</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO Software: Reference Manual</h1>
+
+  <h2>Terrain Geocoding with pixel-area backscatter correction
+  (mk_geo_radcal)</h2>
+
+  <p><i>Perl scripts: <a href=
+  "../scripts/mk_geo">mk_geo_radcal</a>, <a href=
+  "../scripts/mk_geo_data">mk_geo_data</a></i><br>
+  <strong><br>
+  NAME:<br></strong></p>
+
+  <p style="font-weight: bold;"><strong><span style=
+  "font-weight: normal;"><span style=
+  "font-weight: bold;">mk_geo_radcal</span> -</span></strong>
+  <span style="font-weight: normal;">Terrain geocoding of SAR
+  images with lookup table refinement and resample DEM to SAR
+  Range-Doppler Coordinates (RDC) and perform pixel area correction
+  to derive sigma0<br></span></p><span style=
+  "font-weight: bold;">mk_geo_data</span> - Terrain geocoding of
+  data sets in SAR slant-range coordinates &nbsp;
+
+  <h3>Description</h3>This is a guide on how to use the Perl script
+  <span style="font-weight: bold;">mk_geo_radcal</span> to terrain
+  geocode a SAR image, generate a DEM in SAR slant-range
+  coordinates (RDC), and perform pixel-area correction of&nbsp;
+  radar backscatter for terrain effects.&nbsp; <span style=
+  "font-weight: bold;">mk_geo_radcal</span> can also perform
+  ellipsoid geocoding of &nbsp;a SAR image when no DEM is
+  available.&nbsp;<br>
+  <br>
+  The processing of geocoding requires generating a lookup table
+  that relates the SAR image coordinates to the DEM coordinates. A
+  DEM in the Gamma processing paradigm consists of a text format
+  DEM parameter file and the DEM data itself. The DEM parameter
+  file contains information on the DEM projection. size, pixel
+  spacing, and datum. A number projections are supported including
+  Equiangular geographic (EQA), Universal transverse Mercator
+  (UTM), and Polar stereographic. Often we use the SRTM DEM as
+  input. These data are in EQA format with a height reference of
+  the local geoid.&nbsp;<br>
+  <br>
+  The lookup table is initially generated using just the image
+  processing parameters and the DEM information. Invariably there
+  is some residual shift that must be corrected to take into
+  account inaccuracies in SAR processing or timing or the DEM. This
+  is done by a process of lookup table refinement. A simulated SAR
+  image is generated from the the DEM that should match the actual
+  SAR image. Offsets between the simulated and actual SAR image are
+  measured and used to generate an offset polynomial model for the
+  error. This polynomial model is used to adjust the lookup-table
+  values to remove the residual geolocation error. In most cases
+  only a single constant range and azimuth offset is requied for
+  accurate geocoding The <span style=
+  "font-weight: bold;">mk_geo_radcal</span> script takes you
+  through these different steps. Programs in the DIFF/GEO package
+  are used to use the lookup table to resample the SAR image into
+  the DEM geometry (geocode_back)&nbsp; and to transform the DEM
+  into the SAR geometry (geocode).&nbsp; The pixel area correction
+  factor is calculated in slant range coordinates using the program
+  <a href="pixel_area.html">pixel_area.</a><br>
+
+  <h2>1. Terrain geocoding with mk_geo_radcal<br></h2>The arguments
+  of <span style="font-weight: bold;">mk_geo_radcal</span> can be
+  seen by typing <span style=
+  "font-weight: bold;">mk_geo_radcal</span> from the command
+  line.&nbsp; <big><br></big> <code>$ mk_geo_radcal<br>
+  *** /Users/cw/gamma_software/DIFF/scripts/mk_geo_radcal<br>
+  *** Copyright 2015, Gamma Remote Sensing, v5.9 17-Apr-2015 clw
+  ***<br>
+  *** Terrain geocoding of SAR images including lookup-table
+  refinement + resampling of the DEM to SAR Range-Doppler
+  Coordinates (RDC) ***<br>
+  <br>
+  usage: /Users/cw/gamma_software/DIFF/scripts/mk_geo_radcal
+  &lt;MLI&gt; &lt;MLI_par&gt; &lt;DEM&gt; &lt;DEM_par&gt;
+  &lt;DEM_seg&gt; &lt;DEM_seg_par&gt; &lt;GEO_dir&gt;
+  &lt;scene_id&gt; &lt;post&gt; &lt;mode&gt; [ls_mode] [r_ovr]
+  [gc_n_ovr] [rad_max] [rlks] [azlks] [thres] [rpos] [azpos] [roff]
+  [azoff] [r_patch] [az_patch] [nr] [naz]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp;
+  MLI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  MLI SAR image (including path)<br>
+  &nbsp;&nbsp;&nbsp; MLI_par&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  ISP image parameter file of the MLI image (including path)<br>
+  &nbsp;&nbsp;&nbsp;
+  DEM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  DEM in desired output projection (including path)<br>
+  &nbsp;&nbsp;&nbsp; DEM_par&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  DEM parameter file (including path)<br>
+  &nbsp;&nbsp;&nbsp; DEM_seg&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (output)
+  DEM segment for output image products (including path)<br>
+  &nbsp;&nbsp;&nbsp; DEM_seg_par&nbsp; (input/output) DEM parameter
+  file for output image products (including path), regenerated each
+  time<br>
+  &nbsp;&nbsp;&nbsp; GEO_dir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  directory for output images, lookup tables and DEM products<br>
+  &nbsp;&nbsp;&nbsp; scene_id&nbsp;&nbsp;&nbsp;&nbsp; scene name to
+  identify output files<br>
+  &nbsp;&nbsp;&nbsp;
+  post&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; output image
+  sample spacing in meters or degrees for geographic (EQA)
+  projection<br>
+  &nbsp;&nbsp;&nbsp;
+  mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; processing
+  mode:&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: generate initial lookup table, simulated SAR image, and DEM
+  segment parameters, erase existing DEM segment parameters<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: measure initial offset between simulated SAR image and actual
+  SAR image<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: perform refinement of lookup table by offset measurement with
+  respect to the simulated SAR image<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: update lookup table and produce terrain geocoded SAR image and
+  DEM in SAR range-Doppler coordinates (RDC)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4: ellipsoid geocoding of the SAR image without a DEM, erase
+  existing DEM segment parameters&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; ls_mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  algorithm selection in gc_map for regions of layover, shadow, or
+  DEM gaps (enter - for default):<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: set to (0.,0.)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: linear interpolation across these regions<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: use actual value (default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: nearest neighbour thinned (nn-thinned)<br>
+  &nbsp;&nbsp;&nbsp;
+  r_ovr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range
+  over-sampling parameter for ls_mode = 3 (nn-thinned) (enter - for
+  default: 16)<br>
+  &nbsp;&nbsp;&nbsp; gc_n_ovr&nbsp;&nbsp;&nbsp;&nbsp; interpolation
+  oversampling factor used by geocode (enter - for default: 2)<br>
+  &nbsp;&nbsp;&nbsp; rad_max&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; maximum
+  interpolation search radius used by geocode (enter - for default:
+  4*gc_n_ovr)<br>
+  &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; NOTE: gc_n_ovr and rad_max are parameters used
+  by the program geocode for transformation of the simulated
+  image<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; and DEM
+  into SAR geometry. The parameters rlks, azlks, thres, rpos,
+  azpos, roff, azoff are used&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; &nbsp; for estimation of the initial offset of
+  the SAR image with respected to the simulated SAR image.<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; &nbsp;<br>
+  &nbsp;&nbsp;&nbsp;
+  rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  range looks for the initial offset estimate (default: 1)<br>
+  &nbsp;&nbsp;&nbsp;
+  azlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of azimuth
+  looks for the initial offset estimate (default: 1)<br>
+  &nbsp;&nbsp;&nbsp;
+  thres&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; SNR threshold for
+  offset measurements over offset grid (default: 10)<br>
+  &nbsp;&nbsp;&nbsp;
+  rpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range
+  position for initial offset (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;
+  azpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; azimuth position
+  for initial offset (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp;
+  roff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; initial
+  range offset estimate (enter - for current value in DIFF_par
+  file)<br>
+  &nbsp;&nbsp;&nbsp;
+  azoff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; initial azimuth
+  offset estimate (enter - for current value in DIFF_par file)<br>
+  &nbsp;&nbsp;&nbsp; r_patch&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range
+  patch size for offset estimation (default: 512 samples)<br>
+  &nbsp;&nbsp;&nbsp; az_patch&nbsp;&nbsp;&nbsp;&nbsp; azimuth patch
+  size for offset estimation (default: 512 lines)<br>
+  &nbsp;&nbsp;&nbsp;
+  nr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  number of range patches for offset estimation (default: 0)<br>
+  &nbsp;&nbsp;&nbsp;
+  naz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number
+  of azimuth patches for offset estimation (default: 0)<br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp;&nbsp;&nbsp;&nbsp; (option) set
+  image display scale factor (default: 0.9)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) set image display exponent (default: 0.4)<br>
+  &nbsp;&nbsp;&nbsp;
+  -b&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) set raster image type to Sun raster format (default:
+  bmp)<br>
+  &nbsp;&nbsp;&nbsp;
+  -r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) use existing DEM segment to determine image bounds, do
+  not erase an existing DEM segment parameter file<br>
+  &nbsp;&nbsp;&nbsp;
+  -q&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) quiet mode, run without displaying images on screen<br>
+  &nbsp;&nbsp;&nbsp;
+  -p&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) use pixel_area program to generate simulated SAR image
+  in Range-Doppler Coordinates (RDC)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  NOTE:&nbsp; ls_mode must equal actual area: 2<br>
+  &nbsp;&nbsp;&nbsp;
+  -j&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) do not use layover-shadow map in pixel_area
+  calculation<br>
+  &nbsp;&nbsp;&nbsp; -i map_pwr&nbsp;&nbsp; (option) intensity
+  image in map coordinates to be used for lookup table
+  refinement<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  instead of a simulated SAR image, same geometry as DEM_seg<br>
+  &nbsp;&nbsp;&nbsp;
+  -c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) calculate radiometrically calibrated radar backscatter
+  image<br>
+  &nbsp;&nbsp;&nbsp;
+  -d&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) resample DEM to Range-Doppler Coordinates (RDC)<br>
+  &nbsp;&nbsp;&nbsp; -x psize&nbsp;&nbsp;&nbsp;&nbsp; (option)
+  image patch size for initial offset estimate using
+  cross-correlation in mode 1 (default: 1024)<br>
+  &nbsp;&nbsp;&nbsp;
+  -h&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) reference height for ellipsoid geocoding, mode 4
+  (default: 100)<br>
+  &nbsp;&nbsp;&nbsp; -t thres2&nbsp;&nbsp;&nbsp; (option) SNR
+  threshold for initial offset estimate (default: 8)<br>
+  &nbsp;&nbsp;&nbsp; -n npoly&nbsp;&nbsp;&nbsp;&nbsp; (option)
+  number of terms in the range and azimuth offset polynomials
+  (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; -o n_ovr&nbsp;&nbsp;&nbsp;&nbsp; (option)
+  offset estimation oversampling factor for image data (default:
+  2)<br></code><br>
+  <span style="font-family: serif;">This is not nearly as daunting
+  as it seems.</span> <span style=
+  "font-weight: bold; font-family: serif;">mk_geo_radcal&nbsp;</span>
+  <span style="font-family: serif;">is run in a series of
+  processing steps specified by the mode command line
+  parameter.&nbsp; Each step is a significant step in the geocoding
+  process and lets you check intermediate results to see if a step
+  has succeeded.&nbsp;</span> <span style=
+  "font-weight: bold; font-family: serif;">mk_geo_radcal</span>
+  <span style="font-family: serif;">generates log files of its
+  actions in the</span> <span style=
+  "font-style: italic; font-family: serif;">GEO_dir</span>
+  <span style="font-family: serif;">that can be read with any text
+  editor. All script commands and the screen output from
+  running&nbsp; programs are captured in the log files. There are
+  successive log files generated for each each step in the
+  <span style="font-style: italic;">mk_geo_radcal</span> processing
+  sequence with names like <span style=
+  "font-style: italic;">mk_geo_radcal_n.log</span>. where n is the
+  mode number.<br></span> <span style="font-family: serif;"><br>
+  A number of the options in mk_geo_radcal are specific options to
+  the geocoding programs</span> <span style=
+  "font-family: serif;"><span style="font-family: serif;"><a style=
+  "font-family: serif;" href=
+  "file:///Users/cw/gamma_software/DIFF/html/gc_map.html">gc_map</a></span></span><span style="font-family: serif;"><span style="font-family: serif;"><span style="font-family: serif;">&nbsp;
+  and&nbsp; <a href="geocode.html">geocode</a>.&nbsp; The
+  parameters</span> <span style=
+  "font-style: italic; font-family: serif;">r_ovr, n_ovr
+  a</span><span style="font-family: serif;">re specific
+  to</span></span></span> <span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style="font-family: serif;"><a style=
+  "font-family: serif;" href=
+  "file:///Users/cw/gamma_software/DIFF/html/gc_map.html">gc_map</a></span></span><span style="font-family: serif;"><span style="font-family: serif;"><span style="font-family: serif;">&nbsp;</span></span></span>
+  and</span> <span style=
+  "font-style: italic; font-family: serif;">rad_max</span>
+  <span style="font-family: serif;">is used by the
+  program&nbsp;</span></span></span> <span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style=
+  "font-family: serif;"><span style="font-family: serif;"><a href=
+  "file:///Users/cw/gamma_software/DIFF/html/geocode.html">geocode</a></span></span></span></span><span style="font-style: italic; font-family: serif;">.
+  &nbsp;</span> <span style="font-family: serif;">Please consult
+  the documentation</span> <span style="font-family: serif;">in the
+  DIFF/GEO package to understand what these parameters do.
+  Nominally</span> <span style="font-family: serif;">set</span>
+  <span style=
+  "font-style: italic; font-family: serif;">ls_mode</span>
+  <span style="font-family: serif;">to 2 for differential SAR
+  interferometry applications.&nbsp;</span> <span style=
+  "font-family: serif;"><br>
+  &nbsp;</span></span><br>
+  Note that there are a number of options for running the script
+  are specified using a dash such as <span style=
+  "font-weight: bold;">-b</span> or <span style=
+  "font-weight: bold;">-s</span>.&nbsp; These options apply to all
+  the modes. The image display factor -s takes an argument, usually
+  less than the default 1.0 to make the displayed images dimmer to
+  avoid saturation. Nominally <span style="font-weight: bold;">-s
+  0.7</span> is used. The exponent parameter <span style=
+  "font-weight: bold;">-e</span> value is typically 0.4. To
+  increase image contrast, increase the value of <span style=
+  "font-weight: bold;">-e</span> to 0.5.&nbsp; Decreasing the
+  exponent to 0.25 will reduce image contrast.&nbsp;<br>
+  <br>
+  The <span style="font-weight: bold;">-b</span> option forces
+  output raster images to be in Sun raster format.&nbsp; By
+  default, display images are generated in BMP format.<br>
+  <br>
+  The <span style="font-weight: bold;">-r</span> option tells the
+  script to use an existing DEM_seg_par to define the region for
+  the geocoding the scene rather than calculate the bounds of the
+  DEM_seg_par based on the image dimensions. This is useful when
+  geocoding several different frames or sensor images to the same
+  output geometry.&nbsp;<br>
+  <br>
+  The <span style="font-weight: bold;">-q</span> option turns off
+  screen display of the intermediate and final products and is
+  required for batch processing of the images.<br>
+  <br>
+  Very important is the <span style="font-weight: bold;">-p</span>
+  option. If this is specified, then the <a href=
+  "pixel_area.html">pixel_area</a> program is used to calculate the
+  simulated SAR image in radar coordinates rather than using the
+  <a href="geocode.html">geocode</a> program to resample the
+  simulated SAR image into radar coordinates.&nbsp;<br>
+  <br>
+  The <span style="font-weight: bold;">-c</span> option leads to
+  the generation of radiometrically calibrated images in GeoTIFF
+  format. A pixel area normalization factor is used to correct the
+  radar backscatter based on the local surface geometry.&nbsp; The
+  output is given as sigma0.<br>
+  <br>
+  The <span style="font-weight: bold;">-d</span> option causes the
+  DEM to be resampled to Range-Doppler slant-range coordinates.
+  This is required for differential interferometry applications,
+  but not if radiometrically corrected images are the desired
+  products.<br>
+  <br>
+  The <span style="font-weight: bold;">-h</span> option is used to
+  specify a constant height for geocoding the data or the entire
+  scene relative to the reference ellipsoid&nbsp; and is used only
+  with mode 4. The program <a href="gec_map.html%20">gec_map</a>
+  uses the specified value in generation of the geocoding lookup
+  table.&nbsp; The data are then geo-referenced, but not corrected
+  for deviations from the reference height value.<br>
+  <br>
+  The <span style="font-weight: bold;">-i</span> option enables the
+  use of an alternate gray-scale geocoded image for geocoding
+  refinement. This can be an image from an optical satellite such
+  as Landsat.&nbsp; This is useful when the terrain is flat and
+  there is no information in the shaded relief image. An image can
+  be downloaded from<br>
+  <br>
+  The <span style="font-weight: bold;">-j</span> option turns off
+  the use of the layover-shadow map generated by gc_map when
+  running pixel_area with the <span style=
+  "font-weight: bold;">-p</span> option<br>
+  <br>
+  The <span style="font-weight: bold;">-o</span> option sets the
+  oversampling factor for geocoding refinement, recommended to be
+  set to 4<br>
+  <br>
+  The <span style="font-weight: bold;">-t</span> option is used to
+  set the SNR threshold for the initial offset estimation. It may
+  have to be adjusted lower if the area has very little topography.
+  If the initial offset is relatively small then mode 1 can be
+  skipped and move to mode 2 directly.<br>
+  <br>
+  The -n option selects the number of terms in the range and
+  azimuth polynomials used for geocoding refinement. The nominal
+  correction is a constant offset in range and azimuth. In some
+  cases this can be changed to include a slope or higher order. See
+  the documentation on <a href=
+  "offset_fitm.html">offset_fitm</a>.<br>
+  <br style="font-family: serif;"></span> <big style=
+  "font-family: serif;">Note: all command-line inputs delimited
+  with a &lt;&gt; are required!</big>
+
+  <h2 style="font-family: monospace;">Mode 0: generate initial
+  geocoding lookup table and simulate SAR image from
+  DEM</h2><code>mk_geo_radcal mli_1_4/20080806_HH.mli
+  mli_1_4/20080806_HH.mli.par DEM/katmai.dem DEM/katmai.dem_par
+  geo/kt.dem geo/kt.dem_par geo kt 1.851852e-4 0 2 -s .7 -e .35 -p
+  -c -d<br></code><br>
+  The first step is to generate the initial lookup table. Modes 0
+  runs the <a href="gc_map.html">gc_map</a> program and generate
+  the initial lookup table, and a simulated SAR image in the SAR
+  coordinates.&nbsp; In the processing example that is part of this
+  tutorial an image pair from PALSAR has been selected acquired in
+  2008 over Katmai volcano in Alaska.&nbsp; The images were
+  resampled using the DEM resampled into slant-range geometry using
+  this script.&nbsp; The input DEM is in geographic lat/long (EQA)
+  coordinates obtained from an SRTM DEM available from
+  http://gdex.cr.usgs.gov/gdex/.&nbsp;&nbsp; The DEM can be either
+  3 arc-sec (90m) of 1 arc-sec (30 m) resolution. The GeoTIFF DEM
+  data can be converted to Gamma format using the <a href=
+  "file:///Users/cw/SVN_repos/GAMMA_SOFTWARE/current_version/DIFF/scripts/srtm2dem">
+  srtm2dem</a> script. Here is the DEM parameter file for the input
+  DEM:<br>
+  <code><br>
+  $ more katmai.dem_par<br>
+  Gamma DIFF&amp;GEO DEM/MAP parameter file<br>
+  title: SRTM Katmai 3 arc-sec<br>
+  DEM_projection:&nbsp;&nbsp;&nbsp;&nbsp; EQA<br>
+  data_format:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  INTEGER*2<br>
+  DEM_hgt_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000<br>
+  DEM_scale:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1.00000<br>
+  width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  12000<br>
+  nlines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6000<br>
+  corner_lat:&nbsp;&nbsp;&nbsp;&nbsp; 60.0000000&nbsp; decimal
+  degrees<br>
+  corner_lon:&nbsp;&nbsp; -160.0000000&nbsp; decimal degrees<br>
+  post_lat:&nbsp;&nbsp; -8.3333333e-04&nbsp; decimal degrees<br>
+  post_lon:&nbsp;&nbsp;&nbsp; 8.3333333e-04&nbsp; decimal
+  degrees<br>
+  <br>
+  ellipsoid_name: WGS 84<br>
+  ellipsoid_ra:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6378137.000&nbsp;&nbsp; m<br>
+  ellipsoid_reciprocal_flattening:&nbsp; 298.2572236<br>
+  <br>
+  datum_name: WGS 1984<br>
+  datum_shift_dx:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_shift_dy:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_shift_dz:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_scale_m:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000e+00<br>
+  datum_rotation_alpha:&nbsp; 0.00000e+00&nbsp;&nbsp; arc-sec<br>
+  datum_rotation_beta:&nbsp;&nbsp; 0.00000e+00&nbsp;&nbsp;
+  arc-sec<br>
+  datum_rotation_gamma:&nbsp; 0.00000e+00&nbsp;&nbsp; arc-sec<br>
+  datum_country_list Global Definition, WGS84, World</code><br>
+  <br>
+  <hr style="width: 100%; height: 2px;">
+  The input DEM is in EQA geographic coordinates (lat/lon) and can
+  be displayed using:<br>
+  <code><var><br></var> rasshd katmai.dem 12000 30 30 1 0 3 3 - - 1
+  katmai.dem.ras 1<br>
+  disdem_par</code> <code>katmai.dem
+  katmai.dem_par&nbsp;</code><br>
+  <code><br></code> The first step is generate the look up table to
+  geocode the input image mli_1_4/20080806_HH.mli with parameter
+  file mli_1_4/20080806_HH.mli.par&nbsp; using the DEM data in
+  DEM/katmai.dem with the parameter file geo/kt.dem_par. The
+  program pixel_area is used to calculate the simulated radar image
+  in slant range coordaintes kt_0.pix using the layover-shadow map,
+  lookup table, and incidence angle map. The script then displays
+  both the simulated radar image and the actual radar image.<br>
+  <code><br></code> <code>mk_geo_radcal mli_1_4/20080806_HH.mli
+  mli_1_4/20080806_HH.mli.par DEM/katmai.dem DEM/katmai.dem_par
+  geo/kt.dem geo/kt.dem_par geo kt 1.851852e-4 0 2 -s .7 -e .35 -p
+  -c -d<br></code> <code><br></code> The section of the the DEM
+  covering the SAR image is resampled to -1.8518520e-04
+  degrees&nbsp; (~20m) and stored in the file <span style=
+  "font-style: italic;">kt.dem&nbsp;</span> with parameter file
+  <span style="font-style: italic;">kt.dem_par</span>.<br>
+  The output products will be in the&nbsp; <span style=
+  "font-style: italic;">geo</span> directory. The following
+  commands are executed by the script in Mode 0 to accomplish
+  this:<br>
+  <br>
+  #generate lookup table and simulated SAR image kt_0.sim,
+  incidence angle map kt_0.inc_map, pixel area map kt_0.pix_map,
+  and the layover shadow map kt_0.ls_map. The geometry of these
+  files is defined by the dem segment parameter file
+  kt.dem_par.<br>
+  <br>
+  <code>gc_map mli_1_4/20080806_HH.mli.par - DEM/katmai.dem_par
+  DEM/katmai.dem geo/kt.dem_par geo/kt.dem geo/kt_0.map_to_rdc
+  4.49999962200003 4.49999962200003 geo/kt_0.sim - -
+  geo/kt_0.inc_map - geo/kt_0.pix_map geo/kt_0.ls_map 32 2 16<br>
+  <br></code> The DEM segment dimensions and sample spacing is
+  determined by gc_map and stored in the DEM segment parameter
+  file, in this cast <span style=
+  "font-style: italic;">kt.dem_par:</span><code><br>
+  <br>
+  Gamma DIFF&amp;GEO DEM/MAP parameter file<br>
+  title: srtm_06_01<br>
+  DEM_projection:&nbsp;&nbsp;&nbsp;&nbsp; EQA<br>
+  data_format:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; REAL*4<br>
+  DEM_hgt_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000<br>
+  DEM_scale:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1.00000<br>
+  width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8770<br>
+  nlines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5845<br>
+  corner_lat:&nbsp;&nbsp;&nbsp;&nbsp; 58.8516667&nbsp; decimal
+  degrees<br>
+  corner_lon:&nbsp;&nbsp; -155.3466667&nbsp; decimal degrees<br>
+  post_lat:&nbsp;&nbsp; -1.8518520e-04&nbsp; decimal degrees<br>
+  post_lon:&nbsp;&nbsp;&nbsp; 1.8518520e-04&nbsp; decimal
+  degrees<br>
+  <br>
+  ellipsoid_name: WGS 84<br>
+  ellipsoid_ra:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6378137.000&nbsp;&nbsp; m<br>
+  ellipsoid_reciprocal_flattening:&nbsp; 298.2572236<br>
+  <br>
+  datum_name: WGS 1984<br>
+  datum_shift_dx:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_shift_dy:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_shift_dz:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_scale_m:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000e+00<br>
+  datum_rotation_alpha:&nbsp; 0.00000e+00&nbsp;&nbsp; arc-sec<br>
+  datum_rotation_beta:&nbsp;&nbsp; 0.00000e+00&nbsp;&nbsp;
+  arc-sec<br>
+  datum_rotation_gamma:&nbsp; 0.00000e+00&nbsp;&nbsp; arc-sec<br>
+  datum_country_list Global Definition, WGS84, World<br>
+  <br>
+  <br></code> Next calculate pixel area in slant-range coordinates
+  using pixel_area and display the result. If the <span style=
+  "font-weight: bold;">-q</span> option has been set, then the
+  display is bypassed<code><br>
+  <br>
+  pixel_area mli_1_4/20080806_HH.mli.par geo/kt.dem_par geo/kt.dem
+  geo/kt_0.map_to_rdc geo/kt_0.ls_map geo/kt_0.inc_map
+  geo/kt_0.pix<br>
+  raspwr geo/kt_0.pix 4968 1 0 1 1 1. .5&nbsp; 1
+  geo/kt_0.pix.ras<br>
+  dis2ras geo/kt_0.pix.ras
+  mli_1_4/20080806_HH.mli.ras&amp;<br></code> <code><br></code> You
+  will see a display window pop up with the simulated image and the
+  SAR image together. You can switch display between the images
+  using the center mouse button.<br>
+
+  <h2><code>Mode 1:&nbsp; Estimate initial offset between the
+  actual and simulated SAR images and refine the
+  l</code><code>ookup table</code></h2><code>mk_geo_radcal
+  mli_1_4/20080806_HH.mli mli_1_4/20080806_HH.mli.par
+  DEM/katmai.dem DEM/katmai.dem_par geo/kt.dem geo/kt.dem_par geo
+  kt 1.851852e-4 1 2 -s .7 -e .35 -p -c -d<br></code><br>
+  Residual errors in the geocoding are estimated and removed by
+  measuring the offsets between the simulated SAR image produced
+  from the DEM and the actual SAR image. The offset information is
+  stored in a DIFF/GEO parameter file and created using the
+  <span style="font-weight: bold;">create_diff_par</span> program
+  in the DIFF/GEO package. The simulated SAR image is calculated in
+  the map (DEM) geometry when running modes 0 or 1. by the call to
+  <span style="font-weight: bold;">gc_map</span>.&nbsp; These are
+  arguments to the <a href="init_offsetm.html">init_offsetm</a>
+  program. See the DIFF/GEO documentation on <a href=
+  "init_offsetm.html">init_offsetm</a> on how to set them to get a
+  valid offset.&nbsp;<br>
+  <br>
+  <code>&nbsp;&nbsp;&nbsp; rlks&nbsp;&nbsp;&nbsp;&nbsp;number of
+  range looks for the initial offset estimate (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; azlks&nbsp;&nbsp;&nbsp;number of azimuth looks
+  for the initial offset estimate (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; thres&nbsp;&nbsp;&nbsp;SNR threshold for
+  offset estimates (default: 10)<br>
+  &nbsp;&nbsp;&nbsp; rpos&nbsp;&nbsp;&nbsp;&nbsp;range position for
+  initial offset (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp; azpos&nbsp;&nbsp; azimuth position for initial
+  offset (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp; roff&nbsp;&nbsp;&nbsp; initial range offset
+  estimate (enter - for current value in DIFF_par file)<br>
+  &nbsp;&nbsp;&nbsp; azoff&nbsp;&nbsp; initial azimuth offset
+  estimate (enter - for current value in DIFF_par file)<br>
+  <br></code> The commands executed by mode 1 are first to create
+  the DIFF_par parameter file that holds the offset model for
+  geocoding refinement, followed by init_offsetm determine the
+  initial offset between the simulated SAR image and the actual
+  image<br>
+  <br>
+  <code>#create DIFF_par parameter file to save the offset
+  parameters:<br>
+  create_diff_par mli_1_4/20080806_HH.mli.par - geo/kt.diff_par 1
+  &lt; geo/kt.diff_par.in<br>
+  <br></code> The file kt.diff_par.in contains inputs for <a href=
+  "create_diff_par.html">create_diff_par</a>.<code><br>
+  <br>
+  #measure offset for a single large patch<br>
+  init_offsetm geo/kt_0.pix mli_1_4/20080806_HH.mli geo/kt.diff_par
+  3 3 2484 4065.5 0 0 10 1024 1<br>
+  <br>
+  initial range offset (samples): -2.68825&nbsp;&nbsp; azimuth
+  offset (lines): -5.67973<br>
+  setting range and azimuth offset polynomial values to initial
+  offsets in file: geo/kt.diff_par<br>
+  <br></code>
+
+  <h2 style="font-family: monospace;">Mode 2: Estimate offsets
+  between the SAR and simulated image and calculate the polynomial
+  offset model:<br></h2><code>$ mk_geo_radcal
+  mli_1_4/20080806_HH.mli mli_1_4/20080806_HH.mli.par
+  DEM/katmai.dem DEM/katmai.dem_par geo/kt.dem geo/kt.dem_par geo
+  kt 1.851852e-4 2 2 -s .7 -e .35 -p -c -d<br>
+  <br></code> Note that many cases it is sufficient for getting an
+  accurate scene geocoding only to measure this one offset and go
+  directly to mode 3. In some images with very few features there
+  are only a few areas in the scene that can be used for measuring
+  the offset. In that case, do not run mode 2 of <span style=
+  "font-style: italic;">mk_geo_radcal</span>. Enter the center of
+  this area on the command line in the MLI pixel coordinates for
+  mode 1 and go directly to mode 3. &nbsp; Running <span style=
+  "font-style: italic;">mk_geo_radcal</span> mode 2 will estimate
+  the offsets over the entire scene using image patches (512x512)
+  on a grid. The patch size can be changed using&nbsp; the
+  <span style="font-weight: bold;">r_patch</span> and <span style=
+  "font-weight: bold;">az_patch</span> parameters.&nbsp; The
+  program <a href="offset_pwrm.html">offset_pwrm</a> measures the
+  offsets over the entire scene and <a href=
+  "offset_fitm.html">offset_fitm</a> calculates the range and
+  azimuth offset polynomials from the offset measurements and
+  signal to noise ratio (SNR) of the measurements:<br>
+  <br>
+  <code>#measure offsets of intensity images<br>
+  offset_pwrm geo/lan_0.sim_rdc rmli_2_10/rmli_2_10.ave
+  geo/lan.diff geo/lan.offs geo/lan.snr<br>
+  <br>
+  #calculate range and azimuth offset polynomials with 3 terms
+  each<br>
+  offset_fitm geo/lan.offs geo/lan.snr geo/lan.diff geo/lan.coffs -
+  10 3<br>
+  <br></code> In a few cases with sparse dem data or images with no
+  contrast, it may not be possible to find enough points to
+  estimate the offset polynomial parameters. In this case, select a
+  single area in the image with some features and that are also
+  visible in the simulated SAR image. Determine the coordinates of
+  this point in the SAR image and then run mode 2 above specifying
+  the coordinates with rpos and azpos command line parameters. The
+  initial offset values are written as the constant values of
+  offset polynomials. This should usually be sufficient to geocode
+  the image and you can omit running Mode 2.<br>
+  <br>
+  After this process the DIFF_GEO parameter file &nbsp;is as below,
+  note the range and azimuth offset polynomials:<br>
+  <br>
+  <hr style="width: 100%; height: 2px;">
+  <code>$ more kt.diff_par<br>
+  Gamma DIFF&amp;GEO Processing Parameters<br>
+  title: kt<br>
+  initial_range_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -3<br>
+  initial_azimuth_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -6<br>
+  range_samp_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4968<br>
+  az_samp_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8131<br>
+  first_nonzero_range_pixel_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  number_of_nonzero_range_pixels_1:&nbsp;&nbsp;&nbsp;&nbsp;
+  4968<br>
+  range_pixel_spacing_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  9.368514<br>
+  az_pixel_spacing_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  12.577748<br>
+  range_samp_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4968<br>
+  az_samp_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8131<br>
+  first_nonzero_range_pixel_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  number_of_nonzero_range_pixels_2:&nbsp;&nbsp;&nbsp;&nbsp;
+  4968<br>
+  range_pixel_spacing_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  9.368514<br>
+  az_pixel_spacing_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  12.577748<br>
+  offset_estimation_starting_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  48<br>
+  offset_estimation_ending_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4920<br>
+  offset_estimation_range_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  20<br>
+  offset_estimation_range_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  256<br>
+  offset_estimation_starting_azimuth:&nbsp;&nbsp;&nbsp;&nbsp;
+  48<br>
+  offset_estimation_ending_azimuth:&nbsp;&nbsp;&nbsp;&nbsp;
+  8083<br>
+  offset_estimation_azimuth_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  20<br>
+  offset_estimation_azimuth_spacing:&nbsp;&nbsp;&nbsp;&nbsp;
+  422<br>
+  offset_estimation_patch_width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  512<br>
+  offset_estimation_patch_height:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  512<br>
+  offset_estimation_threshhold:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  10.00<br>
+  range_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -2.41406&nbsp;&nbsp;&nbsp; 8.2933e-06&nbsp;&nbsp;
+  -7.3133e-05&nbsp;&nbsp;&nbsp; 0.0000e+00&nbsp;&nbsp;&nbsp;
+  0.0000e+00&nbsp;&nbsp;&nbsp; 0.0000e+00<br>
+  azimuth_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -5.98119&nbsp;&nbsp; -4.4024e-05&nbsp;&nbsp;&nbsp;
+  4.7028e-06&nbsp;&nbsp;&nbsp; 0.0000e+00&nbsp;&nbsp;&nbsp;
+  0.0000e+00&nbsp;&nbsp;&nbsp; 0.0000e+00<br>
+  starting_azimuth_line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  map_azimuth_lines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  map_width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  first_map_range_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  number_map_range_pixels:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  range_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  azimuth_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  diff_phase_fit:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp;&nbsp;&nbsp; 0.0000e+00&nbsp;&nbsp;&nbsp;
+  0.0000e+00&nbsp;&nbsp;&nbsp; 0.0000e+00&nbsp;&nbsp;&nbsp;
+  0.0000e+00&nbsp;&nbsp;&nbsp; 0.0000e+00<br></code><br>
+  <hr style="width: 100%; height: 2px;">
+  <br>
+
+  <h2 style="font-family: monospace;">Mode 3: Update lookup table,
+  generate terrain geocoded image, perform pixel area correction
+  and generate GEOTIFF output. Calculate DEM in SAR range-doppler
+  coordinates:<br></h2><code>mk_geo_radcal mli_1_4/20080806_HH.mli
+  mli_1_4/20080806_HH.mli.par DEM/katmai.dem DEM/katmai.dem_par
+  geo/kt.dem geo/kt.dem_par geo kt 1.851852e-4 3 2 -s .7 -e .35 -p
+  -c -d</code><br>
+  <br>
+  The final steps in terrain geocoding are updating the lookup
+  table, generate the terrain geocoded image from the SAR image,
+  perform pixel area correction, and transform the DEM into SAR
+  coordinates. The resampled DEM is used for simulation of
+  interferograms in the production of 2-pass differential
+  interferograms and is generated only when the <span style=
+  "font-weight: bold;">-d</span> option is selected&nbsp; At each
+  step, output image products are generated for comparison and
+  display. Display of the images on the screen does not occur if
+  the quiet optioin <span style="font-weight: bold;">-q</span> is
+  set:<code><br>
+  <br></code> <code>#update the geocoding lookup table using
+  <a href="gc_map_fine.html">gc_map_fine</a>:<br></code>
+  <code>gc_map_fine geo/kt_0.map_to_rdc 8770 geo/kt.diff_par
+  geo/kt_1.map_to_rdc 1<br>
+  <br>
+  #pixel area correction factor calculated using the refined lookup
+  table, layover-shadow map, and incidence angle map:<br></code>
+  <code>pixel_area mli_1_4/20080806_HH.mli.par geo/kt.dem_par
+  geo/kt.dem geo/kt_1.map_to_rdc geo/kt_0.ls_map geo/kt_0.inc_map
+  geo/kt_1.pix<br>
+  raspwr geo/kt_1.pix 4968 1 0 1 1 1. .5&nbsp; 1
+  geo/kt_1.pix.ras<br>
+  <br>
+  #resample the DEM into radar range-doppler coordiantes:<br>
+  geocode geo/kt_1.map_to_rdc geo/kt.dem 8770 geo/kt_dem.rdc 4968
+  8131 2 0 1 1 2 8<br>
+  rashgt geo/kt_dem.rdc geo/kt_1.pix 4968 1 1 0 1 1 100 1. .35 1
+  geo/kt_dem.rdc.ras<br>
+  <br>
+  #display the simulated SAR image and the actual SAR image:<br>
+  dis2ras geo/kt_1.pix.ras mli_1_4/20080806_HH.mli.ras&amp;<br>
+  <br>
+  #geocode the backscatter radar image by resampling the SAR image
+  into the map projection geometry:<br>
+  geocode_back mli_1_4/20080806_HH.mli 4968 geo/kt_1.map_to_rdc
+  geo/kt_map.mli 8770 5845 2 0<br>
+  raspwr geo/kt_map.mli 8770 1 0 1 1 .7 .35 1
+  geo/kt_map.mli.ras<br>
+  <br>
+  #generate ellipse corrected sigma0 image from the input radar
+  image proportional to beta0:<br>
+  radcal_MLI mli_1_4/20080806_HH.mli mli_1_4/20080806_HH.mli.par -
+  mli_1_4/20080806_HH.mli.ellipse_cal - 0 0 1 0.0 -
+  geo/kt.pix_ellipse<br>
+  <br>
+  #perform ratio between pixel area ellipsoidal pixel area
+  corection factor and the pixel area correction factor determined
+  from the DEM:<br>
+  ratio geo/kt.pix_ellipse&nbsp; geo/kt_1.pix geo/kt.ratio_sigma0
+  4968 1 1<br>
+  <br>
+  #multiply the radar backstatter image by this ratio:<br>
+  product mli_1_4/20080806_HH.mli geo/kt.ratio_sigma0
+  geo/kt.pix_cal 4968 1 1<br>
+  <br>
+  #terrain geocode the pixel-area compensated backscatter
+  image:<br>
+  geocode_back geo/kt.pix_cal 4968 geo/kt_1.map_to_rdc
+  geo/kt_cal_map.mli 8770 5845 2 0<br>
+  raspwr geo/kt_cal_map.mli 8770 1 0 1 1 .7 .35 1
+  geo/kt_cal_map.mli.ras<br>
+  <br>
+  #generate geotiff output image product<br>
+  data2geotiff geo/kt.dem_par geo/kt_cal_map.mli 2
+  geo/kt_cal_map.mli.tif<br>
+  disras_dem_par geo/kt_cal_map.mli.ras
+  geo/kt.dem_par&amp;</code><br>
+
+  <h2>2. Terrain geocoding additional data files using the
+  mk_geo_data script</h2>An additional script <span style=
+  "font-style: italic;">mk_geo_data</span> exists to generate
+  terrain geocoded images of additional data products if
+  <span style="font-style: italic;">mk_geo_data</span> has been
+  completed successfully. This script extracts values from the
+  different parameter files and generates the call to <a href=
+  "geocode_back.html">geocode_back</a> that is used to do the
+  resampling. the parameters are in the <span style=
+  "font-style: italic;">MLI_par</span> and <span style=
+  "font-style: italic;">DEM_seg_par</span> files.<br>
+  <br>
+  <span style="font-family: monospace;">$ mk_geo_data<br>
+  *** /home/cw/gamma_software/DIFF/scripts/mk_geo_data<br>
+  *** Copyright 2012, Gamma Remote Sensing, 1.5 17-Apr-2012 clw
+  ***<br>
+  *** Terrain geocoding of data sets in SAR slant-range coordinates
+  ***<br>
+  <br>
+  usage: /home/cw/gamma_software/DIFF/scripts/mk_geo_data
+  &lt;MLI_par&gt; &lt;DEM_seg_par&gt; &lt;gc&gt; &lt;data&gt;
+  &lt;data_geo&gt; &lt;interp_mode&gt; &lt;format&gt;
+  &lt;log&gt;<br>
+  &nbsp; MLI_par&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input) MLI image
+  parameter file with same dimensions as input data<br>
+  &nbsp; DEM_seg_par&nbsp; (input) DEM parameter file for output
+  geocoded product<br>
+  &nbsp;
+  gc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) geocoding lookup table (map coordinates --&gt; RDC), use
+  refined lookup table if available<br>
+  &nbsp; data&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) input data set with same dimensions as the MLI image<br>
+  &nbsp; data_geo&nbsp;&nbsp;&nbsp;&nbsp; (output) output terrain
+  geocoded data set<br>
+  &nbsp; interp_mode&nbsp; interpolation mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: nearest-neighbor<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 1: bicubic<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 2: bicubic-log<br>
+  &nbsp; format&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; input data
+  format:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: float (4 bytes/value)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 1: fcomplex (re,im float)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 2: SUN raster/BMP<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 3: unsigned byte<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 4: short integer (2 bytes/value)<br>
+  &nbsp; log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  log file name<br></span> <code><br></code> The <span style=
+  "font-style: italic;">MLI_par</span> is used to define the
+  dimensions of the SAR data set. This data set may be an
+  interferometric product such as a deformation map. Also required
+  is the lookup table that has been updated by gc_map_fine to
+  account for geocoding location errors. The user can specify the
+  interpolation mode and data format. Further documentation on
+  these parameters is in the DIFF/GEO documentation of <a href=
+  "geocode_back.html">geocode_back</a>. &nbsp;For example to
+  geocode a complex format differential interferogram in RDC into
+  EQA<br>
+  <br>
+  <code>mk_geo_data</code>
+  <code>mli_1_4/20080806_HH.mli.par&nbsp;</code><code>geo/kt.dem_par</code>
+  <code>geo/kt_1.map_to_rdc&nbsp;
+  diff0_orb/20080806_HH_20080921_HH.diff&nbsp;</code>
+  <code>diff0_orb/20080806_HH_20080921_HH_eqa.diff</code> <code>1 1
+  mk_geo_data.log<br>
+  <br>
+  #terrain geocode the complex differential interferogram using
+  geocode_back:<br>
+  geocode_back diff0_orb/20080806_HH_20080921_HH.diff 4968
+  geo/kt_1.map_to_rdc diff0_orb/20080806_HH_20080921_HH_eqa.diff
+  8770 5845 1 1<br>
+  <br></code>
+  <hr style="width: 100%; height: 2px;">
+  Copyright by <a href="gamma.html">Gamma Remote Sensing</a>, 2015.
+  <a href="charles_werner.html">CW</a> last change 11-.<br>
+  <br>
+</body>
+</html>

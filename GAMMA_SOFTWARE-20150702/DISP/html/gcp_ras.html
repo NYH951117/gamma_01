@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: gcp_ras</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>gcp_ras</h2>
+
+  <p><i>ANSI-C program: DISP/src/gcp_ras.c</i> .<br>
+  This program is located in the DISP package.</p>
+
+  <p><strong>NAME</strong><br>
+  gcp_ras - Ground Control Points (GCP) selection from SUN raster
+  or BMP format images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gcp_ras &lt;ras&gt; &lt;GCP&gt; [mag]
+  [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>ras</td>
+
+        <td>(input) SUN raster *.ras or BMP *.bmp format image</td>
+      </tr>
+
+      <tr>
+        <td>GCP</td>
+
+        <td>(output) GCP data file (text format)</td>
+      </tr>
+
+      <tr>
+        <td>mag</td>
+
+        <td>zoom magnification factor (default=3) )</td>
+      </tr>
+
+      <tr>
+        <td>win_sz</td>
+
+        <td>zoom window size before magnification (default=96)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gcp_ras 1352_1610.flt.ras 1352_1610.gcp</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>gcp_ras</em> reads and displays an image in SUN raster or BMP
+  format. It can be used to select ground control points for
+  precise estimate of the interferometric baseline for repeat track
+  interferometry (RTI). Heights of the GCPs are derived from
+  topographic maps or GPS ground measurements. In this application
+  the reference image is generally of a flattened interferogram</p>
+
+  <p>The data entered using <em>gcp_ras</em> are stored in a text
+  format file that can be edited using a text editor if necessary.
+  The file format consists of columns of numbers containing the GCP
+  number, x (cross-track) pixel coordinate, y (along-track) line
+  number, and the entered data. Each GCP has a single line entry in
+  the file.</p>
+
+  <p>Using the program is simple. Different mouse buttons perform
+  different functions. Pressing the left button of the mouse allows
+  viewing the area around the cursor in a zoom window. GCP points
+  are selected by pressing the right mouse button. A red cross
+  appears at the selected point and the data entry window becomes
+  active (able to accept input). It is permitted to move the
+  initial point location by right clicking another point. Only when
+  Once a desired point is selected, enter the height for that point
+  in the data entry window. Hitting the enter key writes the
+  coordinates and entered data to the GCP file. When finished with
+  data entry click the close button to exit. If you have been
+  working on a GCP list you can append additional GCP points by
+  simply rerunning the application. The previously entered points
+  will be drawn on the image</p>
+
+  <p>&nbsp;The heights, not the true horizontal position is
+  required in the calculation of the interferometric baseline. At
+  least 20 control points at various altitudes are recommended to
+  obtain a reasonable baseline estimate.</p>
+
+  <p>The next step in using the ground control points is to extract
+  values of the phase corresponding to the GCPs from an unwrapped
+  interferogram. This is done using program <em>gcp_phase.</em> The
+  output of <em>gcp_phase</em> is text format file with an
+  additional column containing the unwrapped phase values. This
+  file in turn is used as input to program <em>base_ls</em> to
+  estimate the baseline.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "gcp_phase.html">gcp_phase</a>, <a href=
+  "base_ls.html">base_ls</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Nov-2008.</p>
+</body>
+</html>

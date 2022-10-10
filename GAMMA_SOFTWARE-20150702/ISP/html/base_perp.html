@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: base_perp</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>base_perp</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/base_perp.c"><i>base_perp.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  base_perp - Computation of baseline components normal and
+  parallel to look vector.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_perp &lt;baseline&gt; &lt;SLC1_par&gt;
+  &lt;OFF_par&gt; [time_rev]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;baseline&gt;</td>
+
+      <td>baseline file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC1_par&gt;</td>
+
+      <td>parameter file of first (master) SLC image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par&gt;</td>
+
+      <td>interferogram/offset processing parameter file</td>
+    </tr>
+
+    <tr>
+      <td>[time_rev]</td>
+
+      <td>SLC image time reverse flag<br>
+      (default: 1=normal, -1=reversed)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_perp 1352_1610.base 1352.part 1352_1610.off 1
+  1</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_perp reads the input baseline file and calculates for a
+  number of locations in the image (starting pixel etc defined in
+  interferoemtric processing/offset parameter file) the baseline
+  components parallel and perpendicular to the local look
+  vector.</p>
+
+  <p>If the baseline file contains a precision estimate (i.e. if
+  the third and fourth line contains non-zero values) the precision
+  baseline estimate is used, otherwise the initial estimate.</p>
+
+  <p>The right/left looking parameter is determined from the look
+  angle in the SLC parameter file.</p>
+
+  <p>The image locations (range, azimuth pixel numbers) and the
+  baseline components are printed to standard output.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "orbit.base.html">baseline file</a>.</p>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 27-Apr-2001.</p>
+</body>
+</html>

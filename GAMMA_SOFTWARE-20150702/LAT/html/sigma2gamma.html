@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: sigma2gamma</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>sigma2gamma</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/sigma2gamma.c">sigma2gamma.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  sigma2gamma - Compute backscatter coefficient gamma0 =
+  (sigma0)/cos(inc angle).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sigma2gamma &lt;pwr1&gt; &lt;inc&gt; &lt;gamma&gt;
+  &lt;width&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;pwr1&gt;</td>
+
+        <td>(input) intensity image (sigma zero) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;inc&gt;</td>
+
+        <td>(input) local incidence angle image (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;gamma&gt;</td>
+
+        <td>(output) intensity image (gamma zero = pwr1 / cos(inc))
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>sigma2gamma 1352.pwr1 1352.inc 1352.gamma 2500</samp></p>
+
+  <p>The SAR intensity image in sigma zero format is multiplied
+  with the local incidence angle image to obtain the corresponding
+  SAR intensity image in gamma zero format.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  sigma2gamma generates a SAR intensity image in gamma zero format
+  starting from the corresponding image in sigma zero format
+  (1352.pwr1) and the image of the local incidence angle
+  (1352.inc). In this way the dependence of the SAR backscatter
+  upon local incidence angle is removed. The image of the local
+  incidence angle can be obtained with one of the DIFF/GEO programs
+  gc_map or gc_map_grd depending whether the original SAR image in
+  radar geometry was in slant range or ground range
+  coordinates.</p>
+
+  <p>To further remove the effect due to the different area of the
+  pixel depending on local topography multiplication of the gamma
+  zero image with the image of the pixel area normalization factor
+  can be applied. For this use the program <a href=
+  "product.html">product</a> of the LAT module. The command line
+  following the example above can look as follows:</p>
+
+  <p><samp>product 1352.gamma 1352.pix 1352.gamma_cor 2500 1 1
+  0</samp></p>
+
+  <p>where 1352.gamma_cor the corrected gamma zero image is.
+  One-to-one product and no weighting are used.</p>
+
+  <p>A final correction can be done by multiplying for the cosine
+  of a reference incidence angle. This can be done by reading out
+  from the SAR image ISP/SLC parameter file the incidence angle,
+  taking the cosine and using the LAT program <a href=
+  "lin_comb.html">lin_comb</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, ms,last change 27-Nov-2007.</p>
+</body>
+</html>

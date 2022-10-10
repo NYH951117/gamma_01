@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>swap_bytes_all</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO Software: Reference Manual</h1>
+
+  <h2>Swap Byte Order of a List of Data Files&nbsp;<br></h2><i>Perl
+  script:&nbsp; <a href=
+  "../scripts/swap_bytes_all">swap_bytes_all</a><br>
+  <br></i><strong>NAME</strong>&nbsp;<br>
+  swap_bytes_all&nbsp; - Swap byte-order of a list of data files
+  and store the swapped output in a specified directory<br>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  swap_bytes_all &lt;data_tab&gt; &lt;out_dir&gt;
+  &lt;bpv&gt;</b></code><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_tab&gt;</td>
+
+        <td>(input) single column list of data files to swap byte
+        order (little endian &lt;--&gt; big endian)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;out_dir&gt;</td>
+
+        <td>directory to contain output byte-swapped binary
+        files<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;bpv&gt;</td>
+
+        <td>bytes per value, either 2 or 4<br>
+        &nbsp;&nbsp;&nbsp; SHORT:&nbsp;&nbsp;&nbsp; 2<br>
+        &nbsp;&nbsp;&nbsp; SCOMPLEX: 2<br>
+        &nbsp;&nbsp;&nbsp; FLOAT:&nbsp;&nbsp;&nbsp; 4<br>
+        &nbsp;&nbsp;&nbsp; FCOMPLEX: 4<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4><strong>EXAMPLE</strong></h4><code>swap_bytes cs_tab
+  Cascade_swap 4</code><br>
+  <br>
+  each of the files in the list cs_tab are byte-swapped and stored
+  in the directory <span style=
+  "font-style: italic;">Cascade_swap</span>. The files in the
+  output directory have the same name as the input directory. Each
+  value in the input data files is 4-byte float, either real, or
+  float complex format with real and imaginary components (fcomplex
+  format).<br>
+
+  <h4>
+  <strong><strong>DESCRIPTION</strong></strong></h4><span style="font-style: italic;">swap_bytes_all</span>
+  calls the program <a href=
+  "../../DISP/html/swap_bytes.html">swap_bytes</a> for each of the
+  files contained in a single column list of files. That list of
+  files can be created using the script <a href=
+  "mk_tab.html">mk_tab</a>.&nbsp; The program swap_bytes requires
+  the number of bytes for each value of the data. In the case of
+  data that are complex, the number of bytes for each value is the
+  size of the individual real and imaginary components.<br>
+  <br>
+  The script is useful when performing byte-swapping of data from
+  the UAVSAR. These data are provided in little-endian format,
+  while the Gamma Software operates with big-endian format. Using
+  mk_tab to generate a list of the MLC data products that are
+  within a UAVSAR data set:<br>
+  <br>
+  <code>mk_tab Cascade mlc - cs_tab</code><br>
+  <br>
+  This will generate a single column list of all the data files
+  with mlc extension within the directory named Cascade.&nbsp; Let
+  the output directory be called <span style=
+  "font-style: italic;">Cascade_swap.</span> Then use
+  swap_bytes_all to successively call <a href=
+  "../../DISP/html/swap_bytes.html">swap_bytes</a> and write the
+  byte-swapped files to the Cascade_swap directory. The script will
+  generate an error message and exit&nbsp; if you attempt to
+  overwrite the input file.&nbsp; The script creates the output
+  directory if it does not yet exist.<br>
+  <br>
+  Programs such as MATLAB and ENVI can read data that are either
+  big-endian or little-endian byte order, but it must be specified
+  by the user.<br>
+
+  <h4><strong>SEE ALSO</strong></h4><a href=
+  "../../DISP/html/swap_bytes.html">swap_bytes</a>,&nbsp; <a href=
+  "mk_tab.html">mk_tab</a>, <a href=
+  "../../ISP/html/par_UAVSAR_SLC.html">par_UAVSAR_SLC</a>,
+  &nbsp;<a href="par_UAVSAR_geo.html">par_UAVSAR_geo</a>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="charles_werner.html">CW</a> last change 16-Nov-2012.
+</body>
+</html>

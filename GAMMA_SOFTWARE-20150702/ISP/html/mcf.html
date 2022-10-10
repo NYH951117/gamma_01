@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: mcf</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>mcf</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/mcf.c"><i>mcf.c</i></a>, <a href=
+  "../src/mssptr.c"><i>mssptr.c</i></a>, <a href=
+  "../src/mssptr.c"><i>mssptr.c</i></a>, <a href=
+  "../src/m_tri_init2.c"><i>m_tri_init2.c</i></a>, <a href=
+  "../src/mcf2.h"><i>mcf2.h</i></a>.</p>
+
+  <p><strong>NAME</strong><br>
+  mcf - Phase unwrapping algorithm using Minimum Cost Flow (MCF)
+  and triangulation</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mcf &lt;interf&gt; &lt;wgt&gt; &lt;mask&gt; &lt;unw&gt;
+  &lt;width&gt; [tri_mode] [roff] [loff] [nr] [nlines] [npat_r]
+  [npat_az] [ovrlap] [r_init] [az_init] [init_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;interf&gt;</td>
+
+        <td>(input) interferogram (*.int,*.flt)(fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;wgt&gt;</td>
+
+        <td>(input) weight factors (0 -&gt; 1.0) file (float)(enter
+        - for uniform weight)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mask&gt;</td>
+
+        <td>(input) validity mask (SUN raster or BMP format, value
+        0 -&gt; pixel not used)(enter - if no mask)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;unw&gt;</td>
+
+        <td>(output) unwrapped phase image (*.unw)(float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[tri_mode]</td>
+
+        <td>triangulation mode<br>
+        &nbsp;&nbsp;0: filled triangular mesh (default)<br>
+        &nbsp;&nbsp;1: Delaunay triangulation</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>offset to starting range of section to unwrap (default:
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line of section to unwrap (default:
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range samples of section to unwrap
+        (default(-): width-roff)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines of section to unwrap (default(-): total
+        number of lines -loff)</td>
+      </tr>
+
+      <tr>
+        <td>[npat_r]</td>
+
+        <td>number of patches in range</td>
+      </tr>
+
+      <tr>
+        <td>[npat_az]</td>
+
+        <td>number of patches in azimuth</td>
+      </tr>
+
+      <tr>
+        <td>[ovrlap]</td>
+
+        <td>overlap between patches in pixels (&gt;= 7, default(-):
+        512)</td>
+      </tr>
+
+      <tr>
+        <td>[r_init]</td>
+
+        <td>phase reference range offset (default(-): roff)</td>
+      </tr>
+
+      <tr>
+        <td>[az_init]</td>
+
+        <td>phase reference azimuth offset (default(-): loff)</td>
+      </tr>
+
+      <tr>
+        <td>[init_flag]</td>
+
+        <td>init_flag&nbsp; flag to set phase at reference
+        point<br>
+        &nbsp;&nbsp;&nbsp;0: use initial point phase value
+        (default)<br>
+        &nbsp;&nbsp;&nbsp;1: set phase to 0.0 at initial point</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>mcf 19990915_19991020.diff 19990915_19991020.cc -
+  199990915_19991020.unw 2456<br></samp></p>
+
+  <p>Unwraps the differential interferogram 19990915_19991020.diff,
+  using the coherence file 19990915_19991020.cc as weights for the
+  MCF solution. No mask file is provided, consequently all non-NULL
+  values are unwrapped. The interferogram width is 1024 samples.
+  Output is written to 01608_02109.unw. A filled triangular mesh is
+  used for the unwrapping.</p>
+
+  <p><samp>mcf</samp> <samp>19990915_19991020.diff</samp>
+  <samp>19990915_19991020..cc</samp>
+  <samp>19990915_19991020.cc.mask.ras</samp>
+  <samp>19990915_19991020.unw 1024 1 128 128 768 768 2 2
+  256</samp></p>
+
+  <p>Similar to above, but now only a 768x768 section of the input
+  interferogram is unwrapped. A validity mask
+  (19990915_19991020.cc.mask.ras) is used to indicate areas which
+  should and areas which should not be unwrapped (for example
+  because of too high phase noise). A Delaunay triangulation is
+  used in this case instead of the default filled triangular mesh,
+  because the data has gaps. The unwrapping is done in 4 patches (2
+  in range and 2 in azimuth) with an overlap of 256 samples between
+  patches.</p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p><em>mcf</em> is a standalone phase unwrapping program for
+  complex input data.</p>
+
+  <p>Triangulation is used to generate a network describing the
+  data values. This has two main advantages, namely, that the
+  network is two times denser than the rectangular network and that
+  spatially incomplete data can easily be dealt with. Gaps in the
+  data can be specified using a validity mask file. This Sun raster
+  or BMP format file has values of (0,0,0) in regions that will not
+  be unwrapped. Only points with non-zero values will be
+  triangulated and unwrapped. Delaunay triangulation is used to
+  generate an optimized irregular triangular network.</p>
+
+  <p>The minimum cost flow (MCF) algorithm is used to minimize the
+  total cost associated with phase discontinuities in the scene
+  associated with noise, and layover. The user supplies weights
+  (usually related to the coherence) used to calculate where
+  discontinuities (i.e. network flow) are preferred. Regions of low
+  weight have low costs for phase jumps whereas areas of high cost
+  tend to exclude such discontinuities in the unwrapped phase.</p>
+
+  <p>Each triangle is a node in the network. If integration of the
+  phase around a triangle indicates a a positive phase
+  discontinuity (residue) then the node is marked as contributing
+  flow to the network. A negative phase discontinuity at a node is
+  marked as accepting flow from the network. The cost of flow in an
+  arc connecting adjacent nodes is derived from the weight file
+  provided. Typically, the interferometric correlation is used as
+  weight file. The MCF algorithm solves for the flow in the arcs
+  that minimizes the net cost. The implemented MCF solution is
+  based on the successive shortest path (SSP) method.</p>
+
+  <p>Correlation values are usually used for the weighting
+  function. Be sure to specify the starting sample position and the
+  number of range and azimuth samples to unwrap such that weights
+  values are available. Because of the window function used to
+  estimate the correlation, there will be a few pixels at the edge
+  of the correlation that will be set to 0. Using the mask file can
+  take care of this detail in the operation of the unwrapping. The
+  program <a href="rascc_mask.html">rascc_mask</a> can be used to
+  generate a mask file, with pixel values set to 0 for regions of
+  the image that have correlation values below a user specified
+  threshold.</p>
+
+  <p>The triangulation network structure can also be used to reduce
+  the amount of data to be unwrapped. Areas of high phase noise can
+  be masked out by accordingly defining a validity mask. This
+  process can also be supported by adaptive reduction of the
+  sampling. In areas of low phase variation larger sample spacings
+  are acceptable. This may be used to reduce the network size to
+  allow global optimization, even for large data sets. The program
+  <a href="rascc_mask_thinning.html">rascc_mask_thinning</a>
+  supports this.</p>
+
+  <p>To unwrap images larger than can be processed with the
+  available computer RAM, the input is divided into patches in
+  range and azimuth. For the default patch size (1024x1024), the
+  memory requirements is approximately 320 MB. The results from
+  unwrapping the individual patches is combined by comparing the
+  phase values within the overlapping regions of the patches.</p>
+
+  <p>The user can independently specify the number of patches in
+  range and azimuth, and the size of the the overlap on the command
+  line. Generally it is advised to select patches as large as
+  possible that do not exceed the RAM resources of the machine.
+  Furthermore, it is recommended to reduce the number of azimuth
+  patches. If a phase unwrapping error is evident on the patch
+  boundary, changing the number patches or the patch overlap may
+  eliminate the error. The overlap between patches is an important
+  parameter. Large overlaps such as half the patch size permit to
+  minimize errors. Attempt if possible, to select the patch
+  boundaries to lie in areas of high fringe visibility and minimal
+  terrain.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="rascc_mask.html">rascc_mask</a>, <a href=
+  "rascc_mask_thinning.html">rascc_mask_thinning</a>, <a href=
+  "interp_ad.html">interp_ad</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-Sep-2005.
+</body>
+</html>

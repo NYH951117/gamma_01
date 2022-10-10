@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: par_ASAR</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Geneate SLC parameter and image files for ENVISAT ASAR SLC
+  and PRI data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_ASAR.c">par_ASAR.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_ASAR - reads ENVISAT ASAR data products (Wide Swath image
+  modes including SLC, Image Modes PRI and SLC, Alternating
+  Polarization modes, and Global modes) as provided by ESA and
+  creates the ISP image parameter and data files in the format used
+  by GAMMA software.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_ASAR &lt;ASAR_file&gt;
+  &lt;output_name&gt;</b></code> [K_dB]</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;ASAR_file&gt;</td>
+
+        <td>(input) ASAR data file including header and image as
+        provided by ESA</td>
+      </tr>
+
+      <tr>
+        <td>&lt;output_name&gt;</td>
+
+        <td>(output)common part of output file names (e.g. orbit
+        number)</td>
+      </tr>
+
+      <tr>
+        <td>[K_dB]</td>
+
+        <td>Calibration factor in dB (nominal value for all ASAR
+        modes = 55.0), in the case a calibration factor is provided
+        PRI images are converted to radiometrically calibrated
+        ground-range intensity images in float format</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_ASAR
+  ASA_IMM_1PXPDE20020730_095830_000001002008_00108_02166_0066.N1&nbsp;</samp>20020730</p>
+
+  <p>Reads the ASAR IMM Mode input data file and generates:<br>
+  20020730.VV.PRI.par - SLC parameter file of PRI (ground range)
+  image<br>
+  20020730.VV.PRI - image file (short) of PRI (ground range)
+  image<br>
+  20020730.hdr - header file (containing header only, without image
+  data)</p>
+
+  <p><samp>par_ASAR
+  ASA_IMM_1PXPDE20020730_095830_000001002008_00108_02166_0066.N1
+  02166 55.</samp></p>
+
+  <p>Reads the ASAR IMM Mode input data file and generates:<br>
+  20020730.VV.GRD.par - SLC parameter file of calibrated ground
+  range image<br>
+  20020730.VV.GRD - image file (float) of calibrated ground range
+  image<br>
+  20020730.hdr - header file (containing header only, without image
+  data)</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">par_ASAR</span> is the interface
+  between ENVISAT ASAR data in the format provided by ESA and the
+  format used by GAMMA software. ASAR data are procided in a single
+  data file. This file contains both meta data and the image data.
+  par_ASAR reads this input ASAR data file, extracts the parameters
+  required by the GAMMA software and writes out the related SLC
+  parameter file as well as the image file(s) in GAMMA software
+  format.</p>
+
+  <p>In addition the unchanged header part of the input file is
+  copied to an loutput header file. This is done for later
+  reference to the full meta data provided in the original data
+  file. When providing only a header file as input data file
+  (without image data) par_ASAR generates the SLC parameter file(s)
+  without the image files. For alternating polarization modes two
+  output SLC parameter files and two output image data files are
+  generated.</p>
+
+  <p>ASAR can be operated in many different modes. In order to
+  facilitate the use of ASAR data par_ASAR automatically determines
+  the image mode of the provided data. According to the mode, the
+  names for the output image parameter and data files are defined.
+  The program supports ASAR:<br>
+  &nbsp;&nbsp;&nbsp; - ASAR images mode (IMS, IMP, IMM, IM)<br>
+  &nbsp;&nbsp;&nbsp; - alernating polarization mode (APS, APP, APM,
+  AP)<br>
+  &nbsp;&nbsp;&nbsp; - wide swath mode (WSM, WS)<br>
+  &nbsp;&nbsp;&nbsp; - global monitoring mode (GM1,GM)</p>
+
+  <p>This includes the following data types:<br>
+  &nbsp;&nbsp;&nbsp; - SLC (IMS, APS) (slant range geometry,
+  scomplex)<br>
+  &nbsp;&nbsp;&nbsp; - PRI (IMP, IMM, APP, APM, WSM, GM1) (ground
+  range geometry, short)<br>
+  &nbsp;&nbsp;&nbsp; - PRI (IM, AP, WS, GM) (ground range geometry,
+  uchar)</p>
+
+  <p>The ASAR modes supported by <span style=
+  "font-weight: bold;">par_ASAR</span> and the related naming
+  conventions are indicated in the table below:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>ASAR mode</td>
+
+        <td>SLC_par</td>
+
+        <td>image</td>
+
+        <td>type</td>
+
+        <td>format</td>
+
+        <td>geometry</td>
+      </tr>
+
+      <tr>
+        <td>IMS</td>
+
+        <td>*.VV.SLC.par</td>
+
+        <td>*.VV.SLC</td>
+
+        <td>SLC</td>
+
+        <td>SCOMPLEX</td>
+
+        <td>SLANT_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>IMP</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>SHORT</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>IMM</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>SHORT</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>IM</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>UBYTE</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>APS</td>
+
+        <td>*.VV.SLC.par<br>
+        *.HH.SLC.par</td>
+
+        <td>*.VV.SLC<br>
+        *.HH.SLC</td>
+
+        <td>SLC</td>
+
+        <td>SCOMPLEX</td>
+
+        <td>SLANT_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>APP</td>
+
+        <td>*.VV.PRI.par<br>
+        *.HH.PRI.par</td>
+
+        <td>*.VV.PRI<br>
+        *.HH.PRI</td>
+
+        <td>PRI</td>
+
+        <td>SHORT</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>APM</td>
+
+        <td>*.VV.PRI.par<br>
+        *.HH.PRI.par</td>
+
+        <td>*.VV.PRI<br>
+        *.HH.PRI</td>
+
+        <td>PRI</td>
+
+        <td>SHORT</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>AP</td>
+
+        <td>*.VV.PRI.par<br>
+        *.HH.PRI.par</td>
+
+        <td>*.VV.PRI<br>
+        *.HH.PRI</td>
+
+        <td>PRI</td>
+
+        <td>UBYTE</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>WSM</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>SHORT</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>WS</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>UBYTE</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>WSS</td>
+
+        <td>*.VV.IS1.SLC.par<br>
+        *.VV.IS2.SLC.par<br>
+        *.VV.IS3.SLC.par<br>
+        *.VV.IS4.SLC.par<br>
+        *.VV.IS5.SLC.par</td>
+
+        <td>*.VV.IS1.SLC<br>
+        *.VV.IS2.SLC<br>
+        *.VV.IS3.SLC<br>
+        *.VV.IS4.SLC<br>
+        *.VV.IS5.SLC</td>
+
+        <td>SLC Bursts</td>
+
+        <td>SCOMPLEX</td>
+
+        <td>SLANT_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>GM1</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>SHORT</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+
+      <tr>
+        <td>GM</td>
+
+        <td>*.VV.PRI.par</td>
+
+        <td>*.VV.PRI</td>
+
+        <td>PRI</td>
+
+        <td>UBYTE</td>
+
+        <td>GROUND_RANGE</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>ASAR swath and polarization are documented in the sensor
+  element of the SLC parameter file. Resulting ASAR sensor types
+  looks like ASAR_IS3_VV (image mode 3, VV polarization) or
+  ASAR_WS_VV (wide swath VV-polarization).</p>
+
+  <p>For ASAR image data in ground range geometry, the ground-range
+  to &nbsp;slant range polynomials&nbsp; are provided with the data
+  3 (first, center, last) and written to the SLC parameter file.
+  This permits to re-calculation of the&nbsp; the slant ranges from
+  the ground range pixel location.&nbsp;</p>
+
+  <p>When providing a calibration constant on the command line, PRI
+  images are converted to radiometrically calibrated intensity
+  images (instead of amplitude images) in float format (instead of
+  short integer). According to&nbsp; information from ESA, 55 dB is
+  the calibration constant for all modes. This may not be valid for
+  early ASAR products and is also be subject to change.</p>
+
+  <p>For Wide-Swath Scan-SAR SLC data, multiple SLC data sets are
+  contained withing the ASAR image product. <span style=
+  "font-style: italic;">par_ASAR</span> generates individual SLC
+  and SLC.par files for each of the 5 ASAR beams used in wide-swath
+  imaging.</p>
+
+  <p>Geocoded ASAR products can also be converted to GAMMA software
+  format with par_ASAR,&nbsp; for example in order to display the
+  data. At present the map related geometric information is not
+  interpreted, though.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "GRD_to_SR.html">GRD_to_SR</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-Nov-2005.
+</body>
+</html>

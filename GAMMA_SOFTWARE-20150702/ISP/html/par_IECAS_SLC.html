@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: par_IECAS_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate SLC parameter file and image file for IECAS SLC
+  data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_IECAS_SLC.c">par_IECAS_SLC.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_IECAS_SLC - reads&nbsp; IECAS airborne SAR SLC data and
+  creates the ISP image parameter and SLC file in the FCOMPLEX
+  format used by GAMMA software.</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <table style="width: 835px; height: 257px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;aux_data&gt;</td>
+
+        <td>((input) IECAS SAR auxillary data (POS*.dat)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;SLC_Re&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) real part of
+        complex SLC data<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;SLC_Im&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) imaginary part of
+        complex SLC data<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;date&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) acquistion date
+        format: YYYYMMDD (example 20110121) from aux_data
+        filename<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file (example:
+        yyyymmdd.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(output) SLC data file (example: yyyymmdd.slc)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp><br>
+  POSData_20101114_HH_RepeatTest1.dat
+  data_20101114_HH_RepeatTest1_R.dat
+  data_20101114_HH_RepeatTest1_I.dat 20110114 20101114_HH.slc.par
+  20101114_HH.slc</samp></p>
+
+  <p><strong>DESCRIPTION</strong></p>This program reformats the
+  input file to obtain the SLC image data and to extract the key
+  parameters required in the GAMMA ISP/SLC parameter file. The
+  IECAS data are provided as the separate files for the real part
+  and imaginary part of the SLC image. The real part and imaginary
+  part are combined into a single file in 32-bit floating point
+  format containing pairs of real and imaginary numbers.<br>
+  <br>
+  The state vectors in the SLC parameter file are calculated from
+  the heading, altitude and position of the SAR at the start of the
+  image as documented in the <span style=
+  "font-style: italic;">aux_data</span> file provided on the
+  command line.<br>
+  <br>
+  The state vectors are located at regular intervals on a circular
+  track of constant altitude above the surface. A total of 9 state
+  vectors are calculated starting 1 second before the start of the
+  SLC data and the last occurring 1 second after the end of the SLC
+  image.<br>
+  The coordinate system for the data is cartesian referenced to the
+  WGS84 ellipsoid.<br>
+  <br>
+  The effective PRF for the data is calculated from the actual PRF
+  divided by the number of azimuth looks. Other parameters are
+  extracted<br>
+  from the aux_data and<br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>,</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2011.<br>
+  awi, ms, <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2011.
+</body>
+</html>

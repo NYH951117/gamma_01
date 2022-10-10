@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Reference Manual: PALSAR_antpat</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>PALSAR_antpat</h2>
+
+  <p><i>ANSI-C program:&nbsp;<a href=
+  "../src/PALSAR_antpat.c">PALSAR_antpat.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  PALSAR_proc - Extract specified antenna pattern from a PALSAR
+  JAXA supplied data file and writes into an MSP format antenna
+  file<br></p>
+
+  <p>
+  <big><strong><small>SYNOPSIS</small><br></strong><code>PALSAR_antpat
+  &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;PAL_ANT&gt; &lt;ant_file&gt;
+  [Beam_ID] [TX_POL] [RX_POL]</code></big></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(output) MSP SAR Sensor Parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(output) MSP Processing parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PALSAR_ANT&gt;</td>
+
+        <td>(input) PALSAR antenna pattern data file provided by
+        JAXA (e.g. palsar_ant_20061024.dat)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ant_file&gt;</td>
+
+        <td>(output) MSP format antenna pattern file (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>[Beam_ID]</td>
+
+        <td>input) PALSAR mode beam ID, if not provided the program
+        will determine the appropriate beam from the SAR_par look
+        angle parameter.<br></td>
+      </tr>
+
+      <tr>
+        <td>[TX_POL]</td>
+
+        <td>(input) extracted channel transmit polarization 0: H
+        (default) 1: V</td>
+      </tr>
+
+      <tr>
+        <td>[RX_POL]</td>
+
+        <td>(input) extracted channel receive polarization 0: H
+        (default) 1: V</td>
+      </tr>
+    </tbody>
+  </table><samp><span style="font-weight: normal;"><br>
+  <big>Beam IDs for different center-beam look angles and PALSAR
+  modes:</big></span><big><br style="font-weight: normal;">
+  <br style="font-weight: normal;">
+  <span style="font-weight: normal;">Beam ID&nbsp;&nbsp;&nbsp; look
+  angle (deg.)&nbsp;&nbsp; Mode</span><br style=
+  "font-weight: normal;">
+  <span style=
+  "font-weight: normal;">=======================================</span><br style="font-weight: normal;">
+
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  9.9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  14.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  17.9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  21.2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  25.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  28.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  30.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  34.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  36.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  38.5&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  10&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  41.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  11&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  43.4&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  12&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  45.1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  13&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  46.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  14&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  47.7&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  15&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  49.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  16&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  50.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  17&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  50.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FBS</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  18&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  19.9&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WB1,
+  WB2 Beam 1</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  19&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  25.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WB1,
+  WB2 Beam 2</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  20&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  30.3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WB1,
+  WB2 Beam 3</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  21&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  33.6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WB1,
+  WB2 Beam 4</span><br style="font-weight: normal;">
+  <span style="font-weight: normal;">&nbsp;&nbsp;
+  22&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  36.0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; WB1,
+  WB2 Beam 5</span></big></samp> <strong><br>
+  <br>
+  EXAMPLES:</strong><samp><br></samp><samp><br></samp><samp style=
+  "font-family: monospace;">PALSAR_antpat 20060820_HH.sar_par
+  p20060820_HH.slc.par&nbsp;</samp><span style=
+  "font-family: monospace;">palsar_ant_20061024.dat</span><samp style="font-family: monospace;">&nbsp;</samp><span style="font-family: monospace;">20060820_HH.</span><samp><span style="font-family: monospace;">_antenna.gain
+  7</span><br></samp>
+
+  <p>Select beam FBS beam 7 from <span style=
+  "font-family: monospace;">palsar_ant_20061024.dat</span><br></p><span style="font-family: monospace;">PALSAR_antpat
+  20060820_HH.sar_par p20060820_HH.slc.par&nbsp;</span><span style=
+  "font-family: monospace;">palsar_ant_20061024.dat</span><samp style="font-family: monospace;">&nbsp;</samp><span style="font-family: monospace;">20060820_HH.</span><span style="font-family: monospace;">_antenna.gain
+  -<br></span><br>
+  Determine beam based on the look angle stored in the SLC_par
+  sensor parameter file.<br>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p style="text-align: justify;">This program parses the the JAXA
+  supplied antenna pattern file and generates an antenna pattern
+  file in Gamma format.&nbsp; Differerent antenna patterns are
+  supplied for each of the&nbsp; PALSAR modes.&nbsp; A copy of the
+  JAXA antanna pattern file is in the $MSP_HOME/sensors directory
+  under the name <span style=
+  "font-family: monospace;">palsar_ant_20061024.dat</span> and is
+  the file used by JAXA for their processing. <span style=
+  "color: blue;">palsar_ant_20061024.dat,
+  palsar_ant.dat_f_a</span>, and <span style=
+  "color: blue;">palsar_ant.dat_f_b</span> are in text format and
+  can be examined using a text editor.&nbsp; The latest updates of
+  the antenna pattern data are in files<br></p><big style=
+  "color: blue;"><span style=
+  "font-family: monospace;">palsar_ant.dat_f_a&nbsp;&nbsp; PALSAR
+  antenna pattern to be used for acquisitions on or after 7 August
+  2006</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">palsar_ant.dat_f_b&nbsp;&nbsp; PALSAR
+  antenna pattern to be used for acquisitions before 7 August
+  2006</span></big><br>
+
+  <p style="text-align: justify;">The start of each pattern in the
+  file has the following parameters:<br></p>
+
+  <p><big><i style="font-family: monospace;">NN</i><span style=
+  "font-family: monospace;">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  number of the pattern samples in the current
+  beam</span><br style="font-family: monospace;">
+  <i style="font-family: monospace;">OFF_NADIR0</i><span style=
+  "font-family: monospace;">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  off nadir angle at the first line of the data file
+  (deg.)</span><br style="font-family: monospace;">
+  <i style="font-family: monospace;">DTH</i><span style=
+  "font-family: monospace;">:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  off nadir anguler increment (deg.)</span><br style=
+  "font-family: monospace;">
+  <i style="font-family: monospace;">Ghh, Ghv, Gvh,
+  Gvv</i><span style="font-family: monospace;">: antenna peak gain
+  for four polarizations (dB)</span></big><br></p>
+
+  <p style="text-align: justify;">Then the individual measurements
+  of the antenna pattern consist of 6 values for each
+  angle:&nbsp;</p>
+
+  <p style="text-align: justify;"><big><span style=
+  "font-family: monospace;">ONA, Beam_Angle, ghh, ghv, gvh,
+  gvv&nbsp;</span></big></p>
+
+  <p style="text-align: justify;">where ONA is the off nadir angle,
+  Beam_Angle is the angle relative to the physical boresight of the
+  pannel, and ghh, ghv, gvh, gvv are the relative antenna pattern
+  gains in dB normalized by the peak values.<br></p>
+
+  <p style="text-align: justify;">If the Beam_ID and polariazation
+  are omitted from the command line, they are determined from the
+  SAR_par and PROC_par parameter files. Normally these values would
+  not be supplied because you want to extract the antenna pattern
+  that pertains to the current data set. The gain values are then
+  converted to 1-way power rather than dB and written out in the
+  MSP format for antenna patterns.</p>
+
+  <div style="text-align: justify;"></div>
+
+  <p style="text-align: justify;">The MSP text format antenna
+  pattern consists of pairs of &nbsp;values, one pair/line. The
+  first is the angular offset relative to antenna boresight angle,
+  and the second number is the 1-way antenna gain (amplitude).
+  &nbsp;The look-angle at the center of the beam is specified in
+  the SAR sensor parameter file.<br></p>
+
+  <p style="text-align: justify;">Note that beams 18 to 22 are are
+  used for Wide-Beam (WB) ScanSAR data.<br></p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "PALSAR_proc.html">PALSAR_proc</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Jul-2011.
+</body>
+</html>

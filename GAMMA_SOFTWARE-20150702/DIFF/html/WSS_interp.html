@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF/GEO Reference Manual: WSS_interp</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>WSS_interp</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/WSS_interp.c"><i>WSS_interp.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  WSS_interp - ASAR Wide-Swath SLC complex image resampling using
+  an offset polynomial model and&nbsp; 2-D SINC interpolation</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>&nbsp;WSS_interp &lt;SLC-1&gt; &lt;SLC-2&gt;
+  &lt;SLC1_par&gt; &lt;SLC2_par&gt; &lt;DIFF_par&gt;
+  &lt;DIFF_par&gt; &lt;SLC-2R&gt; &lt;SLC2R_par&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC_1 reference image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC-2 image to be resampled to
+        the geometry of the WSS SLC-1 reference image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC-1 image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC-2 image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input) WSS DIFF/GEO parameter file containing
+        polynomial offset model</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2R&gt;</td>
+
+        <td>&nbsp;ASAR Wide-Swath SLC-2R coregistered to SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par</td>
+
+        <td>&nbsp;(output) ASAR Wide-Swath SLC-2R image parameter
+        file for coregistered image</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <code><samp>WSS_interp 20030921.VV.IS2.SLC 20040208.VV.IS2.SLC
+  20030921.VV.IS2.SLC.par 20040208.VV.IS2.SLC.par
+  20030921_20040208.VV.IS2.diff_par 20040208.VV.IS2.rslc
+  20040208.VV.IS2.rslc.par<br></samp></code><br>
+  Use the <span style="font-family: monospace;">range and azimuth
+  offset polynomials in</span>
+  <code>20030921_20040228.VV.IS2.diff_par</code> to
+  resample&nbsp;<code>20040208.VV.IS2.SLC</code> to the geometry of
+  <code>20030921.VV.IS2.SLC</code>. Output is in
+  20040208<samp>.IS2.rslc</samp> with parameter
+  file&nbsp;<code>20040208</code><samp><code>.IS2.rslc.par</code></samp>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>WSS_interp</em> uses the polynomial offset model in the
+  DIFF_par file to resample ASAR Wide Swath SLC into the geometry
+  of a reference ASAR Wide Swath SLC image. Offsets are measured
+  between MLI images produced from the ASAR Wide-Swath SLC data
+  using <span style=
+  "font-style: italic;">multi_SLC_WSS.&nbsp;</span></p>The
+  Wide-Swath SLC data are produced from SCANSAR data and has a
+  different format than strip-map mod SLC images. Each burst is
+  processed into an SLC burst that is 48 lines long with 80 meter
+  along-track azimuth pixel spacing with each point on the ground
+  imaged by on average 3 bursts. Generating a pair of coregistered
+  ASAR Wide-Swath SLCs requires the following steps:
+
+  <ol>
+    <li>Generate MLI images from the Wide-Swath SLC data
+    using&nbsp; the ISP program&nbsp; <span style=
+    "font-style: italic;">multi_SLC_WSS</span></li>
+
+    <li>Create DIFF/GEO offset parameter file DIFF_par
+    using&nbsp;<a href=
+    "create_diff_par.html">create_diff_par</a></li>
+
+    <li>Measure offsets between resampled MLI-2 and MLI-1 using (
+    <a href="offset_pwrm.html">offset_pwrm</a><span style=
+    "font-style: italic;">)</span></li>
+
+    <li>Estimate offset polynomial coefficients using (<a href=
+    "offset_fitm.html">offset_fitm</a>)</li>
+
+    <li>Resample the WS SLC data using WSS_interp using the offset
+    polynomials stored in the DIFF_par file</li>
+
+    <li>(OPTIONAL) Confirm lookup table offset correction and
+    goodness of fit:</li>
+
+    <li style="list-style: none">
+      <ol>
+        <li>Calculate an MLI image from the resample SLC-2R using
+        the ISP program&nbsp; <span style=
+        "font-style: italic;">multi_SLC_WSS</span></li>
+
+        <li>Measure new offsets btween the MLI-2R and MLI-1 using
+        DIFF program <a href="offset_pwrm.html">offset_pwrm</a>.
+        (use a new DIFF_par file)</li>
+
+        <li>Generate new range and azimuth offset polynomials using
+        DIFF program&nbsp;&nbsp;<a href=
+        "offset_fitm.html">offset_fitm</a><span style=
+        "font-style: italic;">&nbsp;</span></li>
+
+        <li>Analyze the new residual range and azimuth offset
+        polynomials to confirm goodness of fit</li>
+
+        <li>Use <span style="font-style: italic;">dis2SLC</span> to
+        confirm goodness of fit between resampled SLCs and the
+        reference. The number of pixels to use for the image width
+        is number of image pixels + 6. 24 bytes at the start of
+        each line are use for the line header.</li>
+      </ol>
+    </li>
+  </ol>
+
+  <p>A 2D SINC interpolator is used in the resampling of the
+  complex valued data. The interpolation takes into account
+  &nbsp;changes in the Doppler centroid both along-track and in
+  slant range. &nbsp;</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="create_diff_par.html">create_diff_par</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "offset_fitm.html">offset_fitm</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF/GEO_documentation.html">DIFF/GEO Documentation</a>,
+  <a href="DIFF_users_guide.html">DIFF/GEO Users Guide</a> and
+  <a href="DIFF_reference_manual.html">DIFF/GEO Reference
+  Manual</a> by <a href="gamma.html">Gamma Remote Sensing</a>,
+  2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 1-Mar-2006.
+</body>
+</html>

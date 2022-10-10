@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: gcp_ras</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>gcp_ras</h2>
+
+  <p>ANSI-C program: <em>gcp_2ras.c</em><br>
+  This program is located in the DISP package.</p>
+
+  <p><strong>NAME</strong><br>
+  gcp_2ras - Select corresponding points from two SUN raster or BMP
+  format images</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gcp_2ras &lt;ras-1&gt; &lt;ras-2&gt; &lt;GCP&gt; [mag]
+  [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>ras-1</td>
+
+      <td>SUN raster *.ras or BMP *.bmp format image (left
+      window)</td>
+    </tr>
+
+    <tr>
+      <td>ras-2</td>
+
+      <td>SUN raster *.ras or BMP *.bmp format image (right
+      window)</td>
+    </tr>
+
+    <tr>
+      <td>GCP</td>
+
+      <td>GCP data file (text format) contains the coordinate
+      information from the two images</td>
+    </tr>
+
+    <tr>
+      <td>mag</td>
+
+      <td>zoom window magnification factor (default=3) )</td>
+    </tr>
+
+    <tr>
+      <td>win_sz</td>
+
+      <td>zoom window size before magnification (default=96)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gcp_2ras 05263.mli 24936.mli 05263_24936.gcp</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>gcp_2ras</em> reads and displays an 2 images in SUN raster or
+  BMP format. The user can then select corresponding points in the
+  two images and save the coordinates in a text format file. The
+  date entered using <em>gcp_2ras</em> are stored in a text format
+  file that can be edited using a text editor if necessary. The
+  file format consists of columns of numbers containing the GCP
+  number, x cross-track pixel coordinate (column), and y
+  along-track line number of image 1 and the x and y coordinates of
+  the corresponding point in image-2. Each GCP has a single line
+  entry in the file.</p>
+
+  <p>Using the program is simple. Different mouse buttons perform
+  different functions. Pressing the left button of the mouse moves
+  the center of zoom window to the selected location. GCP points
+  are selected by pressing the right mouse button. A red cross
+  appears at the selected point in the selected image. Next select
+  the corresponding point in the second image. It is possible to
+  change the location of either point in the pair by right clicking
+  at a new position. The coordinates of the points are written to a
+  file by clicking the <em>write GCP</em> button under the zoom
+  windows. If you have been working on a GCP list you can append
+  additional GCP points by simply rerunning the application and
+  entering the name of the previous GCP file on the command line.
+  The previously entered points will be drawn on the image</p>
+
+  <p>It is recommended to select at least 10-20 control points over
+  the entire image when selecting points as input to
+  offset_list_fitm.c This will lead to a better fit of the image.
+  It is also suggested that these points be selected in areas of
+  relatively flat terrain using features such as roads, and rivers
+  as matching features.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_par.html">DIFF/GEO offset parameter file</a>,
+  <a href="create_diff_par.html">create_diff_par</a>, and <a href=
+  "offset_list_fitm.html">offset_list_fitm</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Nov-2002.
+</body>
+</html>

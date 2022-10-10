@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing -->
+<!-- uw040610 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: offset_trackingm</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_trackingm</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/offset_trackingm.c"><i>offset_trackingm.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>offset_trackingm</em> converts range and azimuth offsets
+  files to displacement map.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_trackingm &lt;offs&gt; &lt;snr&gt;
+  &lt;MLI_par&gt; &lt;DIFF_par&gt; &lt;coffs_map&gt; [coffsets]
+  [mode] [thres] [poly_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;offs&gt;</td>
+
+      <td>(input) range and azimuth offset estimates
+      (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_par&gt;</td>
+
+      <td>(input) MLI parameter file of reference MLI</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DIFF_par&gt;</td>
+
+      <td>DIFF/GEO parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;coffs_map&gt;</td>
+
+      <td>(output) range and azimuth offsets map (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>[coffsets]</td>
+
+      <td>(output) range and azimuth offset estimates and snr
+      values (text file)</td>
+    </tr>
+
+    <tr>
+      <td>[mode]</td>
+
+      <td>flag indicating displacement mode:<br>
+      0: displacement in range and azimuth pixels<br>
+      1: displacement in meters in slant range and azimuth
+      direction<br>
+      2 (default): displacement in meters in ground range and
+      azimuth direction</td>
+    </tr>
+
+    <tr>
+      <td>[thres]</td>
+
+      <td>SNR threshold to accept offset value (default from
+      DIFF_par)</td>
+    </tr>
+
+    <tr>
+      <td>[poly_flag]</td>
+
+      <td>flag indicating if offset polynomials in offset parameter
+      file<br>
+      shall be subtracted: 0: not subtracted, default=1:
+      subtracted</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_trackingm 1352_1610.offs 1352_1610.snr 1352.MLI.par
+  1352_1610.diff_par 1352_1610.coffs_map 1352_1610.coffsets 2 6.5
+  1</samp></p>
+
+  <p>Converts the input offset fields (*.offs) to an offset map
+  (*.coffs_map) which has the same dimension as the original
+  reference MLI image.</p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p><em>offset_trackingm</em> converts the input offset fields
+  (*.offs) to an offset map (*.coffs_map) which has the same
+  dimension as the original MLI reference image.</p>
+
+  <p>The binary offsets file (*.offs) contains offsets in SAR image
+  pixels (of the reference image) in fcomplex format. The real
+  parts correspond to range offsets and the imaginary parts to
+  azimuth offsets. The positions of the offset estimates are
+  defined by the starting range and azimuth positions and the range
+  and azimuth steps, as documented in the DIFF parameter file.</p>
+
+  <p>Only offsets with a quality value (SNR) above an indicated
+  threshold are used. For offsets with an SNR below the threshold
+  and for missing estimates (previously discarded) the offset map
+  values are set to (0.0,0.0).</p>
+
+  <p>The culled offsets map (*.coffs_map) is in fcomplex format.
+  The real parts correspond to range offsets and the imaginary
+  parts to azimuth offsets. The file size and positions corespond
+  to those of the reference SAR image.</p>
+
+  <p>Different modes are supported. The offsets can be expressed as
+  displacement in range and azimuth pixels (0), or as displacement
+  in meters in slant range and azimuth direction (1), or as
+  displacement in meters in ground range and azimuth direction (2,
+  default mode).</p>
+
+  <p>The offset polynomials defined in the offset parameter file
+  can either be subtracted from the offset values (poly_flag=1) or
+  not subtracted (poly_flag=0). The idea of subtracting the offset
+  polynomials is that the polynomials shall represent overall
+  registration offsets, while the offset map shall only contain
+  offsets related to surface displacements.</p>
+
+  <p><b>OPTIONS</b></p>
+
+  <p>None.</p>
+
+  <p><strong>SEE ALSO</strong></p>
+
+  <p><a href="typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>, <a href=
+  "offset_fitm.html">offset_fitm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "offset_pwr_trackingm.html">offset_pwr_trackingm</a>, <a href=
+  "create_diff_par.html">create_diff_par</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 10-Jun-2004.</p>
+</body>
+</html>

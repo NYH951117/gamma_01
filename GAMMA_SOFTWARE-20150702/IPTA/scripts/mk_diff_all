@@ -1,0 +1,156 @@
+#!/usr/bin/perl
+use FileHandle;
+
+if (($#ARGV + 1) < 13){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2007, Gamma Remote Sensing, v1.7 20-Aug-2007 clw ***
+*** create differential point interferograms using pSLC_par, pint, pbase, phgt, patm, and pdef data stacks  ***
+
+usage: $0 <plist> <pmask> <pSLC_par> <itab> <pbase> <bflag> <pint> <int_type> <phgt> <pdef> <patm> <psim_unw> <pdiff> [log]
+    plist     (input) point list (int)
+    pmask     (input) point data stack of mask values (uchar, set to - to accept all points)
+    pSLC_par  (input) stack of SLC/MLI parameters for the resampled SLC data (binary)
+    itab      (input) table associating interferogram stack records with pairs of SLC stack records (text)
+    pbase     (input) stack of baseline parameters (binary)
+    bflag     baseline flag (0: use initial baseline, 1: precision baseline)
+    pint      (input) point data stack of interferograms (fcomplex or float)
+    int_type  interferogram stack data type (0: float(unwrapped)  default=1: fcomplex) 
+    phgt      (input) point data stack of terrain height (meters, float, single record, enter - for none)
+    pdef      (input) point data stack of LOS deformation rate (meters/yr, float, single record, enter - for none)
+    patm      (input) point data stack of atmosphere phase estimates (enter - for none)
+    psim_unw  (output) point data stack of simulated unwrapped interferometric phase (float)
+    pdiff     (output) point data stack of diff. interf. after subtraction of sim. phase + atm (enter - for none)
+    log       (output) mk_diff_all log file
+           
+EOS
+
+$plist	  = $ARGV[0];
+$pmask    = $ARGV[1];
+$pSLC_par = $ARGV[2];
+$itab     = $ARGV[3];
+$pbase    = $ARGV[4];
+$bflag    = $ARGV[5];
+$pint     = $ARGV[6];
+$phgt     = $ARGV[8];
+$pdef     = $ARGV[9];
+$patm     = $ARGV[10];
+$psim_unw = $ARGV[11];
+$pdiff    = $ARGV[12];
+
+if($#ARGV >= 13){$log = $ARGV[13];}		#write to a specific log file if entered on the command line
+else{$log = "mk_diff_all.log";}
+ 
+$int_type = $ARGV[7];
+($int_type == 0 or $int_type == 1) or die "ERROR $0: invalid interferogram data type: $int_type\n";
+
+-e $plist or die "ERROR $0: point list does not exist: $plist\n";
+-e $pmask || $pmask =~ /-/ or die "ERROR $0: point data stack of point maks values does not exist: $pmask\n";
+-e $pSLC_par or die "ERROR $0: stack of SLC/MLI parameters for the resampled SLC data does not exist: $pSLC_par\n";
+open(ITAB, "<$itab") or die "ERROR $0: cannot open itab file: $itab\n";
+-e $pbase or die "ERROR $0: stack of baseline parameters does not exist: $pbase\n";
+-e $pint or die "ERROR $0: point data stack of interferograms does not exist: $pint\n";
+-e $phgt || $phgt =~ /-/ or die "ERROR $0: point data stack of heights does not exist: $phgt\n";
+-e $pdef || $pdef =~ /-/ or die "ERROR $0: point data stack of LOS deformation rate does not exist: $pdef\n";
+-e $patm || $patm =~ /-/ or die "ERROR $0: point data  stack of atmospheric phase delay does not exist: $patm\n";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+
+$time = localtime;
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n\n";
+print "$0 start: $time\n";
+print "point list:             $plist\n";
+print "pmask:                  $pmask\n";
+print "baselines:              $pbase\n";
+
+$npt_out = `npt $plist`;
+@lines = split /^/m, $npt_out;	#split npt output into lines
+foreach $l1 (@lines) {		#examine each line
+  chomp $l1;
+  @tok = split /:/, $l1;	#break line on semicolon and check if "base perpendicular" is in th line
+  if (@tok[0] =~ m/total_number_of_points/) {
+    $npt = @tok[1];		#save number of points
+  }
+} 
+print "number of points:      $npt\n";
+print "itab:                   $itab\n";
+print "pint:                   $pint\n";
+if($int_type == 0){
+  print "pint data type:         unwrapped phase (float)\n";
+}
+else {
+  print "pint data type:         fcomplex\n";
+}
+
+print "point height:           $phgt\n";
+print "point deformation rate: $pdef\n";
+print "point sim. unw. phase:  $psim_unw\n";
+$pdiff !~ /-/ and print "point diff. phase:      $pdiff\n";
+if ($patm !~ /-/){
+  print "subtracting atmospheric phase delay\n";
+  print "point atmosphere phase: $patm\n";
+}
+print "mk_diff_all log file:   $log\n";
+
+print LOG "point list:           $plist\n";
+print LOG "pmask:                $point mask\n";
+print LOG "number of points:    $npt\n";
+print LOG "$0 start: $time\n";
+print LOG "itab:                 $itab\n";
+print LOG "pint:                 $pint\n";
+if($int_type == 0){
+  print LOG "pint data type:         unwrapped phase (float)\n";
+}
+else {
+  print LOG "pint data type:         fcomplex\n";
+}
+print LOG "point height:         $phgt\n";
+print LOG "point def.:           $pdef\n";
+print LOG "point sim. unw phase: $psim_unw\n";
+$pdiff !~ /-/ and print LOG "point diff. phase:      $pdiff\n";
+if ($patm !~ /-/){
+  print LOG "subtracting atmospheric phase delay\n";
+  print LOG "point atmosphere phase: $patm\n\n";
+}
+print LOG "mk_diff_all log file:   $log\n\n";
+print "\n";
+
+execute("rm -rf $psim_unw",$log);		#delete simulated phase if it exists 
+execute("phase_sim_pt $plist $pmask $pSLC_par - $itab - $pbase $phgt $psim_unw $pdef 0 $bflag",$log);
+
+if ($patm !~ /-/){
+  execute("rm -rf ptemp",$log);
+  execute("lin_comb_pt $plist $pmask $psim_unw - $patm - ptemp - 0. 1. 1. 2",$log);	#add atmosphere to simulated phase
+  if ($pdiff !~ /-/){
+    execute("rm -rf $pdiff",$log);		#delete differential interferogram stack if it exists
+    execute("sub_phase_pt $plist $pmask $pint - ptemp $pdiff $int_type",$log);
+  }
+  else{
+    print "\nWARNING: patm file $patm is specified but not used because the pdiff file is unspecified.
+Note that the simulated unwrapped phase does not include the atm phase $patm\n\n"
+  }
+  execute("rm -rf ptemp",$log);
+}
+else {
+  if ($pdiff !~ /-/){
+    execute("rm -rf $pdiff",$log);		#delete differential interferogram stack if it exists
+    execute("sub_phase_pt $plist $pmask $pint - $psim_unw $pdiff $int_type",$log);
+  }
+}
+
+$time = localtime;
+print "\nprocessing end: $time    log file: $log\n";
+print LOG "\nprocessing end: $time  log file: $log\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}

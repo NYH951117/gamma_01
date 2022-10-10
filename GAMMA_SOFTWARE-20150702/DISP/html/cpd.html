@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DISP Reference Manual: copy</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>cpd</h2>
+
+  <p><i>ANSI-C program: <a href="../src/cpd.c">cpd.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cp_data - Extraction of user defined image or data segment.</p>
+
+  <p><strong>SYNOPSIS<br></strong> &nbsp; <code>cpd &lt;din&gt;
+  &lt;dout&gt; &lt;width&gt; &lt;dtype&gt; &lt;xoff&gt; &lt;nx&gt;
+  &lt;yoff&gt; &lt;ny&gt;</code></p>
+
+  <table cellpadding="7" cellspacing="2" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;din&gt;</td>
+
+        <td>(input) input data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dout&gt;</td>
+
+        <td>(output) output data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of data values/line in the input data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dtype&gt;</td>
+
+        <td>input data type:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: FLOAT (4 bytes/value)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: FCOMPLEX (4 bytes float real, 4 bytes float
+        imaginary)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: SCOMPLEX (2 bytes int real, 2 bytes int imaginary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;xoff&gt;</td>
+
+        <td>offset to starting sample (samples) (enter - for
+        default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;nx&gt;</td>
+
+        <td>number of output samples/line (enter - for default: to
+        end of line)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;yoff&gt;</td>
+
+        <td>offset to starting line (lines) (enter - for default:
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ny&gt;</td>
+
+        <td>&nbsp;number of output lines (enter - for default: to
+        end of file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong> <code>cpd 20141015.rslc
+  20141015_seg.rslc 47639 2 0 5000 0 -</code></p>
+
+  <p>The command extracts a segment of the data file 20141015.rslc
+  and saves it in the file 20141015_seg.rslc. There are 47639
+  samples/line and the data type is SCOMPLEX(dtype =2).&nbsp; The
+  starting x pixel has offset 0 and the number of samples/line of
+  the segment is 5000. The segment starts at offset line 0 and
+  continues to the end of the file.</p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>cpd</em> reads the input
+  data in formats FLOAT, FCOMPLEX or SCOMLEX and then extracts the
+  user defined image section to the output file.&nbsp; The upper
+  left corner of the extracted segment that is edefined by offsets
+  to the starting x sample and y line. The dimensions of the
+  extract segment are defined by the <span style=
+  "font-style: italic;">nx</span> and <span style=
+  "font-style: italic;">ny</span> parameters.&nbsp; This is very
+  useful for examining sections of SLC mosaics from Sentinel-1 that
+  have more than 32767 samples/line. The display programs in the
+  gamma software as well as SUN and BMP raster image formats are
+  limited to a maximum size of 32767 samples and 32767 lines.&nbsp;
+  The X display protocol cannot display objects that are more the
+  32767 in width or height.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Jun-2015.
+</body>
+</html>

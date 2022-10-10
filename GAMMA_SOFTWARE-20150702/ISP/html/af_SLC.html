@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="GENERATOR" content="Adobe PageMill 3.0 Win">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: af</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>af</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/af_SLC.c">af_SLC.c</a></i></p>
+
+  <p><strong>NAME</strong> <em>autof</em> - Estimation of effective
+  along-track velocity for SAR processing using cross-correlation
+  of azimuth looks</p>
+
+  <p><strong>SYNOPSIS</strong> <code>af &lt;SLC_par&gt; &lt;SLC&gt;
+  [rwin] [azwin] [dr] [daz] [thres] [a1_flg] [b0_flg] [offsets]
+  [n_ovr] [roff] [azoff]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td width="151">&lt;SLC_par&gt;</td>
+
+        <td width="529">(input) ISP SLC image parameter
+        file<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">&lt;SLC&gt;</td>
+
+        <td width="529">(input) (input) single-look complex
+        image</td>
+      </tr>
+
+      <tr>
+        <td width="151">[rwin]</td>
+
+        <td width="529">range window size (enter - for default:
+        1024)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[azwin]</td>
+
+        <td width="529">azimuth window size (enter - for default:
+        4096)<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[dr]<br></td>
+
+        <td width="529">range sample increment (enter - for
+        default: 1024,&nbsp; enter 0 for single patch)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[daz]<br></td>
+
+        <td style="vertical-align: top;">azimuth line increment
+        (enter - for default: 4096,&nbsp; enter 0 for single
+        patch)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[thres]</td>
+
+        <td style="vertical-align: top;">offset estimation SNR
+        threshold (enter - for default:&nbsp;&nbsp; 10.000)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[a1_flg]</td>
+
+        <td width="529">fit a1 for first derivative of the
+        effective velocity w.r.t.range<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: yes<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[b0_flg]</td>
+
+        <td width="529">fit b0 for first derivative of the
+        effective velocity w.r.t. along-track time<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: yes<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[offsets]</td>
+
+        <td width="529">(output) range and azimuth offsets and SNR
+        data in text format, enter - for no output<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[n_ovr]</td>
+
+        <td style="vertical-align: top;">SLC oversampling factor
+        (1,2,4: enter - for default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[roff]</td>
+
+        <td style="vertical-align: top;">range offset for single
+        patch center<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[azoff]<br></td>
+
+        <td style="vertical-align: top;">azimuth offset for single
+        patch center<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong> <samp>af_SLC 19991020.slc.par
+  19991020.slc 1024 4096&nbsp;<br></samp></p>
+
+  <p>states that the <span style=
+  "font-style: italic;">af_SLC</span> program should use the SLC
+  parameter file <span style=
+  "font-style: italic;">19991020.slc.par</span> to analyze the SLC
+  <span style="font-style: italic;">10001020.slc</span>.&nbsp; The
+  autofocus analysis is performed on patches that are 1024 pixels
+  in range and 4096 azimuth lines by default. The default SNR
+  threshold of 10 is used to exclude estimates with possibly large
+  errors in the range and azimuth offsets.</p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>af_SLC</em> measures
+  errors in the along-track velocity of the radar platform using
+  cross correlation of images derived from different segments
+  ("looks") of the azimuth doppler spectrum derived from the SLC.
+  An azimuth shift between these two image is proportional to a
+  platform velocity error. <span style=
+  "font-style: italic;">af_SLC</span> selects a set of patches
+  covering the entire SLC mage, generates two looks, and estimates
+  a velocity error for each patch. The set of estimates are
+  averaged and offsets that are more then 2 standard deviations
+  away from the mean are discarded in the case where more than 3
+  patches are measured.&nbsp; The resulting azmuth offsets are
+  converted to errors in the velocity model used for processing the
+  data. The functional relationship between offset and velocity
+  error is a function of the frequency separation of the looks, the
+  radar frequency, slant range, and the platform velocity.&nbsp;
+  See the references: <span style=
+  "text-decoration: underline;">Synthetic Aperture Radar: Systems
+  and Signal Processing</span>,&nbsp; J. Curlander and R.
+  MacDonough, Wiley Interscience, 1991, Chapter 5 and&nbsp;
+  D<span style="text-decoration: underline;">igital Processing of
+  Synthetic Aperture Data,&nbsp; Algorithms and
+  Implemenation</span>, Ian Cumming and Frank Wong, Artech House,
+  2005, Chapter 13.<br></p>
+
+  <p>Range offsets occur only if there is uncompensated range
+  migration in the processor. This can occur when the doppler
+  centroid is incorrect by some multiple of the PRF and termed a
+  <span style="font-style: italic;">doppler ambiguity
+  errror.</span>&nbsp;&nbsp; Azimuth offsets between the looks
+  indicate an error in the azimuth chirp rate.&nbsp;&nbsp;</p>
+
+  <p>Each of the sub-aperture images is formed from a bandwidth
+  equal to 0.35 times the radar PRF. Typically the processing
+  bandwidth for an SLC is 0.8*PRF and hence the frequency
+  separation between looks is .45*PRF.&nbsp; The two looks are
+  obtained by filtering the image using an FIR bandpass
+  filter.&nbsp;&nbsp; After filtering the images are detected and
+  cross-correlated using a 2D FFT to measure the range and azimuth
+  offsets. A biquadratic interpolator determines the offset
+  correlation peak with sub-pixel accuracy.&nbsp;</p>Low
+  correlation and inaccurate offset measurement can occur if the
+  scene is devoid of contrast, such as over the open ocean or on an
+  ice sheet. A threshold for the SNR of the correlation signal can
+  be specified on the command line as the parameter <u style=
+  "font-style: italic;">thres</u> and has a default value of
+  10.&nbsp; The size of the SLC patches is specified by the
+  parameters <span style="font-style: italic;">rwin</span> and
+  <span style="font-style: italic;">azwin</span>, with the spacing
+  between patches by the parameters <span style=
+  "font-style: italic;">dr</span> and <span style=
+  "font-style: italic;">daz</span>.&nbsp; A recommended patch size
+  is 1024 range samples by 4096 azimuth lines.&nbsp; The dr and daz
+  parameters are set by default to 2*rwin and 2*azwin respectively
+  resulting in approximately 6 estimates in a single ERS frame.
+
+  <p>Since multiple measurements are made over the scene,
+  <span style="font-style: italic;">af_SLC</span> is usually able
+  to find areas with reasonable correlation. A fit of the autofocus
+  derived velocity with respect to azimuth and slant range is
+  possible if the <span style="font-style: italic;">a1_flg</span>
+  and <span style="font-style: italic;">b0_flg</span> command line
+  parameters are set to 1.<br>
+  This can reveal if there are any systematic focusing errors in
+  the image.<br></p>
+
+  <p>An example of the screen output after running the program on
+  an ERS frame is shown below:<br></p>
+
+  <p><span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">patch:&nbsp;
+  1&nbsp; az.time(s): -4.8762&nbsp; rng(m):&nbsp; -8090.65&nbsp;
+  r_off(pix): -0.0175&nbsp; az_off(pix): -0.0014&nbsp;
+  af_vel.(m/s): 7109.4956&nbsp; del_v.(m/s):&nbsp; -0.009&nbsp;
+  SNR: 11.18</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">patch:&nbsp;
+  2&nbsp; az.time(s): -4.8762&nbsp; rng(m):&nbsp;&nbsp;
+  8098.56&nbsp; r_off(pix): -0.0249&nbsp; az_off(pix):&nbsp;
+  0.0048&nbsp; af_vel.(m/s): 7106.6711&nbsp;
+  del_v.(m/s):&nbsp;&nbsp; 0.033&nbsp; SNR: 30.08</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">patch:&nbsp;
+  3&nbsp; az.time(s):&nbsp; 0.0003&nbsp; rng(m):&nbsp;
+  -8090.65&nbsp; r_off(pix): -0.0150&nbsp; az_off(pix):
+  -0.1321&nbsp; af_vel.(m/s): 7108.7691&nbsp; del_v.(m/s):&nbsp;
+  -0.916&nbsp; SNR: 24.13</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">patch:&nbsp;
+  5&nbsp; az.time(s):&nbsp; 4.8768&nbsp; rng(m):&nbsp;
+  -8090.65&nbsp; r_off(pix): -0.0206&nbsp; az_off(pix):&nbsp;
+  0.1072&nbsp; af_vel.(m/s): 7110.6088&nbsp;
+  del_v.(m/s):&nbsp;&nbsp; 0.744&nbsp; SNR: 28.05</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">patch:&nbsp;
+  6&nbsp; az.time(s):&nbsp; 4.8768&nbsp; rng(m):&nbsp;&nbsp;
+  8098.56&nbsp; r_off(pix): -0.0143&nbsp; az_off(pix):&nbsp;
+  0.0604&nbsp; af_vel.(m/s): 7107.4441&nbsp;
+  del_v.(m/s):&nbsp;&nbsp; 0.419&nbsp; SNR: 13.22</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <br style="font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">number of valid
+  autofocus patch estimates after culling: 5</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <br style="font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">nominal image
+  center effective focus velocity (m/s): 7108.2352</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">average
+  autofocus velocity (m/s):&nbsp; 7108.5977</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">average range
+  offset between looks (pixels):&nbsp; -0.01844</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">average azimuth
+  offset between looks (pixels): 0.00781</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">average velocity
+  delta (m/s): 0.0541</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <br style="font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">estimated
+  autofocus velocity poly. coeff.: vel.x:&nbsp; 7108.5977&nbsp;
+  vel.y:&nbsp; 0.000e+00&nbsp; acc.x:&nbsp;&nbsp;
+  0.000e+00</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">autofocus
+  velocity std. dev.(m/s):&nbsp; 1.4087</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">average velocity
+  std. dev.&nbsp; (m/s):&nbsp; 0.6300</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <br style="font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">nominal azimuth
+  chirp rate (Hz/sec**2): -2105.3644</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">estimated
+  azimuth chirp rate error (Hz/sec**2): -0.2148</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">azimuth
+  quadratic phase mismatch (deg.): -3.938</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style="font-family: monospace; color: rgb(0, 0, 153);">SLC
+  phase accuracy (deg.): -1.313</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <br style="font-family: monospace; color: rgb(0, 0, 153);">
+  <span style="font-family: monospace; color: rgb(0, 0, 153);">SLC
+  focus quality factor (time_bandwidth_product *
+  chirp_rate_error/chirp_rate): 0.088</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">NOTE: range of
+  values for the focus quality factor:</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0--&gt;1&nbsp; &lt; 2 percent peak broadening</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1--&gt;2&nbsp; &lt; 8 percent peak broadening</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &gt; 2&nbsp;&nbsp;&nbsp; significant blur</span><br></p>
+
+  <p>At the top is a list of the each of the patches, one line per
+  patch with the azimuth time relative to the center of the image,
+  and the slant range relative to center of the swath. The slant
+  range and azimuth time are for the center of the patches that are
+  1024 samples in range and 4096 lines long. The measured range and
+  azimuth offsets between the sub_looks derived from the SLC are
+  shown in the next 2 columns. Finally the effective velocity
+  derived from the azimuth offset and the change in velocity away
+  from the original model are shown. The data on the line is
+  completed by the correlation SNR value derived from the
+  correlation function calculated to determine the offsets.<br></p>
+
+  <p>In the next block are the averaged velocity error estimates
+  determined from the SLC data. In this case the velocity error is
+  very small,&nbsp; approximately 5 cm/second. The effect of
+  velocity errors on the processed image are two fold. First there
+  is a quadratic phase error in the azimuth reference function used
+  for azimuth focus. This quadratic phase error introduces a phase
+  error in the SLC and cause broadening of the azimuth point target
+  response. SLC phase errors &lt; 10 degrees are not
+  significant.<br></p>
+
+  <p>A focus quality factor is calculated from the error in the
+  chirp rate and time-bandwidth product of the azimuth reference
+  function. If the quality factor has a value less than 1 then the
+  focus is good with less than 2% broadening of the peak.<br></p>
+
+  <p><strong>SEE ALSO</strong> <a href="ISP_users_guide.html">Users
+  Guide</a>, <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 10-Sep-2010.
+</body>
+</html>

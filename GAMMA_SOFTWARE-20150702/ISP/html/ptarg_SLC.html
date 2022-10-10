@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="GENERATOR" content="Adobe PageMill 3.0 Win">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISPReference Manual: ptarg_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ptarg_SLC</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ptarg_SLC.c">ptarg_SLC.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em style=
+  "font-style: italic;">ptarg</em><span style=
+  "font-style: italic;">_SLC</span>- Point target response analysis
+  and interpolation for SLC images<br></p>
+
+  <p><strong>SYNOPSIS<br></strong><code>ptarg_SLC &lt;SLC_par&gt;
+  &lt;SLC&gt; &lt;r_samp&gt; &lt;az_samp&gt; &lt;ptr_image&gt;
+  &lt;r_plot&gt; &lt;az_plot&gt; [ptr_par] [osf] [win] [pltflg]<br>
+  <br></code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC image parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input) SLC image in FCOMPLEX or SCOMPLEX
+        format<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_samp&gt;</td>
+
+        <td>point target range sample number</td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_samp&gt;</td>
+
+        <td>point target azimuth line number</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ptr_image&gt;</td>
+
+        <td>(output) oversampled point target image (FCOMPLEX,
+        1024x1024 samples), with and without phase
+        gradient<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_plot&gt;</td>
+
+        <td>(output) range point target response plot data (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_plot&gt;</td>
+
+        <td>(output) azimuth point target response plot data (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[ptr_par]<br></td>
+
+        <td style="vertical-align: top;">(output) measured point
+        target parameters (text format)<br></td>
+      </tr>
+
+      <tr>
+        <td>[osf]</td>
+
+        <td>image over-sampling factor, 2, 4, 8, 16, 32, 64 (enter
+        - for default: 16)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[win]<br></td>
+
+        <td style="vertical-align: top;">(input) maximum search
+        window offset (samples) (enter - for default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pltflg]<br></td>
+
+        <td style="vertical-align: top;">plotting mode flag:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: none<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: output plots in PNG format
+        (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2: screen output and PNG format
+        plots<br>
+        <br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>ptarg_SLC 19990421.slc 19990421.slc.par 1979 472 ptr_image
+  r_plot az_plot ptr_par 16 1 2<br></samp></p>
+
+  <p>Determines the exact point target location, oversamples the
+  SLC about the point target, and extracts the point target range
+  and azimuth response functions, and measures the target PSLR,
+  ISLR, and peak widths at -10 and -3 dB.&nbsp; The oversampling
+  factor is specified as the default value of 16.&nbsp; The search
+  window is +/- 1 pixel about the entered pixel position.&nbsp; A
+  text file <span style="font-style: italic;">ptr_par</span> is
+  generated that contains the results of the analysis.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">ptarg_SLC</span> is a point
+  target analysis tool for single-look complex SAR data The input
+  SLC (in FCOMPLEX or SCOMLEX format) is read and the response of
+  the point target at or near the indicated location is analysed.
+  To estimate the approximate point target location the SLC can be
+  displayed using the&nbsp; display program <a href=
+  "../../DISP/html/DISP_reference_manual.html">disSLC</a>.</p>
+
+  <p>For the point target response analysis the SLC is oversampled
+  with an oversampling factor&nbsp; that can be set on the command
+  line using the <span style="font-style: italic;">osf</span>
+  parameter. The location of the intensity maximum is determined.
+  Centered at the intensity maximum the range and azimuth response
+  is determined and stored as text files and optionally plotted
+  using Gnuplot. Parameters estimated from the data include the
+  sub-pixel peak location, expressed in input SLC samples, the
+  signal intensity in dB, the signal intensity in linear scale, and
+  the signal phase. The over-sampled SLC around the point target is
+  saved as a 2-D&nbsp; image in FCOMPLEX format.&nbsp; <span style=
+  "font-style: italic;"><br></span></p>
+
+  <p><span style="font-style: italic;">ptarg_SLC</span> also
+  estimates the the 3 dB and 10 dB peak widths in range and
+  azimuth, Peak to Side Lobe Ratio (PSLR),&nbsp; and&nbsp;
+  integrated side lobe ratio (ISLR) as defined in the CEOS standard
+  definition. Units for the peak widths are specified both in
+  pixels and in meters using parameters in the SLC parameter
+  file.<br></p>
+
+  <p>The search region for the point target peak is located in the
+  center of the data segment extracted from the entire image as
+  specified by the <span style="font-weight: bold;">r_samp</span>
+  and <span style="font-weight: bold;">az_samp</span> parameters
+  command line parameters. The size of the search region defaults
+  to +/- 1 pixel of the center coordinates but can be increase to
+  +/- 4 samples by entering a value for the <span style=
+  "font-weight: bold;">win</span> command-line parameter. The
+  interpolated image has dimensions determined by the over-sampling
+  factor. The line length is 64*osf, by default is 1024x1024 for
+  osf=16. Two images are written to the output <span style=
+  "font-style: italic;">ptr_image.</span> The first image has any
+  linear phase trend removed, and the second image is an
+  interpolated version of the original SLC segment. In the case
+  where osf=16, the second image starts at line offset 1024 of the
+  ouput ptr image.<br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "ISP_users_guide.html">Users Guide</a>,&nbsp;<a href=
+  "../../MSP/html/ptarg.html">ptarg</a><br></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 25-Sep-2012.
+</body>
+</html>

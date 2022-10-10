@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>DIFF Reference Manual: diff_ls_fit</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>diff_ls_fit</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/diff_ls_fit.c"><i>diff_ls_fit.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  diff_ls_fit - quadratic least squares functional fit of the
+  relationship between unwrapped interferograms for differential
+  interferometry.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>diff_ls_fit &lt;unw-1&gt; &lt;unw-2&gt; &lt;DIFF_par&gt;
+  [nr] [naz] [overlay] [plot_data]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;unw-1&gt;</td>
+
+      <td>(input) unwrapped phase 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;unw-2&gt;</td>
+
+      <td>(input) unwrapped phase 2 (topographic phase)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DIFF_par&gt;</td>
+
+      <td>(input/output) DIFF processing parameter file</td>
+    </tr>
+
+    <tr>
+      <td>[nr]</td>
+
+      <td>(input) number of range samples for LS fit
+      (default=32)</td>
+    </tr>
+
+    <tr>
+      <td>[naz]</td>
+
+      <td>(input) number of azimuth samples for LS fit
+      (default=32)</td>
+    </tr>
+
+    <tr>
+      <td>[overlay]</td>
+
+      <td>SUN raster/BMP format overlay file, regions flagged with
+      0 are excluded ( - for no overlay file)</td>
+    </tr>
+
+    <tr>
+      <td>[plot_data]</td>
+
+      <td>(output) data for plotting results LS fit results</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>diff_ls_fit i1.unw.reramp i2.unw.reramp i1_i2.diff_par 32
+  32 i1.unw.ovr.ras i1_i2.diff_ls_fit</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code diff_ls_fit.c in ./DIFF/src, executable version
+  diff_ls_fit in ./DIFF/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  diff_ls_fit reads two unwrapped interferometric phase images and
+  determines the phase scaling factors for differential
+  interferometry based on a least squares error (LS) approach. It
+  is preferred that the baseline of the second interferogram is
+  significantly larger than the first interferogram generated from
+  the pair with the known motion. the reason for this is that the
+  phase of the second interferogram is scaled down, thereby
+  reducing atmospheric phase distortions. The opposite situation
+  given a short baseline for the second interferogram causes the
+  phase distortion an noise to be scaled up, leading to poor
+  results.</p>
+
+  <p><b>diff_ls_fit</b> requires that both unwrapped phase images
+  are in original geometry, i.e. not flat-Earth-phase-trend
+  removed. This is necessary to correctly determine the phase
+  scaling factors. To reramp an elliopsoidal Earth-phase-trend
+  removed unwrapped phase image the ISP program ph_slope_base is
+  used. The scaling factors determined by diff_ls_fit are written
+  to the DIFF parameter file. The actual subtraction of the scaled
+  unwrapped phase image 2 is then conducted using <a href=
+  "diff_ls_unw.html">diff_ls_unw</a>.</p>
+
+  <p>The user can specify an overlay file in Sun raster format to
+  prevent data values to be selected from specific regions. An
+  image of the scene (i.e. the unwrapped phase) in slant range
+  coordinates can be edited using the program <em>xv</em> to create
+  the overlay. Select black (value = 0) as the region fill color in
+  xv and then select rectangles that cover the regions to exclude
+  selection of unwrapped phase data. The edited image must be saved
+  and entered as an optional argument to <em>extract_gcp</em>.</p>
+
+  <p>diff_ls_fit may be used for 2-pass, 3-pass, and 4-pass
+  differential interferometry. The data written to an ASCII file
+  allows to generate a plot of the LS fit. Plotting the data can be
+  done with the <b>xmgrace</b> program (xmgrace -nxy plot_data) if
+  the parameter (<b>nr &lt; 16</b>).</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="diff_ls_unw.html">diff_ls_unw</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 20-Aug-2003.</p>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Reference Manual: doppler</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>doppler</h2>
+
+  <p><i>ANSI-C programs: <a href="../src/doppler.c">doppler.c</a>,
+  <a href="../src/doppler_real.c">doppler_real.c</a></i></p>
+
+  <p><strong>NAME<br></strong> <em>doppler,doppler_real</em> -
+  Calculate Doppler centroid as a function of slant range using the
+  echo cross correlation from SAR raw data (IQ ADC format: doppler,
+  offset-video ADC: doppler_real).</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>doppler &lt;SAR_par&gt; &lt;PROC_par&gt;
+  &lt;signal_data&gt; &lt;doppler&gt; [loff] [nsub] [ambig_flag]
+  [namb] [order] [pltflg]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input) uncompressed SAR raw data (IQ data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;doppler&gt;</td>
+
+        <td>(output) Doppler centroid as function of slant
+        range</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (enter - for default: PROC_par
+        loff value)</td>
+      </tr>
+
+      <tr>
+        <td>[nsub]</td>
+
+        <td>number of azimuth subapertures (enter - for default:
+        12)<br></td>
+      </tr>
+
+      <tr>
+        <td rowspan="1">[ambig_flag]</td>
+
+        <td>Doppler ambiguity resolution flag<br>
+        &nbsp;&nbsp;&nbsp; 0 = use unambiguous Doppler Ambiguity
+        Resolver (DAR) estimate (default)<br>
+        &nbsp;&nbsp;&nbsp; 1 = estimate Doppler ambiguity number
+        from the Doppler slope<br>
+        &nbsp;&nbsp;&nbsp; 2 = command line entry for the Doppler
+        ambiguity number<br></td>
+      </tr>
+
+      <tr>
+        <td>[namb]</td>
+
+        <td>user defined number of Doppler ambiguities to add to
+        the Doppler function (enter - for default: 0)<br></td>
+      </tr>
+
+      <tr>
+        <td>[order]</td>
+
+        <td>order of polynomial used to fit the range Doppler
+        function 0--&gt;3: (enter - for default: 1)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pltflg]<br></td>
+
+        <td style="vertical-align: top;">Doppler centroid plotting
+        flag:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: none (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: output plot in PNG format<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><code>doppler_real &lt;SAR_param&gt; &lt;PROC_param&gt;
+  &lt;signal_data&gt; &lt;doppler&gt; [loff] [nprf]
+  [nsub]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input) Uncompressed SAR raw data (IQ data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;doppler&gt;</td>
+
+        <td>(output) Doppler centroid as function of slant
+        range</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (enter - for default=parameter
+        file value)</td>
+      </tr>
+
+      <tr>
+        <td>[nsub]</td>
+
+        <td>Number of azimuth sub-apertures (default=12)</td>
+      </tr>
+
+      <tr>
+        <td rowspan="1">[ambig_flag]</td>
+
+        <td>Doppler ambiguity resolution flag<br>
+        &nbsp;&nbsp;&nbsp; 0 = use unambiguous Doppler Ambiguity
+        Resolver (DAR) estimate (default)<br>
+        &nbsp;&nbsp;&nbsp; 1 = estimate Doppler ambiguity number
+        from the Doppler slope<br>
+        &nbsp;&nbsp;&nbsp; 2 = command line entry for the Doppler
+        ambiguity number</td>
+      </tr>
+
+      <tr>
+        <td>[namb]</td>
+
+        <td>User defined number of Doppler ambiguities to add to
+        the Doppler function</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><samp>doppler raw/ERS2_ESA.par raw/p19990915.slc.par
+  raw/19990915.fix raw/19990915.dop 0 12 0 0 1 1<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <em>doppler, doppler_real</em> - The Doppler centroid is
+  calculated from the SAR raw data (IQ data or video offset data)
+  as a function of slant range using the line to line correlation
+  method developed by Soren Madsen. The Doppler ambiguity can
+  either be set to a given value, estimated from the slope of the
+  doppler centroid with respect to range, or determined from the
+  unambiguous doppler estimated by <a href=
+  "dop_ambig.html">dop_ambig</a>. A fit of the doppler function in
+  range can then be used to estimate the pitch and azimuth angles
+  of the SAR antenna. A polynomial function is derived from the
+  estimated pitch and azimuth angles to obtain a doppler function
+  that processes the data to lie on a plane intersecting the earth
+  surface. The pitch and azimuth angles are stored in the SAR
+  Sensor parameter file used by the MSP. The polynomial
+  coefficients of the doppler in range is stored in the processing
+  parameter file. The order of the polynomial used for the fit in
+  doppler can be specified on the command line and must in the
+  range from 0 (constant) to 3</p>
+
+  <p>It is recommended that the unambiguous doppler estimate from
+  <a href="dop_ambig.html">dop_ambig</a> be used to resolve the
+  doppler ambiguity. The data segment used for the estimation can
+  be specified by the user by setting the offset in lines relative
+  to the beginning of the file. The auto-focus program <a href=
+  "af.html">af</a> may also be used to resolve the Doppler
+  ambiguity. Each Doppler ambiguity is equivalent to a shift of the
+  Doppler centroid by the pulse repetition frequency (Hz).<br></p>
+
+  <p>Plotting of the Doppler centroid as a function of range is
+  controlled by the <span style="font-style: italic;">pltflg</span>
+  command line parameter. When the <span style=
+  "font-style: italic;">pltflg</span> is 1, the plot of doppler
+  centroid as a function of range&nbsp; is stored as an image in
+  PNG format. A sample centroid plot with the linear fit is shown
+  below.<br>
+  <img style="width: 640px; height: 480px;" alt=
+  "Doppler centroid as a function of slant range" title=
+  "Doppler centroid as a function of slant range" src=
+  "19990915.dop.png"><br></p>
+
+  <p><span style="font-style: italic;">doppler_real</span>
+  currently does not support direct plotting to a file or
+  screen.&nbsp; However the doppler values and the linear fit to
+  the data can be plotted using gnuplot:<br>
+  <code><br>
+  echo " plot '19990915.dop' u 2:3 with lines lc 3, '19990915.dop'
+  u 2:4 with lines lc 1" |gnuplot<br></code></p>
+
+  <p>This generates a screen plot that shows the doppler centroid
+  in Hertz as a function of slant range (km) and the linear fit of
+  the doppler centroid.<code><br></code></p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "af.html">af</a>, <a href="dop_ambig.html">dop_ambig</a>,
+  <a href="azsp_IQ.html">azsp_IQ</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 4-Feb-2015.
+</body>
+</html>

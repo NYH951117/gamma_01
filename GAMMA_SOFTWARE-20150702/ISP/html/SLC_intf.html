@@ -1,0 +1,292 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: SLC_intf</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_intf</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/SLC_intf.c"><i>SLC_intf.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>SLC_intf</em> Multi-look complex interferogram generation
+  from registered SLC in fcomplex format.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_intf &lt;SLC-1&gt; &lt;SLC-2R&gt; &lt;SLC1_par&gt;
+  &lt;SLC2R_par&gt; &lt;OFF_par&gt; &lt;interf&gt; &lt;rlks&gt;
+  &lt;azlks&gt; [loff] [nlines] [sps_flg] [azf_flg] [rp1_flg]
+  [rp2_flg] [SLC-1s] SLC-2Rs][SLC-1s_par]
+  [SLC-2Rs_par]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) SLC-1, reference geometry (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2R&gt;</td>
+
+        <td>(input) SLC-2, coregistered to SLC-1 (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC parameter file of SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(input) SLC parameter file of SLC-2R</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input/output) ISP offset/processing parameter
+        file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;interf&gt;</td>
+
+        <td>(output) multi-look complex interferogram (with range
+        phase)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks for multi-looking</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>number of azimuth looks for multi-looking</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line relative to SLC-1 for
+        interferogram (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (default = to end of
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[sps_flg]</td>
+
+        <td>&nbsp;range spectral shift flag:<br>
+        &nbsp;&nbsp; 1: apply spectral shift filter (default)<br>
+        &nbsp;&nbsp; 0: do not apply spectral shift filter</td>
+      </tr>
+
+      <tr>
+        <td>[azf_flg]</td>
+
+        <td>azimuth common band filter flag:<br>
+        &nbsp; 1: apply azimuth common band filter (default)<br>
+        &nbsp; 0: do not apply azimuth common band filter</td>
+      </tr>
+
+      <tr>
+        <td>[rp1_flg]</td>
+
+        <td>SLC-1 range phase mode<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0: nearest approach
+        (zero-Doppler) phase<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: ref. function center
+        (Doppler centroid) (default)<br></td>
+      </tr>
+
+      <tr>
+        <td>[rp2_flg]</td>
+
+        <td>SLC-2 range phase mode<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: nearest approach (zero-Doppler)
+        phase<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: ref. function center
+        (Doppler centroid) (default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[SLC-1s]<br></td>
+
+        <td style="vertical-align: top;">SLC-1 after range spectral
+        shift and azimuth common-band filtering (FCOMPLEX
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[SLC-2Rs]<br></td>
+
+        <td style="vertical-align: top;">SLC-2R after range
+        spectral shift and azimuth common-band filtering (FCOMPLEX
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[SLC1s_par]<br></td>
+
+        <td style="vertical-align: top;">SLC-1s ISP image parameter
+        file<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[SLC2Rs_par]<br></td>
+
+        <td style="vertical-align: top;">SLC-2Rs ISP image
+        parameter file<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC_intf 1352.slc 1610.rslc 1352.slc.par 1610.rslc.par
+  1352_1610.off 1352_1610.int 1 5 0 1 1</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>SLC_intf</em> reads the two co-registered,&nbsp; single look
+  complex SAR images SLC-1 and SLC-2R, the corresponding SLC
+  parameter files <em>SLC-1.par</em> and <em>SLC-2R.par</em> and
+  the ISP offset/processing parameter file <em>OFF_par</em> and
+  computes the multi-look interferogram. The complex (normalized)
+  interferogram is defined by:</p>
+
+  <p>complex interferogram = <span style=
+  "font-style: italic; font-weight: bold;">&lt;s1s2*&gt;/sqrt(&lt;s1s1*&gt;&lt;s2s2*&gt;</span><span style="font-weight: bold;">.</span></p>
+
+  <p><span style="font-style: italic;">s1</span> and <span style=
+  "font-style: italic;">s2</span> are the single look complex
+  values of SLC-1 and SLC-2, * stands for conjugate complex, i.e,
+  (a+jb)* = (a-jb),&nbsp;&lt; &gt; stands for the ensemble average.
+  For a multi-look interferogram pixel &lt; &gt; is estimated by
+  (coherent) averaging of the single look values.</p>
+
+  <p>The argument of the complex interferogram corresponds to the
+  interferometric phase. The magnitude of the complex interferogram
+  corresponds to the interferometric correlation derived from the
+  number of interferometric looks used in the multi-looking. Real
+  and imaginary values of the complex (normalized) interferogram
+  are written as output to the <span style=
+  "font-style: italic;">interf&nbsp;</span> file<span style=
+  "font-style: italic;">.</span></p>
+
+  <p>Range spectrum filtering is applied using the <span style=
+  "font-style: italic;">sps_flg</span> command line option. This
+  filtering accounts for the spectral shift induced by the
+  difference in incidence angles between SLC-2 and SLC-1 due to the
+  baseline. Only the range spectrum interval common to the the two
+  SLC images is retained.&nbsp;</p>
+
+  <p>Due to the fact that the 2 SLCs are coregistered no
+  resampling/interpolation step is required. To coregister multiple
+  SLC images there are several different possibilities. The
+  registration offset function is determined using the programs
+  <a href="offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>, and <a href=
+  "offset_fit.html">offset_fit</a>. The resampling of the SLC to
+  the reference geometry is then completed using the program
+  <a href="SLC_interp.html">SLC_interp</a>.</p>
+
+  <p>Another approach to generating an interferogram is to use the
+  DIFF/GEO program <span style=
+  "font-style: italic;">SLC_interp_lt</span> that uses a lookup
+  table to resample the SLC images. After the initial resampling, a
+  refinement &nbsp;using measured offsets of the resampled image
+  and the reference is performed. The resampling lookup table is
+  created using the DIFF/GEO program <span style=
+  "font-style: italic;">rdc_trans</span>.</p>
+
+  <p><span style="font-style: italic;">SLC_intf</span> also
+  supports generation of interferograms with SLC data acquired with
+  sensors having different radar center frequencies such as ERS and
+  ENVISAT. The radar instruments on these platforms differ in
+  carrier frequency by 30 MHz. When the carrier frequencies of the
+  two SLCs are different, <span style=
+  "font-style: italic;">SLC_intf</span> applies a range phase
+  correction proportional to the slant range.</p>
+
+  <p>No multi-look intensity images are produced from the two SLC
+  images by <span style="font-style: italic;">SLC_intf</span>.
+  Coregistered multi-look intensity images in the identical
+  geometry as the interferogram can be generated from the
+  co-registered SLC images using the program <a href=
+  "multi_look.html">multi_look</a>.</p>
+
+  <p>Display of the images can be carried out by ISP programs for
+  complex and intensity data. Complex images can be displayed or
+  saved as SUN raster or BMP format files using the programs
+  <a href="ISP_display.html">dismph, dismph_pwr, rasmph,
+  rasmph_pwr</a>. Intensity images can be displayed using programs
+  <a href="ISP_display.html">dispwr, dis2pwr, raspwr</a>.</p>
+
+  <p><strong><span style="font-weight: normal;">The program also
+  has the option to perform azimuth common band filtering prior to
+  interferogram formation using the <span style=
+  "font-style: italic;">azf_flg</span> command line option. This
+  azimuth filtering retains only the common segment of the azimuth
+  image spectrum to optimize the correlation.</span></strong></p>
+
+  <p><strong><span style="font-weight: normal;">SLC data can be
+  provided that follows either the zero-Doppler or squinted
+  (Doppler-centroid) range phase convention. In the zero-Doppler
+  convention the phase of the SLC pixels is proportional to the
+  slant range at closest approach of the SAR to the point whereas
+  in the Doppler centroid convention the phase is proportional
+  to&nbsp;range at the center of the synthetic aperture reference
+  function. In the reference function center phase convention the
+  range spectrum is centered about DC in the SLC image. The GAMMA
+  MSP produces &nbsp;SLC images using the ref. center phase
+  convention.<br></span></strong></p>
+
+  <p><strong><span style="font-weight: normal;">It is possible as
+  an option&nbsp; to write out the SLC data after common band
+  filtering in range and azimuth. For offset tracking purposes
+  (e.g. glacier motion) using the filtered data may improve the
+  error in the offset measurements.&nbsp; A SLC parameter file is
+  produced for each of the common-band filtered output SLC data
+  files. The file names for the filtered data and parameter files
+  are entered on the command line.<br></span></strong></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="offset_SLC.html">offset_SLC</a>, <a href=
+  "offset_fit.html">offset_fit</a>, <a href=
+  "SLC_interp.html">SLC_interp</a>, <a href=
+  "multi_look.html">multi_look</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "OFF_par.html">OFF_par</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change&nbsp; 10-Aug-2010.
+</body>
+</html>

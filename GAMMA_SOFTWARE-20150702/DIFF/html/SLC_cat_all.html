@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>SLC concatenation using offset polynomial model</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO Software: Reference Manual</h1>
+
+  <h2>Concatenation of SLC pairs (SLC_cat_all)</h2><i>Perl
+  script:&nbsp; <a href=
+  "../scripts/SLC_cat_all">SLC_cat_all</a><br></i>
+
+  <h3>Description</h3>This is&nbsp; a&nbsp; guide on how to use the
+  script <a href="../scripts/SLC_cat_all"><span style=
+  "color: blue;">SLC_cat_all</span></a> to concatenate pairs of SLC
+  images.&nbsp; This script is used to concatenate a stack of
+  acquisitions. Each acquisition consists of two sequential frames
+  that must be concatenated to form a single larger image.&nbsp; It
+  is usually the case that the range lines in the overlap region do
+  not precisely match one another, but have some azimuth or range
+  offset due to differences in the processing parameters between
+  the frames. This script estimates the offsets and generates a
+  polynomial model used to resample the SLC data in the later frame
+  to be precisely matched to the data in the first frame. The
+  concatenation and resampling is determined using range and
+  azimuth offset polynomials that are stored in the ISP
+  offset/interferogram parameter file (OFF_par).&nbsp; As input
+  data the following inputs are required:<br>
+  <br>
+  1. A set of pairs of SLC images that are to be concatenated. The
+  first (earlier) SLC of each pair should be contained in one
+  directory and the second (later) SLC of each pair should be
+  located in a second directory<br>
+  <br>
+  2. Tables of the SLC images and parameter files for each of the
+  input directories containing the SLCs. The SLC tab has two
+  columns, one line per SLC. In the first column is the SLC file
+  name including the absolute or relative path to the SLC. In the
+  second column contains the SLC parameter file name including the
+  absolute or relative path to the SLC parameter file. These tables
+  are called SLC_tab files and can be generated using the <a href=
+  "mk_tab.html">mk_tab</a> script.<br>
+  <br>
+  An example SLC_tab is shown below for 2 SLC images with relative
+  paths:<br>
+  <br>
+  <span style=
+  "font-family: monospace;">slc/19990915.slc&nbsp;&nbsp;&nbsp;
+  slc/19990915.slc.par</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">slc/19991020.slc&nbsp;&nbsp;&nbsp;
+  slc/19991020.slc.par</span><br>
+  <br>
+  Either include $DIFF_HOME/scripts in the PATH environment
+  variable. Run the script without arguments to see the command
+  line arguments:<br>
+  <span style="font-family: monospace;"><br>
+  $ SLC_cat_all<br>
+  *** ./SLC_cat_all<br>
+  *** Copyright 2012, Gamma Remote Sensing, v3.7 18-Aug-2012 clw
+  ***<br>
+  *** Resample a set of SLCs to a common reference SLC using a
+  polynomial offset model ***<br>
+  <br>
+  usage: ./SLC_cat_all &lt;SLC_tab1&gt; &lt;SLC_tab2&gt;
+  &lt;cslc_dir&gt; &lt;CSLC_tab&gt; &lt;mode&gt; [rpos] [azpos]
+  [npoly]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; SLC_tab1&nbsp; (input) two column list of SLCs
+  and SLC parameter files for the early frame<br>
+  &nbsp;&nbsp;&nbsp; SLC_tab2&nbsp; (input) two column list of SLCs
+  and SLC parameter files of the frames to concatenate to the
+  frames in SLC_tab1<br>
+  &nbsp;&nbsp;&nbsp; cslc_dir&nbsp; directory to receive the
+  concatenated SLCs and ISP image parameter files<br>
+  &nbsp;&nbsp;&nbsp; CSLC_tab&nbsp; (output) RCSLC_tab file for the
+  concatenated SLC files<br>
+  &nbsp;&nbsp;&nbsp; mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; processing
+  mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: create offset parameter files<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: estimate initial range and azimuth offsets using orbit state
+  vectors<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: measure initial range and azimuth offsets using SLC images
+  (optional)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: estimate range and azimuth offset models using correlation of
+  image intensities (optional)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4: concatenateSLC images using offset models<br>
+  &nbsp;&nbsp;&nbsp; phflg&nbsp;&nbsp;&nbsp;&nbsp; phase offset
+  correction flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: no phase offset correction for SLC-2 (default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: apply phase offset correction to SLC-2<br>
+  &nbsp;&nbsp;&nbsp; rpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center of
+  patch in range (samples) (enter - for default: image center)<br>
+  &nbsp;&nbsp;&nbsp; azpos&nbsp;&nbsp;&nbsp;&nbsp; center of patch
+  in azimuth (lines) (enter - for default: 1024 lines before end of
+  SLC-1)<br>
+  &nbsp;&nbsp;&nbsp; npoly&nbsp;&nbsp;&nbsp;&nbsp; number of terms
+  in the polynomial fit (1,3,4,6 default: 3)<br></span><span style=
+  "font-family: monospace;"><br>
+  <br></span>The different modes represent steps in the processing
+  that must be performed sequentially.&nbsp; The input files are
+  the SLC_tab file for the earlier frame, and the SLC_tab file for
+  the later frame.&nbsp; Since only a single SLC pair are
+  concatenated in this example, SLC_tab1 and SLC_tab2 have only a
+  single line.&nbsp;&nbsp;<br>
+  <br>
+  SLC_tab1:<br>
+  <span style=
+  "font-family: monospace;">slc/20110324T123632.slc&nbsp;
+  slc/20110324T123632.slc.par</span><br>
+  <br>
+  SLC_tab2:<br>
+  <span style=
+  "font-family: monospace;">slc/20110324T123637.slc&nbsp;
+  slc/20110324T123637.slc.par<br>
+  <br></span>The number of lines in SLC_tab1 must match the number
+  of entries in SLC_tab2.&nbsp; There are a series of processing
+  steps that are performed for all entries in SLC_tab1 and
+  SLC_tab2, beginning with creation of the offset parameter file to
+  contain information on the offset measurements and offset
+  polynomials.<br>
+
+  <h3>Mode 0:&nbsp;<span style="font-family: monospace;">create
+  offset parameter files for estimation of the
+  offsets</span></h3>The first step in the concatenation and
+  resampling process is creating an offset parameter file.
+  &nbsp;The offset parameter files contain the parameters specifies
+  the locations where offsets are measured and the range and
+  azimuth offset polynomials for resampling the SLC.<br>
+  <br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code style="color: rgb(51, 0, 153);">SLC_cat_all SLC_tab1
+  SLC_tab2 cat_slc CAT_SLC_tab 0</code><br>
+  <br>
+  The output directory for the concatenated SLCs is <code style=
+  "color: rgb(51, 0, 153);">cat_slc</code> This generates the
+  following call to the program <code><span style=
+  "color: rgb(51, 0, 153);">create_offset</span></code>:<br>
+  <br>
+  <code><span style="color: rgb(51, 0, 153);">create_offset
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off &lt;
+  create_offset.in</span><br>
+  <br></code>The inputs to create_offset are derived from the SLC
+  are the default values as shown below. Here is an example of the
+  offset and interferogram parameter file after all processing
+  steps have been completed:<br>
+  <span style="font-family: monospace;"><br>
+  Gamma Interferometric SAR Processor (ISP)<br>
+  Interferogram and Image Offset Parameter File<br>
+  <br>
+  title:&nbsp;&nbsp;&nbsp;&nbsp; offset parameters<br>
+  initial_range_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  initial_azimuth_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -16077<br>
+  slc1_starting_range_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  number_of_slc_range_pixels:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  16692<br>
+  offset_estimation_starting_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  48<br>
+  offset_estimation_ending_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  16644<br>
+  offset_estimation_range_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  32<br>
+  offset_estimation_range_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  535<br>
+  offset_estimation_starting_azimuth:&nbsp;&nbsp;&nbsp;&nbsp;
+  48<br>
+  offset_estimation_ending_azimuth:&nbsp;&nbsp;&nbsp; 28302<br>
+  offset_estimation_azimuth_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  32<br>
+  offset_estimation_azimuth_spacing:&nbsp;&nbsp;&nbsp;&nbsp;
+  911<br>
+  offset_estimation_window_width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  64<br>
+  offset_estimation_window_height:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  128<br>
+  offset_estimation_threshhold:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7.00<br>
+  range_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00033&nbsp; -9.0131e-09&nbsp; -6.7599e-09&nbsp;&nbsp;
+  0.0000e+00&nbsp;&nbsp; 0.0000e+00&nbsp;&nbsp; 0.0000e+00<br>
+  azimuth_offset_polynomial:&nbsp; -16077.08145&nbsp;&nbsp;
+  5.2973e-09&nbsp;&nbsp; 2.0647e-07&nbsp;&nbsp;
+  0.0000e+00&nbsp;&nbsp; 0.0000e+00&nbsp;&nbsp; 0.0000e+00<br>
+  slc1_starting_azimuth_line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  interferogram_azimuth_lines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  28350<br>
+  interferogram_width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  16692<br>
+  first_nonzero_range_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  number_of_nonzero_range_pixels:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  16692<br>
+  interferogram_range_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1<br>
+  interferogram_azimuth_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1<br>
+  interferogram_range_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1.364105&nbsp;&nbsp; m<br>
+  interferogram_azimuth_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;
+  2.000404&nbsp;&nbsp; m<br>
+  resampled_range_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000000&nbsp;&nbsp; m<br>
+  resampled_azimuth_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000000&nbsp;&nbsp; m<br>
+  resampled_starting_ground_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp;&nbsp; m<br>
+  resampled_pixels_per_line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  resampled_number_of_lines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</span><br>
+
+  <h3>Mode 1:&nbsp;<span style="font-family: monospace;">measure
+  initial range and azimuth offsets using orbit
+  information</span></h3>The most robust way to estimate the
+  initial offsets between the images is to use the orbit state
+  vector and SLC timing information. The ISP program
+  init_offset_orbit determines the time of closest approach of the
+  two tracks to determine an estimate of the range and azimuth
+  offsets between the images<br>
+  <br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code style="color: rgb(51, 0, 153);">SLC_cat_all SLC_tab1
+  SLC_tab2 cat_slc CAT_SLC_tab 1<br></code><code><br></code>This
+  results in the following command being run:<code><br>
+  <br>
+  <span style="color: rgb(51, 0, 153);">init_offset_orbit
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off 8346 24806.25<br>
+  <br></span></code>with the result:<br>
+  <span style=
+  "color: rgb(0, 0, 153); font-family: monospace;">initial range
+  offset: 0.0000&nbsp;&nbsp; initial azimuth offset:
+  -16077.0871<br></span>
+
+  <h3>Mode 2:&nbsp;<span style="font-family: monospace;">measure
+  initial range and azimuth offsets using the images
+  (optional)<br></span></h3>Instead of or in addition to using the
+  orbits, the initial offset of the images can be determined using
+  the ISP program <a href=
+  "../../ISP/html/init_offset.html">init_offset</a>. This step
+  measures the initial offset between the reference SLC and SLC-2
+  using an image patch specified by the user.. The location
+  &nbsp;for the initial estimate is nominally in the image center.
+  If another location with more topography is desired, the location
+  can be specified on the command line using the &nbsp;following
+  parameters that can be entered on the SLC_resamp_all command
+  line:<br>
+  <br style="font-family: monospace; color: rgb(51, 51, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(51, 51, 153);">&nbsp;&nbsp;&nbsp;
+  rpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center of patch for initial
+  offset estimation in range (samples) (enter - for default: image
+  center)</span><br style=
+  "font-family: monospace; color: rgb(51, 51, 153);">
+  <span style="font-family: monospace;"><span style=
+  "color: rgb(51, 51, 153);">&nbsp;&nbsp;&nbsp;
+  azpos&nbsp;&nbsp;&nbsp;&nbsp; center of patch for initial offset
+  estimation in azimuth (lines) (enter - for default: last eighth
+  of image</span>)<br></span><br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code style="color: rgb(51, 0, 153);">SLC_cat_all SLC_tab1
+  SLC_tab2 cat_slc CAT_SLC_tab 2</code><code><br style=
+  "color: rgb(51, 0, 153);">
+  <br></code>This results in the following command being
+  run:<code><br>
+  <br>
+  <span style="color: rgb(51, 0, 153);">init_offset
+  slc/20110324T123632.slc slc/20110324T123637.slc
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off 1 1 8346 24806.25 - -
+  7 512 512 1<br>
+  <br></span></code>with the result:<br>
+  <br>
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">offset estimate
+  range:&nbsp;&nbsp;&nbsp;&nbsp; -0.00194&nbsp;&nbsp; azimuth:
+  -16077.07295<br>
+  correlation SNR:&nbsp;&nbsp; 1401.461<br>
+  output ISP offset parameter file:
+  cat_slc/20110324T123632_20110324T123637.off</span><br>
+
+  <h3>Mode 3:&nbsp;<span style="font-family: monospace;">estimate
+  range and azimuth offset models using correlation of image
+  intensities</span></h3>In this step, the offsets between the two
+  SLC frames are measured over a grid of points taking into account
+  the initial offset deterimined in the previous steps.<br>
+  The values of these offsets are then used to estimate range and
+  azimuth offset polynomials to resample SLC-2.<br>
+  <span style="font-weight: bold;"><br>
+  Example:</span><br>
+  <code style="color: rgb(51, 0, 153);">SLC_cat_all SLC_tab1
+  SLC_tab2 cat_slc CAT_SLC_tab 3</code> <code><br>
+  <br></code>This results in the following commands and result:<br>
+  <br>
+  <code style="color: rgb(0, 0, 153);"><span style=
+  "font-family: monospace;">offset_pwr slc/20110324T123632.slc
+  slc/20110324T123637.slc slc/20110324T123632.slc.par
+  slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off
+  cat_slc/20110324T123632_20110324T123637.offs
+  cat_slc/20110324T123632_20110324T123637.snr</span></code><br>
+  <br>
+  In the output log file &nbsp;<code style=
+  "color: rgb(0, 0, 153);">cat_slc/20110324T123632_20110324T123637</code><span style="color: rgb(0, 0, 0);">_resamp.log
+  is listed the output from offset_pwr</span><br>
+  <br>
+  <code style="color: rgb(0, 0, 153);">number of offsets above SNR
+  threshold: 415 of 1024</code><br>
+  <br>
+  The range and azimuth offsets as well as the signal to noise
+  values for the offsets (SNR values) are then used as inputs to
+  the offset_fit program:<br style="color: rgb(0, 0, 153);">
+  <code style="color: rgb(0, 0, 153);">offset_fit
+  cat_slc/20110324T123632_20110324T123637.offs
+  cat_slc/20110324T123632_20110324T123637.snr
+  cat_slc/20110324T123632_20110324T123637.off
+  cat_slc/20110324T123632_20110324T123637.coffs - -
+  3<br></code><br>
+  with output:<br>
+  <code style="color: rgb(51, 0, 153);"><br>
+  </code><code><span style="color: rgb(0, 0, 153);"><span style=
+  "font-family: monospace;">final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00033&nbsp; -9.01314e-09&nbsp; -6.75986e-09<br>
+  final range offset poly. coeff. errors:&nbsp;&nbsp;
+  9.13611e-06&nbsp;&nbsp; 2.75036e-10&nbsp;&nbsp; 4.01921e-10<br>
+  <br>
+  final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -16077.08145&nbsp;&nbsp; 5.29725e-09&nbsp;&nbsp; 2.06473e-07<br>
+  final azimuth offset poly. coeff. errors:&nbsp;&nbsp;
+  1.31867e-05&nbsp;&nbsp; 3.96975e-10&nbsp;&nbsp; 5.80115e-10<br>
+  <br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0013&nbsp; azimuth:&nbsp;&nbsp; 0.0019</span></span></code><br>
+
+  <h3>Mode 4: <span style="font-family: monospace;">concatenate SLC
+  images using offset polynomials determined in mode 3 and generate
+  CSLC_tab</span></h3>The offset parameter file now contains the
+  range and azimuth offset polynomials. See the documentation on
+  offset_fit to understand the different terms in the
+  polynomials.&nbsp;&nbsp;If the <code style=
+  "color: rgb(0, 0, 153);">rflag</code> command line parameter is
+  set to 1 (offset confirmation) the residual offsets from this
+  second resampling are measured and a further correction to the
+  offset model is determined.&nbsp;<br>
+  <br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code style="color: rgb(51, 0, 153);">SLC_cat_all SLC_tab1
+  SLC_tab2 cat_slc CAT_SLC_tab 4</code><br>
+  <code><span style="color: rgb(51, 0, 153);"><br>
+  </span></code><span style="color: rgb(0, 0, 0);">generates the
+  following command:</span><code><span style=
+  "color: rgb(51, 0, 153);"><br style=
+  "color: rgb(51, 0, 153);"></span><br>
+  <span style="color: rgb(0, 0, 153);"><br>
+  SLC_cat slc/20110324T123632.slc slc/20110324T123637.slc
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off
+  cat_slc/20110324T123632.slc
+  cat_slc/20110324T123632.slc.par<br></span></code><code><br></code>This
+  call to SLC_cat is repeated for each of the SLC frame pairs in
+  SLC_tab1 and SLC_tab2. An SLC_tab file is created for the output
+  concatenated SLC data sets. In this case the file is call
+  CAT_SLC_tab and contains a single line:<br>
+  <br>
+  <code style=
+  "color: rgb(0, 0, 3);">cat_slc/20110324T123632.slc&nbsp;
+  cat_slc/20110324T123632.slc.par<br>
+  <br></code>OPTIONS:<br>
+  There are several options for the script. Most important is the
+  <span style=
+  "font-style: italic; text-decoration: underline;">phflg</span>
+  option. If this option is set to 1, then any phase trend detected
+  between SLC-1 and SLC-2 in the region of overlap is removed from
+  SLC-2. An interferogram is created between SLC-1 and SLC-2 in the
+  overlap region and the phase in this region is estimated as a
+  function of slant range across the swath.&nbsp; Whe <span style=
+  "font-style: italic; text-decoration: underline;">phflg</span> is
+  set to 0, then the phase function is not applied.&nbsp; The trend
+  is estimated independent of the <span style=
+  "font-style: italic; text-decoration: underline;">phflg</span>
+  option value.<br>
+  <br>
+  The position of the 512x512 patch used to estimate the initial
+  offset can be changed by setting the value of <span style=
+  "font-style: italic; text-decoration: underline;">rpos</span> and
+  <span style=
+  "font-style: italic; text-decoration: underline;">azpos</span>.&nbsp;
+  The default position <span style=
+  "font-style: italic; text-decoration: underline;">azpos</span> is
+  1024 lines before the end of SLC-1 in the center of the
+  swath.<br>
+  <br>
+  Finally, the number of parameters in the offset polynomials that
+  model the pixel offset between SLC-1 and SLC-2 can be changed
+  from the default value by setting the npoly parameter. The npoly
+  parameter is by default 3. This allows a linear offset function
+  in range and azimuth for both the range and azimuth offset
+  polynomials.&nbsp;<br>
+  <br>
+  The script examines the value of the range offset as a function
+  of range and azimuth. If the value of the range offset is very
+  close to zero, the offset polynomial terms are all set to
+  identically 0.&nbsp;&nbsp;<br>
+  <br>
+  <br>
+  <code style="color: rgb(0, 0, 3);"><br></code>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="charles_werner.html">CW</a> last change 14-Nov-2012.
+</body>
+</html>

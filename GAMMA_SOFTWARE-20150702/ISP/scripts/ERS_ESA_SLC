@@ -1,0 +1,44 @@
+#! /bin/csh -fe
+if ($#argv < 2)then
+  echo "ERS_ESA_SLC: read an ERS SLC Exabyte processed at ESRIN or DPAF 06-Sep-2005"
+  echo "usage: ERS_ESA_SLC <orbit> <device> " 
+  echo "       <orbit>   orbit identifier (example: orbit number)"
+  echo "       <device>  EXABYTE tape device (no rewind); example: /dev/rmt/0mn"
+  exit
+endif
+
+set EXABYTE = $2
+rm -f $1.par.out
+
+echo "Reading ESA ERS SLC tape..."
+
+echo "reading CEOS volume directory file: $1.vdf"
+dd bs=360 if=$EXABYTE of=$1.vdf
+
+echo "reading CEOS SAR leader file: $1.ldr"
+dd bs=16384 if=$EXABYTE of=$1.ldr
+
+echo "reading single look complex (SLC) image file: $1.esa_slc" 
+dd bs=19612 if=$EXABYTE of=$1.esa_slc
+
+echo "reading CEOS null volume directory file: $1.nvdf"
+dd bs=360 if=$EXABYTE of=$1.nvdf
+
+echo "creating ISP SLC parameter file: $1.slc.par"
+echo "orbit $1 "| par_ESA_ERS $1.ldr $1.par > $1.par.out
+
+set w1 = `awk '$1 == "range_samples:" {print $2}' `
+echo number of range samples/line: $w1
+
+echo "calculating 20-look SUN rasterfile image from the SLC image: $1.slc.ras"
+echo "rasERS_SLC $1.esa_slc $w1 1 0 2 10 1.0 .35 1"
+rasERS_SLC $1.esa_slc $w1 1 0 2 10 1.0 .35 1
+
+echo "computing doppler centroid from SLC data..."
+echo "az_spec_ESA $1.esa_slc $1.par $1.azspec > $1.azspec.out "
+echo "y" | az_spec_ESA $1.esa_slc $1.par $1.azspec > $1.azspec.out
+echo "  "
+
+echo "ERS_ESA_SLC completed"
+
+ 

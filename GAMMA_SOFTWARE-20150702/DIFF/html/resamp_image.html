@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF&amp;GEO Reference Manual: geocode_back</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>rotate_image<br></h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/resamp_image.c"><i>resamp_image.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  rotate_image -&nbsp; Rotate an image about the image center by a
+  specified angle.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>rotate_image &lt;data_in&gt; &lt;width_in&gt;
+  &lt;angle&gt; &lt;data_out&gt; &lt;width_out&gt;
+  &lt;nlines_out&gt; [interp_mode] [format_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) data file (format as specified by format_flag
+        parameter)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width_in&gt;</td>
+
+        <td>width of input data file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;xscale&gt;</td>
+
+        <td>x coordinate scaling factor (0 &lt; xscale &lt;=
+        100)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;yscale&gt;</td>
+
+        <td>y coordinate scaling factor (0 &lt; yscale &lt;=
+        100)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>(output) output data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width_out&gt;</td>
+
+        <td>output image width, (enter - for default)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;nlines_out&gt;</td>
+
+        <td>number of lines in the output image, (enter - for
+        default)</td>
+      </tr>
+
+      <tr>
+        <td>[interp_mode]</td>
+
+        <td>interpolation mode:<br>
+        &nbsp;&nbsp;&nbsp; 0: nearest-neighbor<br>
+        &nbsp;&nbsp;&nbsp; 1: bicubic spline (default)<br>
+        &nbsp;&nbsp;&nbsp; 2: bicubic spline log(x)<br>
+        &nbsp;&nbsp;&nbsp; 3: bicubic spline sqrt(x)<br></td>
+      </tr>
+
+      <tr>
+        <td>[format_flag]</td>
+
+        <td>input and output data format<br>
+        &nbsp;&nbsp;&nbsp; 0: FLOAT (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: FCOMPLEX<br>
+        &nbsp;&nbsp;&nbsp; 2: SUN raster/BMP format<br>
+        &nbsp;&nbsp;&nbsp; 3: UNSIGNED CHAR<br>
+        &nbsp;&nbsp;&nbsp; 4: SHORT<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES:<br>
+  <br></strong> <samp>resample_image diff_ts_009 600 2. 2.&nbsp;
+  diff_ts_009_2 - - 1 0<br></samp></p>
+
+  <p>Scale the floating point image of unwrapped phase <span style=
+  "font-family: monospace;">diff_ts_009</span> by a factor of 2 in
+  x and y. The input image had a width of 600 samples and contained
+  600 lines.&nbsp; The output image dimensions are scaleed to
+  1200x1200. Bicubic spline interpolation is used as the
+  interpolation method.&nbsp;<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">resamp_image</span> is program
+  that scales images by linear scale factors in x and y. The output
+  image size can either be calculated from the input image or
+  specified on the command line.&nbsp; The user&nbsp; enters "-"
+  for the size of the output image size parameters to select that
+  these be calculated from the image bounds. &nbsp;</p>
+
+  <p>Valid input/output data formats are float, fcomplex, unsigned
+  char, and raster image (SUN or BMP) format. Either&nbsp; cubic
+  spline&nbsp; or a nearest neighbor interpolation can be selected.
+  In the case of complex-valued data the real and imaginary part
+  are interpolated independently. In the case of unsigned char and
+  SUN raster format only the nearest-neighbor resampling algorithm
+  is available.</p>
+
+  <p>The bicubic spline of the log(data) or&nbsp; bicubic spline of
+  the sqrt(data) interpolation transforms the input values,
+  performs the&nbsp; interpolation, and converts the interpolated
+  data back to linear scale. For interpolation of&nbsp; SAR
+  intensity, data converted to log scale or using sqrt()&nbsp; has
+  the advantage that no negative values are generated in the
+  interpolation, even for very noisy data. The output is the
+  interpolated values converted back to linear scale. In order to
+  avoid problems with negative values (log or sqrt not defined) the
+  absolute value of the input values is used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="geocode_back.html"></a><a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Jul-2015.
+</body>
+</html>

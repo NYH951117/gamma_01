@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: dem_RDC_list</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF &amp; GEO Reference Manual</h1>
+  <hr>
+
+  <h2>dem_RDC_list</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dem_RDC_list.c">dem_RDC_list.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  dem_RDC_list - generate coordinate lists in Range-Doppler
+  Coordinates (RDC) and DEM coordinates using a lookup table.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dem_RDC_list &lt;DEM_par1&gt; &lt;gc_map&gt;
+  &lt;MLI_par&gt; &lt;mask&gt; &lt;clist_MAP&gt; &lt;clist_RDC&gt;
+  &lt;DEM_par2&gt; &lt;s_north&gt;
+  &lt;s_east&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par1&gt;</td>
+
+        <td>(input)&nbsp; DEM/MAP parameter file associated with
+        the lookup-table<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;gc_map&gt;</td>
+
+        <td>(input) geocoding lookup table</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(input) ISP image parameter file of MLI image
+        associated with the geocoding lookup table</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mask&gt;</td>
+
+        <td>(input) mask file in SUN raster of BMP format to mask
+        out regions in clist (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;clist_MAP&gt;</td>
+
+        <td>(output) list of x,y pixel coordinates in the geocoded
+        MLI image (text format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;clist_RDC&gt;</td>
+
+        <td>(output) list of x,y pixel coordinates in the reference
+        SLC image geometry (Range-Doppler Coordinates) (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par2&gt;</td>
+
+        <td>(output) DEM/MAP parameter file associated with
+        clist_MAP</td>
+      </tr>
+
+      <tr>
+        <td>&lt;s_north&gt;</td>
+
+        <td>northing sub-sampling factor (int) (default: 10)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;s_east&gt;</td>
+
+        <td>easting&nbsp; sub-sampling factor (int) (default:
+        10)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>dem_RDC_list dem_seg_par geo/19970924_0.map_to_rdc
+  19970924_seg.mli.par geo/19970924_gec.mli.mask.ras clist_MAP
+  clist_RDC offset.dem_par 4 4</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">dem_RDC_list</span> is used to
+  generate a list of points in range-Doppler coordinates of a
+  uniformly spaced raster in a map projection coordinate system. A
+  list of the coordinates of these points&nbsp; in northing line
+  and easting pixel is also generated.&nbsp; This program generates
+  the coordinate lists used by <a href=
+  "offset_pwr_list.html">offset_pwr_list</a> to measure offsets on
+  a uniform raster in the map coordinate system using as input a
+  pair of SLC images. <span style=
+  "font-weight: bold;">dem_RDC_list</span> uses the gc_map
+  lookup-table to calculate the slant-range and azimuth pixel
+  numbers in the range-Doppler coordinate system. The lists are in
+  text format and consist of pairs of range pixel and azimuth line
+  numbers.&nbsp;<br></p>
+
+  <p>The user can specify a mask in SUN raster or BMP format that
+  is an overlay of the map coordinate image. Only points that lie
+  within the non-zero values of the mask will be written to the
+  output point lists. The positions of the points are specified
+  using the DEM parameter file of a geocoded MLI image with
+  geometry specified by the MLI_par parameter. The gc_map command
+  line&nbsp; value is the&nbsp; lookup-table&nbsp; relating the MLI
+  image and the geocoded image&nbsp; Typically an offset
+  measurement is not required at every pixel in the geocoded image.
+  Therefore northing and easting sub-sampling factors s_north and
+  s_east can be specified on the command line. A DEM parameter file
+  that describes the points in the clist_MAP is generated taking
+  into account these sub-sampling factors.&nbsp; A map image shown
+  the sample locations can be created using <a href=
+  "ras_clist.html">ras_clist</a>.</p>
+
+  <p>The program prints out the unit vectors in the direction of
+  slant range and azimiuth expressed using unit vectors in the
+  East, North,&nbsp; and Up for a set of selected locations. The
+  deformation measurements preformed by <a href=
+  "offset_pwr_list.html">offset_pwr_list</a> are precisely along
+  the look vector and in azimuth. Each line of the output geom file
+  contains the unit vector components of the look vector and
+  azimuth vector for each point in the clist_RDC file, one line per
+  point. The&nbsp; range offset along the slant range vector can
+  then be expressed as <span style=
+  "font-family: Symbol;">range_offset*LV&nbsp; where LV is the unit
+  look vector and similarly the azimuth offset can be expressed in
+  the ENU basis as azimuth_offset*AZ&nbsp; where AZ is the unit
+  vector in the azimuth direction. Note that the UP component of
+  the azimuth vector has a consistent value of essentially 0.
+  Estimation of the individual offset components in East, North,
+  and Up requires assumptions about the offset field since only 2
+  measurements are made of the 3 dimensional field. (e.g. offset in
+  the up direction is 0).</span></p>
+
+  <p>A typical processing sequence to measure range and azimuth
+  offsets on a regular grid in the map geometry&nbsp; is described
+  in the&nbsp; <a href="GEO_users_guide.pdf">GEO Users Guide</a>
+  section 15 and&nbsp; section H.<span style=
+  "font-style: italic;">(Measuring range and azimuth offsets on a
+  regular grid in map coordinates</span>).&nbsp;</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The sub-sampling factors in northing and easting determine the
+  offset measurement density when using the output point coordinate
+  lists as input to offset_pwr_clist of ras_clist.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="offset_pwr_list.html">offset_pwr_list</a>, <a href=
+  "ras_clist.html">ras_clist</a>, <a href=
+  "DEM_par.html">dem_par</a>, <a href="datums.h.html">datums.h</a>,
+  <a href="ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Nov-2008.</p>
+</body>
+</html>

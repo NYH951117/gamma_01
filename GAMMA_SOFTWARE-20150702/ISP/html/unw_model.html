@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: unw_model</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>unw_model</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/unw_model.c">unw_model.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>unw_model</i> - Phase unwrapping using model of unwrapped
+  phase.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>unw_model &lt;interf&gt; &lt;unw_model&gt; &lt;unw&gt;
+  &lt;width&gt; [xinit] [yinit] [ref_ph]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;interf&gt;</td>
+
+        <td>(input) complex interferogram</td>
+      </tr>
+
+      <tr>
+        <td>&lt;unw_model&gt;</td>
+
+        <td>(input) approximate unwrapped phase model (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;unw&gt;</td>
+
+        <td>(output) unwrapped phase (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row of the interferogram</td>
+      </tr>
+
+      <tr>
+        <td>[xinit]</td>
+
+        <td>offset to phase reference location range pixel
+        (col)</td>
+      </tr>
+
+      <tr>
+        <td>[yinit]</td>
+
+        <td>offset to phase reference location azimuth pixel
+        (row)</td>
+      </tr>
+
+      <tr>
+        <td>[ref_ph]</td>
+
+        <td>reference point phase (radians) (enter - for phase at
+        the reference point ))</td>
+      </tr>
+
+      <tr>
+        <td>[width_model]</td>
+
+        <td>number of samples/row of the unwrapped phase model
+        (default: interferogram width)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>unw_model 01608_02109.flt 01608_02109.unw_model
+  01608_02109.unw 2456 800 400 0.0</tt></p>
+
+  <p>Unwraps the complex valued interferogram assuming that the
+  unwrapped phase is within the interval (-PI,PI) of the provided
+  model. After completion of the unwrapping a phase constant is
+  subtracted from all unwrapped phase values such that the
+  unwrapped phase at the indicated reference location (800,400)
+  will corresponds to the indicated reference phase value (0.0 in
+  the above example).</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>unw_model</i> unwraps a complex-valued interferogram using a
+  pre-existing unwrapped phase model. For each pixel the unwrapped
+  phase value is set to the value which is within the interval
+  (-PI,PI) of the provided model and which is consistant with the
+  complex valued interferogram in the sense that re-wrapping of the
+  unwrapped interferogram will result in the original interferogram
+  phase value, except for a constant phase offset, originating from
+  setting the unwrapped phase at a reference location to a
+  reference value.</p>
+
+  <p>The pre-requisite for the model used is that it deviates from
+  the true unwrapped phase by only a small value. For deviations
+  larger than PI the unwrapped phase will be set on the wrong
+  ambiguity, i.e. it will deviate from the correct unwrapping by a
+  multiple of 2*PI.</p>
+
+  <p>Unwrapped phase models can be obtained in different ways:</p>
+
+  <p>a) From modeling of the different terms (topographic,
+  deformation, path delay term) of the interferometric phase. It
+  has to be kept in mind, though, that the uncertainty in the path
+  delay or atmospheric distortion term can easily be outside the
+  tolerable interval.</p>
+
+  <p>b) By scaling of an independent unwarpped interferogram as
+  done in multi-pass differential interferometry. Again, the
+  uncertainty in the path delay or atmospheric distortion term can
+  be outside the tolerable interval.</p>
+
+  <p>c) By an unwrapping result which was obtained using
+  multi-looking followed by interpolation of the unwrapped result
+  to the original resoltion.</p>
+
+  <p>d) By an unwrapping result which was obtained using adaptive
+  sampling reduction followed by interpolation of the unwrapped
+  result to the original (full) sampling.</p>
+
+  <p>After completion of the model based unwrapping a phase
+  constant can be subtracted from all unwrapped phase values such
+  that the unwrapped phase at the indicated reference location
+  (800,400) will corresponds to the indicated reference phase value
+  (0.0 in the above example). This can be used, for example, in
+  differential interferoemtry to set the deformation phase of a
+  stable reference location to 0.0.</p>
+
+  <p><b>OPTIONS</b><br>
+  The user can specify independently the line width of the model
+  phase file. The need for this arises if <a href=
+  "multi_cpx.html">&nbsp;multi_cpx</a> and <a href=
+  "multi_real.html">multi_real</a> have been used to unwrap a
+  multi-looked version of the interferogram. When working with full
+  frame inteferograms &nbsp;a vialble approach is to unwrap as
+  asingle patch, &nbsp;a multi-looked &nbsp;version of the
+  interferogram. This smaller interferogram is then reexpanded with
+  multi_real&nbsp; and&nbsp; used as a phase model. The expanded
+  phase model may have a slightly different line width because the
+  original interferogram line width is not a multiple of the
+  scaling factor that was used.&nbsp;</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="mcf.html">mcf</a>, <a href=
+  "rascc_mask.html">rascc_mask</a>, <a href=
+  "rascc_mask_thinning.html">rascc_mask_thinning</a>, <a href=
+  "interp_ad.html">interp_ad</a>,&nbsp; <a href=
+  "multi_real.html">multi_real</a>, <a href=
+  "multi_cpx.html">&nbsp;multi_cpx</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 25-Aug-2008.
+</body>
+</html>

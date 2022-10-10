@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing -->
+
+  <title>DIFF Reference Manual: init_offsetm</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>init_offsetm</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/init_offsetm.c">init_offsetm.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  init_offsetm - initial registration offset estimation for
+  multilook intensity images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>init_offsetm &lt;MLI-1&gt; &lt;MLI-2&gt;
+  &lt;DIFF_par&gt; [rlks] [azlks] [rpos] [azpos] [offr] [offaz]
+  [thres] [patch] [cflag]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI-1&gt;</td>
+
+        <td>(input) intensity image 1 (float) (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI-2&gt;</td>
+
+        <td>(input) intensity image 2 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input/output) DIFF parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>number of range looks (enter - for default: 1)</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>number of azimuth looks (enter - for default: 1)</td>
+      </tr>
+
+      <tr>
+        <td>[rpos]</td>
+
+        <td>center of region for comparison in range (enter - for
+        default: image center)</td>
+      </tr>
+
+      <tr>
+        <td>[azpos]</td>
+
+        <td>center of region for comparison in azimuth (enter - for
+        default: image center)</td>
+      </tr>
+
+      <tr>
+        <td>[offr]</td>
+
+        <td>initial range offset (enter - for default from
+        DIFF_par)</td>
+      </tr>
+
+      <tr>
+        <td>[offaz]</td>
+
+        <td>initial azimuth offset (enter - for default from
+        DIFF_par)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>correlation SNR threshold (enter - for default,
+        default:&nbsp; 7.000)</td>
+      </tr>
+
+      <tr>
+        <td>[patch]</td>
+
+        <td>correlation patch size (enter - for default
+        128,256,512,1024, default: 1024)</td>
+      </tr>
+
+      <tr>
+        <td>[cflag]</td>
+
+        <td>copy offsets to the range and azimuth offset
+        polynomials in DIFF_par (default=0:no&nbsp; 1:yes)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>init_offsetm 19990421.mli 19990422.mli
+  19990421_19990422.diff_par 3 3</samp></p>
+
+  <p>Determines an initial registration offset (in slant range and
+  azimuth) between the two indicated multilook intensity images
+  19990421.mli and 19990422.mli</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">init_offsetm</span> reads two
+  (multi-look) intensity images and the corresponding DIFF
+  parameter file. For a multi-look intensity image at a user
+  defined location, the two-dimensional cross correlation function
+  is calculated and the peak of the correlation function yields an
+  initial estimate of the offset between the images&nbsp; in slant
+  range and azimuth.</p>
+
+  <p>Confidence in the offset estimate is measured by comparing the
+  height of the correlation peak relative to the average level of
+  the correlation function to yield a correlation SNR. SNR values
+  greater than 7.0 indicate registration estimates better than 0.5
+  pixel.</p>
+
+  <p>Due to low contrast some additional multi-looking of the
+  images can improve the correlation between the images with some
+  loss of resolution. Generally operating with <span style=
+  "font-style: italic;">rlks=1</span> and <span style=
+  "font-style: italic;">azlks = 1</span> is recommended.</p>
+
+  <p>In some cases, when images have very few features, it may
+  become difficult to find a region where a reliable offset can be
+  measured. In this case, examine the image (for example with
+  dispwr), and locate an area where there are discernible features
+  such as lakes or mountains. Then note the range and azimuth
+  coordinates. These coordinates can then be entered as the
+  <span style="font-style: italic;">rpos</span> and <span style=
+  "font-style: italic;">azpos</span> command line parameters so
+  that the offset is estimated in the region containing the visible
+  features. In the case of a relatively small feature, reduce the
+  size of the patch to cover the area containing the feature. The
+  patch size must be large enough to however take into account the
+  range and azimuth offset between the 2 images.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  To optimize, both, robustness of the estimation as well as offset
+  estimation accuracy, <span style=
+  "font-style: italic;">init_offsetm</span> may be applied
+  iteratively, starting with stronger multi-looking (such as 3x3)
+  with consecutive reduction of the multi-looking to the full
+  resolution (i.e. 1x1).</p>
+
+  <p>In order to refine a geocoding lookup table, the offsets of a
+  transformed image can be determined and used to refine the
+  geocoding lookup table (program <a href=
+  "gc_map_fine.html">gc_map_fine</a>). This is usually a simulated
+  SAR intensity image as created with the program <a href=
+  "geocode.html">geocode</a> or <a href=
+  "pixel_area.html">pixel_area</a>.</p>
+
+  <p>In measuring the offset, the transformed image (i.e. for
+  example the simulated SAR image)should be taken as the reference
+  geometry, in order to assure that the correct sign is used in the
+  correction of the fine registration offsets. The user also has
+  the option to copy the range and azimuth offsets to the offset
+  polynomial constant terms. This is useful when performing a
+  geocoding refinement and there are insufficient areas in the
+  scene to generate an array of offsets. The user should select the
+  <span style="font-style: italic;">rpos</span> and <span style=
+  "font-style: italic;">azpos</span> parameters to match an area of
+  the scene with contrast. Generally, the constant range and
+  azimuth correction for the geocoding refinement is adequate.</p>
+
+  <p>In cases where there are few features in the image, the user
+  may select a smaller patch size using the patch command line
+  parameter. Valid values for the the patch size are 128,256,512,
+  and 1024.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 1-Jul-2015.
+</body>
+</html>

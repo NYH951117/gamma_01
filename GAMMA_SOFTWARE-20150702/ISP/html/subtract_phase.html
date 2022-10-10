@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: subtract_phase</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>subtract_phase</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/subtract_phase.c">subtract_phase.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  subtract_phase - Subtraction of phase image from complex
+  interferogram.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>subtract_phase &lt;interf_in&gt; &lt;phase_file&gt;
+  &lt;interf_out&gt; &lt;width&gt; [factor]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;interf_in&gt;</td>
+
+        <td>input interferogram (complex format: pairs of
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phase_file&gt;</td>
+
+        <td>interferometric phase data (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;interf_out&gt;</td>
+
+        <td>output interferogram (input interferogram - scaled
+        phase) (complex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line</td>
+      </tr>
+
+      <tr>
+        <td>[factor]</td>
+
+        <td>constant scale factor for input phase data
+        [default=1.0]</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>subtract_phase 1352_1610.flt 1352_1610.unw 1352_1610.diff
+  2500</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  subtract_phase subtracts a phase image from complex
+  interferogram. The phase of the output interferogram corresponds
+  to the phase of the input interferogram minus the phase of the
+  corresponding pixel in the input phase image. The magnitude of
+  the output interferogram is equal to the magnitude of the input
+  interferogram.<br>
+  <span style="font-style: italic;">subtract_phase</span> may be
+  used for example to subtract an unwrapped phase image from an
+  interferogram. This may be useful for the following:</p>
+
+  <p>a) to improve the phase unwrapping by subsequent filtering and
+  (if necessary) phase unwrapping of the flattened
+  interferogram<br>
+  b) obtain a coherence estimate which is not (or less) influenced
+  by the phase changes due to the terrain.&nbsp;</p>
+
+  <p><span style="font-style: italic;">subtract_phase</span> is
+  ncluded as a tool to explore and apply new methods to improve
+  phase unwrapping and coherence estimation.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Nov-2009.
+</body>
+</html>

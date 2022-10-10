@@ -1,0 +1,137 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$osf = 16;
+$scale = .3;	#display scale factor
+$exp = 0.5;	#display exponent
+$sz = 64; 	#size of window that is interpolated
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale);
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2012, Gamma Remote Sensing, v1.5 24-Apr-2012 clw ***
+*** Perform point target analysis on a stack of coregistered SLCs ***
+
+usage: $0 <RSLC_tab> <cal_dir> <r_samp> <az_samp> [osf]
+
+    RSLC_tab  (input) two column list of coregistered SLC filenames and SLC parameter filenames (including paths) (ascii)
+                1. SLC filename  (includes path)
+                2. SLC parameter filename (includes path)
+    cal_dir   directory for output calibration results    
+    r_samp    (input) calibration target range sample number
+    az_samp   (input) calibration target azimuth line number
+    osf       SLC over-sampling factor 2, 4, 8, 16, 32, 64 (default: $osf)
+    -s scale  (option) set image display scale factor (default: $scale)   
+    -e exp    (option) set image display exponent (default: $exp)   		       
+EOS
+
+$rslc_tab  = $ARGV[0];
+$cal_dir   = $ARGV[1];
+$r_samp = $ARGV[2];
+$az_samp  = $ARGV[3];
+
+if($#ARGV >= 4){
+  $osf = $ARGV[4];
+  ($osf >= 2  && $osf <= 64) or die "\nERROR: invalid over-sampling factor: $osf\n";
+}
+print "$0  @ARGV\n";
+
+open(RSLC_TAB, "<$rslc_tab") or die "\nERROR $0: table of resampled SLC images and parameter files does not exist: $rslc_tab\n\n";
+print "table of resampled SLC images and parameter files: $rslc_tab\n"; 
+-d $cal_dir or system("mkdir $cal_dir");
+
+$log = "$cal_dir/mk_ptarg_".$r_samp."_".$az_samp.".log";  
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+
+$time = localtime;
+print "start: $time  log file: $log\n";
+print "RSLC_tab:  $rslc_tab\n";
+print "cal. directory:  $cal_dir\n";
+print "point coordinates range: $r_samp   azimuth: $az_samp\n";
+print "over-sampling factor: $osf\n";
+
+print LOG "\n$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n";
+print LOG "RSLC_tab: $rslc_tab\n";
+print LOG "cal. directory: $cal_dir\n";
+print LOG "point coordinates range: $r_samp   azimuth: $az_samp\n";
+print LOG "over-sampling factor: $osf\n";
+
+$i = 1;
+#read in the contents of the RSLC_TAB file and store in arrays
+LINE: while (<RSLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+ 
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $slc[$i] = $fields[0];
+  $slc_par[$i] = $fields[1];
+  my ($s1, $dir1, $ext1) = fileparse($slc[$i], qr/\.[^.]*/); #extension is the last bit after the last period
+  
+  $ptr_image = "$cal_dir/".$s1.".ptarg";
+  $rplt = "$cal_dir/".$s1.".rplt";
+  $azplt = "$cal_dir/".$s1.".azplt";
+  $ptr_par = "$cal_dir/".$s1.".ptr_par";
+  $ptr_width = $sz * $osf;
+  $ptr_length = $sz * $osf;
+  $cmd = "ptarg_SLC $slc_par[$i] $slc[$i] $r_samp $az_samp $ptr_image $rplt $azplt $ptr_par $osf";
+
+  printf "\n%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  printf "$cmd\n";
+  printf "over-sampled SLC image of point: $ptr_image\n";
+  printf "range cut plot data: $rplt\n";
+  printf "azimuth cut plot data: $azplt\n";
+  printf "point target parameters: $ptr_par\n";
+  $ptarg_SLC_out = `$cmd`;
+  
+  printf LOG "\n%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  printf LOG "$cmd\n";
+  printf LOG $ptarg_SLC_out;
+  printf LOG "over-sampled SLC image of point: $ptr_image\n";
+  printf LOG "range cut plot data: $rplt\n";
+  printf LOG "azimuth cut plot data: $azplt\n";
+  close LOG;
+  
+  execute("rasmph $ptr_image $ptr_width $ptr_length 0 1 1 $scale $exp", $log);
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n"; 
+  $i++;
+}
+
+print LOG"\n";
+print "\n";
+close LOG;
+
+$time = localtime;
+print "processing end: $time\n";
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "processing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: ptarg_cal_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ptarg_cal_SLC</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ptarg_cal_SLC.c">ptarg_cal_SLC.c</a></i></p>
+
+  <p><strong>NAME<br></strong> <em style=
+  "font-style: italic;">ptarg_cal_SLC</em><span style=
+  "font-style: italic;">:&nbsp;</span> Point target analysis and
+  radiometric calibration of SLC images<br></p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>ptarg_cal_SLC
+  &lt;SLC_par&gt; &lt;SLC&gt; &lt;r_samp&gt; &lt;az_samp&gt;
+  &lt;psigma&gt; &lt;c_r_samp&gt; &lt;c_az_samp&gt;
+  &lt;ptr_image&gt; &lt;r_plot&gt; &lt;az_plot&gt; &lt;pcal&gt;
+  [osf] [win] [pltflg] [psz] [csz]<br></code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC image parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input) SLC image in FCOMPLEX or SCOMPLEX
+        format<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_samp&gt;</td>
+
+        <td>point target range sample number<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_samp&gt;</td>
+
+        <td>point target azimuth line number</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;psigma&gt;<br></td>
+
+        <td style="vertical-align: top;">radar cross-section of the
+        calibration target in m**2<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;c_r_samp&gt;<br></td>
+
+        <td style="vertical-align: top;">clutter region center
+        range sample number<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;c_az_samp&gt;<br></td>
+
+        <td style="vertical-align: top;">clutter region center
+        azimuth line number<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;ptr_image&gt;</td>
+
+        <td style="vertical-align: top;">(output) oversampled point
+        target image, with and without phase gradient, width is
+        osf*psz<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_plot&gt;</td>
+
+        <td>(output) range point target response plot data (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_plot&gt;</td>
+
+        <td>(output) azimuth point target response plot data (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pcal]<br></td>
+
+        <td style="vertical-align: top;">(output) measured point
+        target parameters and radiometric calibration factor (text
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td>[osf]</td>
+
+        <td>image over-sampling factor, 2, 4, 8, 16, 32, 64 (enter
+        - for default: 16)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[win]<br></td>
+
+        <td style="vertical-align: top;">(input) maximum search
+        window offset (samples) (enter - for default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pltflg]<br></td>
+
+        <td style="vertical-align: top;">plotting mode flag:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: none<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: output plots in PNG format
+        (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2: screen output and PNG format
+        plots<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 3: output plots in PDF
+        format<br></td>
+      </tr>
+
+      <tr>
+        <td>[psz]</td>
+
+        <td>point target region size (samples) (enter - for
+        default: 16)</td>
+      </tr>
+
+      <tr>
+        <td>[csz]</td>
+
+        <td>clutter region size (samples) (enter - for default:
+        16)</td>
+      </tr>
+
+      <tr>
+        <td>[c_image]</td>
+
+        <td>(output) clutter region image (FCOMPLEX format)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong> <samp>ptarg_cal_SLC 19990421.slc
+  19990421.slc.par 203 48 10.0 203 70</samp> <samp>cr2.slc
+  cr2.r_plot cr2.az_plot cr2.pcal</samp></p>
+
+  <p>Integrates the target backscatter over an 16x16 window about
+  the coordinates specified on the command line. Determines the
+  exact point target location of a calibration target, oversamples
+  the SLC about the target, and determines the range and azimuth
+  response. The average clutter level is determine from a region
+  close to the target.&nbsp; This information is used to determine
+  the absolute radiometric calibration factor.&nbsp; A text file
+  <span style="font-style: italic;">pcal</span> is generated that
+  contains the results of the radiometric analysis.<br></p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p><span style="font-style: italic;">ptarg_cal_SLC</span> is a
+  point target analysis tool used to determine the radiometric
+  calibration factor for SLC images given that the image contains a
+  calibration target with known radar cross section (RCS). The
+  input SLC (in FCOMPLEX or SCOMLEX format) is read and the
+  response of the point target at or near the indicated location is
+  analyzed. To estimate the approximate point target location the
+  SLC can be displayed using the display program <a href=
+  "../../DISP/html/DISP_reference_manual.html">disSLC</a>.&nbsp;
+  The user must also provide the center coordinates of a clutter
+  region chosen close to the point target and that is
+  representative of the area where the point target is
+  located.&nbsp; The radiometric calibration factor is determined
+  using the integral algorithm described by Gray et al. 1990
+  [1].<br></p>
+
+  <p>We start from an SLC that is corrected for antenna pattern,
+  slant range spreading loss, ellipsoidal corrected reference area,
+  except for the calibration constant.&nbsp; This means that the
+  SLC image is radiometrically corrected except for the calibration
+  constant and terrain topography effects. If this is not the case
+  then the SLC has to be corrected using <a href=
+  "radcal_SLC.html">radcal_SLC</a>.&nbsp; Sigma0 values have units
+  of m**2/m**2 (dimensionless) and Radar Cross Section is in units
+  of m**2.<br>
+  <br>
+  Then RCS (radar cross section) of a calibrated (sigma0) SLC pixel
+  is <span style="font-style: italic;">K*A*(Re**2 + Im**2)</span>,
+  where <span style="font-style: italic;">K</span> is the
+  radiometric calibration factor.&nbsp; The defined reference area
+  <span style="font-style: italic;">A</span> is given by
+  ground_range_pixel_spacing * azimuth_pixel_spacing.&nbsp; The
+  RCS&nbsp; of an area is given by the sum of RCS of the pixels
+  within the area.&nbsp; This includes the calibration target RCS
+  and clutter RCS.<br>
+  <br>
+  <span style="font-style: italic;">RCS_CR_with_clutter = K * SUM(A
+  * P_i)</span>&nbsp;<br></p>
+
+  <p>over the 16x16 region where the sum is of the individual pixel
+  intensities, <span style="font-style: italic;">P_i</span>,&nbsp;
+  defined as&nbsp; <span style="font-style: italic;">(Re**2
+  +Im**2)</span>.<br>
+  <br>
+  The clutter cross-section is determined using an area without the
+  target but has the same characteristics (area with the same
+  characteristics close to the calibration target).<br>
+  <br>
+  <span style="font-style: italic;">RCS_clutter_per_pixel = K*
+  SUM(A*P_i)/N_c&nbsp;</span><br></p>
+
+  <p>over the clutter estimation region(32*32), where <span style=
+  "font-style: italic;">N_c</span> is the number of pixels in the
+  clutter region(32*32).<br>
+  <br>
+  <span style="font-style: italic;">RCS_CR = RCS_CR_with_clutter
+  -&nbsp; (N * RCS_clutter_per_pixel)&nbsp;</span>&nbsp;<br></p>
+
+  <p>where N is number of samples in the 8x8 point target
+  region.<br>
+  <br>
+  We can now solve for the calibration constant <span style=
+  "font-style: italic;">K</span>:<br>
+  <br>
+  <span style="font-style: italic;">K =&nbsp; RCS_CR/(SUM(A * P_i)-
+  (N * SUM(A * P_i)/N_c))</span><br></p>
+
+  <p>Note: the two sums are for the region with the target, and the
+  clutter region without the target respectively.&nbsp; This
+  expression can be simplied by extracting A from within the&nbsp;
+  sums:<br>
+  <br>
+  <span style="font-style: italic;">K =&nbsp; RCS_CR/(A *
+  (SUM(P_i)- (N * SUM(P_i)/N_c))</span></p>
+
+  <p>The output pcal file has the following format:<br>
+  <samp><br>
+  #r_pix,&nbsp;&nbsp; az_pix,&nbsp;
+  r_pos,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; az_pos,&nbsp;&nbsp;
+  pk_mag,&nbsp;&nbsp;&nbsp; pk_phase_deg, r_3dB_width,
+  az_3dB_width, r_10dB_width, az_10dB_width, r_pslr_dB,
+  az_pslr_dB<br>
+  &nbsp;202.871&nbsp; 47.350&nbsp;&nbsp; 681125.223&nbsp;&nbsp;
+  81.996&nbsp;&nbsp; 1.48090e+03&nbsp;&nbsp;
+  -123.904&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1.771&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2.966&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3.118&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.277&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -21.669&nbsp;&nbsp;&nbsp; -23.996<br>
+  <br>
+  #cl_r_pix, cl_az_pix,&nbsp; cl_ave_pwr,&nbsp;
+  ptr_range,&nbsp;&nbsp; inc_angle, ptr/clutter_dB, beta0_cl_dB,
+  sigma0_cl_dB, K_beta0_dB, K_sigma0_dB<br>
+  &nbsp;203&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  70&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1.2616e+04&nbsp;&nbsp; 681125.399&nbsp;&nbsp;&nbsp;
+  0.74661&nbsp;&nbsp;&nbsp; 26.7047&nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp; -20.4380&nbsp;&nbsp;&nbsp;&nbsp;
+  -22.1183&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -61.4471&nbsp;&nbsp;
+  -63.1274</samp></p>
+
+  <p>The first line describes the point target parameters including
+  the following parameters:<samp><br></samp></p>
+
+  <p>
+  <samp>rpix:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  range pixel position of the target peak (samples)<br>
+  az_pix:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  azimuth pixel position of the target peak (lines)<br>
+  rpos:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  slant range of the pixel peak<br>
+  azpos:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  meters along-track position of the pixel peak<br>
+  pk_mag:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  magnitude of the peak<br>
+  pk_phase_deg:&nbsp;&nbsp;&nbsp; phase in degrees of the pixel
+  peak<br>
+  r_3dB_width:&nbsp;&nbsp;&nbsp;&nbsp; 3 dB range width of the peak
+  in meters<br>
+  az_3dB_width:&nbsp;&nbsp;&nbsp; 3 dB azimuth width of the peak in
+  meters<br>
+  r_10dB_width:&nbsp;&nbsp;&nbsp; 10 dB range width of the peak in
+  meters<br>
+  az_10dB_width&nbsp;&nbsp;&nbsp; 10 dB azimuth width of the peak
+  in meters<br>
+  r_pslr_dB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range peak
+  sidelobe ratio in dB<br>
+  az_pslr_dB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; azimuth peak
+  sidelobe ratio in dB<br></samp></p>
+
+  <p>The second line describes the clutter statistics and
+  radiometric calibration parameters:<br></p>
+
+  <p><samp>cl_r_pix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  clutter region center range pixel<br>
+  cl_az_pix&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; clutter
+  region center azimuth pixel (line) &nbsp;<br>
+  cl_ave_pwr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; clutter average
+  power level in<br>
+  ptr_range&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; point target
+  range<br>
+  inc_angle&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; incidence
+  angle at the point target<br>
+  ptr/clutter_dB&nbsp;&nbsp; ratio of the point target energy to
+  clutter in dB<br>
+  beta0_cl_dB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; beta0 of the clutter
+  region dB<br>
+  sigma0_cl_dB&nbsp;&nbsp;&nbsp;&nbsp; sigma0 of the clutter region
+  dB<br>
+  K_beta0_dB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; calibration
+  constant for beta0 dB<br>
+  k_sigma0_dB&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; calibration constant
+  for sigma0 dB</samp><samp><br></samp></p>
+
+  <p>For the point target response analysis, the SLC is oversampled
+  with an oversampling factor&nbsp; that can be set on the command
+  line using the <span style="font-style: italic;">osf</span>
+  parameter. The location of the intensity maximum is determined.
+  Centered at the intensity maximum the range and azimuth response
+  is determined and stored as text files and optionally plotted
+  using Gnuplot. Parameters estimated from the data include the
+  sub-pixel peak location, expressed in input SLC samples, the
+  signal intensity in dB, the signal intensity in linear scale, and
+  the signal phase. The over-sampled SLC around the point target is
+  saved as a 2-D image in FCOMPLEX format.&nbsp;<br></p>
+
+  <p>The required parameters in the SLC parameter file are:</p>
+
+  <p><code>date:&nbsp; YYYY MM DD&nbsp;&nbsp;&nbsp; (2012 10
+  15)<br>
+  i<samp>mage_format: &nbsp; &nbsp;&nbsp; (SCOMPLEX, FCOMPLEX)<br>
+  line_header_size: integer (should be nominally 0)<br>
+  range_samples : &nbsp; integer<br>
+  azimuth_lines:&nbsp;&nbsp;&nbsp; integer<br>
+  image_geometry:&nbsp; SLANT_RANGE<br>
+  range_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; 1<br>
+  azimuth_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; 1<br>
+  range_scale_factor:&nbsp;&nbsp;&nbsp; 1.0000<br>
+  azimuth_scale_factor:&nbsp; 1.0000<br>
+  azimuth_deskew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ON<br>
+  azimuth_angle:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  90.0 deg. (for right-looking)<br>
+  radar_frequency:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Hz<br>
+  range_pixel_spacing:&nbsp;&nbsp; meters<br>
+  azimuth pixel_spacing: meters<br>
+  near_range_slc:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  meters<br>
+  sar_to_earth_center:&nbsp;&nbsp; meters<br>
+  earth_semi_major_axis:&nbsp;&nbsp; 6378137.0000&nbsp;&nbsp; m<br>
+  earth_semi_minor_axis:&nbsp;&nbsp; 6356752.3141&nbsp;&nbsp; m<br>
+  number_of_state_vectors: 0<br></samp></code></p>
+
+  <p><samp><code>Other parameters should be set to
+  0.0</code><br></samp></p>
+
+  <p><span style="font-style: italic;">ptarg_cal_SLC</span>&nbsp;
+  estimates the the 3 dB and 10 dB peak widths in range and
+  azimuth, and the Peak to Side-Lobe Ratio (PSLR). The response
+  measured over a larger region including integrated sidelobe ratio
+  can be performed using the program <a href=
+  "ptarg_SLC.html">ptarg_SLC</a>. The search region for the point
+  target peak is located in the center of the data segment
+  extracted from the entire image as specified by the <span style=
+  "font-style: italic;">r_samp</span> and <span style=
+  "font-style: italic;">az_samp</span> parameters command-line
+  parameters. The size of the search region defaults to +/- 1 pixel
+  of the center coordinates but can be increase to +/- 4 samples by
+  entering a value for the <span style=
+  "font-style: italic;">win</span> command-line parameter. The
+  interpolated image has dimensions determined by the over-sampling
+  factor. The oversampled point target image is 256x256 for an
+  16x16 image oversampled with osf=16.&nbsp; Two images are written
+  to the output <span style="font-style: italic;">ptr_image.</span>
+  The first image has any linear phase trend removed, and the
+  second image is an interpolated version of the original SLC
+  segment.&nbsp;</p>
+
+  <p>The user can specify on the command line the size of the
+  point-target window and the size of the clutter window using the
+  command line parameters <span style=
+  "font-style: italic;">psz</span> and <span style=
+  "font-style: italic;">csz</span>&nbsp; The clutter window should
+  be at least as large as the window used for extracting the point
+  target.&nbsp; Increasing the size of the window for the point
+  target beyond where there is any return will only increase errors
+  since the contribution of the clutter has increased relative to
+  the point target energy. It should usually not be necessary to
+  change the size of the windows to differ from the default.</p>
+
+  <p>The user has the option to write out the data values in the
+  clutter region in FCOMPLEX format to a data file by specifying
+  the <span style="font-style: italic;">c_image</span> parameter.
+  This parameter is the name of the file created to contain the
+  data values from the clutter region.&nbsp; The clutter data are
+  not oversampled so that the number of data values per line and
+  the number of lines are equal to the value of the <span style=
+  "font-style: italic;">csz</span> command line parameter.<br></p>
+
+  <p><span style="font-weight: bold;">[1]</span> Gray, L.A., P.
+  Vachon, C. Livingstone, T. Lukowski, "Synthetic Aperture Radar
+  Calibration using Reference Reflectors," IEEE Transactions on
+  Geoscience and Remote Sensing, Vol. 28, No. 3, pp. 374-383, May
+  1990.<br></p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "ISP_users_guide.html">Users Guide</a>,&nbsp;<a href=
+  "ptarg_cal_MLI.html">ptarg_cal_MLI</a>,&nbsp; <a href=
+  "radcal_SLC.html">radcal_SLC</a>,&nbsp; <a href=
+  "ptarg_SLC.html">ptarg_SLC</a><br></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="charles_werner.html">CW</a>, last change 21-Oct-2013.
+</body>
+</html>

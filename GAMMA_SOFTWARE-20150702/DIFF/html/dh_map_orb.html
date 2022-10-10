@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF Reference Manual: dh_map_orb</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>dh_map_orb</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dh_map_orb.c">dh_map_orb.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">dh_map_orb</span> - Calculate
+  delta height and sensitivity of the interferometric phase with
+  respect to terrain height from the orbit geometry and
+  differential interferometric phase</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dh_map_orb &lt;SLC1_par&gt; &lt;SLC2R_par&gt;
+  &lt;OFF_par&gt; &lt;hgt&gt; &lt;dp&gt; &lt;dpdh&gt; &lt;dh&gt;
+  [SLC_ref_par] [int_mode]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-1 (reference
+        SLC of interferometric pair)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-2R (resampled
+        SLC of the pair)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP processing/offset parameter file (of
+        interferometric pair)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;hgt&gt;</td>
+
+        <td>(input) height map in the same geometry as the
+        interferogram (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dp&gt;</td>
+
+        <td>(input) interferogram phase - simulated phase (radians)
+        (float, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dpdh&gt;</td>
+
+        <td>(output) derivative of interferometric phase with
+        respect to height calculated using state vectors and local
+        height (radians/m) (float, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dh&gt;</td>
+
+        <td>(output) height difference calculated from dp using
+        dpdh (m) (float, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[SLC_ref_par]<br></td>
+
+        <td style="vertical-align: top;">(input) SLC parameter file
+        of the image used for geometric co-registration of SLC1 and
+        SLC2R (enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[int_mode]<br></td>
+
+        <td style="vertical-align: top;">&nbsp;(input)
+        interferometric acquisition mode:<br>
+        &nbsp;&nbsp;&nbsp; 0: single-pass mode (Tandem-X)<br>
+        &nbsp; &nbsp; 1: repeat-pass mode (default)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp><br>
+  dh_map_orb slc/20120429.TSX_HH.slc.par
+  slc/20120429.TDX_HH.slc.par
+  diff0_2d/20120429.TSX_HH_20120429.TDX_HH.off geo/perth_dem.rdc
+  diff0_2d/20120429.TSX_HH_20120429.TDX_HH.adf.unw
+  diff0_2d/20120429.TSX_HH_20120429.TDX_HH.dpdh
+  diff0_2d/20120429.TSX_HH_20120429.TDX_HH.dh
+  slc/20120429.TSX_HH.slc.par 0</samp></p>
+
+  <p>This program calculates a correction in height derived from
+  the differential interferometric phase of a Tandem-X image
+  pair.&nbsp; It also calculates the derivative phase the
+  interferometric phase with respect to terrain height.</p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p>When generating a differential interferogram a terrain model
+  resampled in the radar geometry is used to simulate the phase
+  related to terrain. The most accurate way to simulate the phase
+  is to determine the space-craft position for each pass based on
+  the SAR processing parameters and the orbital state
+  vectors.&nbsp; Due to limitations in the input terrain model
+  there is usually a residual phase in the differential
+  interferogram that is related to height error. <span style=
+  "font-style: italic;">dh_orb_map</span> estimates the derivative
+  of interferometric phase with respect to height. The
+  interferometric phase is determined using the same approach as
+  <a href="phase_sim_orb.html">phase_sim_orb</a>. The correction to
+  the DEM height <span style="font-style: italic;">dh</span> is
+  equal to the differential interferogram phase <span style=
+  "font-style: italic;">dphi</span> divided by the derivative of
+  phase with respect to height: <span style=
+  "font-style: italic;">dpdh</span><span style=
+  "font-family: Symbol;">.</span></p>
+
+  <p><span style="font-family: Symbol;">This program is especially
+  useful when there is no differential atmospheric phase as is the
+  case with Tandem-X data. The Tandem-X radar system consists of 2
+  satellites and simultaneously acquires the images of the
+  interferometric pair.&nbsp; If <span style=
+  "font-style: italic;">dh_map_orb</span> is used with repeat-pass
+  interferograms, then the atmospheric interferometric phase will
+  cause errors in <span style=
+  "font-style: italic;">dh</span>.</span> <span style=
+  "font-family: Symbol;">It is also possible to calculate a
+  correction to the DEM using a stack of differential
+  interferograms using the program <a href=
+  "../../IPTA/html/mb.html">mb</a> in the IPTA package. Since mb
+  uses a stack of interferograms this leads to a reduction in&nbsp;
+  the effect of atmospheric phase on the height correction
+  values.</span></p>
+
+  <p><span style="font-family: Symbol;">The user has the option to
+  select either single-pass or repeat-pass mode for the program.
+  For bistatic data, such as Tandem-X, the single-pass mode must be
+  selected. The SLC of the parameter file used for geometric
+  coregistration of the SLC data is required&nbsp; when the
+  reference scene SLC1_par differs from the geometric reference
+  scene.</span></p>
+
+  <p><span style="font-family: Symbol;">The sensitivity to height
+  of the interferogram is proportional to the perpendicular
+  component of the baseline. Bperp can be determined using the
+  program <a href="base_calc.html">base_calc</a>.&nbsp;</span></p>
+
+  <p><span style="font-family: Symbol;">In the case where there is
+  no DEM available to calculate the derivative, the derivative is
+  calculated at a mean height of 500 meters.</span></p>
+
+  <p><span style="font-family: Symbol;">The height correction
+  <span style="font-style: italic;">dh</span> can be added to the
+  existing DEM using the program <a href=
+  "../../DISP/html/float_math.html">float_math</a>. The dh and dpdh
+  data can be displayed using the program <a href=
+  "../../DISP/html/disdt_pwr24.html">disdt_pwr24</a> and <a href=
+  "../../DISP/html/rasdt_pwr24.html">rasdt_pwr24</a>.</span></p>
+
+  <p><span style="font-family: Symbol;"><strong>SEE
+  ALSO</strong><br>
+  <a href="phase_sim_orb.html">phase_sim_orb</a>, <a href=
+  "../../IPTA/html/mb.html">mb</a>, <a href=
+  "base_calc.html">base_calc</a></span></p>
+  <hr>
+  <span style="font-family: Symbol;"><a href=
+  "copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a> last change 4-Sep-2013.</span>
+</body>
+</html>

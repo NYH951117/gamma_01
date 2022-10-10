@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="generator" content="&lt;title">
+
+  <title></title>
+</head>
+
+<body>
+  IPTA Reference Manual: thres_im_pt
+
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>thres_im_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/thres_im_pt.c">thres_im_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  thres_im_pt -&nbsp;&nbsp; generate point list containing
+  coordinates of image points that satisfy constraints</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>thres_im_pt &lt;f_in&gt; &lt;width&gt; &lt;plist&gt;
+  &lt;t_min&gt; &lt;t_max&gt; &lt;rlks&gt;
+  &lt;azlks&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;f_in&gt;</td>
+
+        <td>(input) 2-D image data file (float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;<br></td>
+
+        <td>number of samples/row of f_in<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(output) point list of coordinates of all non-zero
+        points (int)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;t_min&gt;</td>
+
+        <td>minimum threshold value (enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;t_max&gt;</td>
+
+        <td>maximum threshold value (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks in the sampled data geometry</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>number of azimuth looks in the sampled data
+        geometry</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong><samp>thres_im_pt cc 1750 pt_cc
+  .5</samp><code><br></code></p>
+
+  <p>generates a point list containing the pixel coordinates of all
+  points in file cc that have values greater than or equal to 0.5.
+  Each line off the file cc has 1750 values.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code <code><acronym>thres_im_pt.c</acronym></code> in
+  ./src, executable version <code>thres_im_pt</code> in
+  ./bin.<br></p>
+
+  <p><strong>DESCRIPTION</strong><code><br>
+  thres_im_pt</code> generates a point list of pixel coordinates in
+  the input file <span style="font-weight: bold;">f_in</span> that
+  are greater than or equal to <span style=
+  "font-weight: bold;">t_min</span> and less than or equal to
+  <span style="font-weight: bold;">t_max</span>. The input data
+  file <span style="font-weight: bold;">f_in</span> must be in
+  float format (32-bit floating point). If a - is put in place of
+  either <span style="font-weight: bold;">t_min</span> or
+  <span style="font-weight: bold;">t_max,</span> that constraint is
+  not considered.<br></p>
+
+  <p>This program is useful for determining point target candidates
+  from a data file contain spectral coherence information generated
+  by <a href="sp_stat.html">sp_stat</a>. It is also possible to use
+  averaged spectral coherence information generaged by applying
+  <a href="sp_stat.html">sp_stat</a> to a stack of coregistered SLC
+  images and averaging the indivdual output files using <a href=
+  "./ave_image.html">ave_image</a>. Another application is to use
+  this program to generate a point list from the standard
+  interferometric correlation evaluated on a raster using the ISP
+  program <em>cc_wave</em><code><br></code></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <code><a href="ave_image.html">ave_image</a>,</code> <a href=
+  "sp_stat.html">sp_stat</a><br></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Mar-2004.</p>
+</body>
+</html>

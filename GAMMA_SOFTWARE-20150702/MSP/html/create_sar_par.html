@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: create_sar_par</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>create_sar_par</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/create_sar_par.c">create_sar_par.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>create_sar_par</em> - Create and
+  edit MSP SAR sensor parameter files.</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code>create_sar_par &lt;sar_par&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;sar_par&gt;</td>
+
+      <td>SAR sensor parameter file</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong><samp>create_sar_par
+  SAR.par</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  create_sar_par creates or edits an existing SAR Sensor Parameter
+  file. The Sensor Parameter file describes the raw data format,
+  radar chirp and analog to digital converter (ADC)
+  characteristics, antenna radiometric calibration file, and the
+  nominal antenna pointing angles.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  For the SAR sensor on the ERS1/2 and JERS-1 satellites the
+  existing SAR sensor parameter files in the ./sensors directory
+  are recommended for use. Processing of RadarSat-1 and SIR-C uses
+  a SAR sensor parameter file created by the programs <a href=
+  "RSAT_raw.html">RSAT_raw</a> and <a href=
+  "SIRC_proc.html">SIRC_proc</a>. Due to the many data acquisition
+  modes of these radars the sensor parameter file is generated from
+  parameters in the CEOS leader file.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR sensor parameter file</a>, <a href=
+  "RSAT_raw.html">RSAT_raw</a>, <a href=
+  "SIRC_proc.html">SIRC_proc</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-Oct-2000.
+</body>
+</html>

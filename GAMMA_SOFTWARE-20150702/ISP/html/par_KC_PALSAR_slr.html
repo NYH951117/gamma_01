@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: par_KC_PALSAR_slr</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate ISP SLC parameter file and data file for Kyoto and
+  Carbon (KC) ALOS PALSAR strip data in slant range geometry</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_KC_PALSAR_slr.c">par_KC_PALSAR_slr.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_KC_PALSAR_slr - reads KC PALSAR data file and related
+  parameter files as provided by JAXA EORC and creates the data
+  file and ISP SLC/MLI parameter file in the format used by GAMMA
+  software. In Wide-Beam mode, the along-track doppler polynomials
+  can be converted to the Gamma geometrical model and written to a
+  text file.</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b><big><span style=
+  "font-family: monospace;">par_KC_PALSAR_slr &lt;facter_m&gt;
+  &lt;CEOS_leader&gt; &lt;SLC_par&gt; &lt;pol&gt; &lt;pls_mode&gt;
+  &lt;KC_data&gt; &lt;pwr&gt; [fdfdd]
+  [fdtab]</span></big></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;facter_m&gt;</td>
+
+        <td>(input) PALSAR Kyoto-Carbon parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lea&gt;</td>
+
+        <td>(input) PALSAR Kyoto-Carbon leader file (LED*)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP image parameter file (example:
+        yyyymmdd.mli.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pol&gt;</td>
+
+        <td>Polarization e.g. HH or HV</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pls_mode&gt;</td>
+
+        <td>PALSAR acquisition mode:<br>
+        &nbsp; 1 - Fine Beam Single<br>
+        &nbsp; 2 - Fine Beam Double<br>
+        &nbsp; 3 - Wide Beam</td>
+      </tr>
+
+      <tr>
+        <td>[KC_data]</td>
+
+        <td>(input) PALSAR KC data strip, named sar.Q*</td>
+      </tr>
+
+      <tr>
+        <td>[pwr]</td>
+
+        <td>(output) PALSAR KC data strip expressed as SAR
+        intensity, (example: yyyymmdd.mli)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">fdtab<br></td>
+
+        <td style="vertical-align: top;">(output) table of output
+        polynomials, one polynomial/block used as input to
+        gc_map_fd<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p><big><samp>par_KC_PALSAR_slr
+  facter_m.dat LED_ALPSR 20070101.mli.par HH 1 sar.Q16_64_HH
+  20070101.mli</samp></big><br>
+
+  <p>Reads the PALSAR KC parameter file facter_m.dat, the leader
+  file LED-ALPSR, the image data file sar.Q16_64_HH (Fine Beam
+  Single mode) and writes the ISP SLC/MLI parameter file
+  20070101.mli.par and the corresponding data file expressed as SAR
+  intensity, 20070101.mli</p><big><samp>par_KC_PALSAR_slr
+  facter_m.dat LED_ALPSR 20070401.mli.par HH 3 sar_Q16.dat_HH
+  20070401.mli 20070401.fdtab</samp></big>
+
+  <p>Reads the PALSAR KC parameter files facter_m.dat, the leader
+  file LED-ALPSR and the image data file sar_Q16.dat_HH (Wide Beam
+  mode) and writes the ISP SLC/MLI parameter file 20070101.mli.par
+  and the corresponding data file expressed as SAR intensity,
+  20070101.mli. The doppler centroid data are converted from the
+  JAXA model to the Gamma model and written out to the fdtab
+  file.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  Reads PALSAR KC parameter files and data file as provided by JAXA
+  EORC and creates the ISP SLC/MLI parameter file in the format
+  used by GAMMA software. The ISP/MLI parameter file describes the
+  image provided by JAXA EORC. This program also generates a new
+  data file that expresses the KC data as SAR intensity.&nbsp; KC
+  data strips are provided in little endian, short integer and
+  amplitude format. The program supports the conversion of the KC
+  data strip to SAR intensity. The program supports KC PALSAR
+  images in slant range format. In the case of Wide-Beam data
+  (mode=3) the along-track and cross-track doppler information
+  provided in the facter_m.dat file can be converted to the Gamma
+  geometrical reference model and written to the file <span style=
+  "font-style: italic;">fdtab</span>. This file can then be
+  ingested as input by the DIFF&amp;GEO program <span style=
+  "font-style: italic;">gc_map_fd</span>. This program has the
+  capability to use the doppler information stored in a table
+  rather than using the doppler polynomials in the image parameter
+  file. This approach is useful when the doppler changes are not
+  well modelled using a low order polynomial.</p>
+
+  <p>The program requires information on the polarization of the
+  image and the acquisition mode. For FBD images the program must
+  be run for each single image.<br>
+  To radiometrically calibrate the image (only absolute calibration
+  is needed) a correction factor of -83 dB has to be applied. The
+  radiometric calibration is supported by the program <a href=
+  "radcal_SLC.html">radcal_MLI</a>.</p>
+
+  <p>Below an example is given for the KC PALSAR image called
+  sar.Q16_64_HH:</p><big><big style=
+  "font-family: monospace;"><font font="" size=
+  "1"><big><big>radcal_MLI 20070101.mli 20070101.mli.par -
+  20070101.cmli - 0 0 0 0 -83.0</big></big></font></big></big>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, ms last change 03-May-2010.
+</body>
+</html>

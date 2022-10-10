@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: multi_GRD_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>multi_GRD_SLC</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/multi_GRD_SLC.c">multi_GRD_SLC.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>multi_GRD_SLC</em> - Generates
+  multi-look ground range intensity images from complex SAR SLC
+  data.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>multi_GRD_SLC
+  &lt;SLC_PROC_par&gt; &lt;GRD_PROC_par&gt; &lt;SLC_image&gt;
+  &lt;GRD_image&gt; [rlks] [azlks] [interp_mode] [samp_spacing]
+  [t_start] [t_end]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC PROC_par&gt;</td>
+
+        <td>(input) MSP SLC processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI PROC_par&gt;</td>
+
+        <td>(output) MSP ground range (GRD) multi-look image
+        parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_image&gt;</td>
+
+        <td>(input) SLC image file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;GRD_image&gt;</td>
+
+        <td>(output) ground range projected image file</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>number of range looks (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>number of azimuth looks (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[interp_mode]</td>
+
+        <td>interpolation mode<br>
+        &nbsp;&nbsp; 0:nearest neighbor<br>
+        &nbsp; 1=SINC (default)</td>
+      </tr>
+
+      <tr>
+        <td>[samp_spacing]</td>
+
+        <td>multilook image sample spacing (m) (default = azimuth
+        SLC spacing * azlks)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[gr_start]<br></td>
+
+        <td style="vertical-align: top;">starting ground range
+        (meters) (enter - for default: start of data)<br></td>
+      </tr>
+
+      <tr>
+        <td>[t_start]</td>
+
+        <td>starting time (s) for output, (default - : start of
+        data)</td>
+      </tr>
+
+      <tr>
+        <td>[t_end]</td>
+
+        <td>ending time (s) for output, (default: end of data)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong><samp>multi_GRD_SLC p8560.slc.par
+  p8560.grd.par 8560.slc 8560.grd 1 3 12.5</samp></p>
+
+  <p>Generates ground range multi-look images products. It can be
+  used to generate multi-look detected images that are similar to
+  the ESA PRI product for ERS data.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This program resamples the SLC image into ground range geometry,
+  detects the these data to make a multi-look image. The detected
+  intensity image is stored as 4-byte floating point numbers. The
+  program uses either nearest-neighbor or SINC interpolation to
+  resample the output image into the desired sample spacing. The
+  ground range is determined by making a best spherical fit to the
+  earth curvature across track, perpendicular to the heading. The
+  distance from the satellite ground track to the start of the
+  image swath in ground range is stored in the range to start of
+  image parameter in the p*.grd.par file.</p>
+
+  <p>The number of looks selected in range and azimuth should
+  roughly correspond to the desired image spacing to achieve the
+  best radiometric and geometric fidelity. If the output image
+  spacing is not specified, then the azimuth spacing, determined by
+  multiplying the SLC azimuth spacing by the number of azimuth
+  looks, is selected for the ground range spacing. In order to
+  emulate the PRI product from ESA for the ERS AMI instrument, the
+  number of range looks is 1, azimuth looks is 3, and the pixel
+  spacing is specified to be 12.5 meters. The output image
+  parameters image size, pixel spacing [m], number of looks are
+  written to new processing parameter file.</p>
+
+  <p>The default two-dimensional SINC interpolation is gemetrically
+  and radiometrically more accurate than the nearest neighbor
+  interpolation algorithm.&nbsp; Either method permits independent
+  selection of the output spacing and the number of looks in range
+  and azimuth.</p>
+
+  <p>The user can also specify the starting time and nominal ending
+  time of the image on the command line. The true ending time of
+  the data is an integer number of time intervals between lines.
+  The time interval between output lines <strong>dt</strong> is
+  determined by the azimuth line spacing in the output
+  <strong>az_grd</strong>, the pulse repetition interval
+  <strong>prf</strong>, and the azimuth spacing between lines in
+  the SLC image <strong>az_slc</strong>.</p>
+
+  <p><strong>dt = az_grd * az_slc / prf</strong><br></p>
+
+  <p>SLC input image data may be displayed using <a href=
+  "MSP_display.html">disSLC</a>, the (real) output multi-look image
+  using <a href="MSP_display.html">dispwr</a>. Alternately, the
+  intensity image can be scaled and stored as a SUN raster or BMP
+  format image using <a href="MSP_display.html">raspwr</a> or
+  <a href="MSP_display.html">ras_linear</a>.<br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_display.html">dispwr</a>, <a href=
+  "MSP_display.html">raspwr</a>, <a href=
+  "MSP_display.html">ras_linear</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "gamma.html">Gamma Remote Sensing</a>. 2010<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Oct-2010.
+</body>
+</html>

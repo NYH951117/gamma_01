@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: radcal_PRI</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>radcal_PRI</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/radcal_PRI.c"><i>radcal_PRI.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>radcal_PRI</em> Radiometric calibration and format conversion
+  of ESA processed PRI images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>radcal_PRI &lt;PRI&gt; &lt;PRI_par&gt; &lt;GRD&gt;
+  &lt;GRD_par&gt; [K_dB] [inc_ref] [roff] [nr] [loff]
+  [nl]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;PRI&gt;</td>
+
+      <td>(input) PRI ground-range image (short integer,
+      sqrt(backscat. intensity))</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PRI_PAR&gt;</td>
+
+      <td>(input) SLC parameter file of input PRI ground-range
+      image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;GRD&gt;</td>
+
+      <td>(output) calibrated ground-range image (float, backscat.
+      intensity)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;GRD_par&gt;</td>
+
+      <td>(output) SLC parameter file of output calibrated
+      ground-range image</td>
+    </tr>
+
+    <tr>
+      <td>[K_dB]</td>
+
+      <td>calibration factor in decibels (default: 59.75 dB)<br>
+      ERS1 (D-Paf,ESRIN): 58.24 dB, ERS2 (D-Paf,ESRIN,I-Paf,UK-Paf
+      after 1997): 59.75 dB, ENVISAT ASAR: 55.0 dB (all modes),
+      details see product specifications and ESA publications.</td>
+    </tr>
+
+    <tr>
+      <td>[inc_ref]</td>
+
+      <td>reference incidence angle in deg. (default: 23.0
+      deg.)<br>
+      ENVISAT ASAR: 90.0 deg. (all modes)</td>
+    </tr>
+
+    <tr>
+      <td>[roff]</td>
+
+      <td>offset to starting range sample (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[nr]</td>
+
+      <td>number of range pixels to copy (default=0, to end of
+      line)</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>offset to starting line (default=0, 1 header line in the
+      input file is assumed for ERS)</td>
+    </tr>
+
+    <tr>
+      <td>[nl]</td>
+
+      <td>number of lines to copy (default=to end of file)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>radcal_PRI 1352.pri 1352.pri.par 1352.grd 1352.grd.par
+  59.75 23.0 216 1024 311 1000</samp></p>
+
+  <p>Extracts 1000 lines of 1024 range pixels skipping 216 range
+  samples and 311 lines. The data values are radiometrically
+  calibrated and the format is converted from ESA compressed format
+  (short integers) to float.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>radcal_PRI</em> extracts the user defined section from the
+  input PRI and writes it out as an ground-range intensity image
+  (GRD) file. The format is converted from short integer magnitude
+  to floating point intensity. A new GRD parameter file is created
+  to describe the geometry of the output image. Starting, center,
+  and ending times, and the near, center and far ground ranges are
+  calculated for the exrtracted segment.</p>
+
+  <p>For further processing the special geometry of the
+  ground-range images (which deviates from the range Doppler
+  geometry of the slc images) has to be taken into account. As a
+  consequence not the geocoding programs written for the range
+  Doppler geometry but the special programs for geocoding of
+  gorund-range images are used. For the first range pixel and first
+  azimuth line of the input PRI to coincide with the output image
+  select <samp>roff=0</samp> and <samp>loff=0</samp>, respectively.
+  For the input PRI (in ESA compressed format) the program assumes
+  that there is 1 header line. For the output GRD there is no
+  header line at the start of the file. The input PRI (in ESA
+  compressed format) typically has a 12 Byte file header, as
+  documented in the PRI parameter file. The output GRD file has no
+  file header.</p>
+
+  <p>For ERS PRI data the radiometric calibration uses the
+  procedure specified by ESA in the ERS SAR Calibration
+  documentation. There you also find a more complete list of
+  calibration constants for different ESA Pafs. The digital numbers
+  of the PRI product are squared, multiplied with the calibration
+  constant, and multiplied with the ratio between the sine of the
+  incidence angle and the sine of the reference incidence angle
+  (value = DN*DN*K*sin(inc)/sin(inc_ref)).</p>
+
+  <p>For ENVISAT ASAR PRI data the radiometric calibration uses the
+  procedure specified by ESA in the ASAR documentation. The digital
+  numbers of the PRI product are squared, multiplied with the
+  calibration constant, and multiplied with the the sine of the
+  incidence angle (value = DN*DN*K*sin(inc)), which corresponds to
+  the procedure used for ERS with a reference incidence angle of
+  90.0 degrees. The calibration constant shall be 55.0 dB for all
+  ASAR modes. For early data products this may not be valid though.
+  Please check more complete information on the calibration
+  constants as provided by ESA.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The selected image section may extend outside of the range of
+  valid data of the input PRI. The NULL value assigned to these
+  pixels is (0.0,0.0).</p>
+
+  <p>Ground-range image can be converted to slant-range geometry
+  using the program <a href="GRD_to_SR.html">GRD_to_SR</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="par_PRI.html">par_PRI</a>, <a href=
+  "GRD_to_SR.html">GRD_to_SR</a>, <a href=
+  "SR_to_GRD.html">SR_to_GRD</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2001.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 17-Apr-2001.</p>
+</body>
+</html>

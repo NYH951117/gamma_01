@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF Reference Manual: par_RISAT_geo</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate DEM parameter, MLI parameter and image files for
+  RISAT-1 MLI data in GEOTIFF format<br></h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_RISAT_geo.c">par_RISAT_geo.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_RISAT_geo - reads RISAT-1 GeoTIFF data as provided by ISRO
+  and creates a DEM parameter file, ISP image parameter, and MLI
+  image&nbsp; file in the format used by GAMMA software.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_RISAT_geo &lt;annotation_XML&gt; &lt;GEOTIFF&gt;
+  &lt;polarization&gt; &lt;DEM_par&gt; &lt;MLI_par&gt;
+  &lt;MLI&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;annotation_XML&gt;</td>
+
+        <td>(input) RISAT-1 product annotation XML file
+        (product.xml)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;GeoTIFF&gt;</td>
+
+        <td>(input) image data file in GeoTIFF format (example:
+        scene_RH/imagery_RH.tif)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">
+        &lt;polarization&gt;<br></td>
+
+        <td style="vertical-align: top;">polarization RV, RH of the
+        GeoTIFF image data<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(output) DEM parameter file</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;MLI_par&gt;<br></td>
+
+        <td style="vertical-align: top;">(output) ISP image
+        parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI&gt;</td>
+
+        <td>(output) calibrated image intensity data extracted from
+        the GeoTIFF scaled using calibration factor
+        (FLOAT)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES<br></strong><br>
+  <samp>par_RISAT_geo product.xml scene_RH/imagergy_RH.tif RH
+  20120507.dem_par 20120507.mli.par 20120507.mli<br></samp></p>
+
+  <p>Reads the&nbsp; XML annotation<span style=
+  "font-style: italic;">product.xml</span> file<span style=
+  "font-style: italic;">,</span> GeoTiff data file <span style=
+  "font-style: italic;">imagergy_RH.tif</span>. Output is the DEM
+  parameter file <span style=
+  "font-style: italic;">20120507.dem_par</span>, and the MLI image
+  and MLI image parameter files <span style=
+  "font-style: italic;">20120507.mli</span> and <span style=
+  "font-style: italic;">20120507.mli.par</span>.<br></p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p>The RISAT-1 radar satellite was launched in April 2012 by ISRO
+  the Indian Space Research Organization&nbsp; <a href=
+  "http://www.isro.org/satellites/RISAT-1.aspx">http://www.isro.org/satellites/RISAT-1.aspx</a>
+  and produces data in the GeoTIFF format similar to that produced
+  by RADARSAT-2.&nbsp; This program generates the MLI parameter
+  file and DEM parameter file that describe the scene. The program
+  extracts the MLI image data from the GeoTIFF file and writes it
+  as float format to a file with dimensions as described in the
+  DEM_par and MLI parameter file. The MLI data are in big-endian
+  byte order.<br></p>
+
+  <p>Here is an example DEM parameter file:<br></p>
+
+  <p><code>Gamma DIFF&amp;GEO DEM/MAP parameter file<br>
+  title: 1821sd1_s20 RH<br>
+  DEM_projection:&nbsp;&nbsp;&nbsp;&nbsp; UTM<br>
+  data_format:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; REAL*4<br>
+  DEM_hgt_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000<br>
+  DEM_scale:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1.00000<br>
+  width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7321<br>
+  nlines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8214<br>
+  corner_north:&nbsp; 2446510.516&nbsp;&nbsp; m<br>
+  corner_east:&nbsp;&nbsp;&nbsp; 204043.324&nbsp;&nbsp; m<br>
+  post_north:&nbsp;&nbsp;&nbsp;&nbsp; -4.5000000&nbsp;&nbsp; m<br>
+  post_east:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4.5000000&nbsp;&nbsp; m<br>
+  <br>
+  ellipsoid_name: WGS84<br>
+  ellipsoid_ra:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6378137.000&nbsp;&nbsp; m<br>
+  ellipsoid_reciprocal_flattening:&nbsp; 298.2572236<br>
+  <br>
+  datum_name: WGS 1984<br>
+  datum_shift_dx:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_shift_dy:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_shift_dz:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  datum_scale_m:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000e+00<br>
+  datum_rotation_alpha:&nbsp; 0.00000e+00&nbsp;&nbsp; arc-sec<br>
+  datum_rotation_beta:&nbsp;&nbsp; 0.00000e+00&nbsp;&nbsp;
+  arc-sec<br>
+  datum_rotation_gamma:&nbsp; 0.00000e+00&nbsp;&nbsp; arc-sec<br>
+  datum_country_list Global Definition, WGS84, World<br>
+  <br>
+  projection_name: UTM<br>
+  projection_zone:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  46<br>
+  false_easting:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  500000.000&nbsp;&nbsp; m<br>
+  false_northing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000&nbsp;&nbsp; m<br>
+  projection_k0:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.9996000<br>
+  center_longitude:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  93.0000000&nbsp;&nbsp; decimal degrees<br>
+  center_latitude:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000000&nbsp;&nbsp; decimal degrees<br></code></p>
+
+  <p>And the associated MLI image parameter file:<br></p>
+
+  <p><code>Gamma Interferometric SAR Processor (ISP) - Image
+  Parameter File<br>
+  <br>
+  title:&nbsp;&nbsp;&nbsp;&nbsp; 1821sd1_s20 RH<br>
+  sensor:&nbsp;&nbsp;&nbsp; RISAT-1 STRIPMAP-96 RH<br>
+  date:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2012&nbsp; 5&nbsp; 7 23 46
+  20.85000<br>
+  start_time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  85580.850000&nbsp;&nbsp; s<br>
+  center_time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000000&nbsp;&nbsp; s<br>
+  end_time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000000&nbsp;&nbsp; s<br>
+  azimuth_line_time:&nbsp;&nbsp;&nbsp;&nbsp; 0.0000000e+00&nbsp;
+  s<br>
+  line_header_size:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  range_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7321<br>
+  azimuth_lines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8214<br>
+  range_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2<br>
+  azimuth_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4<br>
+  image_format:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  FLOAT<br>
+  image_geometry:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  GEOCODED<br>
+  range_scale_factor:&nbsp;&nbsp;&nbsp;&nbsp; 1.0000000e+00<br>
+  azimuth_scale_factor:&nbsp;&nbsp; 1.0000000e+00<br>
+  center_latitude:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  21.9343905&nbsp;&nbsp; degrees<br>
+  center_longitude:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  90.2943160&nbsp;&nbsp; degrees<br>
+  heading:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  192.3745575&nbsp;&nbsp; degrees<br>
+  range_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4.500000&nbsp;&nbsp; m<br>
+  azimuth_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4.500000&nbsp;&nbsp; m<br>
+  near_range_slc:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  466177.2722&nbsp;&nbsp; m<br>
+  center_range_slc:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000&nbsp;&nbsp; m<br>
+  far_range_slc:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000&nbsp;&nbsp; m<br>
+  first_slant_range_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00000&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; s m 1 m^-1 m^-2 m^-3<br>
+  center_slant_range_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00000&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; s m 1 m^-1 m^-2 m^-3<br>
+  last_slant_range_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.00000&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; s m 1 m^-1 m^-2 m^-3<br>
+  incidence_angle:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  39.5356&nbsp;&nbsp; degrees<br>
+  azimuth_deskew:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ON<br>
+  azimuth_angle:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -90.0000&nbsp;&nbsp; degrees<br>
+  radar_frequency:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.3500000e+09&nbsp;&nbsp; Hz<br>
+  adc_sampling_rate:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  8.3330000e+07&nbsp;&nbsp; Hz<br>
+  chirp_bandwidth:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7.5000000e+07&nbsp;&nbsp; Hz<br>
+  prf:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2915.111940&nbsp;&nbsp; Hz<br>
+  azimuth_proc_bandwidth:&nbsp;&nbsp; 2341.28857&nbsp;&nbsp; Hz<br>
+  doppler_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; Hz&nbsp;&nbsp;&nbsp;&nbsp;
+  Hz/m&nbsp;&nbsp;&nbsp;&nbsp; Hz/m^2&nbsp;&nbsp;&nbsp;&nbsp;
+  Hz/m^3<br>
+  doppler_poly_dot:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; Hz/s&nbsp;&nbsp; Hz/s/m&nbsp;&nbsp;
+  Hz/s/m^2&nbsp;&nbsp; Hz/s/m^3<br>
+  doppler_poly_ddot:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; Hz/s^2 Hz/s^2/m Hz/s^2/m^2 Hz/s^2/m^3<br>
+  receiver_gain:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000&nbsp;&nbsp; dB<br>
+  calibration_gain:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000&nbsp;&nbsp; dB<br>
+  sar_to_earth_center:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000&nbsp;&nbsp; m<br>
+  earth_radius_below_sensor:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.0000&nbsp;&nbsp; m<br>
+  earth_semi_major_axis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6378137.0000&nbsp;&nbsp; m<br>
+  earth_semi_minor_axis:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6356752.3141&nbsp;&nbsp; m<br>
+  number_of_state_vectors:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</code><br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_users_guide.html">Users Guide</a>, <a href=
+  "../../ISP/html/par_RISAT_SLC.html">par_RISAT_SLC</a>,&nbsp;
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "../src/typedef_DIFF.h">typedef_DIFF.h</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2012.<br>
+  <a href="charles_werner.html">CW</a>, last change 21-Dec-2012.
+</body>
+</html>

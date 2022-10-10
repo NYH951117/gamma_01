@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>IPTA Reference Manual: pt2geo</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>pt2geo</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pt2geo.c">pt2geo.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">pt2geo</span> - Convert point
+  range-Doppler pixel coordinates to map pixel and map projection
+  coordinates</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>usage: pt2geo &lt;plist&gt; &lt;pmask&gt;
+  &lt;SLC_par&gt; &lt;ppos&gt; &lt;phgt&gt; &lt;DEM_par&gt;
+  &lt;DIFF_par&gt; &lt;rlks&gt; &lt;azlks&gt; &lt;plist_map&gt;
+  &lt;pmap_coord&gt; [plat_lon][mode][pmask_dem]</b></code></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC/MLI ISP image parameter file of the
+        geometric reference scene (text format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;<br></td>
+
+        <td>(input) point data stack of interpolated point
+        positions (fcomplex, enter - to use plist
+        coordinates)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(input) point data stack of initial DEM terrain heights
+        used for image geocoding(float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DIFF/GEO DEM parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par<br></td>
+
+        <td>(input) DIFF/GEO offset parameter file (using the
+        simulated image as reference!)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>(input) number of range looks for the images used to
+        measure the refinement offset polynomial<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>(input) number of azimuth looks for the images used to
+        measure the refinement offset polynomial</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist_map&gt;<br></td>
+
+        <td>(output) point list in map pixel coordinates (enter -
+        for none, integer)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmap_coord&gt;</td>
+
+        <td>(output) interpolated point positions in map projection
+        coordinates (easting,northing or lat,lon)&nbsp; (enter -
+        for none, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plat_lon&gt;</td>
+
+        <td>(output) point positions in latitude and longitude
+        (deg.) (enter - for none, float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;mode&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) testing if points
+        are within DEM_par bounds:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;&nbsp; 0: all points accepted even if outside of
+        DEM_par<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: test if points are within DEM_par bounds
+        (default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">pmask_dem<br></td>
+
+        <td style="vertical-align: top;">(output) point data stack
+        of mask values for points within DEM_par bounds<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <code>pt2geo pt_5 pmsk1 19980814.rslc.par - phgt0 pas.dem_par
+  pas.diff_par 1 1 plist_map pmap plat_lon 1
+  pmsk1_dem<br></code></p>
+
+  <p>The point list pt_5 (only those in where <span style=
+  "font-style: italic;">pmsk1</span>[i]=1) are converted to map
+  projection point coordinates. The map projection and map geometry
+  are described in <span style=
+  "font-style: italic;">pas.dem_par</span>. The map pixel
+  coordinates are stored in <span style=
+  "font-style: italic;">plist_map</span> and the easting and
+  northing of each point are in the <span style=
+  "font-style: italic;">pmap</span> stack. Lengths of the stacks
+  <span style="font-style: italic;">plist_map</span> and
+  <span style="font-style: italic;">pmap</span> are identical to
+  <span style="font-style: italic;">plist.</span>&nbsp; Refinement
+  polynomials in <span style=
+  "font-style: italic;">pas.diff_par</span> are used to modify the
+  pixel coordinates in <span style=
+  "font-style: italic;">plist</span> such that can be transformed
+  to the correct projection coordinates.&nbsp; Only points within
+  the <span style="font-style: italic;">DEM_par</span> are listed
+  in the output data files. A mask file is generated with values
+  set to 1 for all non-zero points within the <span style=
+  "font-style: italic;">DEM_par</span> bounds.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">pt2geo</span> is used to
+  transform point locations in range-Doppler SAR coordinates into
+  map projection and lat/lon geographic coordinates. The input can
+  either be the reference point positions in the <span style=
+  "font-style: italic;">plist</span> or the subpixel accurate
+  positions in the <span style="font-style: italic;">ppos</span>
+  data stack. The output of the program is a list&nbsp; of pixel
+  coordinates <span style="font-style: italic;">plist_map</span>
+  similar to the <span style="font-style: italic;">plist</span>,
+  but the coordinate values correspond to the map projection pixel
+  coordinates in the image of the scene projected into a map
+  projection such as UTM.</p>
+
+  <p>The geo-referencing refinement procedure uses a geo-referenced
+  image in the desired projection. This can either be generated
+  using <span style="font-style: italic;">gc_map</span> that uses a
+  DEM as input or from an optical sensor (e.g. Landsat). This image
+  is transformed to SAR range-Doppler geometry using DIFF/GEO
+  program geocode. Offsets between the actual SAR image and
+  the&nbsp; geo-referenced image transformed to SAR geometry with
+  program <span style=
+  "font-style: italic;">offset_pwrm</span>.&nbsp; The offsets from
+  <span style="font-style: italic;">offset_pwrm</span> are used to
+  calculate the offset polynomials stored in the DIFF_par using
+  program <span style=
+  "font-style: italic;">offset_fitm</span>.<br></p>
+
+  <p>It is possible that the actual SAR image has multiple looks in
+  range and azimuth. Since the point coordinates are relative to
+  the SLC geometry, the number of looks used in the images used to
+  determine the offsets (<span style=
+  "font-style: italic;">rlks</span> and <span style=
+  "font-style: italic;">azlks</span>) are required as command line
+  input parameters. It is essential that the geo-referenced image
+  is used as the reference image when measuring offsets.&nbsp; The
+  reference SAR image is resampled into map coordinates using
+  program <span style="font-style: italic;">geocode_back</span>.
+  The programs <span style="font-style: italic;">geocode,
+  offset_pwrm, offset_fitm,</span> and <span style=
+  "font-style: italic;">geocode_back</span> are part of the
+  DIFF/GEO package and are described there.<br></p>
+
+  <p>The <span style="font-style: italic;">phgt</span> data stack
+  can either be the original DEM heights or heights improved using
+  IPTA. In the case where the original DEM heights are used, the
+  points will map to the same relative locations in both the SAR
+  image and the geo-referenced image using the original DEM.&nbsp;
+  If the improved IPTA adjusted heights are used, then the map
+  coordinates will be improved but will be different than the
+  corresponding image points in the 2D geo-referenced
+  image.<br></p>
+
+  <p>The point coordinates can then be drawn on the geo-referenced
+  image using IPTA program <span style=
+  "font-style: italic;">ras_pt</span>.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ras_pt.html">ras_pt</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015,<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 15-Jun-2015.
+</body>
+</html>

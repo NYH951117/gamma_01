@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ISP Reference Manual: SLC_deramp</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_deramp</h2>
+
+  <p><i>ANSI-C program:</i>&nbsp;<a href=
+  "../src/SLC_deramp.c">SLC_deramp.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_deramp - Calculate and subtract Doppler phase from an SLC</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  &nbsp; <code><b>SLC_deramp &lt;SLC1_tab&gt; &lt;SLC2_tab&gt;
+  &lt;s1&gt; &lt;bn1&gt; &lt;s2&gt; &lt;bn2&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) SLC data file (fcomplex or scomplex
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par1&gt;</td>
+
+        <td>(input) SLC parameter file with Doppler
+        information</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(output) SLC with Doppler phase removed (or added)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par2&gt;</td>
+
+        <td>(output) SLC parameter file with Doppler
+        information</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mode &gt;</td>
+
+        <td>mode of operation:<br>
+        &nbsp;&nbsp;&nbsp; 0: subtract Doppler phase (deramp)<br>
+        &nbsp;&nbsp;&nbsp; 1: add Doppler phase ramp (reramp)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dopph&gt;</td>
+
+        <td>(output) Doppler phase (FLOAT)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p>Apply azimuth deramp to a single burst from a Sentinel-1 TOPS
+  acquisition, and save the deramp phase:</p>
+
+  <p><code>SLC_deramp 20140809_iw1_vv_4.slc
+  20140809_iw1_vv_4.slc.par 20140809_iw1_vv_4_deramp.slc
+  20140809_iw1_vv_4_deramp.slc.par 0</code>
+  <code>20140809_iw1_vv_4_deramp.dph</code></p>
+
+  <p>Output is written into
+  <code>20140809_iw1_vv_4_deramp.slc</code>. The deramp phase
+  function to <code>20140809_iw1_vv_4_deramp.dph.</code><br></p>
+
+  <p><strong>DESCRIPTION<br>
+  <br></strong> <em>SLC_deramp</em> calculates the Doppler phase by
+  integration of the Doppler function in the SLC_par.&nbsp; In the
+  case of TOPS mode data from Sentinel-1, this doppler polynomial
+  is calculated by <a href=
+  "SLC_burst_copy.html">SLC_burst_copy</a>.</p>
+
+  <p>For Spotlight Mode from TerraSAR-X,&nbsp; the along-track
+  change in Doppler rate polynomial can be calculated from the raw
+  data doppler polynomial and the FM rate provided with the SLC
+  annotation.</p>
+
+  <p>The Doppler phase that is applied to the data is calculated by
+  simple integration of the Doppler function with respect to
+  azimuth time.&nbsp; The Doppler phase function is set to 0.0 at
+  the azimuth center line of the SLC.</p>
+
+  <p>An example of running <span style=
+  "font-style: italic;">SLC_deramp</span> is shown below:</p>
+
+  <p><code>$ SLC_deramp 20140809_iw1_vv_4.slc
+  20140809_iw1_vv_4.slc.par 20140809_iw1_vv_4_deramp.slc
+  20140809_iw1_vv_4_deramp.slc.par 0<br>
+  *** Calculate and subtract Doppler phase from an SLC image
+  ***<br>
+  *** Copyright 2014, Gamma Remote Sensing, v1.2 24-Oct-2014 clw
+  ***<br>
+  <br>
+  SLC-1
+  file:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  20140809_iw1_vv_4.slc<br>
+  SLC parameter file 1: 20140809_iw1_vv_4.slc.par<br>
+  SLC-1 title:
+  s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.tiff<br>
+
+  SLC-1 radar sensor: S1A IW IW1 VV<br>
+  SLC format: FCOMPLEX<br>
+  <br>
+  mode: subtract Doppler phase ramp (deramp)<br>
+  number of bytes/input SLC image line:&nbsp;&nbsp; 170024<br>
+  number SLC image lines in the
+  file:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1629<br>
+  number of
+  samples/line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  21253<br>
+  radar center frequency: 5.405000e+09<br>
+  Doppler poly. coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -103.51893 -4.54061e-04&nbsp; 2.50805e-09<br>
+  Doppler rate poly. coeff.:&nbsp; 1.73851e+03 -1.68100e-03<br>
+  <br>
+  &nbsp;index&nbsp;&nbsp;&nbsp; range (m)&nbsp;&nbsp;&nbsp;&nbsp;
+  fd (Hz)&nbsp;&nbsp; fddot (Hz/s)<br>
+  ***********************************************<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;
+  800420.5701&nbsp;&nbsp;&nbsp; -92.2791&nbsp;&nbsp; 1781.0891<br>
+  &nbsp; 2000&nbsp;&nbsp; 805079.6941&nbsp;&nbsp;&nbsp;
+  -94.3947&nbsp;&nbsp; 1772.9291<br>
+  &nbsp; 4000&nbsp;&nbsp; 809738.8181&nbsp;&nbsp;&nbsp;
+  -96.5102&nbsp;&nbsp; 1764.8360<br>
+  &nbsp; 6000&nbsp;&nbsp; 814397.9421&nbsp;&nbsp;&nbsp;
+  -98.6257&nbsp;&nbsp; 1756.8105<br>
+  &nbsp; 8000&nbsp;&nbsp; 819057.0661&nbsp;&nbsp;
+  -100.7412&nbsp;&nbsp; 1748.8532<br>
+  &nbsp;10000&nbsp;&nbsp; 823716.1901&nbsp;&nbsp;
+  -102.8568&nbsp;&nbsp; 1740.9648<br>
+  &nbsp;12000&nbsp;&nbsp; 828375.3141&nbsp;&nbsp;
+  -104.9723&nbsp;&nbsp; 1733.1459<br>
+  &nbsp;14000&nbsp;&nbsp; 833034.4381&nbsp;&nbsp;
+  -107.0878&nbsp;&nbsp; 1725.3971<br>
+  &nbsp;16000&nbsp;&nbsp; 837693.5621&nbsp;&nbsp;
+  -109.2033&nbsp;&nbsp; 1717.7192<br>
+  &nbsp;18000&nbsp;&nbsp; 842352.6861&nbsp;&nbsp;
+  -111.3189&nbsp;&nbsp; 1710.1126<br>
+  &nbsp;20000&nbsp;&nbsp; 847011.8101&nbsp;&nbsp;
+  -113.4344&nbsp;&nbsp; 1702.5782<br>
+  <br>
+  <br>
+  &nbsp;line&nbsp;&nbsp;&nbsp;&nbsp; time (s)&nbsp;&nbsp;&nbsp;
+  range (m)&nbsp;&nbsp;&nbsp; phase (rad)<br>
+  ***********************************************<br>
+  &nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp; 60954.8193&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp; 16379.271<br>
+  &nbsp;&nbsp; 200&nbsp;&nbsp; 60955.2304&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp; 9520.982<br>
+  &nbsp;&nbsp; 400&nbsp;&nbsp; 60955.6415&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp; 4508.881<br>
+  &nbsp;&nbsp; 600&nbsp;&nbsp; 60956.0526&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp; 1342.967<br>
+  &nbsp;&nbsp; 800&nbsp;&nbsp; 60956.4637&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 23.241<br>
+  &nbsp; 1000&nbsp;&nbsp; 60956.8748&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 549.703<br>
+  &nbsp; 1200&nbsp;&nbsp; 60957.2859&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp; 2922.351<br>
+  &nbsp; 1400&nbsp;&nbsp; 60957.6971&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp;&nbsp; 7141.188<br>
+  &nbsp; 1600&nbsp;&nbsp; 60958.1082&nbsp;&nbsp;
+  825174.496&nbsp;&nbsp;&nbsp; 13206.211<br>
+  <br>
+  lines: 1629&nbsp;&nbsp; width: 21253<br>
+  output SLC: 20140809_iw1_vv_4_deramp.slc<br>
+  output SLC parameter file: 20140809_iw1_vv_4_deramp.slc.par<br>
+  <br>
+  user time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2.690<br>
+  system time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.100<br>
+  elapsed time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.830</code><br>
+  <br>
+  <strong>SEE ALSO</strong></p>
+
+  <p><a href="SLC_par.html">SLC_par</a>,&nbsp; <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "file:///Users/cw/SVN_repos/GAMMA_SOFTWARE/current_version/ISP/html/SLC_burst_copy.html">
+  SLC_burst_copy</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  last change 10-Dec-2014
+</body>
+</html>

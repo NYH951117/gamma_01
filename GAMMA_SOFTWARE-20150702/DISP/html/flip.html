@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: flip</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>flip</h2>
+
+  <p><i>ANSI-C program: <a href="../src/flip.c">flip.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  flip - flip data right/left, top/bottom or both</p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>flip &lt;infile&gt;
+  &lt;outfile&gt; &lt;width&gt; [format] [sense]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="2">
+    <tr>
+      <td>&lt;infile&gt;</td>
+
+      <td>input data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;outfile&gt;</td>
+
+      <td>output data file (flipped)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[format]</td>
+
+      <td>input/output file format flag<br>
+      (default=0:float, 1:fcomplex, 2:scomplex, 3:uchar,
+      4:short)</td>
+    </tr>
+
+    <tr>
+      <td>[sense]</td>
+
+      <td>flip sense flag<br>
+      (default=1:right/left, 2:top/bottom, 3:right/left and
+      top/bottom)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong> <samp>flip 1352_1610.flt
+  1352_1610.flt_flipped 2500 1</samp></p>
+
+  <p>right/left flipping of file consisting of fcomplex
+  data.</p><samp>flip 1352.pri_flipped 1352.pri 2500 1 2</samp>
+
+  <p>top/bottom flipping of file consisting of float
+  data.</p><samp>flip 1352.pri_flipped 1352.pri 2500 4 3</samp>
+
+  <p>right/left and top/bottom flipping of file consisting of short
+  integers.</p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>flip</em> reads the input
+  data in indicated format, and will flip the image depending on
+  the value of the <em>sense</em> command line parameter. The
+  program can flip the data either right/left, top/bottom or both.
+  Flipped data are written to disk in the same format.</p>
+
+  <p>The supported formats are float, short integer, unsigned char,
+  fcomplex (pairs of float), and scomplex (pairs of short).</p>
+  <hr align="left">
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2001.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Dec-2001.</p>
+</body>
+</html>

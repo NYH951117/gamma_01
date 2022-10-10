@@ -1,0 +1,259 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing -->
+<!-- uw020924 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: gec_map,
+  gec_map_grd</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>gec_map</h2>
+
+  <p><i>ANSI-C program: <a href="../src/gec_map.c">gec_map.c</a>,
+  <a href="../src/gec_map.c">gec_map_grd.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  gec_map - Geocoding lookup table derivation for ellipsoid
+  corrected geocoding.<br>
+  gec_map_grd - Geocoding lookup table derivation for ellipsoid
+  corrected geocoding of SAR image in ground-range / azimuth
+  coordinates.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gec_map &lt;SLC_par&gt; &lt;OFF_par&gt;
+  &lt;DEM/MAP_par&gt; &lt;href&gt; &lt;DEM/MAP_seg_par&gt;
+  &lt;lookup_table&gt; [lat_ovr] [lon_ovr] [sim_sar] [u] [v] [inc]
+  [psi] [pix] [ls_map]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) ISP SLC or MLI image parameter file (slant range
+      geometry)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ISP_par&gt;</td>
+
+      <td>(input) ISP/offset parameter file, enter - if geocoding
+      SLC or MLI data</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_par&gt;</td>
+
+      <td>(input) DEM parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;href&gt;</td>
+
+      <td>(input) elevation reference [m]</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_seg_par&gt;</td>
+
+      <td>DEM/MAP segment parameters used for geocoding If this
+      file exists, then the bounds of the DEM segment used for
+      geocoding are read from the parameter file, otherwise the
+      bounds are estimated using the SLC parameters and state
+      vectors, and written to the new parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lookup_table&gt;</td>
+
+      <td>(output) geocoding lookup table</td>
+    </tr>
+
+    <tr>
+      <td>[lat_ovr]</td>
+
+      <td>latitude DEM oversampling factor (default=2.0)</td>
+    </tr>
+
+    <tr>
+      <td>[lon_ovr]</td>
+
+      <td>longitude DEM oversampling factor (default=2.0)</td>
+    </tr>
+  </table><b>Remark: enter - as filename to avoid creation of
+  corresponding output file</b>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gec_map 8560.slc.par 8560_8059.off dv_utm.par 400.0
+  8560_8059.utm.par 8560_8059.utm_to_rdc 2 2</samp></p>
+
+  <p>Creates geocoding lookup table based for ellipsoid corrected
+  geocoding (oversampling factors in latitude and longitude 2.0, a
+  reference elevation of 400.0 m is used).</p>
+
+  <p><samp>gec_map_grd 8560.grd.par dv_utm.par 400.0 8560.utm.par
+  8560.utm_to_grd 2 2</samp></p>
+
+  <p>Creates geocoding lookup table based for ellipsoid corrected
+  geocoding (oversampling factors in latitude and longitude 2.0, a
+  reference elevation of 400.0 m is used).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code gec_map.c and gec_map_grd.c in ./src. For compilation
+  adjust and use Makefile: Executable versions gec_map and
+  gec_map_grd in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP and DIFF type definition files <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  gec_map calculates complex valued geocoding lookup table based on
+  the MAP projection and the SAR imaging geometry. The geocoding
+  lookup table has the dimension of the DEM/MAP segment and
+  contains the corresponding SAR coordinates as complex valued
+  numbers with the real part corresponding to the real valued
+  column and the imaginary part corresponding to the real valued
+  row number.</p>
+
+  <p>If the interferogram/offset parameter file is not available
+  because geocoding is desired of an image not related to an
+  interferogram, such as an MLI image from a SAR processor, a - may
+  be entered instead of the parameter file name. In this case the
+  required parameters are extracted from the SLC/MLI parameter
+  file. The program <a href=
+  "create_diff_par.html">create_diff_par</a> can then be used to
+  create the DIFF/GEO parameter file used to measure offsets
+  between a simulated SAR image and the actual image in order to
+  correct the geocoding map produced by gec_map.</p>
+
+  <p>A DEM/MAP segment covering the area of the SAR image is
+  determined from the input DEM/MAP parameter file which may cover
+  a much larger area than covered by the SAR data. The indicated
+  oversampling rates in range and azimuth are also considered in
+  the definition of the output DEM/MAP parameter file (by modifying
+  the map pixel spacing, and number of pixels necessary to cover
+  the SAR data). This allows to generate geocoded products at user
+  defined spatial resolution.</p>
+
+  <p>Notice that the geocoding lookup table calculated is based on
+  the map projection and SAR geometry information. In particular
+  the orbit data is usually not perfectly accurate. The geocoding
+  lookup table is used by the programs <a href=
+  "geocode.html">geocode</a> and <a href=
+  "geocode_back.html">geocode_back</a> for forward and backward
+  geocoding. The geocoding lookup table may be inverted using the
+  program <a href=
+  "gec_map_inversion.html">gec_map_inversion</a>.</p>
+
+  <p>gec_map_grd has the same functionality as gec_map, but for SAR
+  images in ground-range / azimuth coordinates (instead of
+  slant-range / azimuth). No ISP/offset parameter file is asked for
+  on the command line.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The following DEM/MAP projections are supported:</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><strong>Keyword</strong></td>
+
+      <td><strong>Projection</strong></td>
+    </tr>
+
+    <tr>
+      <td>EQA</td>
+
+      <td>Equiangular</td>
+    </tr>
+
+    <tr>
+      <td>UTM</td>
+
+      <td>Universal Transverse Mercator</td>
+    </tr>
+
+    <tr>
+      <td>TM</td>
+
+      <td>Transverse Mercator (Germany, Finland, Italy, and
+      others)</td>
+    </tr>
+
+    <tr>
+      <td>OMCH</td>
+
+      <td>Oblique Mercator (Switzerland)</td>
+    </tr>
+
+    <tr>
+      <td>LCC</td>
+
+      <td>Lambert Conformal Conic (France)</td>
+    </tr>
+
+    <tr>
+      <td>PS</td>
+
+      <td>Polar Stereographic</td>
+    </tr>
+
+    <tr>
+      <td>SCH</td>
+
+      <td>SAR Coordinates used at JPL</td>
+    </tr>
+
+    <tr>
+      <td>PC</td>
+
+      <td>Polyconic Projection</td>
+    </tr>
+
+    <tr>
+      <td>AEAC</td>
+
+      <td>Albers Equal Area Conic</td>
+    </tr>
+  </table>
+
+  <p>For Terrain Corrected Geocoding based on a DEM provided in map
+  geometry the programs <a href="gc_map.html">gc_map</a> and
+  <a href="gc_map.html">gc_map_grd</a> can be used.</p>
+
+  <p>For Terrain Corrected Geocoding (GTC) based on height
+  information given in SAR range-Doppler coordinates (typically
+  estimated using SAR interferometry) the program <a href=
+  "gc_insar.html">gc_insar</a> can be used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="gc_map.html">gc_map</a>, <a href=
+  "gc_map.html">gc_map_grd</a>, <a href=
+  "gc_insar.html">gc_insar</a>, <a href="geocode.html">geocode</a>,
+  <a href="geocode_back.html">geocode_back</a>, <a href=
+  "gec_map_fine.html">gc_map_fine</a>, <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "gec_map_inversion.html">gc_map_inversion</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Mar-2004.</p>
+</body>
+</html>

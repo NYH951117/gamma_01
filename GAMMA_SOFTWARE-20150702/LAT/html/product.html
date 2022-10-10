@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: product</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>product</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/product.c">product.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  product - Calculation of product=(data_1 )*(datat_2) betweeen two
+  images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>product &lt;data_1&gt; &lt;data_2&gt; &lt;product&gt;
+  &lt;width&gt; [bx] [by] [weights_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;pwr1&gt;</td>
+
+        <td>(input) data file 1 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwr2&gt;</td>
+
+        <td>(input) data file 2 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;product_out&gt;</td>
+
+        <td>(output) product &nbsp;data_1 * data_2 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[bx]</td>
+
+        <td>box size in range for averaging (before multiplication,
+        default=5)</td>
+      </tr>
+
+      <tr>
+        <td>[by]</td>
+
+        <td>box size in azimuth for averaging (before
+        multiplication, default=bx)</td>
+      </tr>
+
+      <tr>
+        <td>[wgt_flag]</td>
+
+        <td>weighting mode:<br>
+        &nbsp; 0: no weighting (default)<br>
+        &nbsp; 1: linearly weighting<br>
+        &nbsp; 2: gaussian weighting&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>product 1352_1610.pwr1 1352_1610.pwr2 1352_1610.product
+  2500 15 15 1</samp></p>
+
+  <p>In the selected example both images are averaged using a 15 x
+  15 pixels window before the product between the averaged images
+  1352_1610.pwr1/1352_1610.pwr2 is calculated. An increase of the
+  backscattering between image 1352_1610.pwr1 and 1352_1610.pwr2
+  results in products smaller than 1.0.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  product estimates the product between two backscatter intensity
+  images. Due to the speckle noise of SAR images it is very
+  important to first sufficiently filter the individual images
+  before calculation of the product. The program product does this
+  filtering using an running average filter with userdefined filter
+  size and optional weighting function.<br>
+  The input and the output data are binary files of type float.<br>
+  The size of the window used for the filtering and the weighting
+  function to apply may be selected. For weights_flag=0 no
+  weighting function is applied, i.e. all filter coefficients are
+  set to 1. For weights_flag=1 a linear weighting function is
+  applied, i.e. the filter coefficients decrease linearly with
+  inclreasing distance to the center of the filter window. For
+  weights_flag=2 a Gaussian weighting function is applied, i.e. the
+  filter coefficients decrease with increasing distance to the
+  center of the filter window following a Gauss function.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 23-Sep-2005..</p>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: lin_comb_ref</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>lin_comb_ref</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/lin_comb_ref.c">lin_comb_ref.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  lin_comb-ref - Calculate linear combination of 2 images (float)
+  with option to add or subtract the scaled average of a specified
+  reference region</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>lin_comb_ref &lt;f1&gt; &lt;f2&gt; &lt;constant&gt;
+  &lt;factor1&gt; &lt;factor2&gt; &lt;f_out&gt; &lt;width&gt;
+  [roff] [loff] [nr] [nl] [zflag]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;f1&gt;</td>
+
+        <td>(input) input data file 1 (float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;f2&gt;</td>
+
+        <td>&nbsp;(input) input data file 2,&nbsp; reference scene
+        if this mode selected by selecting a region with roff and
+        loff (float)</td>
+      </tr>
+
+      <tr>
+        <td>constant</td>
+
+        <td>constant value to add to output<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor1&gt;</td>
+
+        <td>factor1 to multiply with f1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor2&gt;</td>
+
+        <td>factor2 to multiply with f2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;f_out&gt;</td>
+
+        <td>output file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>range pixel offset to center of the reference region in
+        f2, (default: -1, otherwise center of reference
+        region)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>line offset to center of the reference region<br></td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to average in the reference
+        region (enter - for default = 16)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>&nbsp;number of lines average in the reference region
+        (enter - for default= 16)</td>
+      </tr>
+
+      <tr>
+        <td>[zero_flag]</td>
+
+        <td>interpretation of 0.0 data values:<br>
+        &nbsp;&nbsp;&nbsp; 0: interpreted as missing value
+        (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: 0.0 is valid data value<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong></p>
+
+  <p><code><samp>lin_comb_ref 20020831_20021111.adf.unw
+  20021229_20030428.adf.unw 0. 1 -1 diff_phase.unw
+  600<br></samp></code></p>
+
+  <p>Reads the two float format files <span style=
+  "font-style: italic;">20020831_20021111.adf.unw
+  20021229_20030428.adf.unw</span>. The constant is 0.0, and the
+  scaling factors are 1.0 and -.0 respectively. The difference of
+  the data in the two two files is written to the output file
+  <span style="font-style: italic;">diff_phase.unw</span>. Each
+  line is 600 samples.<br></p>
+
+  <p><code><samp>lin_comb_ref 20020831_20021111.adf.unw
+  20020831_20021111.adf.unw 0. 1 -1 b.unw 600 100 100 16
+  16<br></samp></code></p>
+
+  <p>Reads the two float format files <span style=
+  "font-style: italic;">20020831_20021111.adf.unw
+  20021229_20030428.adf.unw</span>.&nbsp; The second file is used
+  to provide a reference value determined by averaging the data in
+  a 16x16 region centered on the coordinate 100,100. The average
+  value is multiplied by factor2 and added to the sum. The constant
+  is 0.0, and the scaling factors are 1.0 and -1.0
+  respectively.&nbsp;<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">lin_comb_ref</span> calculates
+  the linear combination of 2 float format files. Scale factors and
+  a constant can be used to scale the individual data.<br></p>
+
+  <p>There is the option to use the second file as a source for
+  reference values. A region can be specified centered at
+  roff,loff. The values in this region are averaged and used as the
+  data value for the second file.<br></p>
+
+  <p>Values 0.0 of the input data files may either be interpreted
+  as NULL values (zero_flag=0) or as valid data. In the case of an
+  interpretation as NULL values 0.0 is written to the output file
+  as soon as at least one of the input data files has NULL value
+  for a pixel.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 12-Feb-2013.
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="GENERATOR" content="Adobe PageMill 3.0 Win">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: swap_bytes</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2000 Gamma Remote Sensing --><!-- cw/uw000426 -->
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>swap_bytes</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/swap_bytes.c">swap_bytes.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">swap_bytes</span> - Byte order
+  swapping between big_endian and little_endian&nbsp; number
+  formats on different computer platforms.&nbsp; Computers based on
+  the&nbsp; SUN SPARC, HP PA-RISC, and IBM PowerPC&nbsp; and use
+  the big-endian byte order for internal data representation. Linux
+  and Windows PCs (x86 and x86-64 architecture) use the
+  little-endian byte order.&nbsp; All Gamma data files follow the
+  big-endian byte order. Note that&nbsp; this is not the native
+  byte order for the x86 processor.&nbsp; Reading this data into
+  other programs that are not in the Gamma software requires either
+  that the byte-order is swapped using swap_bytes or that the the
+  program has the capability to read big-endian format.&nbsp;
+  MATLAB and python have the capability to read either big or
+  little endian data irrespective of the platform.<br></p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>swap_bytes &lt;infile&gt; &lt;outfile&gt;
+  &lt;type&gt;</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>infile</td>
+
+        <td>input data file</td>
+      </tr>
+
+      <tr>
+        <td>outfile</td>
+
+        <td>output data file</td>
+      </tr>
+
+      <tr>
+        <td>type</td>
+
+        <td>data type flag:<br>
+        &nbsp; 2: (1,2) --&gt; (2,1.) (short integer, scomplex)<br>
+        &nbsp; 4: (1,2,3,4.) --&gt; (4,3,2,1) (integer, float,
+        fcomplex)<br>
+        &nbsp; 8: (1,2,3,4,5,6,7,8) --&gt; (8,7,6,5,4,3,2,1)
+        (double)</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <strong>EXAMPLE</strong><br>
+
+  <p><code><samp>swap_bytes</samp></code> <code>19990421.mli
+  19990421_le.mli 4</code></p>
+
+  <p>Swaps byte order for a 4-byte floating point
+  file.</p><samp>swap_bytes</samp> <code>19990421.slc
+  19990421_le.slc 2</code><br>
+  <br>
+  Swaps the&nbsp; byte order for scomplex&nbsp; ( pairs of short
+  integer) data.
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <em>swap_bytes</em> reads the input data file, swaps the byte
+  order, and writes out the swapped byte order data to the output
+  data file. <em>swap_bytes</em> supports swapping of different
+  binary data types:</p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td><strong>Data type</strong></td>
+
+        <td><strong>swap_type</strong></td>
+      </tr>
+
+      <tr>
+        <td>2-byte short integer</td>
+
+        <td>2</td>
+      </tr>
+
+      <tr>
+        <td>4-byte integer</td>
+
+        <td>4</td>
+      </tr>
+
+      <tr>
+        <td>4-float</td>
+
+        <td>4</td>
+      </tr>
+
+      <tr>
+        <td>8-byte double</td>
+
+        <td>8</td>
+      </tr>
+
+      <tr>
+        <td>scomplex (pairs of 2-byte short integer)</td>
+
+        <td>2</td>
+      </tr>
+
+      <tr>
+        <td>fcomplex (pairs of 4-byte float)</td>
+
+        <td>4</td>
+      </tr>
+    </tbody>
+  </table><br>
+  The data files produced by the Gamma software are homogeneous, so
+  that conversion from one endian convention to the other is
+  readily accomplished.<br>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Jun-2012
+</body>
+</html>

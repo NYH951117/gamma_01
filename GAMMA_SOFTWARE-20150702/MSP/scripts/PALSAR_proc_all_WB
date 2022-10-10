@@ -1,0 +1,284 @@
+#!/usr/bin/perl
+use FileHandle;
+
+$az_patch = 16384;	#default patch azimuth patch size
+$autof_min = 10.0;	#autofocus minimum SNR
+$cal_fact = -41.84;	#default absolute calibration factor in dB for PALSAR SCANSAR data
+$RFI_filt = 1;		#default is to turn on RFI filtering for PALSAR
+$PRE_EXT = 0;		#default pre-azimuth aperture extension in lines
+$POST_EXT = 0;		#default post-azimuth aperture extension in lines
+$NR_EXT = 100;		#default near-range swath extension
+$FR_EXT = 100;		#default far-range swath extension
+$K_BETA = 2.12;		#Kaiser window beta parameter
+$scale = 0.6;		#intensity scaling factor for raspwr
+$exp = 0.4;		#display exponent
+
+if (($#ARGV + 1) < 8){die <<EOS ;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.3 19-Jun-2014 clw ***
+*** ALOS PALSAR SLC generation from raw WB ScanSAR data  ***
+
+usage: $0 <proc_list> <raw_dir> <rc_dir> <SLC_dir> <MLI_dir> <rlks> <azlks> <SLC_format> [az_patch] [autof_snr]
+    proc_list	(input) processing list (6 columns): 
+    		  1. scene identifier  
+		  2. offset in echoes to start of processed data (enter - for default)
+		  3. number of echoes to process (enter - for default)
+		  4. range offset in samples (enter - for default)
+		  5. number of range samples to process (enter - for default)
+		  6. Doppler centroid for scene at center swath (Hz)
+		  7. Doppler slope for scene at center swath (Hz/m) 
+		  8. azimuth processing bandwidth fraction (.1 --> 1.0)
+    raw_dir	directory containing raw data files 
+    rc_dir	directory to contain range compressed data (rc data is deleted)
+    SLC_dir	directory to contain SLC data 
+    MLI_dir	directory to contain multilook intensity (MLI) files derived from SLC data
+    rlks	range looks for MLI image
+    azlks	azimuth looks for MLI image
+    SLC_format	output SLC image format:
+                  0: FCOMPLEX  
+		  1: SCOMPLEX 
+    az_patch    azimuth compression processing patch size (default: $az_patch)
+    autof_snr   minimum SNR threshold for autofocus, 0.0 to turn off autofocus (nominal: $autof_min)
+    
+    NOTE: current directory is denoted by .
+    
+EOS
+
+open(SLIST, "<$ARGV[0]") or die "ERROR $0: processing list does not exist: $ARGV[0]\n\n";
+print "MSP processing list: $ARGV[0]\n"; 
+
+$raw_dir = $ARGV[1];
+$rc_dir  = $ARGV[2];
+$slc_dir = $ARGV[3];
+$mli_dir = $ARGV[4];
+$rlks    = $ARGV[5];
+$azlks   = $ARGV[6];
+$slc_format = $ARGV[7];
+
+-d $raw_dir or die "ERROR $0: raw data directory does not exist: $raw_dir\n";
+-d $rc_dir or die "ERROR $0: directory for temp storage of range compressed data does not exist: $rc_dir\n";
+
+unless (-d $slc_dir) {
+  print "creating SLC directory: $slc_dir\n";
+  $exit = system("mkdir $slc_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $slc_dir\n"
+}
+
+unless(-d $mli_dir) {
+  print "creating MLI directory: $mli_dir\n";
+  $exit = system("mkdir $mli_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $slc_dir\n"
+}
+ 
+print "input raw data directory: $raw_dir\n";
+print "directory for temp storage of range compressed data: $rc_dir\n";
+print "output SLC data directory: $slc_dir\n";
+print "output MLI data directory: $mli_dir\n";
+
+($slc_format == 0 || $slc_format == 1) or die "ERROR $0: invalid slc format value: $ARGV[7]\n";
+if($slc_format == 0){
+  print "SLC image data format: FCOMPLEX\n";
+}
+else {
+  print "SLC image data format: SCOMPLEX\n";
+  $cal_fact += 60.0;	#add 60 dB to obtain calibration factor for SCOMPLEX format
+}
+
+$rlks =~ /\d+$/ && $rlks > 0 or die "ERROR $0: invalid number of range looks: $rlks\n";
+$azlks =~ /\d+$/ && $azlks > 0 or die "ERROR $0: invalid number of azimuth looks: $azlks\n";
+print "MLI range looks: $rlks  azimuth looks: $azlks\n";
+
+if ($#ARGV >= 8){
+   $ARGV[8] =~ /\d+$/ or die "ERROR $0: invalid entry for azimuth patch size: $ARGV[8]\n";
+   $az_patch = $ARGV[8];   
+}
+print "azimuth patch size (lines): $az_patch\n";
+print "pre-azimuth aperture extension (lines): $PRE_EXT\n";
+print "post-azimuth aperture extension (lines): $POST_EXT\n";
+
+if ($#ARGV >= 9){
+  $autof_min = $ARGV[9]; 
+  $autof_min >= 0.0 or die "ERROR $0: invalid entry for autofocus minimum threshold: $autof_min)\n";
+}    
+
+LINE: while (<SLIST>) {		#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier, sensor parameter file, and other parameters
+  ($#fields + 1 == 8) or die "ERROR $0: wrong number of columns in proc_list, check file: $_\n";
+
+  $id = $fields[0];
+
+  foreach $beam (4,5,1,2,3) {
+    $ext = $id."_".$beam;		#file name includes id+polarization
+    $log = $slc_dir."\/".$ext."_MSP.log";
+    $time = localtime;
+    print "\n*** scene id: $ext  processing log file: $log  start time: $time ***\n";
+    open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+    LOG->autoflush;
+    print LOG "$0 @ARGV\n\n";	#write to the log file the PALSAR_proc_all command line
+  
+    print LOG "*** scene id: $id  processing log file: $log  start time: $time ***\n";  
+    $proc_par = "$raw_dir"."\/p$ext.slc.par";	#create processing parameter file name
+    -f $proc_par or die "ERROR $0: MSP processing parameter file does not exist: $proc_par\n";
+
+    $sensor = "$raw_dir"."\/".$ext.".sar_par";
+    (-e $sensor) or die "ERROR: PALSAR sensor parameter file does not exist: $sensor\n";
+
+    print "MSP processing parameter file: $proc_par\n";
+    print "MSP sensor parameter file: $sensor\n";
+    print LOG "MSP processing parameter file: $proc_par\n";
+    print LOG "MSP sensor parameter file: $sensor\n";
+ 
+    @ant_pattern = extract_param($sensor, "antenna_pattern_filename:");	#check if antenna pattern exists
+
+    unless(-e $ant_pattern[1]) {
+      $exit = system("cp \$MSP_HOME/sensors/".$ant_pattern[1]." .");
+      $exit == 0 or die <<EOS ;
+
+      ERROR: non-zero exit status:  "cp \$MSP_HOME/sensors/".$ant_pattern[1]." ."
+      The default location for the antenna pattern file is \$MSP_HOME/sensors
+
+EOS
+    }
+    print LOG "antenna pattern file: $ant_pattern[1]\n";
+  
+    $azsp = "$ext.azsp";
+    $rspec = "$ext.rspec";
+    $rc = "$rc_dir/$ext.rc";
+    $slc = "$slc_dir/$ext.slc";
+    $mli = "$mli_dir/$ext.mli";
+    $raw = "$raw_dir/$ext.raw";
+    -e $raw or die "ERROR $0: PALSAR raw data file does not exist: $raw\n";
+    $af_offsets = "$slc_dir/$ext.af_offsets";
+    $isp_slc_par = "$slc_dir/$ext.slc.par";
+    $isp_mli_par = "$mli_dir/$ext.mli.par";
+    $mli_proc_par = "$mli_dir"."\/p$ext.mli.par";
+    $slc_type = 0;		#sigma0
+    $k_beta = $K_BETA;		#Kaiser window beta parameter (1.0 = -20 db sidelobes, 2.12 = -30 dB sidelobes)
+
+    @sensor_name = extract_param($sensor,"sensor_name:");
+    @date = extract_param($proc_par, "date:");
+    $year = $date[1];
+    print LOG "SAR sensor name:   $sensor_name[1]   year of acquisition: $year\n";
+
+    print LOG "calibration factor (dB): $cal_fact\n";
+    print LOG "minimum autofocus SNR:   $autof_min\n";
+    print LOG "azimuth Kaiser beta:     $k_beta\n";
+    print LOG "raw data file:           $raw\n";
+    print LOG "range spectrum file:     $rspec\n";
+    print LOG "azimuth spectrum file:   $azsp\n";
+    print LOG "SLC output image:        $slc\n";
+    print LOG "MSP MLI proc file:       $mli_proc_par\n";
+    print LOG "MLI output image:        $mli\n\n";
+    close LOG;		
+
+# column entries must be valid numbers or -
+  
+    $fields[1] =~ /\d+$|-$/ or die "ERROR $0: invalid offset to first echo to process: $fields[1]\n";
+    $fields[2] =~ /\d+$|-$/ or die "ERROR $0: invalid number of lines to process: $fields[2]\n";
+    $fields[3] =~ /\d+$|-$/ or die "ERROR $0: invalid range sample offset: $fields[3]\n";
+    $fields[4] =~ /\d+$|-$/ or die "ERROR $0: invalid number of range samples: $fields[4]\n";
+
+    $fields[1] =~ /-/ or execute("set_value $proc_par $proc_par offset_to_first_echo_to_process $fields[1]",$log);  
+    $fields[2] =~ /-/ or execute("set_value $proc_par $proc_par echoes_to_process $fields[2]",$log);
+    $fields[3] =~ /-/ or execute("set_value $proc_par $proc_par range_offset $fields[3]",$log);
+    $fields[4] =~ /-/ or execute("set_value $proc_par $proc_par raw_range_samples $fields[4]",$log);
+
+    if( $fields[5] ne "-"){$dop[1] = sprintf "%10.3f", $fields[5];}   
+    if( $fields[6] ne "-"){$dop[2] = sprintf "%12.4e", $fields[6];}
+    execute("set_value $proc_par $proc_par doppler_polynomial \"$dop[1] $dop[2]  $dop[3]  $dop[4]\" ",$log); 
+
+    if($beam ne "4") {		#copy Doppler parameters from beam 4 for multi-beam data, before range compression for SRC!
+      $ext_4 = $id."_"."4";
+      $sensor_4 = 
+      $proc_par_4 = "$raw_dir"."\/p$ext_4.slc.par";
+      -f $proc_par_4 or die "ERROR $0: $proc_par_4 does not exist and is required to copy the Doppler and auto-focus parameters\n";
+
+      print "NOTE: copying Doppler parameters from $proc_par_4 to $proc_par\n";
+      @dop = extract_param($proc_par_4, "doppler_polynomial:");
+      execute("set_value $proc_par $proc_par doppler_polynomial \"$dop[1]  $dop[2]  $dop[3] $dop[4]\" ", $log);
+      @dop1 = extract_param($proc_par_4, "doppler_poly_dot:");
+      execute("set_value $proc_par $proc_par doppler_poly_dot \"$dop1[1]  $dop1[2]  $dop1[3] $dop1[4]\" ", $log);
+      @dop2 = extract_param($proc_par_4, "doppler_poly_ddot:");
+      execute("set_value $proc_par $proc_par doppler_poly_ddot \"$dop2[1]  $dop2[2]  $dop2[3] $dop2[4]\" ", $log);
+    } 
+    
+    if($fields[7] ne "-"){
+      ($fields[7] >= 0.2 && $fields[8] <= 1.0) or die "ERROR $0: invalid azimuth processing bandwidth fraction: $fields[8]\n";
+      execute("set_value $proc_par $proc_par azimuth_bandwidth_fraction $fields[7]",$log);
+    }
+   
+    execute("pre_rc $sensor $proc_par $raw $rc - - - - - - $NR_EXT $FR_EXT $PRE_EXT $POST_EXT $RFI_filt",$log);	#range compress data with SRC as required, turn on RFI filter
+
+    if($beam ne "4") {			#copy effective focus velocity from beam 4 for WB data
+      $ext_4 = $id."_"."4";
+      $sensor_4 = 
+      $proc_par_4 = "$raw_dir"."\/p$ext_4.slc.par";
+      if (-f $proc_par_4) {
+        print "\nNOTE: copying effective focus velocity from $proc_par_4 to $proc_par\n";
+        @vel = extract_param($proc_par_4, "sensor_velocity_vector:");       #number of range compressed lines
+        print "sensor velocity vector: @vel\n";
+        execute("set_value $proc_par $proc_par sensor_velocity_vector \"$vel[1]  $vel[2]  $vel[3]\" ", $log); 
+      }
+      else{
+        print "\nNOTE: $proc_par_4 does not exist and should be available to copy effective velocity\n";
+      }
+    }
+    execute("az_proc $sensor $proc_par $rc $slc $az_patch $slc_format $cal_fact $slc_type $k_beta", $log);
+
+    if($autof_min > 0.0 && $beam eq "4"){
+      execute("af $sensor $proc_par $slc - - - - $autof_min 1 0 0 $af_offsets", $log);
+      execute("az_proc $sensor $proc_par $rc $slc $az_patch $slc_format $cal_fact $slc_type $k_beta", $log);
+    }
+    
+    $path = $ENV{'PATH'};   #check if ISP installed
+    $sstr = '/ISP/bin';
+    if (index($path, $sstr) < 0) {
+      execute("multi_SLC $proc_par $mli_proc_par $slc $mli $rlks $azlks", $log);
+      @width = extract_param($mli_proc_par, "range_pixels:");       #width of MLI image     
+    }
+    else {
+      execute("par_MSP $sensor $proc_par $isp_slc_par", $log);	#create ISP SLC image parameter file
+      execute("multi_look $slc $isp_slc_par $mli $isp_mli_par $rlks $azlks", $log);
+      @width = extract_param($isp_mli_par, "range_samples:");       #width of MLI image     
+    }
+    execute("raspwr $mli $width[1] 1 0 1 1 $scale $exp", $log);
+
+    open(LOG,">>${log}") or die "ERROR $0: cannot open log file: $log\n\n";
+    $time = localtime;
+    if (-e $rc) {
+      unlink $rc;
+    }
+    print "\nprocessing end: $time\n\n";
+    print LOG "\nprocessing end: $time\n\n";
+    close LOG;
+  }
+} 
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";} 
+  LOG->autoflush;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

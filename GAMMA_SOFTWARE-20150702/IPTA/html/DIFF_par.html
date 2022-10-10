@@ -1,0 +1,399 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: DIFF_par</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>DIFF_par</h2>
+
+  <p>Differential Interferometry/Geocoding (DIFF+GEO) parameter
+  file. For structure definition see <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a></p>
+
+  <p><strong>NAME</strong><br>
+  DIFF_par - Parameter file (text format) used by Gamma DIFF+GEO
+  software containg offset location and polynomial parameters. Also
+  contains image subset and phase scaling parameters.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code>text format parameter file</code></p>
+
+  <p><strong>EXAMPLE and PARAMETER DEFINITIONS</strong><br>
+  The formats and definitions of the DIFF_par parameter file are
+  described in the following example for the file
+  <em>i1_i2.DIFF_par</em>.</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><strong>Keyword</strong></td>
+
+      <td><strong>Example</strong></td>
+
+      <td><strong>Definition</strong></td>
+    </tr>
+
+    <tr>
+      <td>title</td>
+
+      <td>Ft. Irwin</td>
+
+      <td>Title, name, identification for DEM</td>
+    </tr>
+
+    <tr>
+      <td>initial_range_offset</td>
+
+      <td>0</td>
+
+      <td>initial estimate of registration offset in range between
+      two interferograms (pixels)</td>
+    </tr>
+
+    <tr>
+      <td>initial_azimuth_offset</td>
+
+      <td>0</td>
+
+      <td>initial estimate of registration offset in azimuth
+      between two interferograms (pixels)</td>
+    </tr>
+
+    <tr>
+      <td>range_samp_1</td>
+
+      <td>1629</td>
+
+      <td>number of range samples of interferogram 1</td>
+    </tr>
+
+    <tr>
+      <td>az_samp_1</td>
+
+      <td>1445</td>
+
+      <td>number of azimuth lines of interferogram 1</td>
+    </tr>
+
+    <tr>
+      <td>first_nonzero_range_pixel_1</td>
+
+      <td>41</td>
+
+      <td>First non-zero range pixel of interferogram 1</td>
+    </tr>
+
+    <tr>
+      <td>number_of_nonzero_range_pixels_1</td>
+
+      <td>1583</td>
+
+      <td>Number of non-zero range pixels of interferogram 1</td>
+    </tr>
+
+    <tr>
+      <td>range_pixel_spacing_1</td>
+
+      <td>13.324960</td>
+
+      <td>range pixel spacing of interferogram 1 (m)</td>
+    </tr>
+
+    <tr>
+      <td>az_pixel_spacing_1</td>
+
+      <td>20.869380</td>
+
+      <td>azimuth pixel spacing of interferogram 1 (m)</td>
+    </tr>
+
+    <tr>
+      <td>range_samp_2</td>
+
+      <td>1629</td>
+
+      <td>number of range samples of interferogram 2</td>
+    </tr>
+
+    <tr>
+      <td>az_samp_2</td>
+
+      <td>1441</td>
+
+      <td>number of azimuth lines of interferogram 2</td>
+    </tr>
+
+    <tr>
+      <td>first_nonzero_range_pixel_2</td>
+
+      <td>19</td>
+
+      <td>First non-zero range pixel of interferogram 2</td>
+    </tr>
+
+    <tr>
+      <td>number_of_nonzero_range_pixels_2</td>
+
+      <td>1593</td>
+
+      <td>Number of non-zero range pixels of interferogram 2</td>
+    </tr>
+
+    <tr>
+      <td>range_pixel_spacing_2</td>
+
+      <td>13.324960</td>
+
+      <td>range pixel spacing of interferogram 2 (m)</td>
+    </tr>
+
+    <tr>
+      <td>az_pixel_spacing_2</td>
+
+      <td>20.869380</td>
+
+      <td>azimuth pixel spacing of interferogram 2 (m)</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_starting_range</td>
+
+      <td>64</td>
+
+      <td>starting range for automated registration offset
+      estimation</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_ending_range</td>
+
+      <td>1565</td>
+
+      <td>ending range for automated registration offset
+      estimation</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_range_samples</td>
+
+      <td>24</td>
+
+      <td>number of range samples used for automated registration
+      offset estimation</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_range_spacing</td>
+
+      <td>64</td>
+
+      <td>spacing of range samples used for automated registration
+      offset estimation (pixels)</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_starting_azimuth</td>
+
+      <td>64</td>
+
+      <td>starting azimuth for automated registration offset
+      estimation</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_ending_azimuth</td>
+
+      <td>1377</td>
+
+      <td>ending azimuth for automated registration offset
+      estimation</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_azimuth_samples</td>
+
+      <td>21</td>
+
+      <td>number of azimuth samples used for automated registration
+      offset estimation</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_azimuth_spacing</td>
+
+      <td>64</td>
+
+      <td>spacing of azimuth samples used for automated
+      registration offset estimation (pixels)</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_patch_width</td>
+
+      <td>32</td>
+
+      <td>patch width in interferogram pixels used by automated
+      registration</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_patch_height</td>
+
+      <td>32</td>
+
+      <td>patch height in interferogram lines used by automated
+      registration</td>
+    </tr>
+
+    <tr>
+      <td>offset_estimation_threshold</td>
+
+      <td>8.00</td>
+
+      <td>SNR threshold to reject/accept an offset estimate during
+      automated registration.</td>
+    </tr>
+
+    <tr>
+      <td>range_offset_polynomial</td>
+
+      <td>0.0000 1.0000e-04 -2.0000e-04</td>
+
+      <td>Range offset polynomial (constant term, linear term in
+      range, linear term in azimuth (pixel, pixel/pixel,
+      pixel/pixel)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_offset_polynomial</td>
+
+      <td>0.0000 -1.0000e-04 2.0000e-04</td>
+
+      <td>Azimuth offset polynomial (constant term, linear term in
+      range, linear term in azimuth (pixel, pixel/pixel,
+      pixel/pixel)</td>
+    </tr>
+
+    <tr>
+      <td>starting_azimuth_line</td>
+
+      <td>0</td>
+
+      <td>starting azimuth line (relative to interferogram 1)</td>
+    </tr>
+
+    <tr>
+      <td>map_azimuth_lines</td>
+
+      <td>1141</td>
+
+      <td>number of azimuth lines to use for differential
+      processing</td>
+    </tr>
+
+    <tr>
+      <td>map_width:</td>
+
+      <td>1629</td>
+
+      <td>width of differential interferometric products</td>
+    </tr>
+
+    <tr>
+      <td>first_nonzero_range_pixel</td>
+
+      <td>41</td>
+
+      <td>first non-zero range pixel of differential
+      interferometric products</td>
+    </tr>
+
+    <tr>
+      <td>number_of_nonzero_range_pixels:</td>
+
+      <td>3171</td>
+
+      <td>number of non-zero range pixel of differential
+      interferometric products</td>
+    </tr>
+
+    <tr>
+      <td>range_looks</td>
+
+      <td>1</td>
+
+      <td>multi-looking in range applied in differential
+      interferometric processing</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_looks</td>
+
+      <td>1</td>
+
+      <td>multi-looking in azimuth applied in differential
+      interferometric processing</td>
+    </tr>
+
+    <tr>
+      <td>diff_phase_fit</td>
+
+      <td>1.43315e+02 -1.92621e-01 6.89473e-06 -5.83760e-01
+      7.31414e-05 2.97260e-04</td>
+
+      <td>Scaling function for unwrapped interferometric phase 2
+      found by LS fit between unwrapped phase images 1 and 2</td>
+    </tr>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  DIFF_par contains parameter values used by the Differential
+  Interferometry Software DIFF. The DIFF_par file contains
+  information on the registration of the two interferograms used,
+  the data section selected and the phase scaling applied to image
+  2 before it is subtracted from image 1.</p>
+
+  <p>The DIFF_par is generated using the DIFF+GEO program
+  create_diff_par. The user is interactively asked for the input
+  used to describe a DEM. Different projections are supported. The
+  parameters of DIFF_par are used by many of the programs of the
+  DIFF. Some parameters are inserted by programs of the DIFF.</p>
+
+  <p>The formats used in DIFF_par are defined in the in DIFF type
+  definition file <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  If the programs fail to read a DIFF_par file this may be caused
+  by missing parameters/keywords. Often the missing keyword (as
+  indicated by the error message) may be added to the DIFF_par file
+  by editing the DIFF_par file.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing --><!-- uw/ts 010713 -->
+
+  <title>LAT Reference Manual: takecut</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>takecut</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/takecut.c">takecut.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  takecut - extract data values along a line or vertical cut of a
+  float data file.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>takecut &lt;data_in&gt; &lt;width&gt; &lt;report&gt;
+  &lt;mode&gt; &lt;pos&gt; [pr_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) input data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>samples per row of data_in</td>
+      </tr>
+
+      <tr>
+        <td>&lt;report&gt;</td>
+
+        <td>(output) text file containing extracted values</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>data extraction mode (default = 0)<br>
+        &nbsp; 0 : extract values along a line<br>
+        &nbsp; 1 : extract values along a vertical cut<br>
+        <br></td>
+      </tr>
+
+      <tr>
+        <td>[pos]</td>
+
+        <td>line or across-track sample number (starting with
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>[pr_flag]</td>
+
+        <td>&nbsp;print option:<br>
+        &nbsp;&nbsp; 0: print values at all positions (default)<br>
+        &nbsp;&nbsp; 1: print only positions with valid data (data
+        != 0.0)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br></p>
+
+  <p><samp>takecut 03781_25458.disp 2456 disp_profile.dat 0
+  1000</samp></p>Extract values from the displacement map
+  03781_25458.disp at line 1000.&nbsp; The first line of the file
+  is line 0.<br>
+  The extracted profile is written out to the report file as sample
+  number&nbsp; data value pairs, one pair per line.
+
+  <p><samp>takecut 03781_25458.disp 2456 disp_profile.dat 1
+  2000</samp></p>Extract values from the displacement map
+  03781_25458.disp at&nbsp; range sample position&nbsp; 2000.&nbsp;
+  This is a vertical cut of the<br>
+  data. The extracted profile is written out to the report file as
+  line number, data value pairs, one pair per line.<br>
+  <br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code takecut.c&nbsp; in ./src. For compilation adjust and
+  use Makefile. Executable version takecut in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The programs takecut allow extracting values along a horizontal
+  or vertical line in a data file consisting of 4-byte float
+  (real*4). The output values are written to a report file
+  specified on the command line as coordinate, data value pairs,
+  one pair per line. The sampling mode can either be to select
+  either a vertical or horizontal line through the data.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Data values of 0.0 can be interpreted as missing data or not
+  based on the value of the pr_flag parameter.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>. <a href=
+  "display.h.html">display.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 19-Nov-2004.</p>
+</body>
+</html>

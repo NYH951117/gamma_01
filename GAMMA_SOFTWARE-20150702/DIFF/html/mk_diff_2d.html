@@ -1,0 +1,1473 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: mk_diff_2d</title>
+</head>
+
+<body class="western">
+  <h1>Gamma DIFF: mk_diff_2d scripts for differential
+  interferometry</h1>
+  <hr>
+
+  <h2>mk_diff_2d, mk_int_2d, mk_adf_2d, mk_unw_2d, mk_base_2d,
+  mk_hgt_2d, mk_quad_2d</h2>
+
+  <p><i>Perl Script:</i> <a href=
+  "../scripts/mk_diff_2d">mk_diff_2d</a>, <a href=
+  "../scripts/mk_int_2d">mk_int_2d</a>, <a href=
+  "../scripts/mk_adf_2d">mk_adf_2d</a>, <a href=
+  "../scripts/mk_unw_2d">mk_unw_2d</a>, <a href=
+  "../scripts/mk_base_2d">mk_base_2d</a>, <a href=
+  "../scripts/mk_hgt_2d">mk_hgt_2d</a>, <a href=
+  "../scripts/mk_quad_2d">mk_quad_2d</a></p>
+
+  <p><strong>NAMES</strong><br>
+  <br style="font-family: monospace;">
+  <span style="font-family: monospace;">mk_diff_2d
+  &nbsp;&nbsp;&nbsp; Calculate 2D diff. interferograms using
+  RSLC_tab, itab, DEM and deformation rate in Range-Doppler
+  Coordinates (RDC)</span><span style="font-family: monospace;">,
+  either using baseline model or orbits<br></span> <span style=
+  "font-family: monospace;">mk_int_2d &nbsp;&nbsp;&nbsp;&nbsp;
+  Calculate 2D interferograms (*.int, *.diff) without subtraction
+  of simulated phase</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">mk_adf_2d&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Adaptive filtering (adf) of a set of differential
+  interferograms<br></span> <span style=
+  "font-family: monospace;">mk_unw_2d&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Unwrap a stack of differential interferograms</span><br style=
+  "font-family: monospace;">
+  <span style="font-family: monospace;">mk_base_2d &nbsp; &nbsp;
+  Estimate precision baselines from unwrapped phase and DEM in
+  range-Doppler coordinates</span><br style=
+  "font-family: monospace;">
+  <span style="font-family: monospace;">mk_hgt_2d&nbsp;&nbsp;&nbsp;
+  &nbsp; Calculate height maps from a stack of unwrapped
+  differential interferograms</span><br style=
+  "font-family: monospace;">
+  <span style=
+  "font-family: monospace;">mk_quad_2d&nbsp;&nbsp;&nbsp;&nbsp;
+  Estimate and subtract a quadratic polynomial fit from a stack of
+  interferograms and SLCs<br></span></p>
+
+  <p><code><big><big style=
+  "font-family: Times New Roman,Times,serif;"><big><big>Descriptions:<br>
+  </big></big></big></big></code></p>The DIFF/scripts directory
+  contains a set of Perl scripts that can be used in concert to
+  process a stack of differential interferograms starting
+  from&nbsp; the coregistered SLC data and proceeding through to
+  differential interferograms, deformation maps, and height maps.
+  These products can be terrain geocoded. Coregistration of the SLC
+  data can be accomplised with the <a href=
+  "SLC_resamp_all.html">SLC_resamp_lt</a> and <a href=
+  "SLC_resamp_lt_all.html">SLC_resamp_lt_all</a> scripts. Also
+  required is a DEM in the SAR image geometry with the same pixel
+  spacing as the differential interferogram. This DEM in
+  range-doppler coordinates (RDC) can be produced using the
+  <a href="mk_geo.html">mk_geo</a> script.<br>
+  <br>
+  The input resampled and coregistered SLCs used for the
+  interferograms should be all located in a single directory. The
+  starting point of the processing is an text format table of the
+  resampled SLCs (*.rslc) and SLC parameter files (*.rslc.par) that
+  can be created using the <a href="mk_tab.html">mk_tab</a> script.
+  An example of the <span style="color: blue;">SLC_tab</span> used
+  for this example is shown here:<br>
+  <br>
+  <code style="color: blue;"><span style="color: fuchsia;">mk_tab
+  slc slc slc.par SLC_tab</span><br>
+  <br>
+  SLC_tab:<br>
+  slc/19990915.slc&nbsp;&nbsp;&nbsp; slc/19990915.slc.par<br>
+  slc/19991020.slc&nbsp;&nbsp;&nbsp;
+  slc/19991020.slc.par</code><br style="color: blue;">
+  <br>
+  Throughout this document commands entered on the keyboard are
+  <span style="color: fuchsia;">magenta</span>, computer program
+  names and screen output from running programs are in <span style=
+  "color: blue;">blue.</span><br>
+  <br>
+  The <span style="color: rgb(0, 0, 251);">mk_diff_2d</span> script
+  produces a set of differential interferograms using pairs of SLC
+  images as specified in the ITAB text file. The ITAB file has 4
+  columns of text, with each line of the file specifying a single
+  interferogram. The numbers in the first two columns of the ITAB
+  refer to line numbers in the <span style=
+  "color: rgb(0, 0, 251);">SLC_tab</span>. In this example there
+  are only 2 SLCs entries in the SLC_tab and the ITAB file has only
+  single line:<br>
+  <br>
+  <code><span style="color: fuchsia;">cat itab</span><br>
+  <span style="color: rgb(0, 0, 251);">1&nbsp; 2&nbsp; 1&nbsp;
+  1</span></code><br>
+  <br>
+  The numbers in column 3 and 4 are a counter of the number of
+  interferograms in the ITAB starting with 1 and an active flag (0
+  or 1)&nbsp; respectively .&nbsp; If the value of the active flag
+  is set to one, then this interferogram will be used in later time
+  series calculations,&nbsp; otherwise not.&nbsp; The ITAB file can
+  be created using a text editor or as output from the script
+  <span style="color: blue;"><a href=
+  "base_calc.html">base_calc</a>.<br></span>
+
+  <h4><big><big>mk_diff_2d</big></big></h4><code><big style=
+  "color: blue;"><small><span style="font-family: monospace;">***
+  /Users/cw/gamma_software/DIFF/scripts/mk_diff_2d<br>
+  *** Copyright 2015, Gamma Remote Sensing, v4.4 8-Apr-2015 clw
+  ***<br>
+  *** Calculate 2D diff. interferograms using RSLC_tab, itab, DEM
+  and deformation rate in Range-Doppler Coordinates (RDC) ***<br>
+  <br>
+  usage: /Users/cw/gamma_software/DIFF/scripts/mk_diff_2d
+  &lt;RSLC_tab&gt; &lt;itab&gt; &lt;bflag&gt; &lt;DEM_rdc&gt;
+  &lt;def&gt; &lt;mli&gt; &lt;mli_dir&gt; &lt;diff_dir&gt;
+  &lt;rlks&gt; &lt;azlks&gt; &lt;cc_win&gt; [rsflag] [azflag]
+  [mflag] [r_samp] [az_line]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp; (input) two column list of
+  resampled SLC filenames and SLC parameter filenames (including
+  paths) (text)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. SLC filename&nbsp; (includes path)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. SLC parameter filename (includes path)<br>
+  &nbsp;&nbsp;&nbsp; itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  table associating interferogram stack records with pairs of SLC
+  stack records (text)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. row number in SLC_tab of the reference SLC<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. row number in SLC_tab of SLC-2 of the interferogram<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. line number in the itab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. flag used to indicate if this interferogram is used for IPTA
+  processing (0:not used&nbsp; 1:used)<br>
+  &nbsp;&nbsp;&nbsp; bflag&nbsp;&nbsp;&nbsp;&nbsp; baseline
+  flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: use initial baseline in the baseline file<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: use precision baseline in the baseline file<br>
+  &nbsp;&nbsp;&nbsp; DEM_rdc&nbsp;&nbsp; (input) terrain height in
+  radar range-Doppler coordinates (meters, float, enter - for
+  none)<br>
+  &nbsp;&nbsp;&nbsp; def&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) deformation rate (m/year) (enter - for none)<br>
+  &nbsp;&nbsp;&nbsp; mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) reference MLI image with same rlks and azlks as the
+  interferogram<br>
+  &nbsp;&nbsp;&nbsp; mli_dir&nbsp;&nbsp; directory containing MLI
+  images of the coregistered
+  SLCs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+
+  &nbsp;&nbsp;&nbsp; diff_dir&nbsp; differential interferograms
+  after subtraction of simulated unwrapped phase&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range looks
+  for interferogram generation<br>
+  &nbsp;&nbsp;&nbsp; azlks&nbsp;&nbsp;&nbsp;&nbsp; azimuth looks
+  for interferogram generation<br>
+  &nbsp;&nbsp;&nbsp; cc_win&nbsp;&nbsp;&nbsp; correlation
+  estimation window size in pixels with linear weighting (default:
+  3)<br>
+  &nbsp;&nbsp;&nbsp; rsflag&nbsp;&nbsp;&nbsp; range spectral shift
+  filtering flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: off<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: on (default)<br>
+  &nbsp;&nbsp;&nbsp; azflag&nbsp;&nbsp;&nbsp; azimuth common-band
+  filtering flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: off<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: on (default)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; mflag&nbsp;&nbsp;&nbsp;&nbsp; initial baseline
+  estimation and refinement flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: orbit state vector data (default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: orbit state vector data + baseline refinement using 2-D
+  FFT<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: use existing baseline file<br>
+  &nbsp;&nbsp;&nbsp; r_samp&nbsp;&nbsp;&nbsp; range pixel offset to
+  center of FFT window for baseline refinement using 2-D FFT
+  (default: image center)<br>
+  &nbsp;&nbsp;&nbsp; az_line&nbsp;&nbsp; azimuth line offset to
+  center of FFT window for baseline refinement using 2-D FFT
+  (default: image center)<br>
+  &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp; (option) set image display
+  scale factor (default: 1)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp; (option) set image
+  display exponent (default: 0.35)<br>
+  &nbsp;&nbsp;&nbsp; -c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) use of cc_ad rather than cc_wave to estimate
+  correlation<br>
+  &nbsp;&nbsp;&nbsp; -o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) simulate interferogram phase using orbit state vectors
+  with phase_sim_orb<br>
+  &nbsp; &nbsp; -a&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) when using orbit state vectors for simulation of the
+  phase, add phase calculated from residual baseline obtained by
+  base_ls<br>
+  &nbsp;&nbsp;&nbsp; -r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) SLC parameter file from the scene used for
+  coregistration, required by phase_sim_orb<br>
+  &nbsp;&nbsp;&nbsp; -t&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) Tandem-X single-pass interferometry
+  mode</span></small></big><br style="color: blue;">
+  <br></code> This is the main script for generation of
+  differential interferograms.&nbsp; As an example:<br>
+  <br>
+  <code><span style="color: fuchsia;">mk_diff_2d RSLC_tab itab 0
+  geo/hector_dem.rdc - rmli_2_10/rmli_2_10.ave rmli_2_10 diff0_2d 2
+  10</span></code><br>
+  <br>
+  <span style="color: black;">The interferogram filenames are
+  generated from the SLC names with an "_" between the SLC root
+  name. The names are the SLC are usually the date given in the
+  form YYYYMMDD.&nbsp; An extension ".diff" is appended to the end
+  of the filename. In this example the differential interferogram
+  is named:<br>
+  <br>
+  <code><span style=
+  "color: blue;">19990915_1991020.diff</span></code><br>
+  <br>
+  The interferometric products produced by running the scripts are
+  placed in the directory specified on the command line as the
+  <span style="color: blue;">diff_dir</span> parameter.</span>
+  <span style="color: blue;">RSLC_tab</span> is the list of SLCs,
+  the itab file is called <span style="color: blue;">itab,</span>
+  and the initial baseline is used in the baseline file calculated
+  by <span style="color: blue;"><a href=
+  "base_calc.html">base_calc</a> <span style="color: black;">by
+  setting the value of <span style=
+  "color: blue;">bflag</span>&nbsp; to 0</span>. <span style=
+  "color: black;">The DEM in RDC coordinates is given by the
+  <span style="color: blue;">DEM_rdc</span> parameter.&nbsp;
+  If&nbsp; a map of the linear deformation rate is available that
+  matches the size of the differential interferogram it is specfied
+  by the def filename parameter, otherwise a "-" can be
+  entered.&nbsp; The MLI image for the background of the
+  differential interferogram images given by the <span style=
+  "color: blue;">rmli</span> parameter. This is usually the MLI_ave
+  image produced by the <span style=
+  "color: blue;">mk_mli_all</span> script that generated the mli
+  image for the stack of SLCs.&nbsp;&nbsp; The stack of rmli images
+  is in the <span style="color: blue;">rmli_dir</span>
+  directory.&nbsp; <a href="mk_mli_all.html"><span style=
+  "color: blue;">mk_mli_all</span></a> generates the names of the
+  rmli images from the SLC_names by removing .slc and appending
+  <span style="color: #3333ff;">.mli</span> or <span style=
+  "color: #3333ff;">.rmli</span> depending if the SLC file name
+  ended in <span style="color: #3333ff;">.slc</span> or
+  <span style="color: #3333ff;">.rslc.</span>&nbsp;<br>
+  <br>
+  <span style="color: blue;">diff_dir</span> is the directory for
+  the differential interferograms and is the same directory where
+  the baseline calculated by <a href="base_calc.html"><span style=
+  "color: blue;">base_calc</span></a> are placed. The number of
+  range and azimuth looks for the differential interferograms are
+  the <span style="color: blue;">rlks</span> and <span style=
+  "color: blue;">azlks</span> parameters respectively.&nbsp; The
+  size of the rectangular window used by the program <span style=
+  "color: blue;">cc_wave</span> to estimate the correlation
+  coefficent is given by the <span style=
+  "color: blue;">cc_win</span> parameter.&nbsp; The script allows
+  specifying if range and azimuth common band filtering can be
+  switched on or off in the call to program <span style=
+  "color: blue;">SLC_diff_intf</span> via the <span style=
+  "color: blue;">rsflag</span> and <span style=
+  "color: blue;">azflag</span> parameters.&nbsp; In some cases the
+  state vectors used to calculate the initial baseline are
+  inaccurate and the interferogram itself can be used to improve
+  the estimate of the perpendicular baseline using the ISP program
+  <span style="color: blue;"><a href=
+  "../../ISP/html/base_init.html">base_init</a>.</span>&nbsp; If
+  the <span style="color: blue;">mflag</span> parameter is set to
+  1,&nbsp; then </span></span><a href=
+  "../../ISP/html/base_init.html">base_init</a><span style=
+  "color: blue;"><span style="color: black;"> will improve the
+  baseline estimate using an FFT of a section of the interferogram
+  centered on the point specified by <span style=
+  "color: blue;">r_samp</span> and <span style=
+  "color: blue;">az_line</span>.&nbsp;</span></span><br>
+  <br>
+  The program <span style="color: blue;">phase_sim</span> in the
+  DIFF&amp;GEO is used to calculate the simulated interferometric
+  phase from the DEM and a polynomial model for the baseline
+  obtained with program <a href=
+  "../../ISP/html/base_orbit.html"><span style=
+  "color: blue;">base_orbit</span></a>. The program <a href=
+  "../../ISP/html/SLC_diff_intf.html"><span style=
+  "color: blue;">SLC_diff_intf</span></a> is used to calculate the
+  differential interferogram after subtraction of the simulated
+  phase using the coregistered SLCs as input. <span style=
+  "color: blue;">mk_diff_2d</span> uses program&nbsp; <span style=
+  "color: blue;">cc_wave</span> to calculate the correlation map
+  using a window size&nbsp; specified by the <span style=
+  "color: blue;">cc_win</span> parameter.<br>
+  <br>
+  The <span style="color: #3333ff;">-o</span> option selects using
+  state vector orbit data rather than the polynomial baseline model
+  to calculate the simulated interferometric phase&nbsp; If state
+  vector orbit data are selected then the SLC parameter file of the
+  scene used for geometric coregistration must be provided using
+  the <span style="color: #3333ff;">-r</span> option. The reason
+  for this is that resampling of the SLCs means that there are
+  shifts in time for one scene relative to the other. To calculate
+  the actual baseline, the baselines relative to the reference
+  scene are calculated for the two SLCs and their difference is
+  used.&nbsp;<br>
+  <br>
+  The program <a href="phase_sim_orb.html">phase_sim_orb</a> is
+  used to calculate the simulated phase from the orbit state
+  vectors and DEM in radar coordinates. In cases were estimation of
+  the residual baseline error has been performed on differential
+  interferograms after subtraction of the simulated phase obtained
+  from the orbit state vectors (<a href=
+  "phase_sim_orb.html">phase_sim_orb</a>), then providing the -a
+  option will subtract the phase due to this residual baseline in
+  addition to the phase calculated with <a href=
+  "phase_sim_orb.html">phase_sim_orb</a>.&nbsp;&nbsp;<br>
+  <br>
+  The use can also specify that the data are from single-pass
+  interferometry from the Tandem-X mission via the <span style=
+  "color: #3333ff;">-t</span> option.<br>
+  <br>
+  The raster image&nbsp; of the complex differential interferogram
+  is produced using <a style="color: #3333ff;" href=
+  "../../DISP/DISP_reference_manual.html">rasmph_pwr</a> and the
+  correlation map using <a href=
+  "../../DISP/html/DISP_reference_manual.html"><span style=
+  "color: blue;">rascc</span></a>.&nbsp; Both programs are in the
+  DISP package. The scale factor and display exponent can be
+  specified using the <span style="color: blue;">-s</span> and
+  <span style="color: blue;">-e</span> flags followed by a value.
+  These parameters are specified not by the order in the command
+  line, but at the end of the parameter list. Only those parameters
+  in [] brackets must be specified.&nbsp; Required parameters on
+  the command line are surrounded by &lt;&gt; and optional
+  parameters on the command line are surrounded by [
+  ].<code><br></code>
+
+  <h4><big style=
+  "font-weight: bold;"><big>mk_int_2d</big></big></h4><code style=
+  "color: blue;">***
+  /Users/cw/gamma_software/DIFF/scripts/mk_int_2d<br>
+  *** Copyright 2017, Gamma Remote Sensing, v2.7 10-Apr-2015 clw
+  ***<br>
+  *** Calculate 2D interferograms without subtraction of simulated
+  phase ***<br>
+  <br>
+  usage: /Users/cw/gamma_software/DIFF/scripts/mk_int_2d
+  &lt;RSLC_tab&gt; &lt;itab&gt; &lt;mli&gt; &lt;mli_dir&gt;
+  &lt;int_dir&gt; &lt;rlks&gt; &lt;azlks&gt; &lt;cc_win&gt; [rsflg]
+  [azflg] [ext] [scale] [exp]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp; (input) two column list of
+  resampled SLC filenames and SLC parameter filenames (including
+  paths) (text)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. SLC filename&nbsp; (includes path)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. SLC parameter filename (includes path)<br>
+  &nbsp;&nbsp;&nbsp; itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  table associating interferogram stack records with pairs of SLC
+  stack records (text)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. row number in SLC_tab of the reference SLC<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. row number in SLC_tab of SLC-2 of the interferogram<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. line number in the itab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. flag used to indicate if this interferogram is used for IPTA
+  processing (0:not used&nbsp; 1:used)<br>
+  &nbsp;&nbsp;&nbsp; mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) reference MLI image with the same rlks and azlks as the
+  interferogram<br>
+  &nbsp;&nbsp;&nbsp; mli_dir&nbsp;&nbsp; directory containing MLI
+  images of the coregistered
+  SLCs&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+
+  &nbsp;&nbsp;&nbsp; int_dir&nbsp;&nbsp; interferogram
+  directory<br>
+  &nbsp;&nbsp;&nbsp; rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range looks
+  for interferogram generation<br>
+  &nbsp;&nbsp;&nbsp; azlks&nbsp;&nbsp;&nbsp;&nbsp; azimuth looks
+  for interferogram generation<br>
+  &nbsp;&nbsp;&nbsp; cc_win&nbsp;&nbsp;&nbsp; correlation
+  estimation window size in pixels with linear weighting (default:
+  3)<br>
+  &nbsp;&nbsp;&nbsp; rsflg&nbsp;&nbsp;&nbsp;&nbsp; range spectral
+  shift filtering flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: off (default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+  1: on<br>
+  &nbsp;&nbsp;&nbsp; azflg&nbsp;&nbsp;&nbsp;&nbsp; azimuth
+  common-band filtering flag:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: off (default)<br>
+  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: on<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp; (option) set image display
+  scale factor (default: 0.7)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp; (option) set image
+  display exponent (default: 0.35)<br>
+  &nbsp;&nbsp;&nbsp; -m&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) use MLI2 as the background image rather than rmli image
+  on the command line<br>
+  &nbsp;&nbsp;&nbsp; -c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (option) use cc_ad to estimate correlation rather than
+  cc_wave<br>
+  <br>
+  <br></code> <span style="color: black;">This script generates
+  interferograms without subtraction of topographic phase generated
+  using <a href="phase_sim.html"><span style=
+  "color: blue;">phase_sim</span></a> or <a href=
+  "phase_sim_orb.html"><span style=
+  "color: blue;">phase_sim_orb</span></a>.&nbsp; The output
+  interferograms are placed in the <span style=
+  "color: #000099;">int_dir</span> specified on the command line.
+  This script is used primarily for generation of differential
+  interferograms using the GPRI-II (Gamma Portable Radar
+  Interferometer) where the topographic phase contribution is
+  essentially 0.&nbsp; Other command line parameters are are
+  described in <span style=
+  "color: blue;">mk_diff_2d</span>.<br></span>
+
+  <h4 style="color: black;"><big style=
+  "font-weight: bold;"><big>mk_adf_2d</big></big></h4><code><span style="color: blue;">***
+  /Users/cw/gamma_software/DIFF/scripts/mk_adf_2d<br>
+  *** Copyright 2013, Gamma Remote Sensing, v2.7 19-Jul-2013 clw
+  ***<br>
+  *** Adaptive filtering (adf) of a set of differential
+  interferograms ***<br>
+  <br>
+  usage: /Users/cw/gamma_software/DIFF/scripts/mk_adf_2d
+  &lt;RSLC_tab&gt; &lt;itab&gt; &lt;mli&gt; &lt;diff_dir&gt;
+  [cc_win] [adf_exp] [adf_win] [adf_step]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp;&nbsp;&nbsp; (input) two column
+  list of resampled SLC filenames and SLC parameter filenames<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp; 1. SLC filename&nbsp; (includes
+  path)<br>
+  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. SLC parameter filename (includes path)<br>
+  &nbsp;&nbsp;&nbsp; itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) table associating interferogram stack records with pairs
+  of RSLC_tab records (text)&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. row number in SLC_tab of the reference SLC<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp; 2. row number in SLC_tab of SLC-2 of the
+  interferogram<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp; 3. line number in the itab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. flag used to indicate if this interferogram is used for IPTA
+  processing (0:not used&nbsp; 1:used)<br>
+  &nbsp;&nbsp;&nbsp;
+  mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input) MLI
+  background image derived from the resampled SLCs with the same
+  dimensions as the interferogram<br>
+  &nbsp;&nbsp;&nbsp; diff_dir&nbsp;&nbsp;&nbsp; differential
+  interferogram directory containing *.diff differential
+  interferogram files&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; cc_win&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  correlation estimation window range and azimuth size (linear
+  weighting) in pixels, (default: 7)<br>
+  &nbsp;&nbsp;&nbsp; adf_exp&nbsp;&nbsp;&nbsp;&nbsp; exponent
+  parameter for adf interferogram filter, (nominal range
+  0.2--&gt;1.0, default: 0.4)<br>
+  &nbsp;&nbsp;&nbsp; adf_win&nbsp;&nbsp;&nbsp;&nbsp; window size
+  for adf filter (default: 32)<br>
+  &nbsp;&nbsp;&nbsp; adf_step&nbsp;&nbsp;&nbsp; range and azimuth
+  filter step size (1 &lt; adf_step &lt;= adf_win/2, default:
+  4)<br>
+  &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -m mli_dir&nbsp; (option) use MLI2 as the
+  background image rather than mli image specified on the command
+  line<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  mli_dir is the directory containing the mli images<br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp;&nbsp;&nbsp; (option) set image
+  display scale factor (default: 0.7)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (option)
+  set image display exponent (default: 0.35)<br></span></code><br>
+  This script is used to apply the ISP program <a href=
+  "../../ISP/html/adf.html">adf</a> to filter the differential
+  interferograms produced using <span style=
+  "color: blue;">mk_diff_2d, mk_diff_orb_2d</span> or <span style=
+  "color: blue;">mk_int_2d.</span> Further information on setting
+  the <a href="../../ISP/html/adf.html">adf</a> specific parameters
+  (<span style="color: blue;">adf_exp, adf_win, adf_step</span>)
+  are in the HTML documentation for <span style=
+  "color: blue;">adf</span> in the ISP.&nbsp; The <span style=
+  "color: blue;">adf_exp</span> parameter corresponds to the
+  <span style="color: blue;">alpha</span> exponent value in the
+  call to <a href="../../ISP/html/adf.html">adf</a>.<br>
+  <br>
+  <span style="color: blue;"><span style="color: black;">The
+  relative intensity scale factor parameter <span style=
+  "color: blue;">-s value</span> and <span style=
+  "color: blue;">exponent -e value</span> are used to set the
+  brightness and contrast of the Sun raster format images produced
+  by the script using program <a href=
+  "../../DISP/html/DISP_reference_manual.html">rasmph_pwr</a>. The
+  -m option permits using the <span style=
+  "color: #3333ff;">MLI2</span> image as the background rather than
+  the <span style="color: #3333ff;">mli</span> background image
+  supplied on the command line.&nbsp; For scenes that are rapidly
+  changing as with the GPRI-II data, using the actual background
+  image may be useful. To use this option the directory were the
+  MLI images are stored must also be specified.</span></span>
+
+  <h4><big style=
+  "font-weight: bold;"><big>mk_unw_2d</big></big></h4><code><span style="color: blue;">***
+  /Users/cw/gamma_software/DIFF/scripts/mk_unw_2d<br>
+  *** Copyright 2015, Gamma Remote Sensing, v4.4 6-Apr-2015 clw
+  ***<br>
+  *** Unwrap the phase of a stack of interferograms using minimum
+  cost flow (MCF) algorithm ***<br>
+  <br>
+  usage: /Users/cw/gamma_software/DIFF/scripts/mk_unw_2d
+  &lt;RSLC_tab&gt; &lt;itab&gt; &lt;rmli&gt; &lt;diff_dir&gt;
+  [cc_thres] [pwr_thres] [nlks] [npat_r] [npat_az] [mode] [r_init]
+  [az_init] [tri_mode] [unw_mask] [roff] [loff] [nr] [nlines]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp;&nbsp;&nbsp; (input) two column
+  list of resampled SLC filenames and SLC parameter filenames
+  (including paths)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. SLC filename&nbsp; (includes path)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. SLC parameter filename (includes path)<br>
+  &nbsp;&nbsp;&nbsp; itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) table associating interferograms with pairs of SLCs
+  listed in the RSLC_tab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. row number in SLC_tab of the reference SLC<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. row number in SLC_tab of SLC-2 of the interferogram<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. line number in the itab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. flag used to indicate if this interferogram is to be
+  considered in time-series processing (0:not used&nbsp;
+  1:used)<br>
+  &nbsp;&nbsp;&nbsp; rmli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) MLI reference image derived from the resampled SLCs with
+  the same dimensions as the interferogram<br>
+  &nbsp;&nbsp;&nbsp; diff_dir&nbsp;&nbsp;&nbsp; differential
+  interferogram directory containing *.diff differential
+  interferogram files<br>
+  &nbsp;&nbsp;&nbsp; cc_thres&nbsp;&nbsp;&nbsp; threshold for
+  correlation for creating the unwrapping mask (0.0 --&gt; 1.0)
+  (default: 0.4)<br>
+  &nbsp;&nbsp;&nbsp; pwr_thres&nbsp;&nbsp; threshold for relative
+  intensity for creating the unwrapping mask (0.0 --&gt; 1.0)
+  (default: 0)<br>
+  &nbsp;&nbsp;&nbsp; nlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  number of looks in range and azimuth to scale before unwrapping
+  (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; npat_r&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  patches in range (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; npat_az&nbsp;&nbsp;&nbsp;&nbsp; number of
+  patches in azimuth (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  processing mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; 0: unwrap unfiltered data (*.diff)<br>
+  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: (default) unwrap adf filtered data (*.adf.diff) using adf
+  correlation (*.adf.cc)<br>
+  &nbsp;&nbsp;&nbsp; r_init&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; phase
+  reference range offset (default: -)<br>
+  &nbsp;&nbsp;&nbsp; az_init&nbsp;&nbsp;&nbsp;&nbsp; phase
+  reference azimuth offset (default: -)<br>
+  &nbsp;&nbsp;&nbsp; tri_mode&nbsp;&nbsp;&nbsp; MCF triangulation
+  mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: filled triangular mesh<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: Delaunay triangulation (default)<br>
+  &nbsp;&nbsp;&nbsp; unw_mask1&nbsp;&nbsp; mask file to specify
+  unwrap region rather than using a mask generated using cc_thres
+  and pwr_thres<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  parameters (enter - for none) (Sun raster or BMP format)<br>
+  &nbsp;&nbsp;&nbsp; roff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  offset to starting range of region to unwrap (default: 0)<br>
+  &nbsp;&nbsp;&nbsp; loff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  offset to starting line of region to unwrap (default: 0)<br>
+  &nbsp;&nbsp;&nbsp;
+  nr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number
+  of range samples of region to unwrap (default(-): width -
+  roff)<br>
+  &nbsp;&nbsp;&nbsp; nlines&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  lines of region to unwrap (default(-): total number of lines -
+  loff)<br>
+  &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -b rmli_dir&nbsp; (option) use MLI2 as the
+  background image for display rather than MLI image specified on
+  the command line<br>
+  &nbsp;&nbsp;&nbsp; -d diff_tab (option) output a DIFF_tab file
+  containing 2 column list of unwrapped diff. interferograms and
+  delta_T values in decimal days<br>
+  &nbsp;&nbsp;&nbsp;
+  -n&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (option)
+  generate DIFF_tab only, no interferometric processing<br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp;&nbsp;&nbsp; (option) set image
+  display scale factor (default: 0.7)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (option)
+  set image display exponent (default: 0.35)<br>
+  &nbsp;&nbsp;&nbsp; -p pscale&nbsp;&nbsp; (option) set phase
+  scaling for output display, 1 cycle = 2PI/pscale (default:
+  0.5)<br>
+  &nbsp;&nbsp;&nbsp; -m mask&nbsp;&nbsp;&nbsp;&nbsp; (option) mask
+  to apply to the unwrapped phase (Sun raster or BMP format)<br>
+  <br></span></code> This script unwraps the phase of the
+  differential interferograms and is run after generating the
+  interferograms and possibly filtering using <span style=
+  "color: blue;">mk_adf_2d</span>. The script will either unwrap
+  the *.diff or *.adf.diff files depending on the value of the
+  <span style="color: blue;">mode</span> command line
+  parameter:&nbsp; 0: unwrap unfiltered data&nbsp; 1: unwrap adf
+  filtered data. The directory containing the differential
+  interferograms is specified&nbsp; by the <span style=
+  "color: blue;">diff_dir</span> parameter. The <span style=
+  "color: blue;">RSLC_tab</span> and <span style=
+  "color: blue;">itab</span> files are required to determine the
+  names of the differential interferogram files.<br>
+  <br>
+  The ISP program <a href="../../ISP/html/mcf.html">mcf</a> is used
+  to perform the unwrapping using the minimum cost-flow algorithm.
+  One input is an unwrapping mask. This mask in the script is
+  calculated by the ISP program <a href=
+  "../../ISP/html/rascc_mask.html">rascc_mask</a> that uses the
+  correlation coefficient and relative intensity as separate
+  criteria for unwrapping. If the correlation coefficient is above
+  <span style="color: blue;">cc_thres</span> and the relative
+  intensity above <span style="color: blue;">pwr_thres</span>, then
+  the current pixel will be unwrapped. Entering 0 for <span style=
+  "color: blue;">pwr_thres</span> and <span style=
+  "color: blue;">cc_thres</span> unwraps the entire scene. The
+  relative power intensity is calculated relative to the average
+  scene intensity in the MLI reference image entered as the
+  <span style="color: blue;">rmli</span> parameter.<br>
+  <br>
+  One of the features of <span style=
+  "color: blue;">mk_unw_2d</span> is that the user can specify that
+  the unwrapping is performed by partitioning the image into
+  patches in order to use less system resources. The number of
+  patches in range and azimuth (<span style=
+  "color: blue;">npat_r</span> and <span style=
+  "color: blue;">npat_az</span>) are passed to <a href=
+  "../../ISP/html/mcf.html">mcf</a> directly. Patching can lead to
+  phase discontinuities in noisy interferograms and a useful
+  alternative is to unwrap a smaller interferogram that has been
+  averaged in range and azimuth by the parameter <span style=
+  "color: blue;">nlks</span> using the LAT program <a href=
+  "../../LAT/html/reallks.html">reallks</a>. Setting nlks to 1
+  means that no averaging is performed and is usually preferred if
+  the computer has sufficent memory to handle the interferogram.
+  The amount of memory required is dependent on the number of
+  points. A image of 5000x5000 that is completely filled requires
+  approximately 6 GB of memory if no averaging is performed.&nbsp;
+  Unwrapping the smaller averaged interferogram has the advantages
+  that the interferogram is smaller and because it has been
+  averaged, there is generally less phase noise. The smaller
+  unwrapped interferogram is then restored to its original
+  dimensions using <a href=
+  "../../LAT/html/reallks.html">reallks</a> that has the ability
+  both to decimate and interpolate images. The interpolated image
+  is used as phase model to unwrap the original interferogram at
+  full resolution using the program <a href=
+  "../../ISP/html/unw_model.html">unw_model</a>.<br>
+  <br>
+  The starting pixel coordinates for unwrapping the interferogram
+  are specified by the <span style="color: blue;">r_init</span> and
+  <span style="color: blue;">az_init</span> that 0 by default.<br>
+  <br>
+  The method for triangulation of the points used by <a href=
+  "../../ISP/html/mcf.html">mcf</a> can be specified to be either
+  Delauney triangulation or a filled rectangular mesh by setting
+  the <span style="color: blue;">tri_mode</span> parameter to 0 or
+  1.&nbsp;<br>
+  <br>
+  Instead of setting the unwrapping mask using thresholds set by
+  the <span style="color: blue;">pwr_thres</span> and <span style=
+  "color: blue;">cc_thres parameters<span style="color: black;">,
+  it is possible to specify a unw_mask file&nbsp; on the command
+  line. This file must be 8-bit Sun Raster format (without
+  run-length encoding!).&nbsp; Areas to masked out must be set to
+  0. The GIMP graphic editing program can be used to&nbsp; editing
+  one of the raster differential interferogram raster files to
+  serve as a unwrapping mask file.&nbsp;<br>
+  <br>
+  Alternately it is possible to mask the data after unwrapping
+  using the</span></span> <code><span style="color: blue;">-m
+  mask</span></code> <span style="color: blue;"><span style=
+  "color: black;">option. In this case the the mask file in BMP or
+  Sun raster format is applied to the unwrapped data after
+  running</span></span> <a href="../../ISP/html/mcf.html">mcf</a> .
+  Often the phase unwrapping results are <span style=
+  "color: blue;"><span style="color: black;">better when the entire
+  scene is unwrapped without masking and the masking operation is
+  applied to the unwrapped data. Masking before unwrapping can
+  create residues that lead to incorrect
+  unwrapping.</span></span><br>
+  <span style="color: blue;"><span style="color: black;"><br>
+  Raster image files are calculated for the unwrapped phase using
+  the program <a href=
+  "../../DISP/DISP_reference_manual.html">rasrmg</a>.</span></span>
+  <span style="color: blue;"><span style="color: black;">The
+  relative intensity scale factor option <span style=
+  "color: blue;">-s&nbsp;</span> and <span style=
+  "color: blue;"><span style="color: black;">exponent option</span>
+  -e</span> are used to set the brightness and contrast of the BMP
+  raster format images produced by the script.&nbsp; These options
+  are followed by the specified values for these
+  parameters.</span></span> <small><big><span style=
+  "color: black;">The phase display scale parameter <span style=
+  "color: #3333ff;">-p&nbsp; &lt;value&gt;</span> determines the
+  number of 2pi phase cycles per color cycle. Setting the
+  <span style="color: #3333ff;">-p value</span> to 0.5 results in a
+  display of 4pi/cycle.<br>
+  <br>
+  The unwrapped phase generated by</span></big></small>
+  <span style="color: blue;">mk_unw_2d</span>
+  <small><big><span style="color: black;">can be used as input to
+  the IPTA program <a href="../../IPTA/html/mb.html">mb</a> and
+  DIFF program <a href="stacking.html">stacking</a>. These programs
+  require a list of the unwrapped phase files and in the case of
+  stacking, the time interval in days between the
+  acquisitions.&nbsp; </span></big></small><small><big><span style=
+  "color: black;"><span style="color: #000099;"><span style=
+  "color: blue;">mk_unw_2d</span></span> permits creating a
+  DIFF_tab file by using the <span style=
+  "color: #3333ff;">-d</span> option followed by the name of the
+  DIFF_tab file.&nbsp; If this is combined with a <span style=
+  "color: #3333ff;">-n</span> option, then no processing of data is
+  performed and only the DIFF_tab is created. This can be useful if
+  processing has already been completed and only the DIFF_tab is
+  required.<br>
+  <br>
+  The <span style="color: #3333ff;">-b</span> option permits using
+  the actual MLI images of the second SLC as the background image.
+  For this reason the directory containing these MLI images must be
+  provided</span></big></small>
+
+  <h4><big style=
+  "font-weight: bold;"><big>mk_base_2d</big></big></h4><code><span style="color: blue;">***
+  ./mk_base_2d</span><br style="color: blue;">
+  <span style="color: blue;">*** Copyright 2015, Gamma Remote
+  Sensing, v2.5 10-Apr-2015 clw ***</span><br style="color: blue;">
+  <span style="color: blue;">*** Estimate precision baselines from
+  unwrapped phase and DEM in range-Doppler coordinates&nbsp;
+  ***</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">usage: ./mk_base_2d &lt;RSLC_tab&gt;
+  &lt;itab&gt; &lt;DEM_rdc&gt; &lt;diff_dir&gt; &lt;pbase&gt;
+  [mask] [nr] [naz] [gcp_win] [type]</span><br style=
+  "color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp; RSLC_tab&nbsp;
+  (input) two column list of resampled SLC filenames and SLC
+  parameter filenames (including paths) (ascii)</span><br style=
+  "color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. SLC filename&nbsp; (includes path)</span><br style=
+  "color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. SLC parameter filename (includes path)</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input) table associating
+  interferogram stack records with pairs of SLC stack records
+  (ascii)</span><br style="color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. row number in SLC_tab of the reference SLC</span><br style=
+  "color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. row number in SLC_tab of SLC-2 of the
+  interferogram</span><br style="color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. line number in the itab</span><br style="color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. flag used to indicate if this interferogram is used for IPTA
+  processing (0:not used&nbsp; 1:used)</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp; DEM_rdc&nbsp;&nbsp;
+  (input) terrain height in radar range-Doppler coordinates
+  (meters, float format)&nbsp;&nbsp;</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp; diff_dir&nbsp;
+  directory containing unwrapped differential interferograms and
+  baselines&nbsp;</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  pbase&nbsp;&nbsp;&nbsp;&nbsp; (output) baseline parameter stack
+  (enter - for none)</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  mask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input) mask for selection of
+  valid GCPs (Sun raster or BMP format, enter - for
+  none)</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  nr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of GCP
+  selection points in range</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  naz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of GCP selection
+  points in azimuth</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp; gcp_win&nbsp;&nbsp;
+  window size for averaging unwrapped phase, must be odd (default =
+  3)</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; differential interferogram
+  type:</span><br style="color: blue;">
+  <span style=
+  "color: blue;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 0: unfiltered differential interferogram
+  (*.unw)</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; 1:
+  (default) adf filtered differential interferogram (*.adf.unw)<br>
+  <br style="color: blue;"></span></code> This script calls the ISP
+  program <a href="../../ISP/html/base_ls.html">base_ls</a> for
+  each interferogram defined by the <span style=
+  "color: rgb(51, 51, 255);">itab</span> file to generate an
+  improved baseline estimate.&nbsp; <a href=
+  "../../ISP/html/base_ls.html">base_ls</a> uses the phase of the
+  unwrapped interferogram and DEM heights for a set of points
+  selected on a grid to determine the polynomial coefficients of
+  the baseline using minumum least-squares estimation (MLSE). The
+  number of points on the grid are determined from the <span style=
+  "color: rgb(51, 51, 255);">nr</span> and <span style=
+  "color: rgb(51, 51, 255);">nz</span> parameters. The size of the
+  square window around each point is specified by the <span style=
+  "color: rgb(51, 51, 255);">gcp_win</span> parameter.&nbsp; The
+  unwrapped interferograms can be either derived from the
+  unfiltered or <a href="../../ISP/html/adf.html">adf</a> filtered
+  interferograms by specifying the interferogram <span style=
+  "color: rgb(51, 51, 255);">type</span> parameter.<br>
+  <br>
+  The user has the option to specify a <span style=
+  "color: blue;">mask</span> file&nbsp; that excludes regions of
+  deformation for GCPs. This raster file must be set to 0 for those
+  regions to be excluded. The <span style=
+  "color: blue;"><span style="color: black;">8-bit SUN raster
+  format</span> mask</span> file can be created using the GIMP
+  image editor.&nbsp; Not masking out regions with significant
+  deformation leads to an inaccurate baseline and distortion of the
+  deformation signal by the topographic phase model derived from
+  the baseline.<br>
+  <br>
+  Once the precision baselines for the stack of interferograms has
+  been determined the next step is usually to generate a new set of
+  differential interferograms now using the precision baselines. To
+  do this first create a new directory to store the new set of
+  interferograms.&nbsp; Assume that the first set of differential
+  interferograms that use the initial basesline are in the
+  directory diff0_2d, then:<br>
+  <br>
+  <code><span style="color: fuchsia;"><span style=
+  "color: blue;">#improve baselines using GCPs, use scene_mask.ras
+  as the mask for excluding GCPs</span><br>
+  mk_base_2d</span></code> <code><span style=
+  "color: fuchsia;">RSLC_tab itab geo/scene_dem_rdc diff0_2d -
+  scene_mask.ras 32 32 3 1<br>
+  <br style="color: blue;">
+  <span style="color: blue;">#create new directory to contain
+  differential interferograms from the improved
+  baseline</span><br></span></code> <code><span style=
+  "color: fuchsia;">mkdir diff1_2d<br>
+  <br>
+  <span style="color: blue;">#copy baseline files from diff0_2d to
+  diff1_2d. These baseline files contain both the initial and
+  improved baseline models</span><br style=
+  "color: fuchsia;"></span> <span style="color: fuchsia;">cp
+  diff0_2d/*.base diff1_2d<br>
+  <br style="color: blue;">
+  <span style="color: blue;">#generate new set of differential
+  interferograms using improved baselines calculated using
+  mk_base_2d</span><br style=
+  "color: rgb(51, 51, 255);"></span></code> <code><span style=
+  "color: fuchsia;">mk_diff_2d RSLC_tab itab 1 geo/scene_dem.rdc -
+  rmli_2_10/scene_ave.rmli rmli_2_10 diff0_2d 2
+  10</span></code><br>
+
+  <h4><big style=
+  "font-weight: bold;"><big>mk_hgt_2d</big></big></h4><code style=
+  "color: blue;">***
+  /Users/cw/gamma_software/DIFF/scripts/mk_hgt_2d<br>
+  *** Copyright 2013, Gamma Remote Sensing, v1.4 19-Jul-2013 clw
+  ***<br>
+  *** Calculate height maps from a stack of unwrapped differential
+  interferograms ***<br>
+  <br>
+  usage: /Users/cw/gamma_software/DIFF/scripts/mk_hgt_2d
+  &lt;RSLC_tab&gt; &lt;itab&gt; &lt;mli&gt; &lt;diff_dir&gt; [type]
+  [m/cycle]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp; (input) two column list of
+  resampled SLC filenames and SLC parameter filenames (including
+  paths) (ascii)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. SLC filename&nbsp; (includes path)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. SLC parameter filename (includes path)<br>
+  &nbsp;&nbsp;&nbsp; itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  table associating interferogram stack records with pairs of SLC
+  stack records (ascii)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1. row number in SLC_tab of the reference SLC<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2. row number in SLC_tab of SLC-2 of the interferogram<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3. line number in the itab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4. flag used to indicate if this interferogram is used for IPTA
+  processing (0:not used&nbsp; 1:used)<br>
+  &nbsp;&nbsp;&nbsp; mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) MLI image file with same range and azimuth looks as the
+  interferogram (float)<br>
+  &nbsp;&nbsp;&nbsp; diff_dir&nbsp; differential interferogram
+  directory&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; type&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; unwrapped
+  differential interferogram type:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: unfiltered differential interferogram (*.unw)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1:
+  (default) adf filtered differential interferogram (*.adf.unw)<br>
+  &nbsp;&nbsp;&nbsp; m/cycle&nbsp;&nbsp; meters per color cycle
+  (default=100.)<br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp; (option) set image display
+  scale factor (default: 0.7)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp; (option) set image
+  display exponent (default: 0.35)&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;<br>
+  <big><br></big></code> <small><big><span style=
+  "color: black;">This script calculates a set of DEMS in
+  slant-range coordinates using the unwrapped phase and updated
+  baselines. It applies the ISP program <a href=
+  "../../ISP/html/hgt_map.html">hgt_map</a> to each unwrapped
+  interferogram in the stack. The Sun raster images of the
+  individual height maps are displayed with color cycle set by the
+  <span style="color: blue;">m/cycle</span>
+  parameter.</span></big></small> <span style=
+  "color: blue;"><span style="color: black;">The relative intensity
+  scale factor parameter <span style="color: blue;">-s value</span>
+  and <span style="color: blue;">exponent -e value</span> are used
+  to set the brightness and contrast of the Sun raster format
+  images produced by the script using program <a href=
+  "../../DISP/html/DISP_reference_manual.html">rashgt</a>.</span></span><span style="text-decoration: underline;"><br>
+  </span>
+
+  <h4 style="color: black;"><big style=
+  "font-weight: bold;"><big>mk_quad_2d</big></big></h4><code style=
+  "color: blue;">*** ./mk_quad_2d<br>
+  *** Copyright 2015, Gamma Remote Sensing, v1.8 10-Apr-2015 clw
+  ***<br>
+  *** Estimate and subtract quadratic polynomial phase model from a
+  stack of differential interferograms ***<br>
+  <br>
+  usage: ./mk_quad_2d &lt;SLC_tab&gt; &lt;itab&gt; &lt;mli&gt;
+  &lt;diff_dir1&gt; &lt;diff_dir2&gt; &lt;unw_type&gt;
+  &lt;model&gt; &lt;mode&gt; &lt;roff&gt; &lt;loff&gt; [nr] [nl]
+  [mask] [dr] [daz]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; SLC_tab&nbsp;&nbsp;&nbsp; (input) two column
+  list of co-registered SLC filenames and SLC parameter
+  filenames<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp; 1. SLC filename&nbsp; (includes path)<br>
+  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2. SLC parameter
+  filename (includes path)<br>
+  &nbsp;&nbsp;&nbsp; itab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) table associating interferogram stack records with pairs
+  of RSLC_tab records (text)&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp; 1. row number in SLC_tab of the reference
+  SLC<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp; 2. row number in SLC_tab of SLC-2 of the
+  interferogram<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp; 3. line number in the itab<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp; 4. flag used to indicate if this
+  interferogram is used for IPTA processing (0:not used&nbsp;
+  1:used)<br>
+  &nbsp;&nbsp;&nbsp; mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  (input) MLI image file with same range and azimuth looks as the
+  interferogram (float)<br>
+  &nbsp;&nbsp;&nbsp; diff_dir1&nbsp; input directory containing
+  input differential interferograms<br>
+  &nbsp;&nbsp;&nbsp; diff_dir2&nbsp; output directory containing
+  detrended differential interferograms<br>
+  &nbsp;&nbsp;&nbsp; unw_type&nbsp;&nbsp; unwrapped phase data used
+  for L.S. model fit:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: unwrapped phase (*.diff.unw)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp; &nbsp;&nbsp; 1: unwrapped phase with adf filter
+  (*.adf.diff.unw)<br>
+  &nbsp;&nbsp;&nbsp; model&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; polynomial
+  phase model:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: a0 + a1*y + a2*x + a3*x*y + a4*x^2 + a5*y^2 (default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: a0 + a4*x^2 + a5*y^2<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: a0 + a1*y + a2*x + a3*x*y<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: a0 + a1*y + a2*x<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4: a0 + a2*x + a4*x^2<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5: a0 + a2*x<br>
+  &nbsp;&nbsp;&nbsp; mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  processing mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: subtract the phase model from the fcomplex differential
+  interferogram (default)<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: subtract the phase model from the unwrapped interferogram<br>
+  &nbsp;&nbsp;&nbsp; roff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  offset to starting sample for the reference region (samples)<br>
+  &nbsp;&nbsp;&nbsp; loff&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  offset to starting line (lines)<br>
+  &nbsp;&nbsp;&nbsp;
+  nr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  range samples for the reference region (enter - for default:
+  3)<br>
+  &nbsp;&nbsp;&nbsp;
+  nl&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  lines to copy (enter - for default: 3)<br>
+  &nbsp;&nbsp;&nbsp; mask&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  raster mask file (Sun raster or BMP), 0 valued pixels are
+  excluded from the L.S. fit (enter - for none)<br>
+  &nbsp;&nbsp;&nbsp;
+  dr&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; range sample
+  increment for fit values (default: 1)<br>
+  &nbsp;&nbsp;&nbsp; daz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  azimuth line increment (default: 1)<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; -b rmli_dir (option) use MLI2 as the
+  background image for display rather than MLI image specified on
+  the command line<br>
+  &nbsp;&nbsp;&nbsp; -d diff_tab (option) output a DIFF_tab file
+  containing 2 column list of unwrapped diff. interferograms and
+  delta_T values in decimal days<br>
+  &nbsp;&nbsp;&nbsp; -p pcycle&nbsp;&nbsp; (option) set phase cycle
+  for output display,&nbsp; (default: 6.28318530718)<br>
+  &nbsp;&nbsp;&nbsp; -s scale&nbsp; (option) set image display
+  scale factor (default: 0.7)&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; -e exp&nbsp;&nbsp;&nbsp; (option) set image
+  display exponent (default:
+  0.35)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;<br></code> <code style=
+  "color: blue;"><big><br></big></code> <small><big><span style=
+  "color: black;">This script calculates a 2D polynomial phase
+  trend in the unwrapped phase and subtracts this trend from the
+  complex differential interferograms in the stack.&nbsp; This
+  approach is sometimes necessary to remove residual phase trends.
+  These trends can be due to processing of long tracks where
+  the&nbsp; linear baseline polynomial is insufficient to model
+  the&nbsp; orbital phase trends.&nbsp; The&nbsp; unwrapped
+  phase&nbsp; has either been filtered with&nbsp; <span style=
+  "color: blue;">mk_adf_2d</span> (*.adf.unw) or not
+  (*.diff.unw).&nbsp; The script can be set to estimate the 2D
+  polynomial parameters of the phase model by setting the
+  <span style="color: blue;">mode</span> parameter to 0.&nbsp; In
+  this case the program <a href="quad_fit.html">quad_fit</a> is
+  applied to each differential interferogram to calculate the
+  polynomial coefficients. These coefficients are stored in the
+  <a href="DIFF_file_formats.html">DIFF_par</a> associated with
+  each differential interferogram.<br>
+  <br>
+  The program <a href="quad_sub.html">quad_sub</a> then calculates
+  the unwrapped phase values of the model and subtracts this phase
+  from the differential interferogram.&nbsp; The user can select
+  the differential interferogram type, either the complex
+  interferogram (<span style="color: #3333ff;">mode: 0</span>) or
+  unwrapped phase (<span style="color: #3333ff;">mode:
+  1</span>).<br>
+  <br></span></big></small> <span style="color: blue;"><span style=
+  "color: black;">The relative intensity scale factor parameter
+  <span style="color: blue;">-s value</span> and <span style=
+  "color: blue;">exponent -e value</span> are used to set the
+  brightness and contrast raster bitmap images produced by the
+  script using program <a href=
+  "../../DISP/html/DISP_reference_manual.html">rasmph_pwr</a> or
+  <span style="color: #3333ff;">rasdt_pwr24</span>. When applying
+  <span style="color: #3333ff;">quad_fit</span> to unwrapped phase
+  interferograms the color cycle parameter for the display program
+  rasdt_pwr24 can specified using the <span style=
+  "color: #3333ff;">-p pcycle</span> option. By default the value
+  of the pcycle parameter is 2PI.</span></span>
+
+  <h3 style="text-decoration: underline;"><strong>Processing
+  Example</strong></h3><span style="color: rgb(0, 0, 5);">This is
+  an example of processing a single interferometric pair using the
+  <a href="SLC_resamp_lt_all.html"><span style=
+  "color: rgb(0, 0, 251);">SLC_resamp_lt_all</span></a> and
+  <span style="color: rgb(0, 0, 251);">mk_diff_2d</span> set of
+  scripts. Input is 2 SLC files from the ERS-2 instrument that show
+  the deformation from the Hector Mine earthquake in 1999. The SLC
+  images are coregistered using the DEM resampled to slant-range
+  coordinates using the <a href="geocode.html">geocode</a> program
+  called by <a href="mk_geo.html">mk_geo</a>. The baseline was not
+  improved using <span style="color: blue;">mk_base_2d</span>
+  because the deformation field from the earthquake covered the
+  entire frame.<br></span> <code><span style="color: blue;"><br>
+  <br>
+  ###### resampling using a lookup table and DEM in radar
+  coordinates ######<br>
+  #mode 0: generate lookup table and resample MLI-1 image into the
+  geometry of MLI-2<br>
+  <br>
+  <span style="color: fuchsia;">SLC_resamp_lt_all SLC_tab
+  slc/19990915.slc slc/19990915.slc.par mli_2_10/19990915.mli.par
+  geo/hector_dem.rdc mli_2_10 rslc RSLC_tab 0</span><br>
+  <br>
+  cp slc/19990915.slc rslc/19990915.rslc<br>
+  <br>
+  rdc_trans mli_2_10/19990915.mli.par geo/hector_dem.rdc
+  mli_2_10/19991020.mli.par rslc/19990915_19991020.lt0<br>
+  <br>
+  geocode rslc/19990915_19991020.lt0 mli_2_10//19990915.mli 2456
+  rslc/19990915_lt0.mli 2456 2886 2 0 - - 4<br>
+  <br>
+  raspwr rslc/19990915_lt0.mli 2456 1 0 1 1 0.6 0.4<br>
+  <br>
+  <br>
+  #mode 1: refine lookup table based on measured offsets between
+  MLI-1 resampled to the geometry of MLI-2<br>
+  #refine lookup table based on measured offsets between MLI-1
+  resampled to the geometry of MLI-2<br>
+  <span style="color: fuchsia;">SLC_resamp_lt_all SLC_tab
+  slc/19990915.slc slc/19990915.slc.par mli_2_10/19990915.mli.par
+  geo/hector_dem.rdc mli_2_10 rslc RSLC_tab</span><br>
+  <br>
+  #init_offsetm rslc/19990915_lt0.mli mli_2_10/19991020.mli
+  rslc/19990915_19991020_lt0.diff_par 1 1 1228 1343<br>
+  #offset_pwrm rslc/19990915_lt0.mli mli_2_10/19991020.mli
+  rslc/19990915_19991020_lt0.diff_par
+  rslc/19990915_19991020_lt0.offs
+  rslc/19990915_19991020_lt0.snr<br>
+  #offset_fitm rslc/19990915_19991020_lt0.offs
+  rslc/19990915_19991020_lt0.snr
+  rslc/19990915_19991020_lt0.diff_par
+  rslc/19990915_19991020_lt0.coffs -&nbsp; 3<br>
+  #gc_map_fine rslc/19990915_19991020.lt0 2456
+  rslc/19990915_19991020_lt0.diff_par
+  rslc/19990915_19991020.lt1<br>
+  <br>
+  #mode 2: resample SLC-2 to the geometry of the reference SLC
+  using lookup table<br></span></code> <code><span style=
+  "color: blue;"><span style="color: fuchsia;">SLC_resamp_lt_all
+  SLC_tab slc/19990915.slc slc/19990915.slc.par
+  mli_2_10/19990915.mli.par geo/hector_dem.rdc mli_2_10 rslc
+  RSLC_tab 2</span></span></code><br>
+  <code><span style="color: blue;"><br>
+  SLC_interp_lt slc/19991020.slc slc/19990915.slc.par
+  slc/19991020.slc.par rslc/19990915_19991020.lt1
+  mli_2_10/19990915.mli.par mli_2_10/19991020.mli.par -
+  rslc/19991020.rslc rslc/19991020.rslc.par<br>
+  <br>
+  <br>
+  #mode 3:&nbsp; create offset parameter files for SLC resampling
+  refinement, measure offsets, and calculate the SLC offset fit
+  polynomials<br>
+  <span style="color: fuchsia;">SLC_resamp_lt_all SLC_tab
+  slc/19990915.slc slc/19990915.slc.par mli_2_10/19990915.mli.par
+  geo/hector_dem.rdc mli_2_10 rslc RSLC_tab 3</span><br>
+  <br>
+  create_offset rslc/19990915.rslc.par rslc/19991020.rslc.par
+  rslc/19990915_19991020.off &lt; create_offset.in<br>
+  <br>
+  offset_pwr rslc/19990915.rslc rslc/19991020.rslc
+  rslc/19990915.rslc.par rslc/19991020.rslc.par
+  rslc/19990915_19991020.off rslc/19990915_19991020.offs
+  rslc/19990915_19991020.snr<br>
+  <br>
+  offset_fit rslc/19990915_19991020.offs rslc/19990915_19991020.snr
+  rslc/19990915_19991020.off rslc/19990915_19991020.coffs - - 3<br>
+  <br>
+  #mode 4: resample SLC images using lookup table offsets
+  determined in mode 3 and generate RSLC_tab&nbsp;<br>
+  <span style="color: fuchsia;">SLC_resamp_lt_all SLC_tab
+  slc/19990915.slc slc/19990915.slc.par mli_2_10/19990915.mli.par
+  geo/hector_dem.rdc mli_2_10 rslc RSLC_tab 4</span><br>
+  <br>
+  SLC_interp_lt slc/19991020.slc rslc/19990915.rslc.par
+  slc/19991020.slc.par rslc/19990915_19991020.lt1
+  mli_2_10/19990915.mli.par mli_2_10/19991020.mli.par
+  rslc/19990915_19991020.off rslc/19991020.rslc
+  rslc/19991020.rslc.par<br>
+  <br>
+  create_offset rslc/19990915.rslc.par rslc/19991020.rslc.par
+  rslc/19990915_19991020_2.off &lt; create_offset.in<br>
+  <br>
+  offset_pwr rslc/19990915.rslc rslc/19991020.rslc
+  rslc/19990915.rslc.par rslc/19991020.rslc.par
+  rslc/19990915_19991020_2.off rslc/19990915_19991020_2.offs
+  rslc/19990915_19991020_2.snr<br>
+  <br>
+  offset_fit rslc/19990915_19991020_2.offs
+  rslc/19990915_19991020_2.snr rslc/19990915_19991020_2.off
+  rslc/19990915_19991020_2.coffs - - 3<br>
+  residual offset polynomials 1:<br>
+  <br>
+  #range_offset_polynomial: 0.02029 -2.7001e-06 -4.1267e-07
+  0.0000e+00 0.0000e+00 0.0000e+00<br>
+  #azimuth_offset_polynomial: 0.01604 4.3426e-09 -1.0120e-06
+  0.0000e+00 0.0000e+00 0.0000e+00<br>
+  <br>
+  ########<br>
+  $ mk_tab rslc rslc rslc.par RSLC_tab<br>
+  RSLC_tab:<br>
+  rslc/19990915.rslc&nbsp;&nbsp;&nbsp; rslc/19990915.rslc.par<br>
+  rslc/19991020.rslc&nbsp;&nbsp;&nbsp; rslc/19991020.rslc.par<br>
+  <br>
+  #make multilook image of resample MLI scenes<br>
+  <span style="color: fuchsia;">mk_mli_all RSLC_tab rmli_2_10 2 10
+  1</span><br style="color: fuchsia;">
+  <span style="color: fuchsia;">display
+  rmli_2_10/rmli_2_10.ave.ras</span><br style="color: fuchsia;">
+  <br>
+  #estimate baseline to generate itab file</span><br style=
+  "color: blue;">
+  <span style="color: blue;">$ <span style=
+  "color: fuchsia;">base_calc RSLC_tab rslc/19990915.rslc.par
+  hector.bperp itab 0 1<br>
+  <br style="color: blue;"></span></span> <span style=
+  "color: blue;">./base_calc processing started: Tue May 24
+  11:07:31 2011</span><br style="color: blue;">
+  <span style="color: blue;">SLC_tab table SLC images and parameter
+  files: RSLC_tab</span><br style="color: blue;">
+  <span style="color: blue;">reference SLC parameter file:
+  rslc/19990915.rslc.par</span><br style="color: blue;">
+  <span style="color: blue;">bperp textfile:&nbsp;&nbsp;&nbsp;
+  hector.bperp</span><br style="color: blue;">
+  <span style="color: blue;">output itab file:&nbsp;
+  itab</span><br style="color: blue;">
+  <span style="color: blue;">itab generation mode: single SLC
+  reference scene</span><br style="color: blue;">
+  <span style="color: blue;">minimum bperp magnitude (m):
+  1</span><br style="color: blue;">
+  <span style="color: blue;">reference frame date: 1999 9
+  15</span><br style="color: blue;">
+  <span style="color: blue;">reference sensor:
+  ERS2</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">reference SLC start time (s):
+  66323.94287</span><br style="color: blue;">
+  <span style="color: blue;">reference SLC MJD:
+  2451437.76764</span><br style="color: blue;">
+  <span style="color: blue;">&nbsp; 1&nbsp; ref.: 19990915&nbsp;
+  19990915&nbsp; Bperp:&nbsp;&nbsp; -0.0000&nbsp;
+  delta_T:&nbsp;&nbsp;&nbsp;&nbsp; 0.00000</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp; 2&nbsp; ref.: 19990915&nbsp;
+  19991020&nbsp; Bperp:&nbsp; -20.8284&nbsp;
+  delta_T:&nbsp;&nbsp;&nbsp; 35.00001</span><br style=
+  "color: blue;">
+  <br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">##### generate differential
+  interferogram</span><br style="color: blue;">
+  <span style="color: fuchsia;">mk_diff_2d RSLC_tab itab 0
+  geo/hector_dem.rdc - rmli_2_10/rmli_2_10.ave rmli_2_10 diff0_2d 2
+  10<br>
+  <br style="color: blue;"></span> <span style=
+  "color: blue;">#commands generated by mk_diff_2d<br>
+  phase_sim rslc/19990915.rslc.par diff0_2d/19990915_19991020.off
+  diff0_2d/19990915_19991020.base geo/hector_dem.rdc
+  diff0_2d/19990915_19991020.sim_unw 0 0 - 35</span><br style=
+  "color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">SLC_diff_intf rslc/19990915.rslc
+  rslc/19991020.rslc rslc/19990915.rslc.par rslc/19991020.rslc.par
+  diff0_2d/19990915_19991020.off diff0_2d/19990915_19991020.sim_unw
+  diff0_2d/19990915_19991020.diff 2 10 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;</span><br style="color: blue;">
+  <span style="color: blue;">rasmph_pwr
+  diff0_2d/19990915_19991020.diff rmli_2_10/hector_ave.rmli 2456 1
+  1 0 1 1 0.7 0.35<br>
+  <br style="color: blue;"></span> <span style=
+  "color: blue;">cc_wave diff0_2d/19990915_19991020.diff
+  rmli_2_10/19990915.rmli rmli_2_10/19991020.rmli
+  diff0_2d/19990915_19991020.cc 2456 5 5 1<br>
+  <br style="color: blue;"></span> <span style="color: blue;">rascc
+  diff0_2d/19990915_19991020.cc rmli_2_10/hector_ave.rmli 2456 1 1
+  0&nbsp; 1 1 .1 .9 0.7 0.35</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">####### filter interferogram with
+  adf</span><br style="color: blue;">
+  <span style="color: fuchsia;">mk_adf_2d RSLC_tab itab
+  rmli_2_10/hector_ave.rmli diff0_2d 3 .4 16 4</span><br style=
+  "color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">adf diff0_2d/19990915_19991020.diff
+  diff0_2d/19990915_19991020.adf.diff
+  diff0_2d/19990915_19991020.adf.cc 2456 .4 16 3 2 0 0 .2<br>
+  <br style="color: blue;"></span> <span style=
+  "color: blue;">rasmph_pwr diff0_2d/19990915_19991020.adf.diff
+  rmli_2_10/hector_ave.rmli 2456 1 1 0 1 1 1.0 .35<br>
+  <br style="color: blue;"></span> <span style=
+  "color: blue;">rascc&nbsp;&nbsp;
+  diff0_2d/19990915_19991020.adf.cc rmli_2_10/hector_ave.rmli 2456
+  1 1 0 1 1 0.1 0.9 0.7 0.35<br>
+  <br style="color: blue;"></span> <span style=
+  "color: blue;">dis2ras 19990915_19991020.adf.diff.ras
+  19990915_19991020.diff.ras</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">####### unwrap the
+  phase</span><br style="color: fuchsia;">
+  <span style="color: fuchsia;">mk_unw_2d RSLC_tab itab
+  rmli_2_10/hector_ave.rmli diff0_2d 0.7 0 1 1 1 1 100 100 0 -d
+  diff_tab</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">rascc_mask
+  diff0_2d/19990915_19991020.adf.cc rmli_2_10/hector_ave.rmli 2456
+  1 1 0 1 1 0.7 0 .3 1.0 0.7 0.35 1
+  diff0_2d/19990915_19991020.adf.cc_mask.ras</span><br style=
+  "color: blue;">
+  <span style="color: blue;"><br>
+  #unwrap the phase using minimum cost flow<br>
+  mcf diff0_2d/19990915_19991020.adf.diff
+  diff0_2d/19990915_19991020.adf.cc
+  diff0_2d/19990915_19991020.adf.cc_mask.ras
+  diff0_2d/19990915_19991020.adf.unw #2456 0 0 0 2456 2687 1 1 128
+  100 100 1</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">#########</span><br style=
+  "color: blue;">
+  <span style="color: blue;">#positive phase means motion along the
+  LOS is away from the radar</span><br style="color: blue;">
+  <span style="color: fuchsia;">disrmg
+  diff0_2d/19990915_19991020.adf.unw rmli_2_10/rmli_2_10.ave 2456 1
+  1 0&nbsp; .02</span><br style="color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">#generate JPG format image of the
+  filtered interferogram and SAR image into geographic
+  coordinates</span><br style="color: blue;">
+  <span style="color: fuchsia;">create_dem_par
+  geo/hector_eqa_seg.dem_par rmli_2_10/19990915.rmli.par 0. -.0004
+  .0004</span><br style="color: fuchsia;">
+  <br style="color: blue;">
+  <span style="color: blue;">#terrain geocode the filtered
+  interferogram into UTM</span><br style="color: blue;">
+  <span style="color: fuchsia;">mk_geo_data
+  rmli_2_10/19990915.rmli.par geo/hector_utm_seg.dem_par
+  geo/hector_1.map_to_rdc
+  diff0_2d/19990915_19991020.adf.diff</span> <span style=
+  "color: fuchsia;">diff0_2d/19990915_19991020_utm.adf.diff 3 1
+  diff0_2d/mk_geo_data.log</span><br style="color: fuchsia;">
+  <br style="color: blue;">
+  <span style="color: blue;">#generate terrain geocoded raster
+  image of the filtered differential interferogram</span><br style=
+  "color: blue;">
+  <span style="color: fuchsia;">rasmph_pwr24
+  diff0_2d/19990915_19991020_utm.adf.diff geo/hector_map.mli 3016 1
+  1 0<br>
+  <br>
+  <span style="color: blue;">#display
+  interactively</span><br style="color: fuchsia;"></span>
+  <span style="color: fuchsia;">disras_dem_par
+  diff0_2d/19990915_19991020_utm.adf.diff.ras
+  geo/hector_utm_seg.dem_par&amp;<br>
+  <br style="color: fuchsia;"></span> <span style=
+  "color: fuchsia;">eog
+  diff0_2d/19990915_19991020_utm.adf.diff.ras</span><br style=
+  "color: fuchsia;">
+  <br style="color: blue;">
+  <span style="color: blue;">#convert the MLI image into
+  EQA</span><br style="color: blue;">
+  <span style="color: fuchsia;">map_trans
+  geo/hector_utm_seg.dem_par geo/hector_map.mli
+  geo/hector_eqa_seg.dem_par geo/hector_eqa.mli 1 1 2 0<br>
+  <br style="color: blue;"></span> <span style=
+  "color: blue;">#generate raster image and
+  display</span><br style="color: blue;">
+  <span style="color: fuchsia;">raspwr geo/hector_eqa.mli 3800 1 0
+  1 1 .7 .4</span><br style="color: fuchsia;">
+  <span style="color: fuchsia;">eog
+  geo/hector_eqa.mli.ras</span><br style="color: fuchsia;">
+  <br style="color: blue;">
+  <span style="color: blue;">#convert differential phase from UTM
+  to EQA geographic coordinates</span><br style="color: blue;">
+  <span style="color: fuchsia;">map_trans
+  geo/hector_utm_seg.dem_par
+  diff0_2d/19990915_19991020_utm.adf.diff
+  geo/hector_eqa_seg.dem_par
+  diff0_2d/19990915_19991020_eqa.adf.diff 1 1 3 1<br>
+  <br style="color: fuchsia;"></span> <span style=
+  "color: fuchsia;">rasmph_pwr24
+  diff0_2d/19990915_19991020_eqa.adf.diff geo/hector_eqa.mli 3800 1
+  1 0<br>
+  <br style="color: fuchsia;"></span> <span style=
+  "color: fuchsia;">eog
+  diff0_2d/19990915_19991020_eqa.adf.diff.ras</span><br style=
+  "color: blue;">
+  <br style="color: blue;">
+  <span style="color: blue;">#convert to JPEG format, Imagemagick
+  convert utility</span><br style="color: blue;">
+  <span style="color: fuchsia;">convert
+  diff0_2d/19990915_19991020_eqa.adf.diff.ras
+  geo/19990915_19991020_eqa.adf.diff.jpg</span><br style=
+  "color: fuchsia;">
+  <br style="color: blue;">
+  <span style="color: blue;">#generate kml file</span><br style=
+  "color: blue;">
+  <span style="color: fuchsia;">cd geo</span><br style=
+  "color: fuchsia;">
+  <span style="color: fuchsia;">mk_kml hector_eqa_seg.dem_par
+  19990915_19991020_eqa.adf.diff.jpg hector.kml</span><br style=
+  "color: fuchsia;">
+  <br style="color: blue;">
+  <span style="color: blue;">#run google earth and display the
+  differential interferogram in map coordiantes</span><br style=
+  "color: blue;">
+  <span style="color: fuchsia;">googleearth
+  hector.kml</span></code><br>
+  <br>
+  <hr>
+  Copyright for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.&nbsp;<a href=
+  "charles_werner.html">CW</a>,<br>
+  last change 10-Apr-2015 clw.<br>
+  <br>
+</body>
+</html>

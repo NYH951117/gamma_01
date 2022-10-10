@@ -1,0 +1,94 @@
+#! /bin/csh -f
+
+##################################################################
+#
+# uw v1.1 16-Sep-2003
+# Script to apply bandpass filtering to point data stack
+#
+##################################################################
+
+if ($#argv < 10)then
+  echo " " 
+  echo "usage: bpf_pt <plist> <pmask> <SLC_par> <pdata_in> <pdata_out> <rec_num> <type> <MLI_par> <fcf> <bw>" 
+  echo " " 
+  echo "       plist      (input) point list (int)"  
+  echo "       pmask      (input) point data stack of mask values (uchar, pmask[i]=0 excludes point i, enter - if not available)"  
+  echo "       SLC_par    (input) SLC parameter file of point list coordinates"  
+  echo "       pdata_in   (input) point data stack (fcomplex,scomplex,float)"  
+  echo "       pdata_out  (output) filtered point data stack (same type as pdata_in)"  
+  echo "       rec_num    record number to process (default -: all records)"  
+  echo "       type       input/output data type (0:fcomplex  1:scomplex  2:float)"  
+  echo "       MLI_par    (input) SLC/MLI parameter file of 2-D output image data file"  
+  echo "       fcf        bandpass filter normalized center frequency (-0.5 --> 0.5)"  
+  echo "       bw         bandpass filter normalized bandwidth (range: 0 --> 1.0)"  
+  echo " " 
+  exit
+endif
+
+set plist   = $1
+set pmask   = $2
+set SLC_par = $3
+set pdata_in  = $4
+set pdata_out = $5
+set rec_num = $6
+set type    = $7
+set MLI_par = $8
+set fcf     = $9
+set bw      = $10
+
+set width = `awk '$1 == "range_samples:" {printf("%s",$2)}' $MLI_par `
+set nlines = `awk '$1 == "azimuth_lines:" {printf("%s",$2)}' $MLI_par `
+
+set tmp1 = tmp1.bpf_pt
+if (-e $tmp1)then
+  rm $tmp1
+endif
+set tmp2 = tmp2.bpf_pt
+if (-e $tmp2)then
+  rm $tmp2
+endif
+
+set npt    = `npt $plist | awk '$1 == "total_number_of_points:" {printf("%d",$2)}'`
+set nbytes = `ls -l $pdata_in | awk '{printf("%d",$5)}'`
+
+switch ($type)
+  case 0:
+    echo "data type: fcomplex"
+    set bpv = 8;
+    breaksw
+  case 1:
+    echo "data type: scomplex"
+    set bpv = 4;
+    breaksw  
+  case 2:
+    echo "data type: float"
+    set bpv = 4;
+    breaksw  
+  default:
+    echo "ERROR: invalid data type $type"
+    exit -1  
+endsw
+
+set nrec   = `echo $nbytes $npt $bpv|awk '{print ($1/$2/$3)}'`
+echo "number of records in the input data stack: $nrec"
+
+if ("$rec_num" == "-") then
+  set rec = 0
+  while ($rec != $nrec)
+    set rec = `echo $rec 1|awk '{print $1+$2}'`
+    echo "data record: $rec"
+    pt2data $plist $pmask $SLC_par $pdata_in $rec $tmp1 $MLI_par $type 1
+    bpf $tmp1 $tmp2 $width $fcf $bw $fcf $bw 0 0 $width $nlines $type 0 3.384 64   
+    data2pt $tmp2 $MLI_par $plist $SLC_par $pdata_out $rec $type
+  end
+else
+  echo "data record: $rec_num"
+  pt2data $plist $pmask $SLC_par $pdata_in $rec_num $tmp1 $MLI_par $type 1
+  bpf $tmp1 $tmp2 $width $fcf $bw $fcf $bw 0 0 $width $nlines $type 0 3.384 64   
+  data2pt $tmp2 $MLI_par $plist $SLC_par $pdata_out $rec_num $type
+endif
+
+if (1) then
+  rm -f $tmp1
+  rm -f $tmp2
+endif

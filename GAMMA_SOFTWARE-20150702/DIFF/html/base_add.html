@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF/GEO Reference Manual: base_add</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>base_add</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/base_add.c">base_add.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  base_add - Add/subtract baseline components of 2 baseline
+  files.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_add &lt;base_1&gt; &lt;base_2&gt; &lt;base_out&gt;
+  [mode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;base_1&gt;</td>
+
+      <td>1. input baseline file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;base_2&gt;</td>
+
+      <td>2. input baseline file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;base_out&gt;</td>
+
+      <td>ouput baseline file</td>
+    </tr>
+
+    <tr>
+      <td>mode</td>
+
+      <td>add/subtract mode (default=1: add, -1: subtract
+      (base_1-base_2))</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_add 20040622_20040621.base_orb
+  20040622_20040621.base_fft 20040622_20040621.base</samp></p>
+
+  <p>Adds the two baselines (each component).</p>
+
+  <p><samp>base_add 20040622_20040621.base_orb
+  20040622_20040621.base_fft 20040622_20040621.base -1</samp></p>
+
+  <p>Subtracts second baseline from first baseline.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_add reads two baseline files and generates a new baseline
+  file by addition or subtraction of the components of the the two
+  baseline files.</p>
+
+  <p>An initial estimate of the baseline using orbit state vectors
+  (obtained with the program base_orbit of the Gamma
+  Interferometric SAR Processor, ISP ) may not be sufficiently
+  accurate. The remaining fringes in the differential interferogram
+  may be estimated usingFourier analysis and removed in a second
+  step (using the program <em>base_est_fft</em> of the Gamma
+  Interferometric SAR Processor, ISP). The two baseline files
+  obtained (one from the orbits and one from the Fourier analysis
+  of the differential interferogram) may then be added using
+  <em>base_add</em> to obtain a single baseline estimate.</p>
+
+  <p>Applying these ideas to data over level terrain permits
+  precisely estimating the interferometric baseline. By addition
+  and subtraction of baselines the baselines of other SLC pairs can
+  be estimated. This is of interest, as larger baselines or
+  baselines for longer time intervals may be difficult to estimate
+  from the data itself due to low coherence. The described
+  procedure may be applied iteratively to improve the result.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-Sep-2008.</p>
+</body>
+</html>

@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+if (($#ARGV + 1) < 5){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2003, Gamma Remote Sensing, v1.0 9-Dec-2003 clw ***
+*** average all records in a stack of float data  ***
+
+usage: $0 <plist> <pmask> <pdata1> <nrec> <pdata2>
+
+    plist     (input) point list (int)
+    pmask     (input) point data stack of mask values (char)
+    pdata1    (input) input data stack (float);
+    nrec      (input) number of records;
+    pdata2    (output) output average stack (float)
+EOS
+
+$plist = $ARGV[0];
+$pmask = $ARGV[1];
+$pdata1 = $ARGV[2];
+$nrec =   $ARGV[3];
+$pdata2 = $ARGV[4];
+$sc = 1./$nrec;
+
+system "rm -f $pdata2";
+#copy first record to output
+system "lin_comb_pt $plist $pmask $pdata1 1 $pdata1 1 $pdata2 1 0. .5 .5 2"; 
+
+#add the rest of the records
+for($i=2; $i <= $nrec; $i++){
+  $cmd = "lin_comb_pt $plist $pmask $pdata1 $i $pdata2 1 $pdata2 1 0. 1.0 1.0 2 1";
+  printf "%s\n",$cmd;
+  $exit = system "$cmd";
+  ($exit == 0) or die "ERROR: lin_comb_pt failed\n";
+}  
+
+$cmd = "lin_comb_pt $plist $pmask $pdata2 1 $pdata2 1 $pdata2 1 0. 0.0 $sc 2";
+printf "%s\n",$cmd;
+$exit = system "$cmd";
+($exit == 0) or die "ERROR: lin_comb_pt failed\n";
+exit(0);

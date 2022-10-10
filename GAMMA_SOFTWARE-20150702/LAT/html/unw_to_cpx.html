@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: unw_to_cpx</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>unw_to_cpx</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/unw_to_cpx.c">unw_to_cpx.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  unw_to_cpx - calculate fcomplex interferogram from real unwrapped
+  phase.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>unw_to_cpx &lt;unw&gt; &lt;cpx&gt;
+  &lt;width&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;unw&gt;</td>
+
+      <td>(input) unwrappped phase (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;real&gt;</td>
+
+      <td>(output) interferogram file (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>samples per row of unw</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>unw_to_cpx a.unw a.int 800</samp></p><br>
+  converts the unwrapped phase in a.unw to fcomplex values in
+  a.int.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code unw_to_cpx.c in ./src. For compilation adjust and use
+  Makefile: Executable version unw_to_cpx in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  unw_to_cpx reads the unwrapped phase from the output and
+  calculates the fcomplex (real, imaginary) interferogram using the
+  relations: real = cos(phase), imaginary = sin(phase).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  Various display and visualization tools are available for the
+  display of the fcomplex output.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="tazio_strozzi.html">TS</a>, <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 20-Aug-2003.</p>
+</body>
+</html>

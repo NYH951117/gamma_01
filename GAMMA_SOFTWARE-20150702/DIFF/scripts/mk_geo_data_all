@@ -1,0 +1,151 @@
+#!/usr/bin/perl
+# Terrain Geocoding of a stack of float data files in SAR RDC coordinates clw 24-Feb-2014
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+if (($#ARGV + 1) < 9){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, 1.2 9-Apr-2015 clw ***
+*** Terrain geocoding of multiple data files in SAR slant-range coordinates ***
+
+usage: $0 <MLI_par> <DEM_seg_par> <gc> <data_tab> <data_geo_dir> <interp_mode> <format> <geo_tab> <log>
+  MLI_par      (input) MLI image parameter file with same dimensions as input data
+  DEM_seg_par  (input) DEM parameter file for output geocoded product 
+  gc           (input) geocoding lookup table (map coordinates --> RDC), use refined lookup table if available
+  data_tab     (input) input table with names of the coregistered data files in the first column
+  geo_dir      directory for the output terrain geocoded data files, each file in the data_tab list will have .map appended to the name
+  interp_mode  interpolation mode:
+                 0: nearest-neighbor
+		 1: bicubic 
+		 2: bicubic-log 
+  format       input data format:
+                 0: float (4 bytes/value)
+		 1: fcomplex (re,im float)
+		 2: SUN raster/BMP
+		 3: unsigned byte
+		 4: short integer (2 bytes/value)
+  geo_tab      (output) list of output geocoded files
+  log          log file name
+    			       		   
+EOS
+
+$mli_par = $ARGV[0];
+$dem_seg_par = $ARGV[1];
+$gc = $ARGV[2];
+$dat_tab = $ARGV[3];
+$geo_dir = $ARGV[4];
+$interp_mode = $ARGV[5];
+$format = $ARGV[6];
+$geo_tab = $ARGV[7];
+$log = $ARGV[8];
+
+@types = ("float", "fcomplex", "Sun raster/BMP image", "unsigned char", "short integer");
+@interp = ("nearest-neighbor", "spline", "spline-log", "bilinear", "bilinear_log");
+
+($interp_mode >= 0 && $interp_mode <= 2) or die "\nERROR $0: invalid interpolation mode: $interp_mode\n\n";
+($format >= 0 && $format <= 4) or die "\nERROR $0: invalid data format: $format\n\n";
+
+-e $dat_tab or die "\nERROR $0: input list of data files: $dat_tab\n";
+-e $mli_par or die "\nERROR $0: MLI image parameter file does not exist: $mli_par\n";
+-e $gc or die "\nERROR: $0: lookup table does not exist: $gc\n";
+
+unless (-d $geo_dir) {
+  print "creating directory for output geocoded image products: $geo_dir\n";
+  (mkdir $geo_dir) or die "ERROR $0: non-zero exit status, could not create geocoded data directory $geo_dir\n";
+}
+
+#list of input data
+open(DAT_TAB, "<$dat_tab") or die "\nERROR $0: data file list does not exist: $dat_tab\n\n";
+
+#list of output geocoded data
+open(GTAB,">$geo_tab") or die "ERROR $0: cannot create list of output geocoded data files: $geo_tab\n\n";
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;
+
+$time = localtime;
+print LOG "$0 @ARGV\n\n";
+print LOG "*** $0 processing start: $time  mode: $mode ***\n";
+print "*** $0 processing start: $time  mode: $mode ***\n";
+print "log file: $log\n";
+
+@mli_width = extract_param($mli_par,"range_samples:");
+@mli_lines = extract_param($mli_par,"azimuth_lines:"); 
+@mli_rps = extract_param($mli_par,"range_pixel_spacing:"); 
+@mli_azps = extract_param($mli_par,"azimuth_pixel_spacing:"); 
+@dem_seg_width = extract_param($dem_seg_par,"width:");
+@dem_seg_lines = extract_param($dem_seg_par,"nlines:");
+
+print "ISP image parameter file: $mli_par\n";
+print "data width: $mli_width[1]   lines: $mli_lines[1]\n";
+print "data pixel spacing (m) range: $mli_rps[1]  azimuth: $mli_azps[1]\n";
+print "data type: $types[$format]\n";
+
+print "DEM parameter file for geocoded data: $dem_seg_par\n";
+print "output map width: $dem_seg_width[1]  lines: $dem_seg_lines[1]\n";
+print "geocoding lookup table: $gc\n";
+print "interpolation mode: $interp[$interp_mode]\n";
+print "list of output geocoded data files: $geo_tab\n";
+
+print LOG "ISP image parameter file: $mli_par\n";
+print LOG "data width: $mli_width[1]   lines: $mli_lines[1]\n";
+print LOG "data pixel spacing (m) range: $mli_rps[1]  azimuth: $mli_azps[1]\n";
+print LOG "data type: $types[$format]\n";
+print LOG "DEM parameter file for geocoded image: $dem_seg_par\n";
+print LOG "output map width: $dem_seg_width[1]  lines: $dem_seg_lines[1]\n";
+print LOG "geocoding lookup table: $gc\n";
+print LOG "interpolation mode: $interp[$interp_mode]\n";
+print LOG "list of output geocoded data files: $geo_tab\n";
+
+print "\n*** $0 starting  $time ***\n";
+print LOG "\n*** $0 starting $time ***\n";
+
+LINE: while (<DAT_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $dat = $fields[0];
+  my ($d1, $dir1, $ext1) = fileparse($dat, qr/\.[^.]*/); #extension is the last bit after the last period
+  $dat_geo = "$geo_dir/$d1"."_map"."$ext1";
+
+  print "\ninput data: $dat\n";
+  print "output geocoded data: $dat_geo\n";
+  print GTAB "$dat_geo\n";
+  print LOG "\ninput data file: $dat\n";
+  print LOG "output geocoded data: $dat_geo\n";
+  close LOG;
+  
+  execute("geocode_back $dat $mli_width[1] $gc $dat_geo $dem_seg_width[1] $dem_seg_lines[1] $interp_mode $format", $log);
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+}
+
+print "\n*** $0 completed  $time ***\n";
+print LOG "\n*** $0 completed  $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

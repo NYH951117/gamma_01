@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF/GEO Reference Manual: offset_pwr_list</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF &amp; GEO Reference Manual</h1>
+  <hr>
+
+  <h2>offset_pwr_list</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/offset_pwr_list.c"><i>offset_pwr_list.c</i></a></p>
+
+  <p><em style="font-style: italic;">offset_pwr</em><span style=
+  "font-style: italic;">_list</span>&nbsp; measures offsets between
+  SLC images at positions specified by a list of coordinate pairs
+  using intensity cross-correlation</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_pwr_list &lt;SLC-1&gt; &lt;SLC-2&gt;
+  &lt;SLC1_par&gt; &lt;SLC2_par&gt; &lt;OFF_par&gt;
+  &lt;clist_RDC&gt; &lt;clist_MAP&gt; &lt;offs&gt; &lt;snr&gt;
+  &lt;nx&gt; &lt;ny&gt; [rwin] [azwin] [offsets] [n_ovr] [thres]
+  [pflag]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) single-look complex image 1 (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) single-look complex image 2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;clist_RDC&gt;</td>
+
+        <td>(input) list of x,y pixel coordinates in the map
+        projection geometry (text format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;clist_MAP&gt;</td>
+
+        <td>(output) list of x,y pixel coordinates in the reference
+        SLC image geometry (Range-Doppler Coordinates) (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;offs&gt;</td>
+
+        <td>(output) offset estimates (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;snr&gt;</td>
+
+        <td>(output) offset estimation SNR (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;nx&gt;</td>
+
+        <td>width of offset map</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ny&gt;</td>
+
+        <td>height of offset map</td>
+      </tr>
+
+      <tr>
+        <td>[rwin]</td>
+
+        <td>search window size (range pixels, (enter - for default
+        from offset parameter file))</td>
+      </tr>
+
+      <tr>
+        <td>[azwin]</td>
+
+        <td>search window size (azimuth pixels, (enter - for
+        default from offset parameter file))</td>
+      </tr>
+
+      <tr>
+        <td>[offsets]</td>
+
+        <td>(output) range and azimuth offsets and SNR data in text
+        format, enter - for no output</td>
+      </tr>
+
+      <tr>
+        <td>[n_ovr]</td>
+
+        <td>SLC oversampling factor (integer 2**N (1,2,4) default =
+        2)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>offset estimation quality threshold (enter - for
+        default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[pflag]</td>
+
+        <td>&nbsp;print flag (0:print offset summary
+        (default)&nbsp; 1:print all offset data)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_pwr_list 19970924_seg.slc 19971018_seg.slc
+  19970924_seg.slc.par 19971018_seg.slc.par off clist_RDC clist_MAP
+  offs_clist snr_clist 724 315 64 64 offsets_clist 2 6.5</samp></p>
+
+  <p>estimates the range and azimuth offsets at a list of
+  coordinate positions specified in the clist_RDC file.<br></p>
+
+  <p><b>DESCRIPTION</b><br></p>
+
+  <p><em>offset_pwr_list</em> estimates the range and azimuth
+  offset filed&nbsp; cross correlation optimization of the detected
+  SLC data. This cross correlation optimization algorithm rapidly
+  generates the offset fields by correlating image chips. The image
+  chips are nominally square and have sizes in the range of 16 to
+  128 depending on the interferogram correlation. The positions of
+  these image chips is specified in&nbsp; SLC coordinates by
+  entries in the clist_RDC file. This file consists of pairs of
+  integers, one pair per line, specifying the range sample number
+  and azimuth line number for the chip center.</p>
+
+  <p>Oversampling of the SLC images prior to measurement of the
+  offsets is supported&nbsp; with a nominal vvalue of 2.&nbsp; IThe
+  location of the correlation maximum is estimated using a
+  two-dimensional quadratic least squares fit of the 2-dimensional
+  correlation function.<br></p>
+
+  <p>The range and azimuth sizes of the image chips used in the
+  search, the SLC over-sampling factor,&nbsp; and the signal to
+  noise (SNR) threshold can be entered on the command line. Default
+  values are taken from the ISP offset/interferogram parameter
+  file. Recommended values are suggested as default values in the
+  program <em>create_offset</em>. For the SNR threshold, values of
+  7.0 and larger are recommended.&nbsp; Values entered while
+  running create_offset&nbsp; for the number of&nbsp; range and
+  azimuth positions are ignored by offset_pwr_list, since the
+  locations for offset estimation are in the&nbsp;
+  clist_MSP.<br></p>
+
+  <p>The range and azimuth offset estimates are written to a binary
+  data file (fcomplex format) with the offsets coded as pairs of
+  floating point numbers (range offset, azimuth offset). The SNR
+  values are also written to a float data file. The offset and SNR
+  values can also be written to a text format file that contains
+  the range and azimuth positions, offsets, and SNR value. The
+  dimensions of the array for the offset measurements nx and ny can
+  be obtained from the DEM_pwr2&nbsp; output by <a href=
+  "dem_RDC_list.html">dem_RDC_list</a>.&nbsp; One approach to
+  display of the offset results is to&nbsp; scale the geocoded
+  image by the sub-sampling factors entered when running
+  dem_RDC_list. In this way there is 1 pixel for every point where
+  offsets are measured.&nbsp;<br></p>
+
+  <p>A typical processing sequence is described in the&nbsp;&nbsp;
+  <a href="GEO_users_guide.pdf">GEO Users Guide</a> section 15
+  and&nbsp; section H.<span style="font-style: italic;">(Measuring
+  range and azimuth offsets on a regular grid in map
+  coordinates</span>).&nbsp;<br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "dem_RDC_list.html">dem_RDC_list</a>, <a href=
+  "ras_clist.html">ras_clist</a><br></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Nov-2008.</p>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: ORRM_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ORRM_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ORRM_proc.c">ORRM_proc.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>ORRM_proc</em> - extract state
+  vectors from ORRM orbit state vector file and copy to the MSP
+  processing parameter file<br></p>
+
+  <p><strong>SYNOPSIS<br></strong><code>ORRM_proc &lt;PROC_par&gt;
+  &lt;ORRM&gt; [nstate]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>MSP Processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ORRM&gt;</td>
+
+        <td>ORRM state vector file</td>
+      </tr>
+
+      <tr>
+        <td>[nstate]</td>
+
+        <td>number of state vectors (default=5, maximum=9)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong><samp>ORRM_proc p8560.slc.par
+  8560.orrm 5</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  ORRM_proc reads the MSP processing parameter file and extracts
+  the specified number of state vectors from the ORRM state vector
+  file. The state vectors are written into the MSP processing
+  parameter file locations for state vectors. This program is used
+  with raw data sets that do not have adequate state vector data.
+  The default number of state vectors is 5 and is adequate unless
+  multiple frames are processed. ORRM orbit data were distributed
+  by ESA for ERS-1 data spanning 1991-1994. These data are still
+  generated but not distributed except by special agreement. This
+  product has now been replaced by the Precision Orbit data set
+  (PRC) for both ERS-1 and ERS-2. These orbit data are available
+  from an FTP server in Germany with a delay of about 1 month after
+  data acquisition by ERS. A request to the ESRIN help desk is
+  required to get ftp acess.<br></p>
+
+  <p><strong>ORRM State Vector Format</strong><br clear="all">
+  &lt;orbit&gt;.orrm - contains ORRM orbit data as provided by ESA.
+  The ORRM orbit state vector file contains the state vectors and
+  velocities for the sensor (ERS-1). The state vectors and
+  velocities are used to estimate the interferometric baseline.</p>
+
+  <p><strong>EXAMPLE</strong><br>
+  ORRM_911021MCCF0183.E102:18:27<br>
+  0 0 15266 0 15266 86340000 1991/10/21 0:51: 7<br>
+  15266 0 1346 1669.252283 -1781.4552 6718.5946 -6.8175479
+  2.2782278 2.2926923 0<br>
+  15266 60000 1346 1257.8307 -1639.5883 6842.8982 -6.8918049
+  2.4492421 1.8494171 0<br>
+  15266 120000 1346 842.8012 -1487.7264 6940.3805 -6.9377854
+  2.6112437 1.3989348 0<br>
+  15266 180000 1346 425.8638 -1326.4368 7010.6614 -6.9553996
+  2.7633585 0.9430021 0<br>
+  ...<br>
+  (Example represents ORRM orbit state vector file:
+  &lt;1352&gt;.orrm for orbit 1352. In addition to the orbit data
+  for orbit 1352 it contains data for further orbits, starting with
+  orbit 1346)</p>
+
+  <p>Lines 1,2: The first two lines contain auxiliary data.</p>
+
+  <p>Lines 3--&gt; EOF: (int mjd, utc, orb_num, double x, y, z, vx,
+  vy, vz, int TAI_UTC_delta):</p>
+
+  <ol>
+    <li>mdj: modified Julian date, which is (julian date-2433282.5)
+    e.g.: 1.1.1990 = 14610</li>
+
+    <li>utc: time (in msec) since midnight UTC</li>
+
+    <li>orb_num: orbit number</li>
+
+    <li>x, y, z: sensor position (in km) in Conventional
+    Terrestrial System</li>
+
+    <li>vx, vy, vz: sensor velocity (in km/sec) in Conventional
+    Terrestrial System</li>
+
+    <li>TAI_UTC_delta: difference (in sec) between the
+    International Atomic Time and UTC</li>
+  </ol>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-Nov-2004.
+</body>
+</html>

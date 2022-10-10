@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF/GEO Reference Manual: par_EORC_PALSAR_geo</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate ISP and DIFF/GEO parameter files and extract data
+  from CEOS Level 1.5 Ellipsoid Geocoded PALSAR products</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_EORC_PALSAR_geo.c">par_EORC_PALSAR_geo.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_EORC_PALSAR_geo - Create ISP image parameter file and
+  DIFF/GEO DEM parameter file for a ellipsoid geocoded PALSAR image
+  (Level 1.5)</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_EORC_PALSAR_geo &lt;CEOS_leader&amp;t;
+  &lt;MLI_par&gt; &lt;DEM_par&gt;; &lt;CEOS_data&gt; [MLI]
+  [cal]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file provided by EORC for Level 1.5
+        ellipsoid geocoded (GEC) data (LED...P1.5GUA)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(output) ISP image parameter file (example:
+        yyyymmdd_map.mli.par</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(output) DIFF/GEO DEM parameter file (example:
+        yyyymmdd_map.dem_par</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_data&gt;</td>
+
+        <td>(input) PALSAR CEOS format Level 1.5 GEC MLI data
+        (IMG...P1.5GUA)</td>
+      </tr>
+
+      <tr>
+        <td>[MLI]</td>
+
+        <td>(output) reformatted PALSAR&nbsp; GEC MLI image
+        (example: yyyymmdd_map.mli, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[cal]</td>
+
+        <td>radiometric calibration factor in dB (enter - for
+        default: -83 for PALSAR-1 data)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_EORC_PALSAR_geo LED-ALPSRP031591140-P1.5GUA
+  20060826_map.mli.par 20060826_map.dem_par
+  IMG-HH-ALPSRP031591140-P1.5GUA 20060826_map.mli</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <strong>par_EORC_PALSAR_geo</strong> reads a level 1.5 CEOS
+  format ellipsoid geocoded (GEC) PALSAR images. It generates both
+  an ISP image parameter file and DIFF/GEO DEM parameter file. The
+  ISP image parameter file contains only the polarization, date,
+  and state vector information.&nbsp; The associated DEM parameter
+  file contains the projection parameters, image dimensions, sample
+  spacing.&nbsp;</p>
+
+  <p>The default map projection for these products is either
+  Universal Transverse Mercator (UTM) or Polar Stereographic (PS).
+  Other projections are possible, but currently not supported by
+  <strong>par_EORC_PALSAR_geo</strong>. The projection parameters
+  and sample spacing are extracted from the CEOS leader file.</p>
+
+  <p>The GEC data are delivered in the form of 16-bit magnitude
+  values. The data are converted to 32-bit floating intensity data.
+  A default calibration factor of -83 dB is applied to produce
+  radiometrically calibrated image data.&nbsp; This is the default
+  value for PALSAR-1. The user must enter the correct value for
+  PALSAR-2 data.</p>
+
+  <p>It is possible to generate a raster image (BMP or Sun raster)
+  of the intensity data using <strong>raspwr</strong> or
+  <strong>ras_dB</strong> and then display with geographic
+  information using the <strong>disras_dem_par</strong>
+  program.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DEM_par.html">DEM parameter file</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Mar-2015.<br>
+</body>
+</html>

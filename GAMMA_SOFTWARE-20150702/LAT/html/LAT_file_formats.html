@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT: File Formats</title>
+</head>
+
+<body>
+  <h1>GAMMA Land Application Tools (LAT):</h1>
+  <hr>
+
+  <h2>LAT File Formats</h2>
+  <hr>
+
+  <h2><a name="SLC_data">Single look complex SAR data
+  (&lt;orbit&gt;.slc)</a></h2>
+
+  <p>Two formats for SLC data are supported.</p>
+
+  <p>In the first format the SLC data are in complex floating point
+  representation, each complex sample consists of two 4 byte
+  floating point numbers, real and imaginary part. There is no file
+  header, or zero padding of the data. Each record corresponds to a
+  single range line. The number of samples/line and the number of
+  lines is specified in the SLC data parameter file <a href=
+  "SLC_par.html">SLC_par</a> or if available in the <a href=
+  "proc_par.html">MSP processing parameter file</a>.</p>
+
+  <p>The second format is the format provided by ESA Processing
+  Facilities (PAFs). Real and imaginary part of the SLC data are in
+  2 byte integer format. File header, or zero padding of the data
+  as described in the CEOS leaderfile. Each record corresponds to a
+  single range line. The number of samples/line and the number of
+  lines is specified in the SLC data parameter file <a href=
+  "SLC_par.html">SLC_par</a> or if available in the <a href=
+  "proc_par.html">MSP processing parameter file</a>.</p>
+  <hr>
+
+  <h2><a name="complex_data">Complex data (*.int, *.flt, *.sm,
+  *.slope)</a></h2>
+
+  <p>Complex valued data (for example the interferogram) saved as
+  pairs of 4-byte floating point numbers (real part followed by
+  imaginary part). Image width and height correspond to the number
+  of range and azimuth pixels, respectively. No header or
+  zero-padding is used. Image width and height are given in the ISP
+  processing/offset parameter file.</p>
+  <hr>
+
+  <h2><a name="real_data">Real data (*.pwr1, *.pwr2, *.cc, *.unw,
+  *.hgt, *.rpwr1, *.rhgt, ...)</a></h2>
+
+  <p>Real valued data saved as 4-byte floating point numbers. Image
+  width and height correspond to the number of range and azimuth
+  pixels, respectively. No header or zero-padding is used. Image
+  width and height are given in the ISP processing/offset parameter
+  file.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: d2pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>d2pt</h2>
+
+  <p><i>ANSI-C program: <a href="../src/d2pt.c">d2pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  d2pt - raster to vector format conversion (extract values from a
+  2-D data file at specified point locations)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>d2pt &lt;f_in&gt; &lt;width&gt; &lt;plist&gt;
+  &lt;rlks&gt; &lt;azlks&gt; &lt;pdata&gt; &lt;rec_num&gt;
+  &lt;type&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;f_in&gt;</td>
+
+        <td>(input) 2-D image data file (various types
+        supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>(input) image width (ignored if input is a raster
+        image)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list for sampling (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;&nbsp;rlks&gt;</td>
+
+        <td>(input) range looks of input data relative to point
+        list</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>(input) azimuth looks of input data relative to point
+        list</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata&gt;</td>
+
+        <td>(output) point data stack (same type as f_in)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number in output point data stack (starting with
+        1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>data type (0:fcomplex 1:scomplex 2:float 3:int 4:short
+        5:byte 6:SUN/BMP raster)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>d2pt 19920422.rslc 4912&nbsp;plist 1 1&nbsp; pSLC 4
+  1</samp></p>
+
+  <p>Extracts complex SLC values (scomplex) at the point list
+  (plist) coordinates from the registered SLC&nbsp;19920422.rslc
+  and writes the values as record number 4 to the output point data
+  stack pSLC (scomplex). The geometry of the SLC data file is 4912
+  pixels wide. The number of looks in range and azimuth of the SLC
+  data is &nbsp;1 in range and 1 in azimuth.</p><samp>d2pt
+  ave20.rmli 2456&nbsp;plist 2 10 pmli 4 2</samp>
+
+  <p>Extracts values (float) at the point list (testsite.plist)
+  coordinates from the averaged backscatter intensity image
+  (ave20.rmli) and writes the values as record number 1 to the
+  output data stack pmli(float), a stack with just a single record.
+  &nbsp;The number of range looks is 2 and azimuth looks, 10. The
+  data format is float.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code d2pt.c in ./IPTA/src, executable version data2pt in
+  ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The use of point data stacks is an important element of the IPTA.
+  Registered SLC data, and data in map coordinates sampled at point
+  locations&nbsp; are stored in data stacks with each record
+  corresponding to the values from a single data layer. d2pt is a
+  general sampling program that supports sampling input data in
+  natural radar or&nbsp; map coordinates. The number of looks in
+  range and azimuth refer to a scaling factors between coordinates
+  in the plist and the coordinates of the raster data. The rlks
+  parameter refers to the across direction and the azlks parameter
+  to the y coordinate or equivalently the line number. It is
+  assummed that the input data are smaller or the the same size as
+  the reference geomentry where the coordinates of the points is
+  specified.</p>
+
+  <p>The extracted values (in binary vector data format) are
+  written to the point data stack at the indicated record number.
+  The record numbers start with 1. The number of records
+  corresponds to the highest record number. Stacks with just a
+  single record are used in the case of data files as the terrain
+  height. If a new stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.<br>
+  Different data types (fcomplex, scomplex, float, int, short,
+  byte, SUN/BMP raster) are supported. The data type of the input
+  2-D data and the output point data stack are assumed to be
+  identical.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="data2pt.html">data2pt.c</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 7-Jul-2005.
+</body>
+</html>

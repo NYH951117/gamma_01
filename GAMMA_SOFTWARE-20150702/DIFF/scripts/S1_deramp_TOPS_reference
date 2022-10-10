@@ -1,0 +1,82 @@
+#! /bin/csh -f
+
+echo "S1_deramp_TOPS_reference: Script to deramp a Sentinel-1 TOPS mode burst SLC reference SLC v1.1 19-Jun-2015 uw"
+echo " "
+if ($#argv < 1)then
+  echo "usage: S1_deramp_TOPS_reference <SLC1_tab>"
+  echo "       SLC1_tab    (input) SLC_tab of S1 TOPS burst SLC reference (e.g. 20141015.SLC_tab)"
+  echo " "
+  echo "       The filenames for the deramped data and the phase ramp are generated based on SLC1_tab"
+  echo "       20141114.RSLC_tab --> 20141114.RSLC_tab.deramp"
+  echo "       20141114.IW1.rslc --> 20141114.IW1.rslc.deramp, 20141114.IW1.rslc.deramp.par,"
+  echo "                             20141114.IW1.rslc.deramp.TOPS_par, 20141114.IW1.rslc.deramp.dph"
+  exit
+endif
+
+# History:
+# 23-Jan-2015: initial version
+
+#defaults for input parameters
+set SLC1_tab = $1
+set SLC1_tab_deramp = $1.deramp
+
+echo "test if required input/output files and directories exist"
+if (-e "$1" == 0) then 
+  echo "ERROR: SLC1_tab file ($1) does not exist"; exit(-1)
+endif 
+
+#####################################################################################
+
+if (1) then # determine the parameters in SLC1_tab_deramp
+  set tmp=`awk '(NR>=1){print $1}' $1`
+  set nrows=`echo "$tmp" | awk '(NR==1){print NF}'`
+  echo "SLC1_tab has $nrows rows"
+  
+  if ("$nrows" >= "1") then
+    set SLC=`awk '(NR==1){print $1}' $1 `
+    set SLC_par=`awk '(NR==1){print $2}' $1 `
+    set TOPS_par=`awk '(NR==1){print $3}' $1 `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    # echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp" > $SLC1_tab_deramp
+  endif
+  if ("$nrows" >= "2") then
+    set SLC=`awk '(NR==2){print $1}' $1 `
+    set SLC_par=`awk '(NR==2){print $2}' $1 `
+    set TOPS_par=`awk '(NR==2){print $3}' $1 `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    # echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp" >> $SLC1_tab_deramp
+  endif
+  if ("$nrows" >= "3") then
+    set SLC=`awk '(NR==3){print $1}' $1 `
+    set SLC_par=`awk '(NR==3){print $2}' $1 `
+    set TOPS_par=`awk '(NR==3){print $3}' $1 `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    # echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp" >> $SLC1_tab_deramp
+  endif
+endif
+
+if (1) then # deramp reference TOPS burst SLC1
+  echo "SLC_deramp_S1_TOPS $SLC1_tab $SLC1_tab_deramp 0 1"
+  SLC_deramp_S1_TOPS $SLC1_tab $SLC1_tab_deramp 0 1
+endif
+
+#####################################################################################
+
+echo ""
+echo "SLC_tab of deramped reference: $SLC1_tab_deramp"
+echo "deramped SLC reference mosaic: $SLC1_tab_deramp"
+echo "deramp phases example:         $SLC.deramp.dph"
+
+exit

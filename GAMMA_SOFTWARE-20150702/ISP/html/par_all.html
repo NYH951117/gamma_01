@@ -1,0 +1,460 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: par_&lt;facility&gt;</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Create SLC Parameter File</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_ACS_ERS.c">par_ACS_ERS.c</a>, <a href=
+  "../src/par_ASAR.c">par_ASAR.c</a>, <a href=
+  "../src/par_ASF_91.c">par_ASF_91.c</a>, <a href=
+  "../src/par_ASF_96.c">par_ASF_96.c</a>, <a href=
+  "../src/par_ASF_PRI.c">par_ASF_PRI.c</a>, <a href=
+  "../src/par_ASF_RSAT_SS.c">par_ASF_RSAT_SS.c</a>, <a href=
+  "../src/par_ATLSCI_ERS.c">par_ATLSCI_ERS.c</a>, <a href=
+  "../src/par_CS_SLC.c">par_CS_SLC.c</a>, <a href=
+  "../src/par_CS_SLC_TIF.c">par_CS_SLC_TIF.c</a>, <a href=
+  "../src/par_EORC_JERS_SLC.c">par_EORC_JERS_SLC.c</a>, <a href=
+  "../src/par_EORC_PALSAR.c">par_EORC_PALSAR.c</a>, <a href=
+  "../src/par_ERSDAC_PALSAR.c">par_ERSDAC_PALSAR.c</a>, <a href=
+  "../src/par_ESA_ERS.c">par_ESA_ERS.c</a>, <a href=
+  "../src/par_IECAS_SLC.c">par_IECAS_SLC.c</a>, <a href=
+  "../src/par_KC_PALSAR_slr.c">par_KC_PALSAR_slr.c</a>, <a href=
+  "../src/par_KS_DGM.c">par_KS_DGM.c</a>, <a href=
+  "../src/par_KS_SLC.c">par_KS_SLC.c</a>, <a href=
+  "../src/par_PRI.c">par_PRI.c</a>, <a href=
+  "../src/par_PRI_ESRIN_JERS.c">par_PRI_ESRIN_JERS.c</a>, <a href=
+  "../src/par_PulSAR.c">par_PulSAR.c</a>, <a href=
+  "par_RISAT_SLC.html">par_RISAT_SLC.c</a>, <a href=
+  "../src/par_RSAT_SCW.c">par_RSAT_SCW.c</a>, <a href=
+  "../src/par_RSAT_SGF.c">par_RSAT_SGF.c</a>, <a href=
+  "../src/par_RSAT_SLC.c">par_RSAT_SLC.c</a>, <a href=
+  "../src/par_RSAT2_SG.c">par_RSAT2_SG.c</a>, <a href=
+  "../src/par_RSAT2_SLC.c">par_RSAT2_SLC.c</a>, <a href=
+  "../src/par_RSI_ERS.c">par_RSI_ERS.c</a>, <a href=
+  "../src/par_SETHI_ONERA.c">par_SETHI_ONERA.c</a>, <a href=
+  "../src/par_SIRC.c">par_SIRC.c</a>, <a href=
+  "../src/par_TX_GRD.c">par_TX_GRD.c</a>, <a href=
+  "../src/par_TX_SLC.c">par_TX_SLC.c</a>, <a href=
+  "../src/par_UAVSAR_SLC.c">par_UAVSAR_SLC.c</a>.<br></p>
+
+  <p><strong>NAME</strong><br></p>
+
+  <p><em>par_&lt;facility&gt;</em> - creates SLC Parameter File
+  from CEOS Leader files or similar annotation (e.g. xml file) for
+  a number of SAR sensors as provided with the SLC or PRI data by
+  different receiving stations / processing facilities, or from the
+  Gamma MSP Processing Parameter File.</p>
+
+  <p><em>par_&lt;facility&gt;</em> reads the original data file(s),
+  searches for information needed for ISP SLC/MLI image&nbsp;
+  parameter file, and creates the ISP SLC/MLI image&nbsp; parameter
+  file. If needed, it reformats the image data to adhere to the
+  format of the GAMMA software.</p>
+
+  <table border="1">
+    <tbody>
+      <tr>
+        <th style="background-color: transparent;">Program:</th>
+
+        <th>Sensor</th>
+
+        <th>Image Type and Facility</th>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_ers.html">par_ACS_ERS</a></td>
+
+        <td>ERS</td>
+
+        <td>SLC data from the ACS processor used by Indian PAF</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_ASAR.html">par_ASAR</a></td>
+
+        <td>ENVISAT ASAR</td>
+
+        <td>SLC (Alternating Polarization, Image Mode, Wide Swath
+        modes) and PRI data (also Global Monitoring mode)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_asf.html">par_ASF_91</a></td>
+
+        <td>various</td>
+
+        <td>SLC data from Alaskan SAR Facility, Fairbanks
+        (1991-1996)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_asf.html">par_ASF_96</a></td>
+
+        <td>various</td>
+
+        <td>SLC data from Alaskan SAR Facility, Fairbanks (after
+        1996)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_asf.html">par_ASF_PRI</a></td>
+
+        <td>various</td>
+
+        <td>Ground range detected images produced by the Alaskan
+        SAR Facility, Fairbanks after 1996, available for ERS-1,
+        ERS-2, Radarsat-1, and JERS-1</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_asf.html">par_ASF_RSAT_SS</a></td>
+
+        <td>RADARSAT-1</td>
+
+        <td>Ground range detected SCANSAR images produced by the
+        Alaskan SAR Facility</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_ers.html">par_ATLSCI_ERS</a></td>
+
+        <td>ERS</td>
+
+        <td>SLC data produced using the Atlantis APP processor
+        (CCRS)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_CS_SLC.html">par_CS_SLC</a></td>
+
+        <td>COSMO-SkyMed</td>
+
+        <td>COSMO-Skymed SLC data in HDF5 format produced by
+        ASI</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_CS_SLC_TIF.html">par_CS_SLC_TIF</a></td>
+
+        <td>COSMO-SkyMed</td>
+
+        <td>COSMO-Skymed SLC data in TIF format produced by
+        ASI</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "par_EORC_JERS_SLC.html">par_EORC_JERS_SLC</a></td>
+
+        <td>JERS</td>
+
+        <td>SLC data produced by JAXA EORC</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_palsar.html">par_EORC_PALSAR</a></td>
+
+        <td>ALOS PALSAR</td>
+
+        <td>Level 1.1 SLC data produced by JAXA EORC</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "par_all_palsar.html">par_ERSDAC_PALSAR</a></td>
+
+        <td>JERS</td>
+
+        <td>Level 1.1 SLC data produced by ERSDAC</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_ers.html">par_ESA_ERS</a></td>
+
+        <td>ERS</td>
+
+        <td>SLC data from the German, ASI, UK or ESRIN PAF, either
+        VMP or PGS processed data</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "par_IECAS_SLC.html">par_IECAS_SLC</a><br></td>
+
+        <td style="vertical-align: top;">IECAS SAR<br></td>
+
+        <td style="vertical-align: top;">Generate ISP image
+        parameter file and SLC image in fcomplex format<br></td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "par_KC_PALSAR_slr.html">par_KC_PALSAR_slr</a></td>
+
+        <td>ALOS PALSAR</td>
+
+        <td>Detected SAR intensity data strips in slant range
+        geometry produced by JAXA EORC for the Kyoto and Carbon
+        Initiative</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_KS_DGM.html">par_KS_DGM</a></td>
+
+        <td>KOMPSAT-5</td>
+
+        <td>Kompsat-5 DGM (Level 1B) data as provided by KARI</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_KS_SLC.html">par_KS_SLC</a></td>
+
+        <td>KOMPSAT-5</td>
+
+        <td>Kompsat-5 SCS (Level 1A) data as provided by KARI</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_MSP.html">par_MSP</a></td>
+
+        <td>various</td>
+
+        <td>SLC data processed with the Gamma MSP module</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_PRI.html">par_PRI</a></td>
+
+        <td>ERS</td>
+
+        <td>PRI ground range data produced by ESA PAFs</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_PRI.html">par_PRI_ESRIN_JERS</a></td>
+
+        <td>JERS-1</td>
+
+        <td>PRI ground range data produced by ESA ESRIN</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_ers.html">par_PulSAR</a></td>
+
+        <td>ERS</td>
+
+        <td>SLC data processed using the PulSAR SAR processor from
+        Phoenix Systems</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_RISAT_GRD.html">par_RISAT_GRD</a></td>
+
+        <td>RISAT-1</td>
+
+        <td>Read RISAT-1 Ground-Range data from a CEOS data set and
+        perform radiometric calibration</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "par_RISAT_SLC.html">par_RISAT_SLC</a><br></td>
+
+        <td style="vertical-align: top;">RISAT-1<br></td>
+
+        <td style="vertical-align: top;">Read RISAT-1 CEOS format
+        SLC data and perform radiometric calibration<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_rsat.html">par_RSAT_SCW</a></td>
+
+        <td>RADARSAT-1</td>
+
+        <td>Wide-swath SCANSAR images (8-bit/value ),</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_rsat.html">par_RSAT_SGF</a></td>
+
+        <td>RADARSAT-1</td>
+
+        <td>Radarsat stripmap path images (SGF) are analogous to
+        ESA ERS PRI images</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_rsat.html">par_RSAT_SLC</a></td>
+
+        <td>RADARSAT-1</td>
+
+        <td>Radarsat strip map SLC data processed by Radarsat
+        International (RSI), Atlantis APP SAR processor, or the ASF
+        BPP processor</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_RSAT2_SG.html">par_RSAT2_SG</a></td>
+
+        <td>RADARSAT-2</td>
+
+        <td>Radarsat ground range SGF/SGX data processed by
+        Radarsat International (RSI)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_RSAT2_SLC.html">par_RSAT2_SLC</a></td>
+
+        <td>RADARSAT-2</td>
+
+        <td>Radarsat strip map SLC data processed by Radarsat
+        International (RSI)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_all_ers.html">par_RSI_ERS</a></td>
+
+        <td>ERS</td>
+
+        <td>SLC data processed by Radarsat International (RSI)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_S1_all.html">par_S1_GRD</a></td>
+
+        <td>Sentinel-1</td>
+
+        <td>Generate GRD parameter and image files for Sentinel-1
+        Intensity Ground Range Data</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_S1_all.html">par_S1_SLC</a></td>
+
+        <td>Sentinel-1</td>
+
+        <td>Generate SLC parameter and image files for Sentinel-1
+        SLC data</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_SETHI_ONERA.html">par_SETHI_ONERA</a></td>
+
+        <td>SETHI</td>
+
+        <td>SLC data from SETHI instrument processed by ONERA</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_SIRC.html">par_SIRC</a></td>
+
+        <td>SIR-C</td>
+
+        <td>SLC data from JPL or USGS EOC</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_TX_GRD.html">par_TX_GRD</a></td>
+
+        <td>TerraSAR-X</td>
+
+        <td>MGD, i.e. PRI, ground range data processed by DLR</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_TX_SLC.html">par_TX_SLC</a></td>
+
+        <td>TerraSAR-X</td>
+
+        <td>SSC, i.e. SLC, data processed by DLR</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "par_UAVSAR_SLC.html">par_UAVSAR_SLC</a><br></td>
+
+        <td style="vertical-align: top;">UAVSAR<br></td>
+
+        <td style="vertical-align: top;">MLC,SLC data products
+        processed by JPL<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+  <strong>EXAMPLES:</strong><br>
+  <code><samp>par_ESA_ERS LEA_01.001 19950922.par
+  DAT_01.001&nbsp;</samp>19950922<samp>.slc</samp><br>
+  <samp>par_ASF&nbsp;</samp>LEA_01.001<samp>TLR_01.001</samp>
+  <span style=
+  "font-family: monospace;">19950922</span><samp>.par</samp><br>
+  <samp>par_MSP ERS_ESA.par p19950922.slc.par 19950922.par<br>
+  par_S1_SLC
+  measurement/s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.tiff&nbsp;
+  annotation/s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.xml&nbsp;
+  annotation/calibration/calibration-s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.xml&nbsp;
+  -&nbsp; slc_TOPS/20140809_iw1_vv.slc.par&nbsp;
+  slc_TOPS/20140809_iw1_vv.slc
+  slc_TOPS/20140809_iw1_vv.tops_par<br>
+  <br></samp></code>
+
+  <p><strong>DESCRIPTION:</strong><br>
+  The ISP has a standard parameter file format to describe SLC and
+  multi-look intensity image products. In this way data from many
+  different processors can be used by the ISP.&nbsp; For processed
+  SLC or ground range data, a CEOS format leader file or an
+  annotated file is provided by the processing facility. In a few
+  cases the annotation is stored in the same file as the image data
+  (e.g. ENVISAT ASAR). Parameters from these files can be
+  extracted, and the necessary calculations performed to generate
+  the ISP image parameter file.</p>
+
+  <p>For data processed through the MSP, the MSP processing
+  parameter and sensor parameter files&nbsp; provide the necessary
+  information.</p>
+
+  <p>In the case of&nbsp; data processed from RADARSAT-1 and
+  RISAT-1, the image needs to reformatted and possibly flipped in
+  range or in the along-track direction such that the direction of
+  range and azimuth time is always increasing for processing with
+  the Gamma software.</p>
+
+  <p>Sentinel-1 TOPS mode SLC data consist of a set of bursts
+  (nominally 10) in a single SLC. Since there are 3 Swaths in
+  Interferometric Wide mode (IW), there are 3 SLC images saved as
+  TIFF format images in each image data set. These have names like
+  <code>s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.tiff.</code>
+  The data are short complex (16 bit real, 16 imaginary), but are
+  converted to float complex (32-bit real, 32-bit imaginary) after
+  scaling by the program par_S1_TOPS.c The output of par_S1_SLC are
+  a binary float complex image, the SLC parameter file and a Burst
+  parameter file called the TOPS_par. See&nbsp;<a href=
+  "TOPS_par.html">TOPS_par</a> documentation.</p>
+
+  <p><strong>SEE ALSO:</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>,&nbsp; <a href=
+  "par_all_rsat.html">par_all_rsat</a>, <a href=
+  "par_all_ers.html">par_all_ers</a>, <a href=
+  "par_all_palsar.html">par_all_palsar</a>, <a href=
+  "TOPS_par.html">TOPS_par</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,&nbsp; ms last change 9-Dec-2014.
+</body>
+</html>

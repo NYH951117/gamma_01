@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: ascii2float</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2000 Gamma Remote Sensing --><!-- cw/uw000426 -->
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ascii2float</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ascii2float.c">ascii2float.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">ascii2float</span> -&nbsp;
+  Convert text format data to float format<span style=
+  "font-weight: bold;"><br></span></p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>ascii2float &lt;data_in&gt; &lt;width&gt; &lt;data_out&gt;
+  [loff] [nl] [coff] [nv]<br></code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>data_in</td>
+
+        <td>(input) input text format data file with , or
+        whitespace between columns</td>
+      </tr>
+
+      <tr>
+        <td>width<br></td>
+
+        <td>&nbsp;number of data values (columns) in each line of
+        text<br></td>
+      </tr>
+
+      <tr>
+        <td>data_out</td>
+
+        <td>(output) ouput data file (float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">loff<br></td>
+
+        <td style="vertical-align: top;">offset lines to start of
+        data (enter - for default: 0)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">nl<br></td>
+
+        <td style="vertical-align: top;">number of lines (enter -
+        for default: all)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">coff<br></td>
+
+        <td style="vertical-align: top;">offset columns to begin
+        reading data values (enter - for default: 0)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">nv<br></td>
+
+        <td style="vertical-align: top;">number of values to read
+        (enter - for default: to end of line)<br></td>
+      </tr>
+    </tbody>
+  </table><strong><br>
+  EXAMPLE</strong>
+
+  <p><code><samp>ascii2float q.txt 16 q3<br></samp></code></p>
+
+  <p>Converts the text file q.text with 16 columns of numbers to
+  the binary file q3<br>
+  Each line of q3 has 16 values that are 4-byte floating point
+  numbers.<br></p>
+
+  <p><code>ascii2float q.txt 16 q3&nbsp; 2 14 2 8<br></code></p>
+
+  <p>Converts the text file q.text with 16 columns of numbers to
+  the binary file q3.&nbsp; The first 2 lines of the input text
+  file are skipped and the subsequent 14 lines are read. Each line
+  is processed by skipping the first 2 columns and then converting
+  8 values to 4-byte flot<span style=
+  "font-weight: bold;"><br></span></p>
+
+  <h4>DESCRIPTION</h4><span style=
+  "font-style: italic;">ascii2float</span> is used to convert text
+  format data such as a DEM into floating point binary data. The
+  binary data are 4-byte floating point numbers. <span style=
+  "font-style: italic;">ascii2float</span> has the <span style=
+  "font-style: italic;">loff</span> and <span style=
+  "font-style: italic;">nl</span> options to skip a specified
+  number of lines of the text file and read only a specified number
+  of lines. The input data are expected to be separated by either
+  spaces,&nbsp; commas, or TAB characters.&nbsp;<br>
+  <br>
+  The program can be instructed extract a specified number of
+  values <span style="font-style: italic;">nv</span> after skipping
+  a specified number of columns <span style=
+  "font-style: italic;">coff</span> on each line that is read in.
+  By default all the values on a line are converted to binary
+  format.&nbsp;<br>
+
+  <p><b>SEE ALSO</b><br>
+  <span style="text-decoration: underline;"><a href=
+  "float2ascii.html">float2ascii</a><br></span></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Jun-2012.
+</body>
+</html>

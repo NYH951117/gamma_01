@@ -1,0 +1,101 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: base_copy</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>base_copy</h2><i>ANSI-C program: <a href=
+  "../src/base_copy.c">base_copy.c</a></i>
+
+  <p><b>NAME</b><br>
+  base_copy - Determine baseline file for SLC sub-section
+  (extracted using <a href="SLC_copy.html">SLC_copy</a>).</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <b><tt>base_copy &lt;SLC-1_par&gt; &lt;baseline_1&gt;
+  &lt;SLC-2_par&gt; &lt;baseline_2&gt; [time_rev]</tt></b><br>
+  &nbsp;</p>
+
+  <table border cellpadding="7">
+    <tr>
+      <td>&lt;SLC-1_par&gt;</td>
+
+      <td>(input) ISP image parameter file of the reference
+      SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;baseline_1&gt;</td>
+
+      <td>(input) baseline file derived using the reference SLC
+      geometry</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC-2_par&gt;</td>
+
+      <td>(input) ISP image parameter file corresponding to the
+      subsecton of the reference SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;baseline_2&gt;</td>
+
+      <td>(output) baseline file derived using the geometry and
+      timing of the SLC subsection</td>
+    </tr>
+
+    <tr>
+      <td>[time_rev];</td>
+
+      <td>SLC image normal=1, time-reversed = -1 (default=1)</td>
+    </tr>
+  </table>
+
+  <p><b>EXAMPLE</b><br>
+  base_copy 05549.slc_esa.par 05549_11270.base 05549.rslc_esa.par
+  05549_11270.base_res</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>base_copy</i> is used to copy the baseline file after SLC
+  sub-section extraction (with the ISP program <a href=
+  "SLC_copy.html">SLC_copy</a>). The baseline is adjusted according
+  to the geometric parameters in the reference SLC parameter file
+  of the sub-section SLC. The baseline is defined as the baseline
+  at the first line of the reference SLC. When extracting a
+  sub-section of the SLC this reference position changes and
+  therefore the baseline must be calculated for the segment. The
+  baseline component rates from the original baseline file are used
+  to calculate the baseline values for the center of the
+  interferogram created using the SLC subsection as the reference
+  image.</p>
+
+  <p>In differential SAR interferoemtry <i>base_copy</i> is
+  required when estimating the perpendicular component of the
+  baseline based on the fringe frequency of a large area (possibly
+  excluding the area of surface motion) and applying it to the
+  smaller extracted sub-section with ground surface motion.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="SLC_copy.html">SLC_copy</a>, <a href=
+  "orbit.base.html">baseline file</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-2003.
+</body>
+</html>

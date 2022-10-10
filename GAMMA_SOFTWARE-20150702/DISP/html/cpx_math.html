@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DISP Reference Manual: cpx_math</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr>
+
+  <h2>cpx_math</h2>
+
+  <p><i>ANSI-C program: <span style=
+  "text-decoration: underline;">cpx</span><a href=
+  "../src/cpx_math.c">_math.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cpx_math -&nbsp; Perform math operations on raster data files
+  (fcomplex format)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>cpx_math &lt;d1&gt; &lt;d2&gt; &lt;d_out&gt;
+  &lt;width&gt; &lt;mode&gt; [roff] [loff] [nr] [nl] [c_re] [c_im]
+  [zflg]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;d1&gt;</td>
+
+        <td>(input) data file 1 (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;d2&gt;</td>
+
+        <td>(input) data file 2 (fcomplex) (enter - for none)<br>
+        NOTE: if no input file is provided, d2 values are set to
+        value specified by c_re and c_im parameters</td>
+      </tr>
+
+      <tr>
+        <td>&lt;d_out&gt;</td>
+
+        <td>(output) output of math operation on d1 and d2
+        (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mode&gt;</td>
+
+        <td>math operation to perform on the data<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0:&nbsp; complex addition, d1 +
+        d2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1:&nbsp; subtraction, d1 - d2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2:&nbsp; multiplication, d1 *
+        d2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 3:&nbsp; division, d1/d2</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>range pixel offset to center of the reference region
+        (enter - for default: no reference correction)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>line offset to center of the reference region (enter -
+        for default: no reference correction)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to average in the reference
+        region (enter - for default: 13)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td style="height: 19.2px;">number of lines average in the
+        reference region (enter - for default: 13)</td>
+      </tr>
+
+      <tr>
+        <td>[c_re]</td>
+
+        <td>constant real component (enter - for default: 1.18e-38
+        for addition and subtraction, 1.0 for multiplication and
+        division)</td>
+      </tr>
+
+      <tr>
+        <td>[c_im]</td>
+
+        <td>constant imaginary component (enter - for default:
+        0.0)</td>
+      </tr>
+
+      <tr>
+        <td>[zflg]</td>
+
+        <td>zero data flag:<br>
+        &nbsp; 0: values of 0.0 in d1 or d2 are considered as
+        no-data and the output is set to 0.0 (default)<br>
+        &nbsp; 1: values of 0.0 are considered as valid data</td>
+      </tr>
+
+      <tr>
+        <td><br></td>
+
+        <td>&nbsp;NOTE: when specifying a reference region with
+        roff, loff, nr, nl parameters:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; modes 0, 1:
+        reference region average value is subtracted from d1 and d2
+        data respectively<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; modes 2, 3: d1
+        and d2 data are divided by the average in the reference
+        region</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPL</strong></p><code>cpx_math s1.diff s2.diff
+  s3.diff 600 1 425 270 16 16</code><br>
+  <br>
+  subtract&nbsp; the data files <span style=
+  "font-style: italic;">s1.diff</span> and <span style=
+  "font-style: italic;">s2.diff</span> and place the sum in
+  <span style="font-style: italic;">s3.diff.</span> Each line of s1
+  and s2 is 600 samples wide.&nbsp; The reference area is centered
+  on sample 425 in range and line 270. The region that is averaged
+  is 16 samples wide and has 16 lines.&nbsp; The average value of
+  the reference are in <span style="font-style: italic;">s1</span>
+  is subtracted from <span style="font-style: italic;">s1</span>
+  and similarly for <span style="font-style: italic;">s2</span>.
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p><span style="font-style: italic;">cpx_math</span> evaluates
+  arithmetic operations between data files of type fcomplex
+  (32-bits/sample real, imaginary). The input data files
+  <span style="font-style: italic;">d1</span> and <span style=
+  "font-style: italic;">d2</span> must have the same line width
+  specified by the <span style="font-style: italic;">width</span>
+  command line parameter. The operations of addition, subtraction,
+  multiplication, and division are supported.</p>
+
+  <p>The user can specify a reference region for the two images to
+  perform normalization of the data. The average of the data in the
+  reference region is evaluated for each scene and used to remove a
+  bias or normalize the data. This is particularly useful for
+  removal of a interferogram phase offset at a particular position
+  in the image chosen as the phase reference location. &nbsp;</p>
+
+  <p>For the addition or subtraction modes the average of
+  <span style="font-style: italic;">d1</span> in the reference area
+  is subtracted from <span style="font-style: italic;">d1</span>
+  and the average of <span style="font-style: italic;">d2</span> in
+  the reference area is subtracted from <span style=
+  "font-style: italic;">d2</span>.&nbsp; In the case of
+  multiplication or division, the data files <span style=
+  "font-style: italic;">d1</span> and <span style=
+  "font-style: italic;">d2</span> are divided by the averages of
+  their respective reference regions.</p>
+
+  <p style="text-align: left;">The <span style=
+  "font-style: italic;">zflg</span> command line parameter
+  determines how values of 0.0 + 0.0i in the data are handled. If
+  <span style="font-style: italic;">zflg</span> is the default
+  value of 0, then if either of the input files has a value of 0.0
+  + 0.0i, the output pixel value is 0.0+0.0i (<span style=
+  "font-style: italic;">no-data</span>). Also when zflg = 0 for the
+  case where the operations of addition or subtraction lead to a
+  value that is exactly 0.0, then the output value is replaced with
+  the smallest floating point value for the real value (1.18e-38)
+  to avoid the pixel being considered as <span style=
+  "font-style: italic;">no-data</span>.&nbsp;</p>
+
+  <p style="text-align: left;">If <span style=
+  "font-style: italic;">zflg</span> is 1, then 0.0+0.0i is
+  considered valid data. For the special case of division when
+  <span style="font-style: italic;">zflg</span> = 1,&nbsp; and the
+  value of <span style="font-style: italic;">d2</span> is
+  0.0+0.0i,&nbsp; the output pixel value is set to 0.0 + 0.0&nbsp;
+  (<span style="font-style: italic;">no-data</span>) and not
+  <span style="font-style: italic;">NaN</span>.&nbsp;</p>
+
+  <p style="text-align: left;">Instead of reading a file for the
+  values <span style="font-style: italic;">d2</span>, it is
+  possible to enter&nbsp; -.&nbsp; In this case, the <span style=
+  "font-style: italic;">d2</span> values are set to the constant
+  values <span style="font-style: italic;">c_re + c_im i</span>
+  specified on the command line. In the case where - or no value is
+  given for the constant real and imaginary components, default
+  values of 1.18e-38 + 0.0i for addition and subtraction or 1.0 +
+  0.0i for multiplication and division are set.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Sep-2013.
+</body>
+</html>

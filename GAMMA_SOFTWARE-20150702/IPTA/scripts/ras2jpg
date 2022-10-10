@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+#program ras2jpg convert SUN raster files to jpeg format
+#using the Imagemagick convert program
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2004, Gamma Remote Sensing, v1.2 15-Jul-2004 clw ***
+*** convert Sun raster files to jpeg format  ***
+
+usage: $0 <root> <dir> <geom> <scale> <min> <max>
+
+    dir    directory for input images  (. is the current directory)
+    root   root of file name (example: disp_los4);
+    geom   image geometry of output image segment <width>x<height>{+-}<x>{+-}<y> 
+           where x and y are offsets to the upper left image corner example: 3200x2700+400+400
+    scale  scale factor (example: 0.2, enter 1.0 for no rescaling);
+    min    minimum image number (> 0)
+    max    maximum image number
+EOS
+
+$dir =  $ARGV[0];
+$rt =   $ARGV[1];
+$geom = $ARGV[2];
+$sc =   $ARGV[3];
+$min =  $ARGV[4];
+$max =  $ARGV[5];
+
+print "image directory: $dir\n";
+print "file name root:  $rt\n";
+print "geometry <width>x<height>{+-}<x>{+-}<y>: $geom\n";
+print "scale factor : $sc\n";
+print "minimum image number: $min\n";
+print "maximum image number: $max\n\n";
+
+$pcnt = int 100*$sc;
+$pcnt > 0 or die "ERROR: image scale factor must be > 0: $sc";
+
+for($i=$min; $i <= $max; $i++){
+  $n1 = sprintf "_%03d",$i;
+  $f1 = $dir."/".$rt.$n1.".ras";
+  $f2 = $dir."/".$rt.$n1.".jpg";
+  $cmd = "convert -crop $geom -resize $pcnt% $f1 $f2";
+  printf "%s\n",$cmd;
+  $exit = system "$cmd";
+#  ($exit == 0) or die "ERROR: unable to convert file\n";
+}  
+exit(0);

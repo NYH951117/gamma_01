@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: tree_cc</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>tree_cc</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/tree_cc.c"><i>tree_cc.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  tree_cc - Uses the marked low correlation areas and residues
+  (from the unwrapping flag file) and constructs a tree-like
+  structure of branc cuts (walls). This branch cuts will not be
+  crossed during the phase unwrapping. The walls are places that
+  localize jumps of multiples of 2pi such as occur in regions of
+  lay-over. The branch cuts are drawn been phase residues. These
+  are points where the integral of phase around a path encircling
+  the residue is a multiple of 2 pi.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>tree_cc &lt;flagfile&gt; &lt;width&gt; [mbl] [xmin]
+  [xmax] [ymin] [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;flagfile&gt;</td>
+
+      <td>phase unwrapping flag filename</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[mbl]</td>
+
+      <td>maximum branch length (default = <b>64</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmin]</td>
+
+      <td>offset to starting range pixel (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmax]</td>
+
+      <td>offset last range pixel (default = <b>width-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>offset to starting azimuth row, relative to start
+      (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>offset to last azimuth row, relative to start (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>tree_cc 1352_1610.flag 2500 64</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>tree_cc</em> reads unwrapping flag file and uses the low
+  correlation areas and the residues to construct a tree-like
+  structure. The tree-like structure will not be crossed during the
+  phase unwrapping to localize phase jumps to the regions defined
+  by the cuts. Both low-correlation areas and residues are
+  considered in the construction of the trees. The trees are
+  written into the unwrapping flag file. For each pixel a single
+  byte consisting of 8 bits is stored in the flag file. Each bit is
+  used to denote a property of that particular pixel such as if it
+  is a residue. The meaning of the individual bits is explained in
+  the <em>typedef_ISP.h</em> file. The information contained in the
+  unwrapping can be displayed with the programs <em>disflag</em>
+  and <em>rastree</em>.</p>
+
+  <p><em>tree_cc</em> generates a tree consisting of branch cuts
+  with a minimum of extra cuts to create a sparse network or
+  <em>tree</em>. It does this by a progressive search, connecting
+  to any residues encountered in the search. The search distance
+  from each residue is increased at each step thereby increasing
+  the search area until the tree has no net charge (neutralized).
+  When a tree is neutral, the program proceeds to find the next
+  residue in the image that has not yet been connected and
+  neutralized. Older, neutral trees in the flag file are used as
+  pathways to find residues not yet incorporated in the trees of
+  the flag file. Closed tree loops are avoided. by preventing cuts
+  back to the origin of the tree. It differs from <em>tree_gzw</em>
+  in that when an old discharged tree is encountered, this tree is
+  searched out exhaustively to find all the tree members prior to
+  continue with search. This search operation can take a
+  significant amount of time for large trees. Another feature of
+  this program is that regions of low correlation, when encountered
+  are search immediately for a residues of opposite charge,
+  irrespective of the current branch length.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "tree_gzw.html">tree_gzw</a>, <a href=
+  "ISP_display.html">rastree</a>, <a href=
+  "ISP_display.html">disflag</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 31-Jan-2000.</p>
+</body>
+</html>

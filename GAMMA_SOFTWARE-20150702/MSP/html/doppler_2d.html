@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: doppler</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>doppler_2d</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/doppler_2d.c">doppler_2d.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>doppler_2d</em>- Calculate
+  Doppler centroid as a function of slant range and azimuth
+  position&nbsp; using&nbsp; line to line&nbsp; cross-correlation
+  measurements of SAR raw data (IQ ADC format:).</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>doppler_2d &lt;SAR_par&gt; &lt;PROC_par&gt;
+  &lt;signal_data&gt; &lt;dop2d&gt; [loff] [blsz] [nbl]</code>
+  <code>[</code><code>a2_flg</code><code>]</code><code>[</code><code>b0_flg</code><code>]</code>
+  <code>[</code><code>b1_flg</code><code>]</code><code>[</code><code>c0_flg</code><code>]</code>
+  <code>[ambig_flag] [namb]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input) Uncompressed SAR raw data (IQ data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dop2d&gt;</td>
+
+        <td>(output) Doppler centroid as a function of range for
+        each block</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (enter - for default=parameter
+        file value)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[blsz]<br></td>
+
+        <td style="vertical-align: top;">block size lines (enter -
+        for default = 2048)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nbl]<br></td>
+
+        <td style="vertical-align: top;">number of blocks (enter -
+        for default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">a2_flg<br></td>
+
+        <td style="vertical-align: top;">fit a2 for second
+        derivative of the Doppler centroid w.r.t.range (Hz/m/m)
+        (default=0: no&nbsp; 1: yes)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">b0_flg<br></td>
+
+        <td style="vertical-align: top;">fit b0 for first
+        derivative of the Doppler centroid w.r.t. along-track
+        time&nbsp; (Hz/sec) (0: no&nbsp; default=1: yes)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">b1_flg<br></td>
+
+        <td style="vertical-align: top;">fit b1 for along-track
+        rate of the change in slope of Doppler w.r.t. range
+        (Hz/sec/m) (0: no&nbsp; default=1: yes)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">c0_flg<br></td>
+
+        <td style="vertical-align: top;">fit c0 for second
+        derivative of the Doppler centroid w.r.t. along-track time
+        (Hz/sec/sec) (default=0: no 1: yes)<br></td>
+      </tr>
+
+      <tr>
+        <td rowspan="3">[ambig_flag]</td>
+
+        <td>Global Doppler ambiguity resolution flag</td>
+      </tr>
+
+      <tr>
+        <td>0 = use unambiguous Doppler Ambiguity Resolver (DAR)
+        estimate (default)</td>
+      </tr>
+
+      <tr>
+        <td>1 = command line entry for the Doppler ambiguity
+        number</td>
+      </tr>
+
+      <tr>
+        <td>[namb]</td>
+
+        <td>user defined number of Doppler ambiguities to add to
+        the Doppler function</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLES<br></strong><samp>doppler_2d RSAT_5011.par
+  p5011.slc.par 5011.raw 5011.dop2d 0 2048</samp>&nbsp;<br></p>
+
+  <p>Analyze the data set 5011.raw using a blocksize of 2048
+  echoes, starting from the line offset given in the processing
+  parameter file. Default Doppler centroid parameters are estimated
+  from the raw data.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  The correlation algorithm used in Doppler averages the complex
+  correlatation between adjacent echoes for each range bin. (see
+  MSP documentation for <a href="doppler.html">doppler</a>). The
+  resultant estimates of the Doppler centroid are&nbsp; wrapped
+  modulo the pulse repetition frequency. Doppler ambiguity is
+  equivalent to a shift of the Doppler centroid by the pulse
+  repetition frequency (Hz). For the 1-D case, where the Doppler
+  centroid is a function of range&nbsp; alone, the unwrapping is
+  performed by looking at the difference in Doppler centroid for
+  adjacent range bins and adding&nbsp; or subtracting a multiple of
+  the PRF such that the difference is less than PRF/2.&nbsp;
+  Sensors such as Radarsat-1 that are not yaw steered can exhibit
+  doppler variations of 20 Hz/sec along-track. The Doppler centroid
+  model must then be extended to include this along-track variation
+  if multiple raw data frames are to be processed. This
+  extended&nbsp; parametric model for <big><span style=
+  "font-weight: bold; font-style: italic; font-family: monospace;">fd</span></big>
+  is a function both of slant-range <span style=
+  "font-weight: bold;"><big style=
+  "font-family: monospace;"><span style=
+  "font-style: italic;">r</span></big></span> relative to center
+  swath and the along-track time <big style=
+  "font-style: italic;"><span style=
+  "font-weight: bold; font-family: monospace;">t</span></big>
+  relative to the center of the raw data set.<br></p>
+
+  <p><big style="font-weight: bold;"><big><small><span style=
+  "font-style: italic; font-family: monospace;">fd(r, t) = a0 +
+  b0*t + c0*t**2 + (a1 + b1*t)r + a2*r**2&nbsp;&nbsp; &nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;
+  (1)<br style=
+  "font-style: italic;"></span></small></big></big></p>
+
+  <p>The range used in equation 1 is relative to the center of the
+  raw data swath.&nbsp; The time argument <big style=
+  "font-style: italic; font-family: monospace;"><span style=
+  "font-weight: bold;">t</span></big> is relative to the center
+  time of the entire raw data set.<br>
+  The programs <a href="./doppler.html">doppler</a> and <a href=
+  "./doppler.html">doppler_real</a> estimate parameters parameters
+  a0, a1, and a2 only.<br></p>
+
+  <p>For the 2d implemnation that includes the along-track
+  variation in Doppler centroid we apply the line-to line
+  correlation algorithm for a set of along-track blocks . This
+  yeilds the ambiguous centroid on&nbsp; a 2-D array of points as a
+  function of relative slant range and time.&nbsp; This array&nbsp;
+  of measurements is unwrapped in 2-D by comparision with a
+  parameterized set of Doppler model functions and the model with
+  the least error is used to unwrap the centroid estimates. The
+  unwrapped Doppler centroid estimates are&nbsp; then used to
+  determine the 2-D model parameters a0, a1, a2, b0 and b1 and the
+  c0 by performing a&nbsp; least-squares fit.</p>
+
+  <p>The global Doppler ambiguity can either be set to a given
+  number, or from the&nbsp; unambiguous Doppler centroid estimated
+  by <a href="dop_ambig.html">dop_ambig</a> (recommmend).&nbsp; The
+  user can also optionally select which of the parameters a1, b0,
+  b1, and c0 are fit.&nbsp; Below is the typical output from
+  running <span style="font-style: italic;">doppler_2d</span> on an
+  ERS2 raw data set:<br></p>
+
+  <p><samp>$ doppler_2d raw/ERS2_ESA.par raw/p19990915_test.slc.par
+  raw/19990915.fix 19990915.dop_2d<br>
+  *** 2-D Doppler centroid estimation for IQ SAR data ***<br>
+  *** Copyright 2006, Gamma Remote Sensing, v1.8 20-Nov-2006 clw
+  ***<br>
+  <br>
+  SAR sensor description: ERS2 C-BAND radar 5.3 GHZ 15.55 MHz
+  BW<br>
+  scene title: 19990915 ERS2_ESA.par orbit:23027 frame:2907<br>
+  <br>
+  image start time sec:&nbsp;&nbsp;&nbsp;
+  66323.5830&nbsp;&nbsp;&nbsp;&nbsp; center time:&nbsp;&nbsp;
+  66331.9172<br>
+  radar wavelength (m):&nbsp;&nbsp;&nbsp; 0.05656461<br>
+  ADC mode, f_samp, chirp offset freq. (Hz): IQ&nbsp;
+  1.89625e+07<br>
+  pulse repetition frequency
+  (Hz):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1679.878455<br>
+  range to first sample
+  (m.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  829147.393<br>
+  number of range
+  samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5616<br>
+  range sample spacing
+  (m.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7.904890<br>
+  offset to first echo (lines):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0<br>
+  number of lines to process:&nbsp;&nbsp;&nbsp;&nbsp; 28002<br>
+  block size
+  (lines):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  4096<br>
+  number of
+  blocks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6<br>
+  fit parameter flags&nbsp; a2: 0&nbsp; b0: 1&nbsp; b1: 1 c0: 0<br>
+  order of Doppler polynomial fit:&nbsp; 6<br>
+  single byte values, (2 values/sample in IQ mode),
+  #samples/echo:&nbsp;&nbsp; 5616<br>
+  <br>
+  number of sample points in DC bias sum:&nbsp;&nbsp; 22173104<br>
+  I channel offset:&nbsp; 15.506937<br>
+  Q channel offset:&nbsp; 15.514473<br>
+  <br>
+  block:&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp; starting
+  echo:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp; block center
+  time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -7.1154<br>
+  block:&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp; starting echo:&nbsp;&nbsp;
+  4096&nbsp; block center time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -4.6771<br>
+  block:&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp; starting echo:&nbsp;&nbsp;
+  8192&nbsp; block center time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -2.2389<br>
+  block:&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp; starting echo:&nbsp;
+  12288&nbsp; block center
+  time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.1994<br>
+  block:&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp; starting echo:&nbsp;
+  16384&nbsp; block center
+  time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2.6377<br>
+  block:&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp; starting echo:&nbsp;
+  20480&nbsp; block center
+  time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5.0760<br>
+  <br>
+  search increment for fd0:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6.250e-02<br>
+  search increment for dfd0/dt:&nbsp; 1.250e-03<br>
+  search increment for dfd0/dr:&nbsp; 5.631e-06<br>
+  <br>
+  chisqm:&nbsp; 5.560e-02 c1m:&nbsp; 0.000e+00&nbsp; c2m:&nbsp;
+  -0.00125&nbsp; c3m:&nbsp;&nbsp; 0.00000<br>
+  number of valid points: 31776<br>
+  <br>
+  Doppler Ambiguity Resolver (DAR) centroid (center swath)
+  (Hz):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000&nbsp; ambiguity
+  number:&nbsp; 0<br>
+  <br>
+  estimated Doppler polynomial
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 24.639
+  -8.734e-04&nbsp; 0.000e+00 -1.356e+00&nbsp; 1.797e-05&nbsp;
+  0.000e+00<br>
+  Doppler standard deviation (measured -
+  model):&nbsp;&nbsp;&nbsp;&nbsp; 16.152 Hz<br>
+  <br>
+  writing updated MSP processing parameter file:
+  raw/p19990915_test.slc.par</samp><br></p>
+
+  <p>The output file has 4 columns:<br>
+  1. range sample number<br>
+  2. estimated doppler centroid<br>
+  3. polynomial fit of the doppler centroid<br>
+  4. difference of the measured value with respect to the
+  fit<br></p>
+
+  <p>To get a set of plots of doppler centroid in Hertz versus
+  slant range sample number withone plot for each block:</p>
+
+  <p><code>echo "plot 'raw/19990915.dop_2d' u 1:2 with lines lc 3
+  lw .5, 'raw/19990915.dop_2d' u 1:3 with lines lc 1 lw .5"&nbsp;
+  |gnuplot</code><br></p>
+
+  <p>An example plot is shown below:<br>
+  <br>
+  <code><img style="width: 640px; height: 480px;" alt=
+  "2d doppler spectrum" title="2d doppler spectrum" src=
+  "19990915.dop_2d.png"></code><br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  The auto-focus program <a href="af.html">af</a> may also be used
+  to resolve the global Doppler ambiguity.<br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "doppler.html">doppler</a>, <a href=
+  "doppler.html">doppler_real</a>, <a href="af.html">af</a>,
+  <a href="dop_ambig.html">dop_ambig</a>, <a href=
+  "azsp_IQ.html">azsp_IQ</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 18-Jun-2012.
+</body>
+</html>

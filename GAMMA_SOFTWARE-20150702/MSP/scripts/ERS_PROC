@@ -1,0 +1,188 @@
+#! /bin/tcsh -fe
+
+echo "ERS_PROC: Script to process IQ SAR data from ERS1/ERS2 v3.6 7-May-2003 clw/uw"
+echo " "
+if ($#argv < 4)then
+  echo "usage: ERS_PROC <sensor> <scene> <RLK> <AZLK> [RAW_dir] [RC_dir] [SLC_dir] [AZ_PATCH] [SLC_FORMAT]"
+  echo "       sensor      processing/Archive Facility (PAF) dependent ERS sensor file"
+  echo "       scene       scene identifier (example: orbit number)"
+  echo "       RLK         number of range looks in the multilook intensity (MLI) image"
+  echo "       AZLK        number of azimuth looks in the MLI image"
+  echo "       RAW_dir     SAR raw data file directory (enter . for current directory)"
+  echo "       RC_dir      range compressed data file directory (enter . for current directory)"
+  echo "       SLC_dir     Single Look Complex image file directory (enter . for current directory)"
+  echo "       AZ_PATCH    azimuth patch size: 4096, 6144, 8192 (default=4096)"
+  echo "       SLC_FORMAT  0=FCOMPLEX  1=SCOMPLEX default: SCOMPLEX"
+  echo " "
+  exit
+endif
+
+#defaults for input parameters
+set RAW_dir = "."
+set RC_dir = "."
+set SLC_dir = "."
+set AZ_PATCH = 4096
+set SLC_FORMAT = 1
+
+if ($#argv >= 5) set RAW_dir = $5
+if ($#argv >= 6) set RC_dir = $6
+if ($#argv >= 7) set SLC_dir = $7
+if ($#argv >= 8) set AZ_PATCH = $8
+if ($#argv >= 9) set SLC_FORMAT = $9
+
+echo "test if required input/output files and directories exist"
+if (-e "$1" == 0) then 
+  echo "ERROR: sensor parameter file ($1) does not exist"; exit(-1)
+endif 
+if (($#argv >= 5) && (-e "$5" == 0)) then 
+  echo "ERROR: RAW_dir ($5) does not exist"; exit(-1)
+endif 
+if ((-e "p$2.slc.par" == 0)) then 
+  echo "ERROR: MSP processing parameter file (p$2.slc.par) does not exist"; exit(-1)
+endif 
+if (($#argv >= 5) && (-e "$5" == 0)) then  
+  echo "ERROR: RAW_dir ($5) does not exist"; exit(-1)
+endif 
+if ( (-e "$RAW_dir/$2.raw" == 0 ) && (-e "$RAW_dir/$2.fix" == 0 ) ) then 
+  echo "ERROR: raw data file ($RAW_dir/$2.raw or $RAW_dir/$2.fix) does not exist"; exit(-1)
+endif 
+if ( ($#argv >= 6) && (-e "$6" == 0) ) then
+  echo "ERROR: RC_dir ($6) does not exist"; exit(-1)
+endif 
+if (($#argv >= 7) && (-e "$7" == 0 )) then 
+  echo "ERROR: SLC_dir ($7) does not exist"; exit(-1)
+endif 
+echo "required input/output files and directories exist"
+
+if (-e $RAW_dir/$2.fix) then
+  set RAW_DATA = $RAW_dir/$2.fix
+else  
+  set RAW_DATA = $RAW_dir/$2.raw
+endif
+
+set SENSOR = $1
+set RLK = $3
+set AZLK = $4
+
+set DECIM = 1
+set AMB_FLAG = 1		#use value from Doppler ambiguity resolver
+set NSUB = 12
+set AUTOF_SNR_MIN = 2.0
+
+set AZ_PROC = az_proc
+set ANTENNA = `awk '$1 == "antenna_pattern_filename:" {print $2}' $1`
+set YEAR =  `awk '$1 == "date:" {print $2}' p$2.slc.par`
+
+set RC =  $RC_dir/$2.rc
+set SLC = $SLC_dir/$2.slc
+set MLI = $SLC_dir/$2.mli
+set LOG = $SLC_dir/$2'_MSP.log'
+
+set MSP_SLC_PAR = $SLC_dir/p$2.slc.par
+set MSP_MLI_PAR = $SLC_dir/p$2.mli.par
+set ISP_SLC_PAR = $SLC_dir/$2.slc.par
+set ISP_MLI_PAR = $SLC_dir/$2.mli.par
+
+set AUTOF = $SLC_dir/$2.autof
+set RSPEC = $SLC_dir/$2.rspec
+set AZSP = $SLC_dir/$2.azsp
+
+echo " "
+echo "ERS raw data file:          $RAW_DATA"
+echo "MSP SLC proc. parameters:   $MSP_SLC_PAR"
+echo "SLC image:                  $SLC"
+echo "number of range looks:      $RLK"
+echo "number of azimuth looks:    $AZLK"
+echo "MSP MLI proc. parameters:   $MSP_MLI_PAR"
+echo "Multi-Look Intensity file:  $MLI"
+echo "MLI Sun raster format file: $MLI.ras"
+echo "minimum autofocus SNR:      $AUTOF_SNR_MIN"
+echo "azimuth patch size (lines): $AZ_PATCH"
+echo "antenna pattern filename:   $ANTENNA"
+echo "range compressed data:      $RC"
+echo "azimuth spectrum:           $AZSP"
+echo "range spectrum:             $RSPEC"
+echo "autofocus correlation:      $AUTOF"
+echo "MSP processing log file:    $LOG"
+echo " "
+
+switch( $SLC_FORMAT )
+  case 0: 
+  echo "SLC data format:  FCOMPLEX"; breaksw
+  case 1:
+  echo "SLC data format:  SCOMPLEX"; breaksw
+  default:
+  echo "ERROR: invalid value for SLC_FORMAT: $SLC_FORMAT"; exit
+endsw
+echo "MLI data format:     FLOAT"
+echo " "
+
+set SAR = `awk '$1 == "sensor_name:" {print $2}' $1`
+if ($SAR == "ERS1") then
+  if ($YEAR <= "1996") then
+    set CAL_FACT = "-10.3" ### ERS1 1991 - 1996
+  else
+    set CAL_FACT = "-12.5" ### ERS1 1997 - 2000
+  endif
+else
+  if ($SAR == "ERS2") set CAL_FACT = "-2.8"
+  else
+    echo "ERROR: Sensor ($SAR) is neither ERS1 nor ERS2"; exit(-1)
+  endif
+endif
+echo "SAR sensor: $SAR   year: $YEAR"
+if ($SLC_FORMAT == "1") set CAL_FACT = `echo $CAL_FACT 60.0 |awk '{print $1+$2}'`
+echo "Azimuth compression calibration factor (dB): $CAL_FACT"
+echo " "
+
+rm -f $LOG			#delete old log file
+date
+date > $LOG
+
+echo "azsp_IQ $SENSOR $MSP_SLC_PAR $RAW_DATA $AZSP - - $NSUB $AMB_FLAG"
+azsp_IQ $SENSOR $MSP_SLC_PAR $RAW_DATA $AZSP - - $NSUB $AMB_FLAG >> $LOG
+
+echo "rspec_IQ $SENSOR $MSP_SLC_PAR $RAW_DATA $RSPEC "
+rspec_IQ $SENSOR $MSP_SLC_PAR $RAW_DATA $RSPEC >> $LOG
+
+echo "pre_rc $SENSOR $MSP_SLC_PAR $RAW_DATA $RC $DECIM"
+pre_rc $SENSOR $MSP_SLC_PAR $RAW_DATA $RC $DECIM >> $LOG
+
+echo "autof $SENSOR $MSP_SLC_PAR $RC $AUTOF $AUTOF_SNR_MIN $DECIM "
+autof $SENSOR $MSP_SLC_PAR $RC $AUTOF $AUTOF_SNR_MIN $DECIM >> $LOG 
+
+echo "autof $SENSOR $MSP_SLC_PAR $RC $AUTOF $AUTOF_SNR_MIN $DECIM "
+autof $SENSOR $MSP_SLC_PAR $RC $AUTOF $AUTOF_SNR_MIN $DECIM >> $LOG 
+
+echo "$AZ_PROC $SENSOR $MSP_SLC_PAR $RC $SLC $AZ_PATCH $SLC_FORMAT $CAL_FACT 0 "
+$AZ_PROC $SENSOR $MSP_SLC_PAR $RC $SLC $AZ_PATCH $SLC_FORMAT $CAL_FACT 0 >> $LOG
+
+echo "multi_SLC $MSP_SLC_PAR $MSP_MLI_PAR $SLC $MLI $RLK $AZLK "
+multi_SLC $MSP_SLC_PAR $MSP_MLI_PAR $SLC $MLI $RLK $AZLK >> $LOG
+
+set WIDTH = `awk '$1 == "range_pixels:" {print $2}' $MSP_MLI_PAR`
+echo "raspwr $MLI $WIDTH"
+raspwr $MLI $WIDTH >> $LOG
+echo "disras $MLI.ras"
+disras $MLI.ras &
+
+which par_MSP > /dev/null		#test if ISP programs installed
+if ( $? == 0 ) then 
+  echo "par_MSP $SENSOR $MSP_SLC_PAR $ISP_SLC_PAR"
+  par_MSP $SENSOR $MSP_SLC_PAR $ISP_SLC_PAR >> $LOG
+
+  echo "par_MSP $SENSOR $MSP_MLI_PAR $ISP_MLI_PAR"
+  par_MSP $SENSOR $MSP_MLI_PAR $ISP_MLI_PAR >> $LOG
+  echo " "
+  echo "created ISP SLC parameter file: $ISP_SLC_PAR"
+  echo "created ISP MLI parameter file: $ISP_MLI_PAR"
+else
+  echo "NOTE: ISP not installed, not creating ISP image parameter files: $ISP_SLC_PAR $ISP_MLI_PAR"
+endif
+echo " "
+
+#echo "rm $RC"
+#rm $RC
+
+date
+date >> $LOG

@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: phase_sim_orb</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>phase_sim_orb</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/phase_sim_orb.c">phase_sim_orb.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  phase_sim_orb - simulate unwrapped interferometric phase using
+  DEM height and deformation rate using the orbit state vectors for
+  baseline calculation.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>phase_sim_orb &lt;SLC1_par&gt; &lt;SLC2R_par&gt;
+  &lt;OFF_par&gt; &lt;hgt_map&gt; &lt;sim_phase&gt; [SLC_ref_par]
+  [def] [delta_t] [ph_mode]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-1 (reference
+        SLC of interferometric pair)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-2R (resampled
+        SLC of the pair)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP processing/offset parameter file (of
+        interferometric pair)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;hgt_map&gt;</td>
+
+        <td>(input) height map in the same geometry as the
+        interferogram (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sim_unw&gt;</td>
+
+        <td>(output) simulated unwrapped interferometric phase</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[SLC_ref_par]<br></td>
+
+        <td style="vertical-align: top;">(input) SLC parameter file
+        of the image used for geometric co-registration (enter -
+        for none)<br></td>
+      </tr>
+
+      <tr>
+        <td>[def]</td>
+
+        <td>(input) LOS deformation rate map (meters/yr, float,
+        enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[delta_t]</td>
+
+        <td>interferogram time interval (days, required for
+        deformation modeling, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[int_mode]<br></td>
+
+        <td style="vertical-align: top;">&nbsp;(input)
+        interferometric acquisition mode:<br>
+        &nbsp;&nbsp; 0: single-pass mode (Tandem-X)<br>
+        &nbsp;&nbsp; 1: repeat-pass mode (default)<br></td>
+      </tr>
+
+      <tr>
+        <td>[ph_mode]</td>
+
+        <td>phase offset mode:<br>
+        &nbsp;&nbsp;&nbsp; 0: absolute phase (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: subtract phase offset that is a
+        multiple of 2PI to improve phase precision</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>phase_sim_orb 19950421.slc.par 19960422.slc.par
+  19960421_19960421.off landers_dem.rdc 19960421_19960421.sim_unw -
+  - 1<br></samp></p>
+
+  <p>Simulates an unwrapped phase image for the specific geometry
+  of an interferometric pair using a height map in the geometry of
+  the interferogram. The interferometric phase is simulated for
+  repeat-pass interferometry (int_mode = 1).</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">phase_sim_orb</span> simulates
+  an interferogram based on a height map and a deformation rate
+  map, both in SAR range-Doppler coordinates (RDC). The baseline
+  for each point is calculated using the DEM height, slant range,
+  doppler centroid, and state vectors. This approach is applicable
+  for long image strips where the linear baseline model may be
+  inadequate and residual quadratic phase trends may still be
+  visible. In the case of interferograms all generated using the
+  same reference image, use the parameter file of the reference
+  image as the SLC1_par argument.&nbsp;</p>
+
+  <p>The height map in SAR geometry is obtained by resampling a
+  digital elevation model (DEM) into SAR coordinates. The geometric
+  transformation is determined by simulation of a SAR intensity
+  image (in SAR geometry) from the DEM. The simulated SAR intensity
+  image is then registered to a real SAR intensity image using a
+  cross correlation registration approach for real valued data.
+  This step is required to remove errors resulting from small
+  errors in the orbit geometry. If a - is entered for the height
+  file, then all heights are set to 0.0.</p>
+
+  <p>Simulated interferometric phase is used primarily for
+  generating 2-pass differential interferograms. In 2-pass
+  differential interferometry the phase corresponding to the
+  terrain topography is simulated and subtracted from an
+  interferometric pair which contains both differential and
+  topographic phase components.To calculate the deformation phase
+  term the user must provide the LOS deformation rate and the
+  number days between images used to calculate the specific
+  interferogram pair.<br></p>
+
+  <p>The interferometric mode (<span style=
+  "font-style: italic;">int_mode)</span> option permits selection
+  of either single or repeat pass mode. The single pass
+  interferometric phase is half as large as the repeat pass
+  simulated phase because the path difference is half that compared
+  to repeat pass interferometry.&nbsp; Tandem-X data are acquired
+  in single-pass mode where one satellite transmits and the other
+  receives. In this case <span style=
+  "font-style: italic;">int_mode</span> must be set to 0 to
+  correctly simulate the interferometric phase.<br></p>
+
+  <p>The process for calculation of a deformation rate map can be
+  as follows. First obtain an initial differential interferogram
+  using a DEM and state vectors. Unwrap this differential initial
+  interferogram. In general this interferogram will have some
+  residual phase trend. Next use <i>base_ls (from the ISP)</i> to
+  estimate a residual baseline using the height map in SAR geometry
+  and the unwrapped phase. The effective baseline for the residual
+  phase should be relatively small and the linear model used by
+  <i>base_ls</i> and <i>phase_sim</i> should be adequate. Add the
+  two simulated interferograms together to get the net simulated
+  interferogram using <a href="sub_phase.html">sub_phase</a>.
+  Subtract this net simulated phase from the original
+  interferometric phase using <a href=
+  "sub_phase.html">sub_phase</a> or generate the differential
+  interferogram directly from the resampled SLC data using <a href=
+  "SLC_diff_intf.html">SLC_diff_intf.html</a>. Filter and unwrap
+  the differential interferogram. Then scale the unwrapped phase
+  using <a href="dispmap.html">dispmap</a> to obtain the LOS
+  deformation rate.</p>
+
+  <p>Note that the the residual phase is the combination of
+  residual baseline error, deformation, and tropospheric phase.
+  Therefore it is important to select a time interval for the
+  interferogram that is sufficiently long that the deformation
+  phase dominates over baseline error and tropospheric phase.</p>
+
+  <p>The user has the option to specify the SLC parameter file of
+  the SLC used as the geometric reference for a stack of images. If
+  the geometric reference of the interferometric pair is other than
+  SLC1, it is recommended to specify the parameter file for the
+  geometric reference SLC. This reduces errors due to shifts in
+  timing and sampling introduced by the resampling of SLC1 and SLC2
+  into the geometry of the reference SLC.</p>
+
+  <p>There is also the <span style=
+  "font-style: italic;">ph_mode</span> command line option to
+  subtract a multiple of 2PI from the simulated interferogram to
+  improve the accuracy of the single-precision phase data stored in
+  the output file. When there is a large difference in slant range,
+  the magnitude of the interferometric phase can become large
+  enough (~200000) such that there is a a measurable loss of
+  accuracy in the phase data due to the single-precision
+  representation.&nbsp; The value of the phase that is subtracted
+  from the entire simulated interferogram is calculated from the
+  simulated phase at the center of the interferogram with a height
+  of 0.0. This phase value is then rounded to the nearest multiple
+  of 2PI. All internal calculations related to the phase that are
+  internal to the program are performed using double-precision.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="phase_sim.html">phase_sim</a>, <a href=
+  "SLC_diff_intf.html">SLC_diff_intf.html</a>, <a href=
+  "dispmap.html">dispmap</a>, <a href=
+  "sub_phase.html">sub_phase</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a> <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a> last change 3-Sep-2013.
+</body>
+</html>

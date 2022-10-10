@@ -1,0 +1,35 @@
+#! /bin/csh -f
+if ($#argv < 2)then
+  echo "READ annotated JERS raw data tape"
+  echo "usage: JERS_RAW <orbit> <device>"
+  echo "       orbit   orbit number"
+  echo "       device  EXABYTE tape device name; example: /dev/rmt/0mn" 
+  exit
+endif
+
+set EXABYTE = $2
+setenv TAPE $EXABYTE
+echo "Reading JERS annotated raw data tape..."
+
+echo "Reading JERS CEOS volume directory file: $1.vdf"
+dd bs=360 if=$EXABYTE of=$1.vdf
+
+echo "Reading JERS CEOS leader file: $1.ldr"
+dd bs=16384 if=$EXABYTE of=$1.ldr
+
+echo "Reading JERS raw data file: $1.raw.1"
+echo "dd bs=12700 if=$EXABYTE of=$1.raw.1"
+dd bs=12700 if=$EXABYTE of=$1.raw.1
+echo "rewinding tape..."
+mt offl
+
+echo "LOAD TAPE #2, then hit return..."
+set name=$<
+echo "mt fsf 1"
+mt fsf 1
+echo "Reading JERS raw data file: $1.raw.2"
+dd bs=12700 if=$EXABYTE of=$1.raw.2
+echo "rewinding tape..."
+mt offl
+ 
+echo "JERS_RAW completed"

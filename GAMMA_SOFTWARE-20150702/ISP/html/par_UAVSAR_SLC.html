@@ -1,0 +1,313 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: par_UAVSAR_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate SLC/MLI iamge parameter file for UAVSAR SLC and MLC
+  data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_UAVSAR_SLC.c">par_UAVSAR_SLC.c</a></p>
+
+  <p><strong>NAME<br>
+  <br></strong> par_UAVSAR_SLC - Generate ISP image parameter file
+  from UAVSAR annotation file (ann) for SLC and MLC data products
+  <small><br></small></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_UAVSAR_SLC &lt;ann&gt; &lt;SLC/MLI_par&gt;
+  &lt;image_type&gt; &lt;image_format&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;ann&gt;</td>
+
+        <td>(input) UAVSAR annotation file (*ann.txt)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file (example:
+        yyyymmdd.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;image_type&gt;</td>
+
+        <td>image type flag<br>
+        &nbsp;&nbsp;&nbsp; 0: SLC (slc) in slant range
+        coordinates<br>
+        &nbsp;&nbsp;&nbsp; 1: MLC (mlc) in slant range
+        coordinates<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HHHH*, VVVV*,
+        HVHV* are FLOAT format<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; HHHV*, HHVV*,
+        HVVV* are FCOMPLEX format<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;image_format&gt;</td>
+
+        <td>image data format flag<br>
+        &nbsp;&nbsp; 0: FCOMPLEX (pairs of 4-byte float
+        (re,im))<br>
+        &nbsp;&nbsp; 2: FLOAT&nbsp; (4-bytes/value)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES<br></strong><br>
+  <samp>par_UAVSAR_SLC
+  cscade_06701_09075_001_090928_L090_CX_01.ann.txt
+  cscade_06701_09075_001_090928_L090_CX_01.mlc.par 1 2</samp></p>
+
+  <p>Reads the annotation file <span style=
+  "font-style: italic;">cscade_06701_09075_001_090928_L090_CX_01.ann.txt</span>&nbsp;
+  and generates the <span style=
+  "font-style: italic;">cscade_06701_09075_001_090928_L090_CX_01.mlc.par</span>&nbsp;
+  file. This parameter file should be used with MLC products that
+  are FLOAT format.<br></p>
+
+  <p><strong>DESCRIPTION</strong></p>UAVSAR is a reconfigurable
+  L-Band airborne radar built and operated by JPL <a href=
+  "http://uavsar.jpl.nasa.gov/">http://uavsar.jpl.nasa.gov/</a>.&nbsp;
+  It can operate in both full polarimetric and repeat track
+  interferometric modes.&nbsp;&nbsp; Data can be obtained using the
+  on-line search capability and can be downloaded freely. There are
+  also sample data products available, see <a href=
+  "http://uavsar.jpl.nasa.gov/data.html">http://uavsar.jpl.nasa.gov/data.html</a>.<br>
+
+  <br>
+  Each data set consists of an text format annotation file
+  consisting of keyword value pairs.&nbsp; The data products that
+  comprise the data set are listed at the start of the annotation
+  file. An example of this listing including the file extensing and
+  description of the individual product files is shown here:<br>
+  <samp><br>
+  ;</samp> <samp>Parameter file for
+  cscade_06701_09075_001_090928_L090_CX_01<br>
+  ; search for parameters/value rather than placement in file<br>
+  ; slc = single look complex slant range image<br>
+  ; mlc = multi look cross product slant range image<br>
+  ; dat = compressed stokes matrix of multi-looked data<br>
+  ; grd = ground range projected (equiangular) and multi-looked
+  data<br>
+  ; hgt = dem that grd were projected<br>
+  ; slc_mag and slc_phase are derived from the same 8 bytes per
+  pixel of the slc input file<br>
+  ; mlc_mag and mlc_phase are derived from the same 8 bytes per
+  pixel of the complex mlc input files<br>
+  ; grd_mag and grd_phase ground range projected (equiangular)
+  complex cross-products image<br>
+  ; Peg position is the nadir position of aircraft at the middle of
+  the datatake<br>
+  ; Projection of image is relative to the flightline (S - along
+  track position, C - cross track position)<br>
+  ; S0, C0 is offset to upper left coordinate of SLC in meters<br>
+  ; to display MLC amplitude and phase in mdx:<br>
+  ; mdx -h cscade_06701_09075_001_090928_L090_CX_01.ann
+  cscade_06701_09075_001_090928_L090HHVV_CX_01.mlc -set mlc_mag
+  cscade_06701_09075_001_090928_L090HHVV_CX_01.mlc -set
+  mlc_phase<br>
+  <br>
+  ; general location of data (non-unique)<br>
+  <br>
+  Site Description = Cascades volcanoes<br>
+  <br>
+  ; URL of JPL website for precision data<br>
+  <br>
+  URL&nbsp;&nbsp;&nbsp;&nbsp; =
+  http://uavsar.jpl.nasa.gov/kml/2009/cscade_06701_09075_001_090928_L090_CX_01.htm<br>
+
+  <br>
+  ; list of precision data files<br>
+  <br>
+  slcHH&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090HH_CX_01.slc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 12739557600 bytes&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  slcHV&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090HV_CX_01.slc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 12739557600 bytes<br>
+  slcVH&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090VH_CX_01.slc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 12739557600 bytes<br>
+  slcVV&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090VV_CX_01.slc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 12739557600 bytes<br>
+  mlcHHHH =
+  cscade_06701_09075_001_090928_L090HHHH_CX_01.mlc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 176932800&nbsp;&nbsp; bytes<br>
+  mlcHVHV =
+  cscade_06701_09075_001_090928_L090HVHV_CX_01.mlc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 176932800&nbsp;&nbsp; bytes<br>
+  mlcVVVV =
+  cscade_06701_09075_001_090928_L090VVVV_CX_01.mlc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 176932800&nbsp;&nbsp; bytes<br>
+  mlcHHHV =
+  cscade_06701_09075_001_090928_L090HHHV_CX_01.mlc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 353865600&nbsp;&nbsp; bytes<br>
+  mlcHHVV =
+  cscade_06701_09075_001_090928_L090HHVV_CX_01.mlc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 353865600&nbsp;&nbsp; bytes<br>
+  mlcHVVV =
+  cscade_06701_09075_001_090928_L090HVVV_CX_01.mlc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 353865600&nbsp;&nbsp; bytes<br>
+  dat&nbsp;&nbsp;&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090_CX_01.dat&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 442431000&nbsp;&nbsp; bytes<br>
+  grdHHHH =
+  cscade_06701_09075_001_090928_L090HHHH_CX_01.grd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 834474168&nbsp;&nbsp; bytes<br>
+  grdHVHV =
+  cscade_06701_09075_001_090928_L090HVHV_CX_01.grd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 834474168&nbsp;&nbsp; bytes<br>
+  grdVVVV =
+  cscade_06701_09075_001_090928_L090VVVV_CX_01.grd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 834474168&nbsp;&nbsp; bytes<br>
+  grdHHHV =
+  cscade_06701_09075_001_090928_L090HHHV_CX_01.grd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 1668948336&nbsp; bytes<br>
+  grdHHVV =
+  cscade_06701_09075_001_090928_L090HHVV_CX_01.grd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 1668948336&nbsp; bytes<br>
+  grdHVVV =
+  cscade_06701_09075_001_090928_L090HVVV_CX_01.grd&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 1668948336&nbsp; bytes<br>
+  hgt&nbsp;&nbsp;&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090_CX_01.hgt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 834474168&nbsp;&nbsp; bytes<br>
+  kmz&nbsp;&nbsp;&nbsp;&nbsp; =
+  cscade_06701_09075_001_090928_L090_CX_01.kmz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  ; File Size 202830277&nbsp;&nbsp; bytes</samp><br>
+  <br>
+  The data files themselves are without headers and in
+  little-endian byte order. To use these files with the Gamma
+  software, they must be converted to big-endian byte order using
+  the program <a href=
+  "../../DISP/html/swap_bytes.html">swap_bytes</a>. A script has
+  been written that automates that process by taking a list of
+  files and swapping the bytes and placing the swapped files in a
+  specified directory <a href=
+  "../../DIFF/html/swap_bytes_all.html">swap_bytes_all</a>.<br>
+  <br>
+  The different types of data files supported by the Gamma software
+  are:<br>
+  <br>
+  <span style="font-weight: bold;">SLC:</span>&nbsp;&nbsp;
+  Single-look complex data, 8 bytes per value (FCOMLEX), 4-bytes
+  float real (FLOAT), 4-bytes float imaginary (FLOAT), SLCHH,
+  SLCHV, SLCVH, SLCVV<br>
+  <br>
+  <span style="font-weight: bold;">MLC:</span> Multi-look complex
+  data. Three of these files are 4-byte/value float: mlcHHHH,
+  mlcVVVV, mlcHVHV and three are complex valued: mlcHHHV, mlcHHVV,
+  and mlcHVVV.&nbsp; These products are calibrated and
+  multi-looked, typically with 3 range-looks and 12 azimuth looks
+  and are sufficient for full polarimetric analysis.&nbsp;<br>
+  <br>
+  <span style="font-weight: bold;">GRD:</span> These products are
+  float or FCOMPLEX and have been resampled to geographic
+  coordinates in latitude and longitude. Use the program
+  par_UAVSAR_geo to create the Gamma DEM parameter file to describe
+  these products. The terrain geocoding uses a DEM for the
+  geocoding. This DEM is also provided in the data set as an
+  <span style="font-weight: bold;">HGT</span> product.&nbsp; See
+  documentation on <a href=
+  "../../DIFF/html/par_UAVSAR_geo.html">par_UAVSAR_geo</a> in the
+  DIFF package.<br>
+  <br>
+  Note that the GRD products can be either FLOAT or FCOMPLEX data
+  format and require byte-swapping just like the MLC or SLC
+  products.<br>
+  <br>
+  Because the UAVSAR is an aircraft that does not move at constant
+  velocity or on a perfectly smooth track, motion compensation is
+  applied to the data, and a new reference track is created. This
+  reference track is at a constant altitude and is part of a
+  spherical orbit with a reference heading relative to North. This
+  geometry is given the name SCH coordinate system. The coordinate
+  system is locally defined by a reference point called the peg
+  point, and a heading angle relative to north that follows the
+  heading of the radar platform at the peg point. The peg point is
+  chosed near the center of the track. The projection coordinates
+  are:<br>
+  <br>
+  S:&nbsp;&nbsp; Along track distance in meters along the track
+  relative to the peg point<br>
+  C:&nbsp; cross-track coordinate in meters<br>
+  H:&nbsp; altitude above the peg point<br>
+  <br>
+  SCH is based on an approximating sphere to the ellipsoid at the
+  peg point. The radius of this sphere is the ellipsoid radius of
+  curvature in the along-track direction. The <span style=
+  "font-style: italic; font-weight: bold;">h</span> unit vector is
+  defined as the vector perpendicular to the ellipsoid at the peg
+  point. It is also perpendicular to the approximating sphere. The
+  prime meridian is the intersection of the plane perpendicular to
+  the <span style="font-weight: bold; font-style: italic;">h</span>
+  vector containing the sphere center. The <span style=
+  "font-weight: bold; font-style: italic;">s</span> unit vector is
+  perpendicular to <span style=
+  "font-weight: bold; font-style: italic;">h</span> and is parallel
+  to the heading vector. The equator of the sphere is the great
+  circle passing though peg point along the direction of the
+  heading vector. The heading angle is defined as the clockwise
+  rototation angle relative to north of the track. The <span style=
+  "font-style: italic; font-weight: bold;">c</span> vector is
+  defined as <span style=
+  "font-weight: bold; font-style: italic;">h</span>&nbsp; x&nbsp;
+  <span style=
+  "font-weight: bold; font-style: italic;">s</span>&nbsp;
+  completing the SCH coordinate system definition.<br>
+  <br>
+  The state vectors in the ISP parameter are generated using the
+  SCH geometry track information and then converted to geocentric
+  XYZ in the WGS84 datum.<br>
+  A constant velocity for the aircraft of 227 m/s is then used to
+  create an artificial constant velocity SAR system flying along S
+  at the reference altitude provided in the annotation file.<br>
+  <br>
+  Note, because the UAVSAR track can have any direction, the SCH
+  coordinate system and SCH map projection are preferred. Geocoding
+  with other map projections will generally have large regions with
+  0.0 when SAR data are mapped. Furthermore, the DIFF/GEO program
+  gc_map produces accurate layover-and shadow maps only when the
+  projection is parallel to the map coordinate axies. Since SCH is
+  defined parallel to the track, this condition is fulfilled. To
+  use SCH as the projection, resample initial DEM to SCH
+  coordinates using DEM_trans.&nbsp; An example image of the sample
+  data scene of Mount Shasta Volcano in California is shown below.
+  The track covers is about 90 km long and is parallel to the
+  bottom of the page<br>
+  <br>
+  <img style="width: 1497px; height: 390px;" alt=
+  "Mt Shasta UAVSAR MLI image" src="cs_cal_map.mli_rot.jpg"><br>
+  &nbsp;<br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "../../DIFF/html/par_UAVSAR_geo.html">par_UAVSAR_geo</a>,
+  <a href="../../DISP/html/swap_bytes.html">swap_bytes</a>,&nbsp;
+  <a href=
+  "../../DIFF/html/swap_bytes_all.html">swap_bytes_all</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2012.<br>
+  <a href="charles_werner.html">CW</a>, last change 15-Nov-2012.
+</body>
+</html>

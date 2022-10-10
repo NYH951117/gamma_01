@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <!-- Software documentation in hypertext language (html), Copyright 2010 Gamma Remote Sensing  -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: look_vector</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>data2xyz</h2>
+
+  <p><i>ANSI-C program: <a href="../src/data2xyz.c"><span style=
+  "text-decoration: underline;">data2xyz.c</span></a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">data2xyz</span> - Convert&nbsp;
+  float data in map geometry described by a DEM_par to triplets of
+  float: (easting, northing,&nbsp; data_value) or (latitude,
+  longitude, data_value)<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>data2xyz &lt;DEM_par&gt; &lt;data&gt; &lt;data_xyz&gt;
+  [dflg]<br></b></code></p>
+
+  <table style="width: 744px; height: 118px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;data&gt;</td>
+
+        <td>(input) float format data with same dimensions and
+        spacing as specified in the DEM parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_xyz&gt;</td>
+
+        <td>(output) data triplets in 4-byte float format
+        (northing, easting, data_value)</td>
+      </tr>
+
+      <tr>
+        <td>[dflg]</td>
+
+        <td>output data format flag:<br>
+        &nbsp; 0: binary (float)<br>
+        &nbsp; 1: text format</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>data2xyz hector_utm_seg.dem_par hector_utm.diff
+  hector_utm_disp.xyz</samp><br></p>
+
+  <p>generates triplets of 4-byte float data values with the
+  format:&nbsp; <span style="font-weight: bold;">(northing,&nbsp;
+  easting,&nbsp; displacement)<br></span></p>
+
+  <p><span style="font-family: monospace;">data2xyz
+  hector_eqa_seg.dem_par hector_eqa.diff hector_eqa_disp.xyz</span>
+  <samp><br></samp><br>
+  generates triplets of 4-byte float data values with the
+  format:&nbsp; <span style="font-weight: bold;">(latitude,
+  longitude,&nbsp; displacement)</span><br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">data2xyz</span> generates
+  triplets of data values with the format easting, north,
+  data-value. As inputs the program requires&nbsp; a DEM parameter
+  file<br>
+  and a data file with the dimensions as specified by the DEM
+  parameter file.&nbsp; <span style="font-style: italic;">Output
+  data format is little-endian for Intel and AMD CPUs.</span></p>
+
+  <p>The data can also be output in text format by setting the
+  value of the <span style="font-style: italic;">dflg</span>
+  command line parameter to 1. There will be one data point per
+  line. These data can be compressed using zip or gzip to get
+  significantly smaller file sizes.</p>
+
+  <p>The output data are compatible with the GMT generic mapping
+  tools&nbsp; <a href=
+  "http://gmt.soest.hawaii.edu/">http://gmt.soest.hawaii.edu/</a><span style="font-weight: bold;"><br>
+  </span></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DEM_par.html">DEM_par,</a> <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 31-Jul-2014.
+</body>
+</html>

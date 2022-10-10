@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: hgt_map_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>hgt_map_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/base_ls_pt.c">hgt_map_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  hgt_map_pt - estimation of terrain height and cross track ground
+  range&nbsp; from unwrapped phase (single record or all
+  records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>hgt_map_pt &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;ppos&gt; &lt;itab&gt; &lt;rec_num&gt; &lt;punw&gt;
+  &lt;pbase&gt; &lt;phgt&gt; &lt;pgr&gt; [ph_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number to process (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw&gt;</td>
+
+        <td>(input) point data stack of unwrapped interferometric
+        phases (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input/output) stack of baseline parameters
+        (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(output) point data stack of terrain heights (enter -
+        for none: float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pgr&gt;</td>
+
+        <td>(output) cross-track ground ranges on the WGS-84
+        ellipsoid (in slant range geometry)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>restore range phase ramp (default=0: do not restore 1:
+        restore)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp><code>hgt_map_pt&nbsp;plist&nbsp;pmask pSLC_par - itab -
+  pbase punw phgt pgr 0</code></samp></p>calculate heights at
+  points using the unwrapped phase and precision baseline
+  information
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code hgt_map_pt.c in ./IPTA/src, executable version
+  hgt_map_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">hgt_map_pt</span> reads the
+  phase unwrapped point&nbsp; interferogram phase values and the
+  baseline geometry and reconstructs the terrain height and cross
+  track position for each pixel and on an ellipsodial (WGS84) Earth
+  model. The unwrapped phase is a measure of the propagation path
+  length difference between the received signals used to generate
+  the interferogram. This is combined with the baseline data for
+  each point in the image to calculate the look vector from the
+  radar to the point on the ground.</p>
+
+  <p>The&nbsp;<span style="font-style: italic;">hgt_map_pt</span>
+  program requires the SLC parameter file of the reference image to
+  reconstruct the interferometric DEM data. The terrain height and
+  cross-track ground range point data layers are written into
+  separate files. Display and generation of images of the resulting
+  height map (in slant range geometry) &nbsp;and ground range
+  values can be done using pt2data and <a href=
+  "rasdt_pwr24.html">rasdt_pwr24</a>.&nbsp;<a href=
+  "./rasdt_pwr24.html"></a></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_orbit_pt.html">base_orbit_pt</a>, <a href=
+  "base_par_pt.html">base_par_pt,</a> <a href=
+  "rasdt_pwr24.html">rasdt_pwr24</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 6-Jun-2005.
+</body>
+</html>

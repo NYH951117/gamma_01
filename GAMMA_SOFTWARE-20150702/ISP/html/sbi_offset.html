@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: sbi_offset</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>sbi_offset.c<br></h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/sbi_offset.c"><i>sbi_offset.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>sbi_offset&nbsp;</em> Calculate azimuth offsets from
+  unwrapped split-beam interferogram</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sbi_offset &lt;sbi_unw&gt; &lt;SLCf_par&gt;
+  &lt;SLCb_par&gt; &lt;OFF_par&gt;
+  &lt;az_offset&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;sbi_unw&gt;</td>
+
+        <td>(input)&nbsp; unwrapped phase of split-beam
+        interferogram (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLCf_par&gt;</td>
+
+        <td>(input) SLC parameter file (forward-looking)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLCb_par&gt;</td>
+
+        <td>(input) SLC parameter file (backward-looking)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) interferogram offset parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_offset&gt;</td>
+
+        <td>(output) azimuth offsets<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong></p>
+
+  <p><samp>sbi_offset 19990915_19991020_4_20.sbi.unw
+  19990915f.rslc.par 19990915b.rslc.par 19990915_19991020_4_20.off
+  19990915_19991020_4_20.az<br></samp></p>
+
+  <p>The unwrapped phase split-beam interferogram&nbsp;
+  <code>19990915_19991020_4_20.sbi.unw</code> is converted to
+  offsets parallel to the radar velocity vector using information
+  in the SLC parameter files for the forward and backward squinted
+  beams and the offset parameter file of the interferogram<br></p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p style="text-align: justify;"><em>sbi_offset</em> is used
+  convert the unwrapped phase of the split-beam interferogram to
+  azimuth offsets in meters, see <span style=
+  "font-style: italic;">Bechor and Zebker 2006.</span> A positive
+  offsets denotes a shift in the same direction as the radar
+  velocity vector. The scale factor for the conversion is
+  calculated for each point in the scene using the geoemetry
+  timing, and doppler polynomials stored in the SLC parameter file.
+  The number of looks in range and azimuth and the interferogram
+  dimensions are stored in the interferogram offset parameter
+  file.<br></p>
+
+  <p style="text-align: justify;">In the normal processing flow, a
+  single-look interferogram is produced from the forward-looking
+  beams and a second interferogram from the backward-looking beams
+  using <a href="SLC_intf.html">SLC_intf</a>. These interferograms
+  are differenced using <a href=
+  "../../DIFF/html/comb_interfs.html">comb_interfs</a> and then
+  multi-looked in range and azimuth using <a href=
+  "multi_cpx.html">multi_cpx</a> to produce a multi-look split-beam
+  interferogram. The split-beam interferogram is usually filtered
+  with&nbsp;<a href="adf.html">adf</a> and then unwrapped using
+  <a href="mcf.html">mcf</a>. In this example, 4 range looks and 20
+  azimuth looks are used to estimate the phase that is proportional
+  to the azimuth offset prior to&nbsp; unwrapping.<br></p>
+
+  <p style="text-align: justify;">The relationship between the
+  azimuth phase and the forward and backward squint angles are
+  given by the equation:</p>
+
+  <p style="text-align: center;"><img style=
+  "width: 227px; height: 59px;" alt="" src="sbi_scale.png"><br></p>
+
+  <p style="text-align: left;">where the azimuth offset is
+  proportional to wavelength divided by the differences in the sin
+  of the forward and backward squint angles. The squint angles are
+  determined from the doppler centroids of each look and the
+  effective along-track velocity of the radar. The effective
+  along-track velocity is determined from the orbital state vectors
+  and an ellipsoidal earth model.</p>
+
+  <p style="text-align: left;">The output azimuth displacements can
+  be displayed using the programs <a href=
+  "../../DISP/html/disdt_pwr24.html">disdt_pwr24</a> and&nbsp;
+  <a href=
+  "../../DISP/html/rasdt_pwr24.html">rasdt_pwr24</a>.<br></p>
+
+  <p style="text-align: left;">Bechor, N., H. Zebker,&nbsp;
+  "Measuring two-dimensional movements using a single INSAR pair",
+  Geophsical Resarch Letters, Vol. 33, L16133, 2006,
+  doi:10.1029/2006GL026883<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href="OFF_par.html">OFF_par,</a>
+  <a href="sbi_filt.html">sbi_filt</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change&nbsp; 25-Nov-2011.
+</body>
+</html>

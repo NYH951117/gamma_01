@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: par_* for RADARSAT-1 data</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Programs for generation of&nbsp; parameter files and image
+  files for RADARSAT-1 data</h2>
+
+  <p>Programs: <a href="../src/par_RSAT_SCW.c">par_RSAT_SCW.c</a>,
+  <a href="../src/par_RSAT_SGF.c">par_RSAT_SGF.c</a>, <a href=
+  "../src/par_RSAT_SLC.c">par_RSAT_SLC.c</a>.</p>
+
+  <h2><strong>par_RSAT_SCW</strong></h2>reads the LEADER, the
+  TRAILER and the DATA file in CEOS format, generating the ISP SLC
+  parameter file and the reformatted image.
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_RSAT_SCW &lt;CEOS_leader&gt; &lt;CEOS_trailer&gt;
+  &lt;CEOS_data&gt; &lt;GRD_par&gt; &lt;GRD&gt; [sc_dB]
+  [dt]</b></code></p><br>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file file provided by processing
+        facility&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_trailer&gt;<br></td>
+
+        <td>(input) CEOS trailer file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_data&gt;<br></td>
+
+        <td>(input) CEOS SCW or SCN image data file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;GRD_par&gt;</td>
+
+        <td>(output) ISP image&nbsp; parameter file&nbsp;
+        (*.grd.par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;GRD&gt;<br></td>
+
+        <td>(output) ground range image data (short integer
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td>sc_dB</td>
+
+        <td>intensity scale factor in dB (enter - for default:
+        &nbsp;0.0)</td>
+      </tr>
+
+      <tr>
+        <td>dt</td>
+
+        <td>azimuth image time offset (s) (enter - for default =
+        0.0)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <h3>Description</h3>The image is acquired in Wide Swath mode and
+  is in ground range projection. The reformatted image data are
+  scaled and saved as 4-byte/value floating point values. Absolute
+  calibration constants are applied. The time offset dt in seconds,
+  is subtracted from the image times specified in the CEOS leader
+  and is nominally 0.0. Ouput image values are radar cross section
+  in dB. The sc_dB argument is an additional output scale factor
+  used to adjust the output values and is nominally 0.0.
+
+  <h2><strong>par_RSAT_SGF</strong></h2>reads the LEADER and the
+  DATA file in CEOS format, generating the ISP SLC parameter file
+  and the reformatted image.<br>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_RSAT_SGF &lt;CEOS_leader&gt; &lt;CEOS_data&gt;
+  &lt;GRD_par&gt; &lt;GRD&gt; [sc_DB] [dt]</b></code></p><br>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file file provided by processing
+        facility with SGF or SCW16 data<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_data&gt;<br></td>
+
+        <td>(input) CEOS image data file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;GRD_par&gt;</td>
+
+        <td>(output) ISP image&nbsp; parameter file&nbsp;
+        (*.grd.par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;GRD&gt;<br></td>
+
+        <td>(output) ground range image data (short integer
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td>sc_dB</td>
+
+        <td>intensity scale factor in dB (enter - for
+        default:&nbsp; 0.0)</td>
+      </tr>
+
+      <tr>
+        <td>dt</td>
+
+        <td>azimuth image time offset (s) (enter - for default =
+        0.0)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <h3><strong>DESCRIPTION</strong></h3>The image can be either in
+  ground range format (SGW) or ScanSAR SCW16 format. If the input
+  data file is provided on the command line, an output SLC data set
+  and parameter file are created that are radiometrically
+  calibrated and flipped as required in range and azimuth such that
+  the earliest azimuth time is the first line of the file and the
+  range samples begin at near range and extend to the far
+  range.<br>
+  <br>
+  The time offset dt in seconds, is subtracted from the image times
+  specified in the CEOS leader and is nominally 0.0. Ouput image
+  values are radar cross section in dB. The sc_dB argument is an
+  additional output scale factor used to adjust the output values
+  and is nominally 0.0.<br>
+  <br>
+
+  <h2><strong>par_RSAT_SLC</strong><br></h2>
+
+  <p>par_RSAT_SLC - reads the LEADER and the SLC DATA file in CEOS
+  format, generating the ISP SLC parameter file and the reformatted
+  SLC image.</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_RSAT_SLC &lt;CEOS_SAR_leader&gt; &lt;SLC_par&gt;
+  [CEOS_DAT] [SLC] [sc_dB] [dt]</b></code></p><br>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) &nbsp;CEOS SAR leader file (example:
+        lea_01.001)<br></td>
+      </tr>
+
+      <tr>
+        <td>SLC_par</td>
+
+        <td>(output) ISP SLC parameter file (example:
+        yyyymmdd.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_data&gt;<br></td>
+
+        <td>(input) CEOS data file (example: dat_01.001)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;<br></td>
+
+        <td>&nbsp;(output) SLC data with file and line headers
+        removed (example: yyyymmdd.slc)<br></td>
+      </tr>
+
+      <tr>
+        <td>sc_dB</td>
+
+        <td>intensity scale factor in dB (enter - for default:
+        &nbsp;85.0)</td>
+      </tr>
+
+      <tr>
+        <td>dt</td>
+
+        <td>azimuth image time offset (s) (enter - for default =
+        0.0)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <h3><strong>DESCRIPTION</strong></h3>This program processes a
+  CEOS format&nbsp; SLC data set and creates the ISP SLC parameter
+  file and the SLC image.&nbsp; Radiometric scaling is applied to
+  the data using the scaling factors stored in the CEOS leader
+  file. The image is flipped in range and azimuth if requred to
+  insure that azimuth line time and slant range are always
+  increasing.&nbsp; This insures that the first image sample in the
+  file was acquired earliest and has the minimum slant-range.&nbsp;
+
+  <p>The time offset dt in seconds, is subtracted from the image
+  times specified in the CEOS leader and is nominally 0.0. Ouput
+  image values are pairs (re,im) of short integers (scomplex). The
+  sc_dB argument is an additional output scale factor used to
+  adjust the output values so that the available dynamic range is
+  fully utilized. In the case of scomplex data, the data are scaled
+  such that:</p>
+
+  <p style="font-weight: bold;"><code><big style=
+  "font-style: italic;">sigma0 = 10.0*log10(re*re + im*im) -
+  sc_dB</big></code></p>
+
+  <p><strong>SEE ALSO:</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, ms, last change 18-Oct-2012
+</body>
+</html>

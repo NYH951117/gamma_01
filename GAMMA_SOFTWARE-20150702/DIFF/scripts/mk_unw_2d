@@ -1,0 +1,471 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$ovrlap = 128;
+$npat_az = 1;
+$npat_r = 1;
+$r_init = "-";
+$az_init = "-";
+$mode = 1;
+$nlks = 1;
+$cct = 0.4;
+$pwrt = 0.0;
+$tri_mode = 1;
+$umflg = 0;
+$psc = .50;  #phase scaling factor for display
+$scale = .7;    #display intensity relative scale factor
+$exp = .35;	#display intensity exponent
+$diff_tab = '';
+$no_proc = 0;
+$unw_msk2 = '';	#mask to apply to the unwrapped phase, after unwrapping
+$roff = -1000;
+$loff = -1000;
+$rmli_dir = "";
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale, 'd=s' => \$diff_tab, 'n'=> \$no_proc, 'b=s' => \$rmli_dir, 'p=f' => \$psc,'m=s' => \$unw_msk2);
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v4.4 6-Apr-2015 clw ***
+*** Unwrap the phase of a stack of interferograms using Minimum Cost Flow (MCF) algorithm ***
+
+usage: $0 <RSLC_tab> <itab> <rmli> <diff_dir> [cc_thres] [pwr_thres] [nlks] [npat_r] [npat_az] [mode] [r_init] [az_init] [tri_mode] [unw_mask] [roff] [loff] [nr] [nlines]
+
+    RSLC_tab    (input) two column list of coregistered SLC filenames and SLC parameter filenames (including paths)
+                  1. SLC filename  (includes path)
+                  2. SLC parameter filename (includes path)
+    itab        (input) table associating interferograms with pairs of SLCs listed in the RSLC_tab
+                  1. row number in SLC_tab of the reference SLC 
+                  2. row number in SLC_tab of SLC-2 of the interferogram
+                  3. line number in the itab
+                  4. flag used to indicate if this interferogram is to be considered in time-series processing (0:not used  1:used)
+    rmli        (input) MLI image derived from the coregistered SLCs with the same dimensions as the interferogram
+    diff_dir    differential interferogram directory containing *.diff differential interferogram files 
+    cc_thres    threshold for correlation for creating the unwrapping mask (0.0 --> 1.0) (default: $cct)
+    pwr_thres   threshold for relative intensity for creating the unwrapping mask (0.0 --> 1.0) (default: $pwrt)
+    nlks        number of looks in range and azimuth to scale before unwrapping (default: 1)
+    npat_r      number of patches in range (default: $npat_r)
+    npat_az     number of patches in azimuth (default: $npat_az)
+    mode        processing mode:
+                  0: unwrap unfiltered data (*.diff)
+	          1: (default) unwrap adf filtered data (*.adf.diff) using adf correlation (*.adf.cc)
+    r_init      phase reference range offset (default: $r_init)
+    az_init     phase reference azimuth offset (default: $az_init)
+    tri_mode    MCF triangulation mode:
+                  0: filled triangular mesh 
+                  1: Delaunay triangulation (default)
+    unw_mask1   mask file to specify unwrap region rather than using a mask generated using cc_thres and pwr_thres
+                parameters (enter - for none) (Sun raster or BMP format) 
+    roff        offset to starting range of region to unwrap (default: 0)
+    loff        offset to starting line of region to unwrap (default: 0)
+    nr          number of range samples of region to unwrap (default(-): width - roff)
+    nlines      number of lines of region to unwrap (default(-): total number of lines - loff)
+    
+    -b rmli_dir  (option) use MLI2 as the background image for display rather than MLI image specified on the command line
+    -d diff_tab (option) output a DIFF_tab file containing 2 column list of unwrapped diff. interferograms and delta_T values in decimal days 
+    -n          (option) generate DIFF_tab only, no interferometric processing 
+    -s scale    (option) set image display scale factor (default: $scale)   
+    -e exp      (option) set image display exponent (default: $exp)
+    -p pscale   (option) set phase scaling for output display, 1 cycle = 2PI/pscale (default: $psc)
+    -m mask     (option) mask to apply to the unwrapped phase (Sun raster or BMP format)          			  
+EOS
+
+$rslc_tab  = $ARGV[0];
+$itab      = $ARGV[1];
+$rmli      = $ARGV[2];
+$diff_dir  = $ARGV[3];
+
+if($#ARGV >= 4){
+  $cct = $ARGV[4];
+  ($cct >= 0.0 && $cct <= 1.0 ) or die "\nERROR: correlation threshold outside of valid range: $cct\n";
+}
+
+if($#ARGV >= 5){
+  $pwrt = $ARGV[5];
+  ($pwrt >= 0.0) or die "\nERROR: relative power threshold outside of valid range: $pwrt\n";
+}
+
+if($#ARGV >= 6){
+  $nlks = $ARGV[6];
+  ($nlks >= 1 && $nlks <= 16 ) or die "\nERROR: number of looks outside of valid range: $nlks\n";
+}
+
+if($#ARGV >= 7){
+  $npat_r = $ARGV[7];
+  ($npat_r >= 1 ) or die "\nERROR: number of patches in range < 0: $npat_r\n";
+}
+
+if($#ARGV >= 8){
+  $npat_az = $ARGV[8];
+  ($npat_az >= 1 ) or die "\nERROR: number of patches in azimuth < 0: $npat_az\n";
+}
+
+if($#ARGV >= 9){
+  $mode = $ARGV[9];
+  ($mode >= 0  && $mode <= 1) or die "\nERROR: invalid processing mode: $mode\n";
+}
+
+if($#ARGV >= 10){
+  $r_init = $ARGV[10];
+  ($r_init >= 0 || $r_init eq "-") or die "\nERROR: reference point range offset invalid: $r_init\n";
+}
+
+if($#ARGV >= 11){
+  $az_init = $ARGV[11];
+  ($az_init >= 0 || $az_init eq "-" ) or die "\nERROR: reference point azimuth offset invalid: $az_init\n";
+}
+
+if($#ARGV >= 12){
+  $tri_mode = $ARGV[12];
+  ($tri_mode == 0 || $tri_mode == 1) or die "\nERROR: invalid triangulation mode: $tri_mode\n";
+}
+
+if($#ARGV >= 13){
+  $unw_mask = $ARGV[13];
+  if ($unw_mask ne "-"){
+    -e $unw_mask or die "ERROR $0: unwrapping mask file specified on command line does not exist: $unw_mask\n";
+    if ($nlks > 1){
+      print "NOTE: the user-supplied unwrapping mask file must have dimensions: width/nlks, lines/nlks\n"
+    }
+    $umflg = 1;
+  }
+}
+
+if($diff_tab ne ''){
+  open(DIFF_TAB,">$diff_tab") or die "ERROR $0: cannot open DIFF_tab file: $log\n";
+}
+
+$log = "$diff_dir/mk_unw_2d.log";  
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+$time = localtime;
+print "start: $time  log file:  $log\n";
+
+open(RSLC_TAB, "<$rslc_tab") or die "\nERROR $0: table of resampled SLC images and parameter files does not exist: $rslc_tab\n\n";
+print "resampled SLC images and image parameter files: $rslc_tab\n"; 
+
+open(ITAB, "<$itab") or die "\nERROR $0: table of interferometric pairs does not exist: $itab\n\n";
+print "table of interferometric pairs: $itab\n"; 
+-e $rmli or die "ERROR $0: RMLI reference image file does not exist: $rmli\n";
+-d $diff_dir or die "ERROR $0: differential interferogram directory does not exist: $diff_dir\n";
+
+print "$0  @ARGV\n";
+print "unwrapping mode:         $mode\n";
+print "RSLC_tab:                $rslc_tab\n";
+print "ITAB:                    $itab\n";
+print "DIFF directory:          $diff_dir\n";
+print "correlation threshold:   $cct\n";
+print "intensity threshold:     $pwrt\n";
+print "number of looks:         $nlks\n";
+print "number of range patches: $npat_r\n";
+print "number of az. patches:   $npat_az\n";
+if ($diff_tab ne ''){
+  print "DIFF_tab file: $diff_tab\n";
+}
+if ($unw_msk2 ne ''){
+  print "masking data after unwrapping with mask file: $unw_msk2\n";
+}
+print "display scale factor: $scale  exponent: $exp\n\n";
+
+print LOG "\n$0  @ARGV\n";
+print LOG "start: $time  log file:  $log\n\n";
+print LOG "unwrapping mode:         $mode\n";
+print LOG "RSLC_tab:                $rslc_tab\n";
+print LOG "ITAB:                    $itab\n";
+print LOG "DIFF directory:          $diff_dir\n";
+print LOG "correlation threshold:   $cct\n";
+print LOG "intensity threshold:     $pwrt\n";
+print LOG "number of looks:         $nlks\n";
+print LOG "number of range patches: $npat_r\n";
+print LOG "number of az. patches:   $npat_az\n";
+
+if ($diff_tab ne ''){
+  print LOG "DIFF_tab file: $diff_tab\n";
+}
+if ($unw_msk2 ne ''){
+  print LOG "masking data after unwrapping with mask file: $unw_msk2\n";
+}
+print LOG "display scale factor: $scale  exponent: $exp\n\n";
+
+$i = 1;
+#read in the contents of the RSLC_TAB file and store in arrays
+LINE: while (<RSLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $slc[$i] = $fields[0];
+  $slc_par[$i] = $fields[1];
+  printf "%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  printf LOG "%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  $i++;
+} 
+print LOG"\n";
+
+$n = 0;
+LINE: while (<ITAB>) {		#read lines of processing list file
+  $n++;
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  next LINE if ($fields[3] == 0); #do not unwrap interferograms with the layer flag set to 0
+  $slc1 = $slc[$fields[0]];
+  $slc1_par = $slc_par[$fields[0]];
+  my ($s1, $dir1, $ext1) = fileparse($slc1, qr/\.[^.]*/); #extension is the last bit after the last period   
+
+  $slc2 = $slc[$fields[1]];
+  $slc2_par = $slc_par[$fields[1]];
+  my ($s2, $dir2, $ext2) = fileparse($slc2, qr/\.[^.]*/); #extension is the last bit after the last period   
+#  next LINE if ($s1 =~ m/$s2/);
+
+  $fn = $diff_dir."/".$s1."_".$s2;
+  $off =  $fn.".off";
+
+  if ($rmli_dir ne ""){		#background intensity image is rmli2 and changes from image to image
+    $rmli2 = $rmli_dir."/".$s2.".rmli";
+    unless (-e $rmli2){
+      $rmli2 = $rmli_dir."/".$s2.".mli";
+      -e $rmli2 or die "MLI-2 does not exist: $rmli2\n";
+    }
+  }
+
+  $time = localtime;
+  printf "\n*** Interferogram:%5d  $time ***\n",$n;
+  print "SLC-1: $slc1   SLC1_par: $slc1_par\n";
+  print "SLC-2: $slc2   SLC2_par: $slc2_par\n";
+  print "diff. interferogram parameters: $off\n";
+
+  printf LOG "\n*** Interferogram:%5d  $time ***\n",$n;
+  print LOG "SLC-1: $slc1   SLC1_par: $slc1_par\n";
+  print LOG "SLC-2: $slc2   SLC2_par: $slc2_par\n";
+  print LOG "diff. interferogram parameters: $off\n";
+
+  @width = extract_param($off, "interferogram_width:");		#extract interf. size from *.off
+  @rstart = extract_param($off, "first_nonzero_range_pixel:");
+  @rpix = extract_param($off, "number_of_nonzero_range_pixels:");
+  @lines = extract_param($off, "interferogram_azimuth_lines:");
+
+  print "interferogram width: $width[1]  lines: $lines[1]\n";
+  print "first non-zero range sample: $rstart[1]  number of non-zero samples: $rpix[1]\n";
+  print LOG "interferogram width: $width[1]  lines: $lines[1]\n";
+  print LOG "first non-zero range sample: $rstart[1]  number of non-zero samples: $rpix[1]\n";
+
+  @slc1_date = extract_param($slc1_par, "date:");
+  @slc2_date = extract_param($slc2_par, "date:");
+  @stime1 = extract_param($slc1_par, "start_time:"); #determine start time of SLC 1
+  @stime2 = extract_param($slc2_par, "start_time:"); #determine start time of SLC 2
+  $st1 = $stime1[1];
+  $st2 = $stime2[1];
+
+  $jd1 = julday($slc1_date[1], $slc1_date[2], $slc1_date[3]) + $st1/86400.;
+  $jd2 = julday($slc2_date[1], $slc2_date[2], $slc2_date[3]) + $st2/86400.;
+  $year = $slc2_date[1];
+  $month = $slc2_date[2];
+  $day = $slc2_date[3];
+  $hrs = int($st2/3600);
+
+  $min = int(($st2 - $hrs*3600.)/60.);
+  $sec = $st2 - $hrs*3600. - $min*60.;
+  $tstr = sprintf("%4d-%02d-%02dT%02d:%02d:%06.3f",$year,$month,$day,$hrs,$min,$sec);
+  
+  print "SLC-1 date: @slc1_date   julian day: $jd1\n";
+  print "SLC-2 date: @slc2_date   julian day: $jd2   ISO8601: $tstr\n";
+  $delta_t = $jd2 - $jd1;
+  printf "interferogram time interval (days): %.8f\n", $delta_t;
+
+  if ($mode == 0){
+    $diff = $fn.".diff";
+    $unw = $fn.".unw";
+    $cc = $fn.".cc";
+
+    if($umflg == 0 ){			#check if using an unwrapping mask file instead of correlation
+      $cc_msk = $fn.".cc_mask.bmp";
+      print "correlation threshold mask: $cc_msk\n\n"; 
+      if ($no_proc == 0){
+        execute("rascc_mask $cc $rmli $width[1] 1 1 0 $nlks $nlks $cct $pwrt .3 1.0 $scale $exp 1 $cc_msk",$log);
+      }
+    }
+    else{
+      $cc_msk = $unw_mask;		#use unwrapping mask raster file rather than correlation derived mask 
+    }
+  }
+  
+  if ($mode == 1){
+    $diff = $fn.".adf.diff";
+    $unw = $fn.".adf.unw";
+    $cc = $fn.".adf.cc";  
+
+    if($umflg == 0){			#check if using an unwrapping mask file instead of correlation
+      $cc_msk = $fn.".adf.cc_mask.bmp";
+      print "correlation threshold mask: $cc_msk\n\n"; 
+      if ($no_proc == 0){
+        execute("rascc_mask $cc $rmli $width[1] 1 1 0 $nlks $nlks $cct $pwrt .3 1.0 $scale $exp 1 $cc_msk",$log);
+      }
+    }
+    else{
+      $cc_msk = $unw_mask;		#use supplied unwrapping mask rather than correlation derived mask
+    }     
+  }
+
+  $roff = $rstart[1];
+  if (($#ARGV >= 14) && ($ARGV[14] ne "-")) {
+    $roff = $ARGV[14];
+    print "starting range sample to specify unwrap region from command line: $roff\n";
+    if (($roff < 0) || ($roff >= ($rstart[1] + $rpix[1] - 2))) {
+      print "ERROR: invalid roff parameter value given on the command line: $roff\n";
+      printf "starting range sample roff for the unwrap region must be >= 0 and < %d\n",$rstart[1] + $rpix[1] - 2;
+      exit -1;
+    }
+  }
+
+  $loff = 0;
+  if (($#ARGV >= 15) && ($ARGV[15] ne "-")) {
+    $loff = $ARGV[15];
+    print "number of offset lines to specify unwrap region from command line: $loff\n";
+    if (($loff < 0) || ($roff >= ($lines[1] + $loff[1] - 2))) {
+      print "ERROR: invalid loff parameter value given on the command line: $loff\n";
+      printf "offset lines loff for the unwrap region must be >= 0 and < %d\n",$lines[1] + $loff[1] - 2;
+      exit -1;
+    }
+  }
+
+  $nr = $rpix[1] - ($roff - $rstart[1]);
+  if (($#ARGV >= 16) && ($ARGV[16] ne "-")) {
+    $nr = $ARGV[16];
+    print "number of range samples to unwrap from command line: $nr\n";
+    if (($nr <= 0) || ($nr > ($rpix[1] - ($roff - $rstart[1])))){
+      print "ERROR: invalid number of samples to process nr on the command line: $nr\n";
+      printf "number of samples nr must be > 0 and <= %d\n", $rpix[1] - ($roff - $rstart[1]);
+      exit -1;
+    }
+  }
+
+  $nl = $lines[1] - $loff;
+  if (($#ARGV >= 17) && ($ARGV[17] ne "-")) {
+    $nl = $ARGV[17];
+    print "number of lines to unwrap from command line: $nl\n";
+    if (($nl <= 0) || ($nl > ($lines[1] - $loff))){
+      print "ERROR: invalid number of lines to process nl on the command line: $nl\n";
+      printf "number of lines nl must be > 0 and <= %d\n",$lines[1] - $loff;
+      exit -1;
+    }
+  }
+
+  print "\nunwrap region range offset: $roff   range samples: $nr\n";
+  print "unwrap region azimuth offset:   $loff   azimuth lines: $nl\n\n";
+  print LOG "\nunwrap region range offset: $roff   range samples: $nr\n";
+  print LOG "unwrap region azimuth offset:   $loff   azimuth lines: $nl\n\n";
+
+  if($diff_tab ne ''){
+    printf DIFF_TAB "$unw   %13.7f   %s\n",$delta_t, $tstr;
+  }
+  
+  next if $no_proc == 1; #skip around processing if $no_proc set by -n option on the command line
+  if ($rmli_dir eq ""){
+    $rmli2 = $rmli;
+  }
+
+  if($nlks == 1){
+#unwrap diff file using minimum cost flow with regions above threshold, set phase at reference point to 0.0
+    execute("mcf $diff $cc $cc_msk $unw $width[1] $tri_mode $roff $loff $nr $nl $npat_r $npat_az $ovrlap $r_init $az_init 1", $log);  
+    if ($unw_msk2 ne ''){
+      $unw_tmp = $unw.".tmp";
+      print "rename $unw --> $unw_tmp\n";
+      rename $unw, $unw_tmp;
+      execute("mask_data $unw_tmp $width[1] $unw $unw_msk2 0", $log);
+      print "deleting $unw_tmp\n";
+      unlink $unw_tmp
+    } 
+    execute("rasrmg $unw $rmli2 $width[1] 1 1 0 1 1 $psc $scale $exp", $log);
+  }
+  else{
+    $diff2 = $diff_dir."/diff2";
+    $unw2 = $diff_dir."/unw2";
+    $unw3 = $diff_dir."/unw3";
+    $cc2 = $diff_dir."/cc2";
+    $off2 = $diff_dir."/off2";
+
+    $width2 =  int $width[1]/$nlks;
+    $width_model = $width2 * $nlks;
+    $roff2 = int $roff/$nlks;
+    $loff2 = int $loff/$nlks;
+    $nr2 = int $nr/$nlks;
+    $nl2 = int $nl/$nlks;
+    $az_init2 = int $az_init/$nlks;
+    $r_init2 = int $r_init/$nlks;
+    $ref_ph = "-";
+    print "multi-look image width: $width2  model width after expansion: $width_model\n";
+    execute("multi_cpx $diff $off $diff2 $off2 $nlks $nlks",$log);
+    execute("multi_real $cc $off $cc2 $off2 $nlks $nlks",$log);
+    execute("mcf $diff2 $cc2 $cc_msk $unw2 $width2 $tri_mode $roff2 $loff2 $nr2 $nl2 $npat_r $npat_az $ovrlap $r_init2 $az_init2 0",$log); 
+    execute("multi_real $unw2 $off2 $unw3 $off -$nlks -$nlks",$log);
+    execute("unw_model $diff $unw3 $unw $width[1] $r_init $az_init $ref_ph",$log);
+
+    if ($unw_msk2 ne ''){
+      $unw_tmp = $unw.".tmp";
+      print "rename $unw --> $unw_tmp\n";
+      rename $unw, $unw_tmp;
+      execute("mask_data $unw_tmp $width[1] $unw $unw_msk2 0",$log);
+      print "deleting $unw_tmp\n";
+      unlink $unw_tmp;
+    } 
+    execute("rasrmg $unw $rmli2 $width[1] 1 1 0 1 1 $psc $scale $exp",$log);
+    print "deleting $cc2, $diff2, $off2, $unw2, $unw3\n";
+    unlink $cc2, $diff2, $off2, $unw2, $unw3;
+#    system("rm -f $cc2 $diff2 $off2 $unw2 $unw3");
+  }
+}
+
+$time = localtime;
+print "\n$0 processing end: $time\n";
+print LOG "\n$0 processing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+  if (-e $log){
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  }
+  else {
+    open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";
+  } 
+  LOG->autoflush;   
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub julday {
+##################################
+# Julian Day from Gregorian Date #
+##################################
+use integer;
+my ( $y, $m, $d) = @_;
+#print "y,m,d: $y $m $d\n";
+my $jd = (1461 * ($y + 4800 + 
+($m - 14) / 12)) / 4 + (367 * 
+($m - 2 - 12 * (($m - 14) / 12))) 
+/ 12 - (3 * (($y + 4900 + ($m - 14)
+/ 12) / 100)) / 4 + $d - 32075;
+return $jd;
+};
+

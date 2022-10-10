@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing -->
+<!-- uw/ts 010713 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: takethat</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>takethat</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/takethat.c">takethat.c</a></i>, <a href=
+  "../src/takethat_dem_par.c">takethat_dem_par.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  takethat - Extraction of values along profiles, in polygon
+  regions, or for indicated positions (pixel numbers
+  specified).</p>takethat_dem_par - Extraction of values along
+  profiles, in polygon regions, or for indicated positions (map
+  coordinates specified).
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>takethat &lt;data_in&gt; &lt;width&gt; &lt;positions&gt;
+  &lt;report&gt; [mode] [zero_flag] [nn_flag]
+  [print_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data_in&gt;</td>
+
+      <td>(input) input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>samples per row of data_in</td>
+    </tr>
+
+    <tr>
+      <td>&lt;positions&gt;</td>
+
+      <td>(input) text file containing list of positions: column
+      number, row number</td>
+    </tr>
+
+    <tr>
+      <td>&lt;report&gt;</td>
+
+      <td>(output) text file containing extracted values</td>
+    </tr>
+
+    <tr>
+      <td>[mode]</td>
+
+      <td>data extraction mode (default = 0)<br>
+      0 : extract values along the profile connecting the indicated
+      positions<br>
+      1 : extract values in the polygon region specified by the
+      indicated positions<br>
+      2 : extract values at the indicated positions</td>
+    </tr>
+
+    <tr>
+      <td>[zero_flag]</td>
+
+      <td>interpret 0.0 as missing value (default=0: 0.0 indicates
+      missing value, 1: 0.0 is valid value)</td>
+    </tr>
+
+    <tr>
+      <td>[nn_flag]</td>
+
+      <td>resampling algorithm flag in the case of extraction along
+      a profile (default=0: interpolation algorithm, 1: nearest
+      neighbor)</td>
+    </tr>
+
+    <tr>
+      <td>[print_flag]</td>
+
+      <td>print flag (default=0:print values at all positions
+      1:print only positions with valid data)</td>
+    </tr>
+  </table>
+
+  <p><code><b>takethat_dem_par &lt;data_in&gt; &lt;width&gt;
+  &lt;positions&gt; &lt;DEM_par&gt; &lt;report&gt; [type_flag]
+  [zero_flag] [nn_flag] [print_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data_in&gt;</td>
+
+      <td>(input) input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>samples per row of data_in</td>
+    </tr>
+
+    <tr>
+      <td>&lt;positions&gt;</td>
+
+      <td>(input) text containing list of positions:
+      easting/longitude, northing/latitude</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_par&gt;</td>
+
+      <td>DEM/MAP parameter file used to convert coordiantes to
+      pixel numbers</td>
+    </tr>
+
+    <tr>
+      <td>&lt;report&gt;</td>
+
+      <td>(output) text file containing extracted values</td>
+    </tr>
+
+    <tr>
+      <td>[mode]</td>
+
+      <td>data extraction mode(default = 0)<br>
+      0 : extract values along the profile connecting the indicated
+      positions<br>
+      1 : extract values in the polygon region specified by the
+      indicated positions<br>
+      2 : extract values at the indicated positions</td>
+    </tr>
+
+    <tr>
+      <td>[zero_flag]</td>
+
+      <td>interpret 0.0 as missing value (default=0: 0.0 indicates
+      missing value, 1: 0.0 is valid value)</td>
+    </tr>
+
+    <tr>
+      <td>[nn_flag]</td>
+
+      <td>resampling algorithm flag in the case of extraction along
+      a profile (default=0: interpolation algorithm, 1: nearest
+      neighbor)</td>
+    </tr>
+
+    <tr>
+      <td>[print_flag]</td>
+
+      <td>print flag (default=0:print values at all positions
+      1:print only positions with valid data)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br></p>
+
+  <p><samp>takethat 03781_25458.disp 2456 profile_coordinates.txt
+  disp_profile.txt 0 0 1</samp></p>Extract values from the
+  displacement map 03781_25458.disp along the profile specified by
+  the positions (column and row numbers) listed in the text file
+  profile_coordinates. The extracted profile is written out to the
+  report file. Nearest neighbor interpolation approach is specified
+
+  <p><samp>takethat_dem_par 03781_25458.UTM.disp 2456
+  profile_coordinates.txt 03781_25458.UTM.dem_par disp_profile.txt
+  0 0 1</samp></p>Extract values from the geocoded displacement map
+  03781_25458.UTM.disp along the profile specified by the map
+  coordiantes (easting and northing) listed in the text file
+  profile_coordinates.txt. The extracted profile is written out to
+  standard output which is redirected into the output ASCII file
+  "disp_profile.txt". Nearest neighbor interpolation approach has
+  been selected.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code takethat.c and takethat_dem_par.c in ./src. For
+  compilation adjust and use Makefile. Executable version takethat
+  in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.<br>
+  Uses DISP type definition file <a href=
+  "display.h.html">display.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The programs takethat and takethat_dem_par allow to extract
+  values along a profile, in a polygonal region, or for a set of
+  specified positions. In the case of takethat the pixel numbers
+  (column and row numbers) are used while for takethat_dem_par the
+  map coordinates of the positions are are provided in a text file
+  that defines the profile, the polyogon region, or the list of
+  positions where to extract the values. The supported input data
+  file format is float (REAL*4). The output values are written to a
+  report file specified on the command line.</p>
+
+  <p>The DISP program <a href="polyras.html">polyras.c</a> can be
+  used to select the positions and write its column and row
+  coordinates into a text file. Every line in the positions file
+  contains one position, i.e. a pair of column and row numbers.
+  Different profiles, polygon regions, or position lists are
+  seperated by an empty line:<br>
+  88 179 1<br>
+  96 152 2<br>
+  129 109 3<br>
+  <br>
+  188 279 1<br>
+  196 252 2<br>
+  229 209 3<br>
+  250 209 3<br>
+  <br>
+  200 300 1<br>
+  400 300 2<br></p>
+
+  <p>For the extraction along a profile the values are extracted in
+  regular intervals corresponding to the distance of one pixel for
+  each start and stop position. The distance along the profile is
+  written to the standard output together with the number of
+  positions, the column and row numbers of the positions and the
+  extracted values. An interpolation algortihm or the nearest
+  neighbor algorithm may be selected for the determination of the
+  output values.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Data values of 0.0 can be interpreted as missing data or not. For
+  profiles (mode 0), the user may also specify via the print_flag
+  command line parameter if positions with zero data are listed in
+  the output report file.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>. <a href=
+  "display.h.html">display.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 9-Apr-2004.</p>
+</body>
+</html>

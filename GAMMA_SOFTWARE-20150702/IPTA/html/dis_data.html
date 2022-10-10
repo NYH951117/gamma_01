@@ -1,0 +1,179 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: dis_data</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>dis_data</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/dis_data.c">dis_data.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  dis_data - display point-based data as a time series.<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dis_data &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;itab&gt; &lt;nstack&gt; &lt;pdata1&gt; ... &lt;pdata_type&gt;
+  &lt;ras&gt; [ymin] [ymax] [mag] [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 pINT_rec
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;nstack&gt;</td>
+
+        <td>number of point data stacks</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata1&gt;</td>
+
+        <td>(input) point data stack (fcomplex or float)</td>
+      </tr>
+
+      <tr>
+        <td>...</td>
+
+        <td>(input) sequence of remaining data stacks</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_type&gt;</td>
+
+        <td>data type (0:float 1:fcomplex,&nbsp; default=0:
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras&gt;</td>
+
+        <td>(input) raster reference image with PT locations marked
+        (SUN *.ras, or BMP *.bmp)</td>
+      </tr>
+
+      <tr>
+        <td>[ymin]</td>
+
+        <td>(input) plot display minimum (enter - for default =
+        -PI)<br></td>
+      </tr>
+
+      <tr>
+        <td>[ymax]</td>
+
+        <td>(input) plot display maximum (enter - for default =
+        +PI)<br></td>
+      </tr>
+
+      <tr>
+        <td>[mag]</td>
+
+        <td>zoom magnification factor (default=3)</td>
+      </tr>
+
+      <tr>
+        <td>[win_sz]</td>
+
+        <td>zoom window size before magnification
+        (default=128)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>dis_data pt0 pmask ppar itab pdef_unw0 0
+  pt0.ras<br></samp></p>
+
+  <p>Displays the SUN/BMP rasterfile pt0.ras showing the point
+  locations, and plots the data as a time series using
+  xmgrace<br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code dis_data.c in ./IPTA/src, executable version dis_data
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION<br></strong>Plots the data values of one
+  or more data stacks as time series at locations selected using
+  the reference image. The reference image is in Sun raster or BMP
+  format with the points marking the pixels contained in the plist.
+  The user can select a point for analysis by clicking on the point
+  &nbsp; with&nbsp; mouse button 1. The point closest to the
+  clicked location is selected if it is closer than 5 pixels. The
+  coordinates of the point, both in the reference image on the
+  screen, and in the plist are then displayed in the application
+  window.&nbsp; Values from the different data stacks are plotted
+  versus delta-time in the xmgrace plot window, where the
+  delta-time values have been calculated from the SLC parameter
+  data and itab files. The specific data values in the input data
+  stack&nbsp; are also written to stdout, which by default is the
+  terminal window.<br></p>
+
+  <p>Either fcomplex or float data stacks can examined as specified
+  by the pdata_type command line parameter. In the case of fcomplex
+  format data, the phase is first calculated and then plotted. In
+  the case of a single layer in the stack, the plot is not
+  generated and the value is shown in the application window that
+  is associated with the selected point.<br></p>
+
+  <p>This program can be used to display the time history of
+  deformaton for individual points generated using the program
+  dispmap_pt.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  Individual plots can be saved or printed using the xmgrace
+  functionality. The plot can also be zoomed or transformed in
+  various ways, as described in the xmgrace documentation.<br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "dispmap_pt.html">dispmap_pt</a><br></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 8-Sep-2004.</p>
+</body>
+</html>

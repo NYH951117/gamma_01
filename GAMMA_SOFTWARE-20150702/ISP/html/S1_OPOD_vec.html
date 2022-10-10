@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: OPOD_vec</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>OPOD_vec</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/OPOD_vec.c"><i>OPOD_vec.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>OPOD_vec</em>&nbsp; - extract state vectors from OPOD
+  precision orbit state vector files and copy to the ISP SLC/MLI
+  image parameter file<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>OPOD_vec &lt;SLC_par&gt;</b></code> <code>&lt;EOF&gt;
+  [nstate]</code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;<a href="SLC_par.html">SLC_par</a>&gt;</td>
+
+        <td>(input/output) ISP SLC/MLI&nbsp; image parameter
+        file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DOR&gt;</td>
+
+        <td>&nbsp;(input) (input) Sentinel-1 OPOD orbit data file
+        (AUX_POEORB or AUX_RESORB)<br>
+        https://qc.sentinel1.eo.esa.int/aux_resorb/</td>
+      </tr>
+
+      <tr>
+        <td>[nstate]</td>
+
+        <td>number of state vectors to extract (image +- 35 seconds
+        )</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>OPOD_vec 22331.par
+  S1A_OPER_AUX_RESORB_OPOD_20150402T162033_V20150402T122229_20150402T154000.EOF</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  OPOD_vec reads state vectors distributed by the Sentinel-1
+  payload data ground segment. The state vectors are written into
+  the ISP SLC/MLI image parameter file along with the start time
+  and time interval between state vectors.<br>
+  https://qc.sentinel1.eo.esa.int/aux_poeorb/<br>
+  https://qc.sentinel1.eo.esa.int/aux_resorb/</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  , last change 29-April-2015</p>
+</body>
+</html>

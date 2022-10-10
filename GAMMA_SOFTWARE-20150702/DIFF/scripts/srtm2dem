@@ -1,0 +1,104 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+$log = "srtm2dem.log";
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v1.4 28-Jan-2015 clw ***
+*** Convert GeoTIFF format DEM downloaded from USGS or CGIAR to Gamma format DEM and DEM parameter file ***
+
+usage: $0 <SRTM_DEM> <DEM> <DEM_par> <offset>
+    SRTM_DEM  (input) GeoTIFF DEM in geographic coordinates (lat./lon.)
+              Note: DEMs downloaded from USGS http://gdex.cr.usgs.gov or CGIAR http://srtm.csi.cgiar.org
+    DEM       (output) DEM data (float)
+    DEM_par   (output) Gamma DEM parameter file
+    offset    height of the geoid relative to WGS84 ellipsoid (m)
+              http://www.unavco.org/software/geodetic-utilities/geoid-height-calculator/geoid-height-calculator.html
+
+EOS
+
+$srtm = $ARGV[0];
+$dem     = $ARGV[1];
+$dem_par = $ARGV[2];
+$goff = $ARGV[3];
+
+$dem_par_in = "dem_par.in";
+$srtm_tmp= "srtm_tmp";
+
+my ($s1, $dir1, $ext1) = fileparse($srtm, qr/\.[^.]*/); #extension is the last bit after the last period
+print "basename: $s1\n";
+print "SRTM DEM GeoTIFF tile: $srtm\n";
+print "output DEM: $dem\n";
+print "output DEM parameter file: $dem_par\n";
+print "offset of the geoid to WGS84 (m): $goff\n";
+print "log file: $log\n";
+
+$gdal_output = `gdalinfo $srtm`;
+print $gdal_output;
+
+my @gdal = split /\n/, $gdal_output; #split into lines
+foreach my $line (@gdal){
+
+  if ($line =~ m/Size is/) {
+    @a = split (/[\s+,]/, $line);	#parse line into tokens, splitting on whitespace or ,
+    $xsize = $a[2];
+    $ysize = $a[4];
+    print "\nDEM samples across: $xsize   down: $ysize\n";
+  }
+
+  if ($line =~ m/Upper Left/) {
+    @a = split (/[(),]/, $line);	#parse line into tokens, splitting on (),
+    $lon = $a[1];
+    $lat = $a[2];
+    print "Upper Left corner latitude (deg.): $lat    longitude (deg.): $lon\n";
+  }
+
+  if ($line =~ m/Pixel Size/){
+    @a = split (/[(),]/, $line);	#parse line into tokens, splitting on (),
+    $pix_lon = $a[1];
+    $pix_lat = $a[2];
+    printf "Pixel size (deg.) latitude: %.7le    longitude: %.7le\n",$pix_lat, $pix_lon;
+  }
+}
+
+#convert from Pixel as Area to Pixel as Point convention, Gamma DEM is Pixel as Point
+printf "DEM (Pixel as Area)  upper left corner latitude (deg.): %.8f  longitude (deg.): %.8f\n",$lat,$lon; 
+$lat = $lat + $pix_lat/2.0;
+$lon = $lon + $pix_lon/2.0;
+printf "DEM (Pixel as Point) upper left corner latitude (deg.): %.8f  longitude (deg.): %.8f\n",$lat,$lon;
+
+open(DPAR, "> $dem_par_in") or die "ERROR $0: cannot create file with inputs to create_dem_par: $dem_par_in\n\n";
+print DPAR "\nEQA\nWGS84\n1\n$s1\nREAL*4\n 0.0\n1.0\n$xsize\n$ysize\n$pix_lat $pix_lon\n$lat $lon\n";
+close(DPAR);
+print "\n";
+execute("rm -f $dem_par",$log);
+execute("create_dem_par $dem_par < $dem_par_in",$log);
+print "\n\n";
+
+execute("gdal_translate -ot Int16 -of ENVI $srtm $srtm_tmp",$log);
+execute("swap_bytes $srtm_tmp $dem 2",$log);
+$goff = $goff + 1.0e-20;		#add small delta to force 0 height to be recognized as valid data
+execute("short2float $dem $srtm_tmp 1. 1.",$log);
+
+#add offset of the geoid relative to the WGS84 ellipsoid to get heights relative to WGS84
+#zflg option in float_math set to 1 so that 0.0 is considered valid data
+execute("float_math $srtm_tmp - $dem $xsize 0 - - - - $goff 1",$log);
+
+#replace no-data values,-32768 + $goff, with 0.0. Gamma software recognizes 0.0 as no-data
+execute("replace_values $dem -10000.0 0.0 $srtm_tmp $xsize 2 2",$log);
+execute("/bin/mv -f $srtm_tmp $dem",$log);
+exit(0);
+
+sub execute{
+  my ($command, $log) = @_;
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log  command: $command\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log  command: $command\n";}
+  LOG->autoflush;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}

@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: multi_real</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_real</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/multi_real.c"><i>multi_real.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  multi_real - This program is used to resample a selected region
+  of a real-valued image. Both decimation and oversampling are
+  supported.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>multi_real &lt;real_input &gt; &lt;OFF_par_in &gt;
+  &lt;real_output&gt; &lt;OFF_par_out&gt; [rlks] [azlks] [loff]
+  [nlines] [roff] [nsamp]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;real_input&gt;</td>
+
+      <td>input real image file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par_in&gt;</td>
+
+      <td>interferogram/offset parameter file for input image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;real_output&gt;</td>
+
+      <td>output multi-look or interpolated real data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par_out&gt;</td>
+
+      <td>interferogram/offset parameter file for output, use
+      existing parameter file if available</td>
+    </tr>
+
+    <tr>
+      <td>[rlks]</td>
+
+      <td>number of range looks, values &lt; -1, interpreted as an
+      image magnification factor (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[azlks]</td>
+
+      <td>number azimuth looks, values &lt; -1, interpreted as an
+      image magnification factor (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>line offset to starting line (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines (default=0, to end of file)</td>
+    </tr>
+
+    <tr>
+      <td>[roff]</td>
+
+      <td>offset to starting range sample (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[nsamp]</td>
+
+      <td>number of range samples to extract (default=to end of
+      line)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  Average and decimate a complex correlation file by a factor of
+  2:<br>
+  <samp>multi_real 8560_8059.cc 8560_8059.off 8560_8059_2.cc
+  8560_8059_2.off 2 2</samp></p>
+
+  <p>Oversample an unwrapped phase file by a factor of 2:<br>
+  <samp>multi_real 8560_8059.unw 8560_8059.off unw_2.unw unw_2.off
+  -2 -2</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>multi_real</em> extracts a region from a real-valued data
+  file and averages the data using the <em>rlks</em> and
+  <em>azlks</em> parameters defined on the command line. If the
+  number of range and azimuth looks is set to 1, then the desired
+  region is extracted and the values are not altered. If the output
+  image is decimated, averaging of the data is performed to reduce
+  noise, using <em>rlks</em> samples in range and <em>azlks</em>
+  azimuth samples for each output sample.</p>
+
+  <p>Alternately, the program can be used to oversample a segment
+  of an image with the magnification factors specified on the
+  command line. These integer factors are given as negative rather
+  than positive values for the <em>rlks</em> and <em>azlks</em>
+  parameters. Interpolation in one dimension and decimation in the
+  other is not permitted. Bilinear interpolation is used to
+  resample the data.</p>Normally a new parameter file describing
+  the processed output image geometry is created. When
+  interpolating data however, the program first checks if there is
+  an existing parameter file. If it exists is is used to determine
+  the size of the output image to ensure that the oversampled
+  images have the same geometry as other data sets prior to
+  averaging and subsampling. In the case of an existing parameter
+  file, the parameters <em>loff</em>, <em>nlines</em>,
+  <em>roff</em>, and <em>nsamp</em> must all be default values.
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-Nov-2000.</p>
+</body>
+</html>

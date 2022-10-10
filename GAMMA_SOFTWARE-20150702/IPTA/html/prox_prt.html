@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: prox_prt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>prox_prt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/prox_prt.c">prox_prt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  prox_prt - print data stack elements close to a particular
+  location to ASCII file</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>prox_prt &lt;plist&gt; &lt;pmask&gt; &lt;pdata&gt;
+  &lt;cr&gt; &lt;cl&gt; &lt;dr&gt; &lt;dl&gt; &lt;np_max&gt;
+  &lt;type&gt; [output] [rec_num] [n_rec]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;cr&gt;</td>
+
+        <td>area center range coordinate (beginning with
+        0)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;cl&gt;</td>
+
+        <td>area center azimuth line number (beginning with
+        0)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;dr&gt;</td>
+
+        <td>area range search width (cr-dr,cr+dr), enter - for the
+        entire image width</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dl&gt;</td>
+
+        <td>area azimuth line number search window (cl-dl,cl+dl),
+        enter - for all lines</td>
+      </tr>
+
+      <tr>
+        <td>&lt;np_max&gt;</td>
+
+        <td>maximum number of nearest points to include, enter -
+        for all</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>data type (0:fcomplex 1:scomplex 2:float 3:int 4:short
+        5:byte 7:position 8:coordinates(int))</td>
+      </tr>
+
+      <tr>
+        <td>[output]</td>
+
+        <td>(output) ascii file (enter - for output to stdout)</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>starting record number (default=1, starting with
+        1)</td>
+      </tr>
+
+      <tr>
+        <td>[n_rec]</td>
+
+        <td>number of records to display (default= to end of
+        stack)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>prox_prt testsite.plist testsite.pmask testsite.punw 214
+  712 50 250 20 2 testsite.unw.txt</samp></p>
+
+  <p>Reads the input point list, searches the 20 valid points which
+  are closest to the indicated coordinate, and writes out the
+  corresponding values from the input point data stack to the
+  output ascii file.</p>
+
+  <p><samp>prox_prt testsite.plist testsite.pmask testsite.punw 214
+  712 50 250 20 2 - 1 25</samp></p>
+
+  <p>Reads the input point list, searches the 20 valid points which
+  are closest to the indicated coordinate, and writes out the
+  corresponding values of records 1 to 25 from the input point data
+  stack to standard output.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code prox_prt.c in ./IPTA/src, executable version prox_prt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  prox_prt extracts values of points close to an indicated
+  coordinate from a point data stack and writes these out to a text
+  file or standard output.</p>
+
+  <p>For the center of the search the range and azimuth coordinate
+  (relative to the reference SLC geometry) are indicated. The
+  search area can further be limited by indicating a maximum
+  distance in range pixels and azimuth lines.</p>
+
+  <p>prox_prt searches all valid points of the input point list in
+  the indicated search area, orders these by increasing distance
+  from the area center, and determines the nearest points up to the
+  indicated maximum number.<br></p>
+
+  <p>The optional mask file indicates for each point if it is valid
+  (1, i.e. considered) or not volid (0, excluded).</p>
+
+  <p>For these closest points the data values are extracted from
+  the indicated records of the point data stack and written out to
+  an ascii file or standard output. The point indices begin with 0.
+  Point coordinates are specified such that the x and y position
+  coordinates begin with 0.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 17-Apr-2003.</p>
+</body>
+</html>

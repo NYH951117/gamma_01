@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: ph_coh_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>ph_coh_pt.c</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ph_coh_pt.c">ph_coh_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ph_coh_pt - estimate temporal phase coherence for complex or
+  unwrapped phase interferograms</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ph_coh_pt &lt;plist&gt; &lt;pmask&gt; &lt;pres&gt;
+  &lt;pccp&gt; [type]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pres&gt;</td>
+
+        <td>(input) residual phase point data stack (float or
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pccp&gt;</td>
+
+        <td>&nbsp;(output) phase coherence (float)</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type (0:fcomplex&nbsp; 2:float, default -:
+        float)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ph_coh_pt plist pmsk1 pres3 pccp3
+  2&nbsp;<br></samp></p>determines phase coherence using temporal
+  phase history of the residual phase for each point in the
+  stack.<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code ph_coh_pt in ./IPTA/src, executable version ph_coh_pt
+  ./IPTA/bin</p><strong>DESCRIPTION</strong><br>
+  ph_coh_pt is used estimate the phase coherence of a set of phase
+  values. These phases can be stored &nbsp;either as float data
+  values or as the<br>
+  phase of a complex data vector where phase = cpx_exp(imag/real).
+  &nbsp;The phase coherence is defined as<br>
+  <br>
+  ph_coh = 1/N * SUM&nbsp;cexp(-i*(phase_measured_i -
+  phase_model)<br>
+  <br>
+  where the sum is over the set of &nbsp;measurements for each
+  point. The input phase stack whould be the residual phase after
+  all modelled atmosphere and and deformation signal have<br>
+  been subtracted. Since the deformation signal consists of both
+  linear and non-linear components, the phase coherence will be
+  dependent on how much of the residual phase is considered as
+  non-linear deformation<br>
+  by the temporal and spatial filters that have been applied.<br>
+  <br>
+  The phase coherence can be evaluated both for unwrapped (float
+  format) or wrapped phase (fcomplex format).
+
+  <p><strong>SEE ALSO</strong><br>
+  cct_pt.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 7-Jul-2005.
+</body>
+</html>

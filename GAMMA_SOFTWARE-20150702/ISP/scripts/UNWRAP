@@ -1,0 +1,153 @@
+#! /bin/csh -fe
+if ($#argv < 7) then
+  echo "UNWRAP: unwrap phase with using parameters from the ISP interferogram parameter file 8-May-2000 clw"
+  echo ""
+  echo "usage: UNWRAP <interf> <cc> <pwr> <unwrap> <flag> <width> <lines> [corr_thr] [pwr_thr] [r_init] [az_init] [r1] [r2] [l1] [l2]"
+  echo "       interf           interferogram filename  (*.int, *.flt)"
+  echo "       cc               correlation filename (*.cc)"
+  echo "       pwr              intensity image (*.pwr, *.mli)"
+  echo "       unwrap           unwrap output file (*.unw)"
+  echo "       flag             unwapping flag file (*.flag)"
+  echo "       width            interferogram width"
+  echo "       lines            number of interferogram lines"
+  echo "       corr_thr         threshold for correlation in the unwrapping mask (default=.3)"
+  echo "       pwr_thr	        intensity threshold for phase unwrapping neutrons, multiples of average (default = 6.)"  
+  echo "       r_init           range seed location in the interferogram"
+  echo "       az_init          azimuth seed location in the interferogram"
+  echo "       r1               starting range sample offset to unwrap"
+  echo "       r2               ending range sample offset to unwrap"
+  echo "       l1		starting line offset to unwrap"
+  echo "       l2               ending line offset to unwrap\n"
+  exit
+endif
+
+set TREE = tree_cc
+set RESIDUE = residue
+
+set CORR_THR = .7
+set MAX_BRANCH = 32
+set NTHR = 6.0
+
+set w1 = $6
+set nls = $7
+set nrb =  0
+set nrps = $w1
+
+echo interferogram width, '#'lines: $w1 $nls
+echo offset to first interferogram pixel, '#'interferogram pixels: $nrb $nrps
+
+set r1 = $nrb
+set r2 = `echo $nrb $nrps 1|awk '{print $1+$2-$3}'`
+set l1 = 0
+set l2 = `echo $nls 1 0|awk '{print $1-$2-$3}'`
+
+set INTF = $1
+set CCF = $2
+set PWR1F = $3
+set NTHR
+set UNWF = $4
+set FLAGF = $5
+
+if ($#argv >= 8) set CORR_THR = $8
+if ($#argv >= 9) set NTHR = $9
+
+echo ""
+echo "low correlation threshold:    $CORR_THR"
+echo "neutron intensity threshold:  $NTHR"
+echo "maximum tree branch length:   $MAX_BRANCH"
+echo ""
+
+if ($#argv >= 10) then
+  set R_SEED = $10
+  echo "range seed location:   $R_SEED"
+endif
+
+if ($#argv >= 11) then
+  set AZ_SEED = $11
+  echo "azimuth seed location: $AZ_SEED"
+endif
+
+if ($#argv >= 12) then
+  set r1 = $12
+  echo "starting pixel range offset: $r1"
+endif
+
+if ($#argv >= 13) then
+  set r2 = $13
+  echo "ending pixel range offset:   $r2"
+endif
+
+if ($#argv >= 14) then
+  set l1 = $14
+  echo "starting line offset: $l1"
+endif
+
+if ($#argv >= 15) then
+  set l2 = $15
+  echo "ending line offset:   $l2"
+endif
+
+if (!(-r $CCF)) then
+  echo ""
+  echo "ERROR: correlation file does not exist: $CCF"
+  echo ""
+  exit(-1)
+endif
+
+if (!(-r $PWR1F)) then
+  echo ""
+  echo "ERROR: intensity image file file does not exist: $PWR1F"
+  echo ""
+  exit(-1)
+endif
+
+rm -f $FLAGF $UNWF
+
+echo ""
+echo "corr_flag $CCF $FLAGF $w1 $CORR_THR" 
+corr_flag $CCF $FLAGF $w1 $CORR_THR 
+
+echo ""
+echo "$RESIDUE $INTF $FLAGF $w1"
+$RESIDUE $INTF $FLAGF $w1 
+
+echo ""
+echo "neutron $PWR1F $FLAGF $w1 $NTHR"
+neutron $PWR1F $FLAGF $w1 $NTHR
+
+echo "$TREE $FLAGF $w1 $MAX_BRANCH $r1 $r2 $l1 $l2" 
+$TREE $FLAGF $w1 $MAX_BRANCH $r1 $r2 $l1 $l2 
+
+echo ""
+if ($#argv >= 9)then
+  echo "grasses $INTF $FLAGF $UNWF $w1 $r1 $r2 $l1 $l2 $R_SEED $AZ_SEED"
+  grasses $INTF $FLAGF $UNWF $w1 $r1 $r2 $l1 $l2 $R_SEED $AZ_SEED
+else
+  echo "grasses $INTF $FLAGF $UNWF $w1 $r1 $r2 $l1 $l2"
+  grasses $INTF $FLAGF $UNWF $w1 $r1 $r2 $l1 $l2
+endif
+
+echo ""
+echo "rasrmg $UNWF $PWR1F $w1 1 1 0 1 1 .333"
+rasrmg $UNWF $PWR1F $w1 1 1 0 1 1 .333
+
+echo ""
+echo "rastree $FLAGF $UNWF $INTF $w1 1 0 1.0 $FLAGF.ras"
+rastree $FLAGF $UNWF $INTF $w1 1 0 1.0 $FLAGF.ras
+
+echo ""
+echo "rastree $FLAGF $UNWF $INTF $w1 1 0 .3333  $FLAGF"2.ras""
+rastree $FLAGF $UNWF $INTF $w1 1 0 .3333 $FLAGF'2.ras'
+
+echo ""
+echo "interferogram file:        $INTF"
+echo "intensity file from SLC-1: $PWR1F"
+echo "correlation file:          $CCF"
+echo "unwrapping flag file:      $FLAGF"
+echo "unwrapped interferogram:   $UNWF"
+echo "SUN raster image of flag file (phase scale 1.00): $FLAGF.ras"
+echo "SUN raster image of flag file (phase scale .333): $FLAGF"2.ras""
+echo ""
+
+exit(0)
+

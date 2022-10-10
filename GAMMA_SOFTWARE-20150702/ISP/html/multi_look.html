@@ -1,0 +1,146 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: multi_look</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_look</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/multi_look.c"><i>multi_look.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  multi_look - Generates multi-look intensity image from SLC image
+  in either fcomplex or scomplex format SLC</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>multi_look &lt;SLC&gt; &lt;SLC_par&gt; &lt;MLI&gt;
+  &lt;MLI_par&gt; &lt;rlks&gt; &lt;azlks&gt; [lbegin] [nlines]
+  [scale] [exp]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC&gt;</td>
+
+      <td>(input) SLC image file (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) SLC parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI&gt;</td>
+
+      <td>(output) MLI image file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_par&gt;</td>
+
+      <td>(output) Multi Look Intensity (MLI) image parameter
+      file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rlks&gt;</td>
+
+      <td>range looks for multi-looking</td>
+    </tr>
+
+    <tr>
+      <td>&lt;azlks&gt;</td>
+
+      <td>azimuth looks for multi-looking</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>offset to starting line in the input data
+      (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of SLC lines to process (default=to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[scale]</td>
+
+      <td>scale factor for output MLI (default = 1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[exp]</td>
+
+      <td>exponent for the output MLI (default = 1.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>multi_look 19960421.slc 19960421.slc.par 19960421.mli
+  19960421.mli.par 1 5</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>multi_look</em> reads the complex valued input SLC image and
+  generates a real valued multilook intensity image (MLI). A new
+  parameter file to characterize the file dimension and geometry of
+  the MLI image is also created. The number of range and azimuth
+  looks used in the multi-looking are specified on the command line
+  and the offset to the starting line and number of input lines can
+  be specified.</p>
+
+  <p>The main use of <em>multi_look</em> is in the interferometric
+  processing with registered SLC images. In this case the SLC are
+  first registered, then the interferogram is generated using the
+  program <a href="SLC_intf.html">SLC_intf</a>. In this case the
+  multi-look intensity images are created using
+  <em>multi_look.</em> In order to obtain multi-look intensity
+  images which are registered to the complex interferogram the
+  number of range and azimuth looks, the starting line, and the
+  number of lines have to set to the same values as used in the
+  calculation of the interferogram.</p>
+
+  <p><em>multi_look</em> take into account SLC line headers (as
+  indicated in the SLC parameter file. The output multi-look
+  intensity image has no line header. The output MLI may be scaled
+  using a command line parameter. A scale factor 1.e-06 is used to
+  generate multi-look images for MSP processed radiometrically
+  calibrated SLC images in short integer format. The user also has
+  the option to apply an exponent that is other than 1.0 to the
+  output values. An exponent of 0.5 will produce output values that
+  are proportional to the image magnitude rather than the image
+  intensity.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_intf.html">SLC_intf</a>, <a href=
+  "multi_real.html">multi_real</a>, <a href=
+  "multi_cpx.html">multi_cpx</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Jul-2007.</p>
+</body>
+</html>

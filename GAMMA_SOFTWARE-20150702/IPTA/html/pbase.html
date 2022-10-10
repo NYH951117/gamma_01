@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pbase</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>pbase</h2>
+
+  <p>In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>pbase is a stack of baseline parameters. For each record
+  defined in an itab, respectively for each record of a stack of
+  interferometric data, the stack of baseline parameters contains
+  the baseline information.</p>
+
+  <p>The baseline parameters are identical to the one of the
+  conventional baseline parameter file.</p>
+
+  <p>A binary format is used for pbase.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

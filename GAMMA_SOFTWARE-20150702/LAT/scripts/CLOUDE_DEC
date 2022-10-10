@@ -1,0 +1,130 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     CLOUDE_DEC: script to run LAT program sequence to               ###
+###                 perform Cloude decomposition                        ###                                
+###########################################################################
+### version 1.2 - ms  20130705                                          ###
+###                                                                     ###
+###########################################################################
+
+echo " "
+echo "CLOUDE_DEC: Cloude target decomposition from elements of scattering and coherency matrix"
+echo " "
+
+
+if ($#argv < 9)then
+  echo " "
+  echo "usage: CLOUDE_DEC <SLC_HH> <SLC_HV> <SLC_VV> <T12> <T13> <nlines> <ctd>"
+  echo "  "
+  echo "       SLC_HH      (input) SLC HH-polarization (FCOMPLEX)"
+  echo "       SLC_HV      (input) SLC HV-polarization (FCOMPLEX)"
+  echo "       SLC_VV      (input) SLC VV-polarization (FCOMPLEX)"
+  echo "       T12         (input) T12 element of coherency matrix (FCOMPLEX)"
+  echo "       T13         (input) T13 element of coherency matrix (FCOMPLEX)"
+  echo "       nlines      (input) width of input SLC"
+  echo "       ctd         (output) Cloude target decompostion file name, e.g. date or orbit number"
+  echo "       rlks        Number of looks in range"
+  echo "       azlks       Number of looks in azimuth"
+  echo " "
+  exit
+endif
+
+
+set slc_hh0 = $1
+set slc_hv0 = $2
+set slc_vv0 = $3
+set t12 = $4
+set t13 = $5
+set nlines = $6
+set ctd = $7
+set rlks = $8
+set azlks = $9
+
+echo " "
+echo " "
+
+# Multi-look
+set slc_hh = slc_hh_tmp
+set slc_hv = slc_hv_tmp
+set slc_vv = slc_vv_tmp
+
+
+echo "cpxlks $slc_hh0 $slc_hh $nlines $rlks $azlks"
+nice cpxlks $slc_hh0 $slc_hh $nlines $rlks $azlks
+echo "cpxlks $slc_hv0 $slc_hv $nlines $rlks $azlks"
+nice cpxlks $slc_hv0 $slc_hv $nlines $rlks $azlks
+echo "cpxlks $slc_vv0 $slc_vv $nlines $rlks $azlks"
+nice cpxlks $slc_vv0 $slc_vv $nlines $rlks $azlks
+
+# First component = sqrt(2 A0) = 1/2 |Sxx+Syy|
+echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1"
+nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1
+echo "cpx_to_real tmp1 tmp2 $nlines 3"
+nice cpx_to_real tmp1 tmp2 $nlines 3
+echo "lin_comb 1 tmp2 0 0.707 $ctd.ctd_1.mag $nlines - - 1 1 1"
+nice lin_comb 1 tmp2 0 0.707 $ctd.ctd_1.mag $nlines - - 1 1 1
+
+/bin/rm	tmp*	
+
+echo " "
+echo "The magnitude of the first component $ctd.ctd_1.mag has been generated - FLOAT format"
+echo " "
+
+# Second component 
+
+# Magnitude = sqrt(B0+B) = 1/2 |Sxx-Syy|
+echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1"
+lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1
+echo "cpx_to_real tmp1 tmp2 $nlines 3"
+nice cpx_to_real tmp1 tmp2 $nlines 3
+echo "lin_comb 1 tmp2 0 0.707 $ctd.ctd_2.mag $nlines - - 1 1 1"
+nice lin_comb 1 tmp2 0 0.707 $ctd.ctd_2.mag $nlines - - 1 1 1
+
+/bin/rm	tmp*	
+
+echo " "
+echo "The magnitude of the second component $ctd.ctd_2.mag has been generated - FLOAT format"
+echo " "
+
+
+# Phase = -phase of T12
+echo "cpx_to_real $t12 tmp1 $nlines 4"
+nice cpx_to_real $t12 tmp1 $nlines 4
+echo "lin_comb 1 tmp1 0 -1 $ctd.ctd_2.pha $nlines - - 1 1 1"  
+nice lin_comb 1 tmp1 0 -1 $ctd.ctd_2.pha $nlines - - 1 1 1
+
+/bin/rm	tmp*	
+
+echo " "
+echo "The phase of the first component $ctd.ctd_2.pha has been generated - FLOAT format"
+echo " "
+
+# Third component
+
+# Magnitude = sqrt(B0+B) = 1/2 |Sxx-Syy|
+echo "cpx_to_real $slc_hv tmp1 $nlines 3"
+nice cpx_to_real $slc_hv tmp1 $nlines 3
+echo "lin_comb 1 tmp1 0 1.414 $ctd.ctd_3.mag $nlines - - 1 1 1"
+nice lin_comb 1 tmp1 0 1.414 $ctd.ctd_3.mag $nlines - - 1 1 1
+
+/bin/rm	tmp*	
+
+echo " "
+echo "The magnitude of the third component $ctd.ctd_3.mag has been generated - FLOAT format"
+echo " "
+
+# Phase = -phase of T12
+echo "cpx_to_real $t13 tmp1 $nlines 4"
+nice cpx_to_real $t13 tmp1 $nlines 4
+echo "lin_comb 1 tmp1 0 -1 $ctd.ctd_3.pha $nlines - - 1 1 1"
+nice lin_comb 1 tmp1 0 -1 $ctd.ctd_3.pha $nlines - - 1 1 1
+
+/bin/rm	*tmp*	
+
+echo " "
+echo "The phase of the third component $ctd.ctd_3.pha has been generated - FLOAT format"
+echo " "
+
+
+echo End of CLOUDE_DEC
+

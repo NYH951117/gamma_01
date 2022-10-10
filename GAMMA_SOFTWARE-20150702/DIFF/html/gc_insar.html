@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw020924 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: gc_insar</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>gc_insar</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/gc_insar.c">gc_insar.c</a></i></p><strong>NAME</strong><br>
+
+  gc_insar - Generate lookup table mapping an interferometrically
+  derived&nbsp; height map in SAR geometry &nbsp;into a map
+  geometry&nbsp;
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gc_insar &lt;SLC_par&gt; &lt;ISP_par&gt;
+  &lt;hgt&gt;&nbsp;&lt;DEM_par&gt;
+  &lt;lookup_table&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file (reference geometry)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ISP_par&gt;</td>
+
+        <td>(input) ISP parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;hgt&gt;</td>
+
+        <td>(input) height map in SAR coordinates (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM parameter file defining region of the
+        output map</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lookup_table&gt;</td>
+
+        <td>(output) geocoding lookup table in SAR geometry
+        (containing corresponding map coordinates) (fcomplex)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gc_insar 19960421.par 19960421_19960422.off
+  19960421_19969422.hgt</samp> <samp>dv.utm.par
+  8560_8059.rdc_to_utm</samp></p>
+
+  <p>Creates geocoding lookup table based on height map in SAR
+  geometry (which was derived with SAR interferometry).</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">gc_insar</span> calculates a
+  complex valued transformation lookup table for terrain corrected
+  geocoding. The calculation is based on heights in (range-Doppler)
+  SAR coordinates (as retrieved from SAR interferometry).&nbsp;</p>
+
+  <p>The transformation lookup table describes the geometric
+  transformation between images in SAR (range-Doppler) coordinates
+  and a map projection. The complex valued lookup table has the
+  dimension of the images in the SAR coordinates. Each complex
+  value contains the corresponding map coordinates with the real
+  part corresponding to the real valued column (corresponding to
+  easting or longitude) and the imaginary part corresponding to the
+  real valued row number (corresponding to northing or
+  latitude).</p>
+
+  <p>The SAR image geometry is defined by the SLC parameter file
+  and the ISP/offset parameter file. The map projection is defined
+  in the DEM/MAP parameter file which can be created using the
+  program <a href="create_dem_par.html">create_dem_par</a>.
+  &nbsp;The DEM_par defines the map projection, corner coordinates,
+  posting, and map dimensions in northing and easting.</p>
+
+  <p>The input height map used is typically derived from the
+  unwrapped phase SAR interferogram. For data gaps (i.e. pixels
+  with NULL height value, which is 0.0) the transformation value is
+  set to (0.0, 0.0). The forward and backward geocoding programs
+  identify these negative row and column numbers as NO-DATA.&nbsp;
+  The consequence of such gaps is an increased spacing of the valid
+  data points used in the resampling and interpolation steps.</p>
+
+  <p>Notice that the geocoding lookup table calculated is based on
+  the available SAR geometry information. In particular the orbit
+  data is often not perfectly accurate, so that application of a
+  fine registration step is recommended.</p>
+
+  <p>Unlike <a href="gc_map.html">gc_map</a> no additional
+  parameters such as local incidence angle, projection angle (for
+  pixel size normalization), pixel size normalization factor,
+  zenith and orientation angle for local surface normal,
+  layover/shadow map is calculated from the height map and SAR
+  geometry are calculated.</p>
+
+  <p>The geocoding lookup table is used by the programs <a href=
+  "geocode.html">geocode</a> and <a href=
+  "geocode_back.html">geocode_back</a> for forward and backward
+  geocoding. The geocoding lookup table may be inverted using the
+  program <a href="gc_map_inversion.html">gc_map_inversion</a>.</p>
+
+  <p>For the generation of Geocoded Ellipsoid Corrected (GEC)
+  products the program <a href="gec_map.html">gec_map</a> with a
+  constant height value specified instead of the input DEM file can
+  be used. GEC geocoding does not require height information other
+  than the constant height value.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="geocode.html">geocode</a>, <a href=
+  "geocode_back.html">geocode_back</a>, <a href=
+  "gc_map_fine.html">gc_map_fine</a>, <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "gc_map_inversion.html">gc_map_inversion</a>, <a href=
+  "gc_map.html">gc_map</a>, <a href="gec_map.html">gec_map</a>,
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Mar-2007.
+</body>
+</html>

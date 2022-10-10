@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: image_stat</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>image_stat</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/image_stat.c">image_stat.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  image_stat - Calculate mean, standard deviation and number of
+  non-zero values for a rectangular region (float format)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>image_stat &lt;data&gt; &lt;width&gt; &lt;roff&gt;
+  &lt;loff&gt; &lt;nr&gt; &lt;nl&gt; &lt;report&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data&gt;</td>
+
+        <td>(input) text file containing list of names of
+        co-registered data sets&nbsp; in column 1 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>image width in range pixels</td>
+      </tr>
+
+      <tr>
+        <td>&lt;roff&gt;</td>
+
+        <td>pixel offset to start (enter- for default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;loff&gt;</td>
+
+        <td>line offset start (enter - for default: 0)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;nr&gt;</td>
+
+        <td style="vertical-align: top; height: 19.2px;">number of
+        range pixels (enter - for default: width - roff)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;nl&gt;</td>
+
+        <td style="vertical-align: top; height: 19.2px;">number of
+        lines to use (enter - for default: nl_file - loff)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;report&gt;</td>
+
+        <td style="vertical-align: top;">output text file (keyword:
+        value) format<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        keywords: file, mean, stdev, total_samples,
+        non_zero_samples, fractiont_valid)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>image_stat 19990915.mli 2456 100 200 300 400
+  stat.out<br></samp></p>
+
+  <p>calculates the image statistics in a specified region</p>
+
+  <p><strong>DESCRIPTION</strong><code><br></code> <span style=
+  "font-style: italic;">image_stat</span> is used to calculate the
+  mean and standard deviation of <span style=
+  "text-decoration: underline;">float format</span> data in a
+  rectangular window specified on the command line. The upper left
+  corner coordinates are specified by <span style=
+  "font-style: italic;">roff</span> and <span style=
+  "font-style: italic;">loff</span> parameters. The number of
+  pixels across and lines down are specified by the <span style=
+  "font-style: italic;">nr</span> and <span style=
+  "font-style: italic;">nl</span> parameters.&nbsp; The program
+  also counts the number of non-zero values in the window and
+  calculates the percentage of non-zero values.&nbsp; The output is
+  a report file that has <span style="font-style: italic;">keyword:
+  value pairs</span>&nbsp; as shown below:</p>
+
+  <p><code>data_file: 19990915.mli<br>
+  mean:&nbsp;&nbsp;&nbsp; 8.159940e-02<br>
+  stdev:&nbsp;&nbsp; 1.958567e-02<br>
+  total_samples: 120000<br>
+  non_zero_samples: 120000<br>
+  fraction_valid:&nbsp;&nbsp; 1.000000</code></p>
+
+  <p>One of the applications of this program is used to determine
+  the number of valid samples and the average value and standard
+  deviation in the overlap region of Sentinel-1 burst differential
+  interferograms.</p>An example of running the program is shown
+  below:
+
+  <p><code>image_stat 19990915.mli 2456 100 200 300 400
+  stat.out</code></p>
+
+  <p><code>*** Calculate mean, standard deviation and number of
+  non-zero values for a rectangular region (float format) ***<br>
+  *** Copyright 2014, Gamma Remote Sensing, v1.1 10-Dec-2014
+  ***<br>
+  data file: 19990915.mli<br>
+  line width (samples): 2456<br>
+  number of lines in the file: 2687<br>
+  range sample offset:&nbsp; 100&nbsp;&nbsp; number of samples:
+  300<br>
+  azimuth range offset: 200&nbsp;&nbsp; number of
+  lines:&nbsp;&nbsp; 400<br>
+  output report file: stat.out<br>
+  <br>
+  data_file: 19990915.mli<br>
+  mean:&nbsp;&nbsp;&nbsp; 8.159940e-02<br>
+  stdev:&nbsp;&nbsp; 1.958567e-02<br>
+  total_samples: 120000<br>
+  non_zero_samples: 120000<br>
+  fraction_valid:&nbsp;&nbsp; 1.000000<br>
+  <br>
+  user time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000<br>
+  system time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.000<br>
+  elapsed time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.050<br></code></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014<br>
+  &nbsp;<a href="charles_werner.html">CW</a> , last change
+  10-Dec-2014
+</body>
+</html>

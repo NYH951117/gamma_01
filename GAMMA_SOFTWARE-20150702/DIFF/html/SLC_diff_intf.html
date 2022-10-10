@@ -1,0 +1,248 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF/GEO Reference Manual: SLC_intf</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_diff_intf</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/SLC_diff_intf.c"><i>SLC_diff_intf.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>SLC_diff_intf</em> - Multi-look complex interferogram
+  generation from coregistered SLC data and a simulated
+  interferogram derived from a DEM.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_diff_intf &lt;SLC-1&gt; &lt;SLC-2R&gt;
+  &lt;SLC-1.par&gt; &lt;SLC-2R.par&gt; &lt;OFF_par&gt;
+  &lt;interf&gt; &lt;rlks&gt; &lt;azlks&gt; [loff] [nlines]
+  [sps_flg] [azf_flg] [rbw_min] [rp1_flg] [rp2_flg]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) single-look complex image 1 (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2R&gt;</td>
+
+        <td>(input) single-look complex image 2 coregistered to
+        SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(input) single-look complex image 2 coregistered to
+        SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sim_unw&gt;</td>
+
+        <td>(input) simulated unflattened and unwrapped
+        interferogram, same range and azimuth looks and dimensions
+        as the output interferogram (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;diff_int&gt;</td>
+
+        <td>(output) differential interferogram (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks for the output interferogram</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>number of azimuth looks for the simulated and output
+        interferogram</td>
+      </tr>
+
+      <tr>
+        <td>[sps_flg]</td>
+
+        <td>&nbsp;range spectral shift flag:<br>
+        &nbsp;&nbsp; 1: apply spectral shift filter (default)<br>
+        &nbsp;&nbsp; 0: do not apply spectral shift filter</td>
+      </tr>
+
+      <tr>
+        <td>[azf_flg]</td>
+
+        <td>azimuth common band filter flag:<br>
+        &nbsp; 1: apply azimuth common band filter (default)<br>
+        &nbsp; 0: do not apply azimuth common band filter</td>
+      </tr>
+
+      <tr>
+        <td>[rbw_min]</td>
+
+        <td>minimum range bandwidth fraction (0.1 --&gt;
+        1.0)(default:&nbsp; 0.250)</td>
+      </tr>
+
+      <tr>
+        <td>[rp1_flg]</td>
+
+        <td>SLC-1 range phase mode<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0: nearest approach
+        (zero-Doppler) phase<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: ref. function center
+        (Doppler centroid) (default)<br></td>
+      </tr>
+
+      <tr>
+        <td>[rp2_flg]</td>
+
+        <td>SLC-2 range phase mode<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: nearest approach (zero-Doppler
+        phase)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: ref. function center
+        (Doppler centroid) (default)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC_diff_intf&nbsp;19960421.rslc&nbsp;19960422.rslc&nbsp;19960421.rslc.par&nbsp;19960422.rslc.par&nbsp;19960421_19960422.off&nbsp;19960421_19960422.sim_unw&nbsp;19960421_19960422_sps.diff
+  1 5 1 1</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>SLC_diff_intf</em> reads the two co-registered,&nbsp; single
+  look complex SAR images SLC-1 and SLC-2R, the corresponding SLC
+  parameter files <em>SLC-1.par</em> and <em>SLC-2R.par</em> and
+  the ISP offset/processing parameter file
+  <em>OFF_par,&nbsp;</em>and a simulated unwrapped interferogram
+  and computes the differential multi-look interferogram.&nbsp; The
+  complex (normalized) interferogram is defined by:</p>
+
+  <p>complex interferogram = <span style=
+  "font-style: italic;">&lt;s1s2*&gt;/sqrt(&lt;s1s1*&gt;&lt;s2s2*&gt;</span>.</p>
+
+  <p><span style="font-style: italic;">s1</span> and <span style=
+  "font-style: italic;">s2</span> are the single look complex
+  values of SLC-1 and SLC-2, * stands for conjugate complex, i.e,
+  (a + jb)* = (a - jb),&nbsp;&lt; &gt; stands for the ensemble
+  average. For a multi-look interferogram pixel &lt; &gt; is
+  estimated by (coherent) averaging of the single look values. The
+  unwrapped phase provided in the <span style=
+  "font-weight: bold;">sim_unw</span> file&nbsp; is subtracted from
+  the SLC data prior to generation of the interferogram, and hence
+  prevents undersampling of the final interferogram. The simulated
+  interferometric phase data must have the same sample spacing and
+  dimensions as the output interferogram. This means that when the
+  ISP offset parameter file is created using the ISP program
+  <em>create_offset</em> , the number of range and azimuth looks in
+  the output interferogram must be specified on the command line.
+  This leads to significanlty higher correlation for scenes with
+  larger baseline and significant topographry.&nbsp;</p>
+
+  <p>The argument of the complex interferogram corresponds to the
+  interferometric phase. The magnitude of the complex interferogram
+  corresponds to the interferometric correlation derived from the
+  number of interferometric looks used in the multi-looking. Real
+  and imaginary values of the complex (normalized) interferogram
+  are written as output to the <span style=
+  "font-style: italic;">diff_int</span> file<span style=
+  "font-style: italic;">.</span></p>
+
+  <p>Range spectrum filtering is applied using the <span style=
+  "font-weight: bold;">sps_flg</span> command line option. This
+  filtering accounts for the shift of the ground reflectivity
+  spectrum&nbsp; induced by the difference in incidence angles
+  between SLC-2 and SLC-1. Only the range spectrum interval common
+  to the the two SLC images is retained. No multi-look intensity
+  images are produced from the two SLC images by <span style=
+  "font-style: italic;">SLC_diff_intf</span>. Coregistered
+  multi-look intensity images in the identical geometry as the
+  interferogram can be generated from the co-registered SLC images
+  using the program <a href="multi_look.html">multi_look</a>.</p>
+
+  <p>The user also has the option to apply azimuth common-band
+  filtering. The SLCs may have been acquired with different Doppler
+  centroids. This filtering step improves the correlation by
+  preserving on the common azimuth spectrum of the SLCs prior to
+  generating the inteferogram.</p>
+
+  <p>The recommended approach for resampling the SLCs to coregister
+  the data is to use the&nbsp; DIFF/GEO program <a href=
+  "SLC_interp_lt.html">SLC_interp_lt</a> &nbsp;that uses a lookup
+  table to resample the SLC images. After the initial resampling, a
+  refinement &nbsp;using measured offsets of the resampled image
+  and the reference is performed. The resampling lookup table is
+  created using the DIFF/GEO program <a href=
+  "rdc_trans.html">rdc_trans</a>.</p>
+
+  <p>Display of the images can be carried out by ISP programs for
+  complex and intensity data. Complex images can be displayed or
+  saved as SUN raster or BMP format files using the programs
+  <a href="ISP_display.html">dismph, dismph_pwr, rasmph,
+  rasmph_pwr</a>. Intensity images can be displayed using programs
+  <a href="ISP_display.html">dispwr, dis2pwr, raspwr</a>.</p>
+
+  <p><strong><span style="font-weight: normal;">The program also
+  has the option to perform azimuth common band filtering prior to
+  interferogram formation using the <span style=
+  "font-style: italic;">azf_flg</span> command line option. This
+  azimuth filtering retains only the common segment of the azimuth
+  image spectrum to optimize the interfeormetric
+  correlation.</span></strong></p>
+
+  <p><strong><span style="font-weight: normal;">SLC data can be
+  provided that follows either the zero-Doppler or squinted
+  (Doppler-centroid) range phase convention. In the zero-Doppler
+  convention the phase of the SLC pixels is proportional to the
+  slant range at closest approach of the SAR to the point whereas
+  in the Doppler centroid convention the phase is proportional
+  to&nbsp;range at the center of the synthetic aperture reference
+  function. In the reference function center phase convention the
+  range spectrum is centered about DC in the SLC image. The GAMMA
+  MSP produces &nbsp;SLC images using the ref. center phase
+  convention.</span></strong></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_interp_lt.html">SLC_interp_lt</a>, <a href=
+  "rdc_trans.html">rdc_trans</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change &nbsp;25-Apr-2007.
+</body>
+</html>

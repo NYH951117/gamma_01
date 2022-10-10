@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: pre_rc_JERS</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>pre_rc_JERS</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pre_rc_JERS.c">pre_rc_JERS.c</a></i></p>
+
+  <p><strong>NAME<br></strong> <em>pre_rc_JERS</em> - Prefilter and
+  range compression of JERS-1 raw data including RFI
+  suppression.</p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>pre_rc_JERS
+  &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;psd&gt; &lt;raw_data&gt;
+  &lt;rc_data&gt; [prefilt_dec] [kaiser] [filt_lm]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) MSP SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rspec&gt;</td>
+
+        <td>(input) range spectra data file for RFI
+        suppression</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input) uncompressed raw SAR signal data filename</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rc_data&gt;</td>
+
+        <td>(output) range compressed data filename</td>
+      </tr>
+
+      <tr>
+        <td>[prefilt_dec]</td>
+
+        <td>prefilter decimation factor (enter - for default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[kaiser]</td>
+
+        <td>range chirp Kaiser window parameter beta
+        (default=2.120, -30 dB sidelobes)</td>
+      </tr>
+
+      <tr>
+        <td>[filt_lm]</td>
+
+        <td>filter length multiplier (default FIR_lm=8) FIR_length
+        = FIR_lm *prefilt_dec + 1</td>
+      </tr>
+    </tbody>
+  </table><span style="font-weight: bold;"><br>
+  EXAMPLE</span><samp><br>
+  pre_rc_JERS JERS-1.par p19960421.slc.par 19960421.psd
+  19960421.raw 19960421.rc 5 0 16000 4000</samp>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <em>pre_rc_JERS</em> is similar to <a href=
+  "pre_rc.html">pre_rc</a>but also includes the capability to
+  suppress&nbsp;radio frequency interference (RFI). For JERS-1
+  there is also functionality to track the receiver gain and to
+  apply the inverse of the Sensitivity Time Control (STC) function.
+  &nbsp;PALSAR does not change the receiver gain along-track nor
+  does it apply an STC function. The along-track gain variations of
+  JERS-1 are related to the receiver&nbsp; automatic gain control
+  (AGC) that adjusts the gain for optimum SNR in the digitized
+  samples.&nbsp; RFI suppression uses the range spectra contained
+  in the file <em>*.psd</em> (calculated using <a href=
+  "rspec_JERS.html">rspec_JERS</a>) to notch the range reference
+  function spectrum, thereby suppressing narrow-band interference
+  that often occurs in L-Band data.</p>
+
+  <p>This program has the option to perform decimation in azimuth
+  (prefiltering) by applying a bandpass filter followed by
+  subsampling. This is useful for survey mode processing to
+  generate a "quicklook". Any integer decimation factor can be used
+  because. The filter is implemented with as an FIR filter in the
+  time-domain. The number of taps in the finite impulse response
+  filter determines how closely the azimuth filter approximates an
+  ideal response. Since the Doppler centroid varies in the
+  cross-track direction, somewhat better results may be obtained by
+  range compressing the entire data set followed by applying the
+  azimuth bandpass filter and decimation rather than filtering
+  prior to range compression. The program <a href=
+  "prefilt.html">prefilt</a> performs this function on the range
+  compressed data set.</p>
+
+  <p>Notice: Updates for the number of range samples, number of
+  offset lines, number of lines to process, and the swath extension
+  parameter values must occur before running program
+  <em>rspec_JERS</em>. If these values change, run
+  <em>rspec_JERS</em> prior to <em>pre_rc_JERS</em>.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "rspec_JERS.html">rspec_JERS</a> <a href="sar_par.html">Sensor
+  parameter file</a>, <a href="proc_par.html">MSP Processing
+  Parameter File</a>, <a href="prefilt.html">prefilt</a> .</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 12-Jun-2006.
+</body>
+</html>

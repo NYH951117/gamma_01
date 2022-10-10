@@ -1,0 +1,265 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: ISP offset/processing parameter
+  file: &lt;orbit&gt;.off</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ISP offset/processing parameter file:
+  &lt;date_date&gt;.off</h2>
+
+  <p><i>(text-file)</i></p>
+
+  <p><strong>NAME</strong><br>
+  &lt;date_date&gt;.off - contains parameter values used by the
+  <em>Interferometric SAR Processor ISP</em>. The ISP
+  offset/processing parameter file contains the information on the
+  co-registration of the SLC image pair, the image section to be
+  processed, and parameters used or determined during the
+  interferometric processing.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  Non-executable. May be created using create_offset.</p>
+
+  <p><strong>EXAMPLE</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>
+          <pre>
+<samp>
+GAMMA Interferometric SAR Processor (ISP) - Parameters associated
+with ISP processing and offsets between SLC image pair
+
+title:     Death Valley, 8059_8560, 5-look complex data
+initial_range_offset:                  -11
+initial_azimuth_offset:                  1
+slc1_starting_range_pixel:              12
+number_of_slc_range_pixels:           4900
+offset_estimation_starting_range:      128
+offset_estimation_ending_range:       4784
+offset_estimation_range_samples:        32
+offset_estimation_range_spacing:       146
+offset_estimation_starting_azimuth:    512
+offset_estimation_ending_azimuth:     4817
+offset_estimation_azimuth_samples:      16
+offset_estimation_azimuth_spacing:     270
+offset_estimation_window_width:         12
+offset_estimation_window_height:        12
+offset_estimation_threshhold:         3.00
+range_offset_polynomial:     -1.0508e+01  -3.6019e-04   9.8214e-05
+azimuth_offset_polynomial:    2.1188e+00  -9.8766e-05  -4.5460e-06
+slc1_starting_azimuth_line:            100
+interferogram_azimuth_lines:          2520
+interferogram_width:                  2450
+first_nonzero_range_pixel:               8
+number_of_nonzero_range_pixels:       2439
+interferogram_range_looks:               2
+interferogram_azimuth_looks:             2
+interferogram_range_pixel_spacing:       15.81184   m
+interferogram_azimuth_pixel_spacing:     39.96044   m
+resampled_range_pixel_spacing:            0.00000   m
+resampled_azimuth_pixel_spacing:          0.00000   m
+resampled_starting_ground_range:          0.00000   m
+resampled_pixels_per_line:               0
+</samp>
+</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>(Example represents state as it occurs after the
+  co-registration, interferogram generation and removal of the
+  phase trend, but before the derivation of the terrain heights.
+  Therefore, some values at the end of the file are not yet
+  determined (set to zero).</p>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong><br>
+  The formats are defined in ISP type definition file
+  <em>typedef_ISP.h</em>.<br>
+  <br>
+  <br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>char title[128]</td>
+
+        <td>ASCII string with title of the interferogram</td>
+      </tr>
+
+      <tr>
+        <td>int initr, initaz</td>
+
+        <td>initial slant range and azimuth offset estimates
+        (integer number of complex pixels). With an identical
+        object having the (slant range, azimuth) coordinates
+        (268,1805) in SLC-1 and (250,1930) in SLC-2 the offset
+        estimates are -18 and 125 for range and azimuth,
+        respectively.</td>
+      </tr>
+
+      <tr>
+        <td>int nofstr, npr:</td>
+
+        <td>Slant range of first range sample to be used for
+        interferogram, width of interferogram (number of samples in
+        slant range direction) to process.</td>
+      </tr>
+
+      <tr>
+        <td>int rstr, rend, nr:</td>
+
+        <td>Sampling for precision co-registration: starting range
+        sample, ending range sample, number of samples in range
+        direction (range values are relative to the selected
+        interferogram, i.e. for an interferogram with a width of
+        800 pixels starting at range pixel 1035 (relative to SLC-1)
+        the range interval (rstr,rend)=(50,750) is a reasonable
+        choice).</td>
+      </tr>
+
+      <tr>
+        <td>int azstr, azend, naz</td>
+
+        <td>Sampling for precision co-registration: starting
+        azimuth sample, ending azimuth sample, number of samples in
+        azimuth direction (azimuth values are relative to
+        SLC-1).</td>
+      </tr>
+
+      <tr>
+        <td>int rwin, azwin</td>
+
+        <td>search window size in range, azimuth pixels (centered
+        at initial offset estimate) used to estimate offset at each
+        sample.</td>
+      </tr>
+
+      <tr>
+        <td>double thres</td>
+
+        <td>fringe SNR threshold to save offset estimate or
+        discard.</td>
+      </tr>
+
+      <tr>
+        <td>double rpoly[MAR]</td>
+
+        <td>range offset as a bi-linear function of range and
+        azimuth. range coordinate is relative to first range pixel
+        of interferogram (nofstr). azimuth coordinate is relative
+        to SLC-1.</td>
+      </tr>
+
+      <tr>
+        <td>double azpoly[MAAZ]</td>
+
+        <td>azimuth offset as a bi-linear function of range and
+        azimuth. range coordinate is relative to first range pixel
+        of interferogram (nofstr). azimuth coordinate is relative
+        to SLC-1.</td>
+      </tr>
+
+      <tr>
+        <td>int lbegin, nls</td>
+
+        <td>starting azimuth in interferogram (relative to start of
+        SLC-1), number of (multi-look) interferogram lines.</td>
+      </tr>
+
+      <tr>
+        <td>int nr, nrb, nrps</td>
+
+        <td>Number of range pixels, range coordinate of first
+        non-zero interferogram pixel (relative to range of first
+        interferogram pixel), number of non-zero interferogram
+        pixels in range direction.</td>
+      </tr>
+
+      <tr>
+        <td>int rlks, azlks</td>
+
+        <td>number of interferometric looks in range and
+        azimuth.</td>
+      </tr>
+
+      <tr>
+        <td>double rps_int, azps_int</td>
+
+        <td>interferogram sample spacing (meters) in slant range
+        and azimuth direction</td>
+      </tr>
+
+      <tr>
+        <td>double rps_res, azps_res</td>
+
+        <td>true ground range and azimuth spacing (meters) in
+        resampled height map</td>
+      </tr>
+
+      <tr>
+        <td>double grg_start</td>
+
+        <td>starting ground range relative to satellite footpoint
+        at altitude=0.0m</td>
+      </tr>
+
+      <tr>
+        <td>int ngrg</td>
+
+        <td>number of (true ground range) samples in the cross
+        track direction.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;orbit&gt;.off - contains parameter values used by the
+  <em>Interferometric SAR Processor ISP</em>. The ISP
+  offset/processing parameter file contains the information on the
+  co-registration of the SLC image pair, the image section to be
+  processed, and parameters used or determined during the
+  interferometric processing. The size and location of the
+  interferogram are selected in &lt;orbit&gt;.off The number of
+  looks in azimuth and range direction used for the interferometric
+  processing are selected in &lt;orbit&gt;.off The bilinear offset
+  polynomial indicating the offset of SLC-2 relative to SLC-1 is
+  indicated in &lt;orbit&gt;.off (as determined by the
+  co-registration program). &lt;orbit&gt;.off - is generated
+  interactively using the <em>make_offset</em> program. Processing
+  related values are introduced later during the interferometric
+  processing. The formats used in &lt;orbit&gt;.off are defined in
+  the in ISP type definition file <em>typedef_ISP.h</em>. The
+  formats are also described in the interactive parameter selection
+  in the <em>make_offset</em> program.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The ISP offset/processing parameter file date1_date2.off may be
+  edited manually.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "make_offset.html">make_offset</a>, <a href="orbit.par.html">SLC
+  parameter file</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jun-2006.</p>
+</body>
+</html>

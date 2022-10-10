@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: neutron</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>neutron</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/neutron.c"><i>neutron.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  neutron - Reads an intensity image and generates neutrons based
+  upon intensity used for guiding the generation of branch cuts
+  (trees) in phase unwrapping.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>neutron &lt;intensity&gt; &lt;flagfile&gt; &lt;width&gt;
+  [n_thres] [ymin] [ymax]</b></code></p>
+
+  <table border="1">
+    <tr>
+      <td>intensity &gt;</td>
+    </tr>
+
+    <tr>
+      <td>intensity image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;flagfile&gt;</td>
+
+      <td>flag filename</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[n_thres]</td>
+
+      <td>neutron threshold in multiples of the average intensity
+      (default = <b>4</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>offset to starting azimuth row (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>offset to last azimuth row (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><samp>neutron 1352_1610.pwr1 1352_1610.flag 2500</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>neutron</em> reads an intensity image and uses this
+  information to generate neutrons to guide the generation of phase
+  unwrapping trees (branch cuts). A neutron is placed in the flag
+  file if the intensity is <em>n_thres</em> times the average image
+  intensity. Neutrons effectively reduce the size of the search
+  area around residues for generation of branches and creates a
+  dense network of branch cuts in the vacinity of actual residues.
+  In this way the maximum branch length is limited and greatly
+  reduces the number of phase unwrapping errors. Neutrons are
+  placed in the image based upon knowledge of probable paths for
+  branch cuts through areas of layover. Image pixels above a set
+  threshold are highly correlated with layover. Other programs,
+  <a href="corr_flag.html">corr_flag</a>, <a href=
+  "grasses.html">grasses</a>, <a href="tree_cc.html">tree_cc</a>,
+  will add further information to the flag file. For each pixel of
+  the interferogram a flag byte is stored. The meaning of the
+  individual bits in the flag bytes is explained in source code of
+  the phase unwrapping programs. The information contained in the
+  flag file can be displayed with the programs <a href=
+  "ISP_display.html">disflag</a> and <a href=
+  "ISP_display.html">rastree</a>.</p>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Jan-2000.</p>
+</body>
+</html>

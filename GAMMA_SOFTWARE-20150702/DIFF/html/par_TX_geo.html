@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF/GEO Reference Manual: par_TX_geo</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate ISP and DIFF/GEO parameter files and extract data
+  from for Terrasar-X GEC and EEC data products</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_TX_geo.c">par_TX_geo.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_TX_geo - Generate ISP SLC/MLI and DEM parameter files, and
+  image files for Terrasar-X GEC and EEC data</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_TX_geo &lt;annotation_XML&gt; &lt;GEOTIFF&gt;
+  &lt;MLI_par&gt; &lt;DEM_par&gt; &lt;GEO&gt;
+  &lt;pol&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;annotation_XML&gt;</td>
+
+      <td>(input) TerraSAR-X product annotation XML file provided
+      by DLR
+      (e.g.TSX1_SAR__MGD_SE___SL_S_SRA_20070803T175100_20070803T175102.xml)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;GEOTIFF&gt;</td>
+
+      <td>(input) MGD file in GEOTIFF format</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_par&gt;</td>
+
+      <td>(output) ISP SLC/MLI image parameter file (example:
+      yyyymmdd.mli.par</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_par&gt;</td>
+
+      <td>(output) DIFF/GEO DEM parameter file (example:
+      yyyymmdd_map.dem_par</td>
+    </tr>
+
+    <tr>
+      <td>&lt;GEO&gt;</td>
+
+      <td>(output) geocoded image data file (example:
+      yyyymmdd.geo)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pol&gt;</td>
+
+      <td>polarisation, e.g. HH, HV, VH or VV (default: first
+      polarisation found in the annotation XML file)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_TX_geo
+  TSX1_SAR__EEC_SE___HS_S_SRA_20070704T165948_20070704T165949.xml
+  IMAGE_HH_SRA_spot_042.tif 20070704.mli.par 20070704.dem_par
+  20070704.geo</samp><br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <strong>par_TX_geo</strong> reads a Terrasar-X EEC geocoded image
+  (e.g. IMAGE_HH_SRA_spot_042.tif) and the related annotation file
+  TSX1_SAR__*.xml produced by DLR. It generates both an ISP SLC/MLI
+  image parameter file (e.g. 20070704.mli.par) and a DIFF/GEO DEM
+  parameter file (e.g. 20070704.dem_par), and writes the geocoded
+  image (e.g. 20070704.geo. The ISP image parameter file contains
+  the data, polarization, date, and state vector information. The
+  DEM parameter file contains the image dimensions, sample spacing
+  and map projection parameters.</p>
+
+  <p>As polarisation the default value was chosen, i.e. it is
+  assumed that the polarisation corresponds to the first
+  polarisation in the XML annotation file.</p>
+
+  <p>The image is reformatted from amplitude, short integer to
+  intensity and floating point format. Absolute calibration is also
+  performed. For data acquired during the commissioning phase
+  (before 7 January 2008) an additional offset of 56 dB needs to be
+  added. This correction can be applied for example with the ISP
+  program radcal_MLI.</p>
+
+  <p>The default map projection for these products is either
+  Universal Transverse Mercator (UTM) or Polar Stereographic (PS).
+  Other projections are possible, but currently not supported. The
+  projection parameters and sample spacing are extracted from the
+  annotation file but are also provided in the GEOTIFF file.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DEM_par.html">DEM parameter file</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, awi, last change 28-May-2008.<br>
+</body>
+</html>

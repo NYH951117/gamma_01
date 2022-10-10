@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: SLC_cat</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_cat</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/SLC_cat.c"><i>SLC_cat.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_cat - Concatenate a pair of SLC images using 2-D SINC
+  interpolation<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_cat &lt;SLC-1&gt; &lt;SLC-2&gt; &lt;SLC1_par&gt;
+  &lt;SLC2_par&gt; &lt;OFF_par&gt; &lt;SLC-3&gt; &lt;SLC3_par&gt;
+  [dopflg][iflg]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) SLC-1 image (scomplex or fcomplex)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) SLC-2 image to be appended to SLC-1<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset parameter file containing offset
+        polynomials between SLC-1 and SLC-2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-3&gt;<br></td>
+
+        <td>(output) concatenated SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC3_par&gt;</td>
+
+        <td>(output) ISP image parameter file for concatenated
+        image<br></td>
+      </tr>
+
+      <tr>
+        <td>[dopflg]</td>
+
+        <td>Doppler flag:<br>
+        &nbsp;&nbsp; 0: ignore Doppler centroid information, assume
+        0 Doppler centroid<br>
+        &nbsp;&nbsp; 1: use Doppler centroid information for
+        interpolation (default)<br>
+        <br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[iflg]<br></td>
+
+        <td style="vertical-align: top;">interferogram flag:<br>
+        &nbsp; 0: check SLC data type (default)<br>
+        &nbsp; 1: force data type to be fcomplex as required when
+        concatenating single-look interferograms<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES<br></strong></p><code><span style=
+  "font-family: Courier New,Courier,monospace; color: rgb(31, 12, 251);">SLC_cat
+  slc/20110324T123632.slc slc/20110324T123637.slc
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off
+  cat_slc/20110324T123632.slc
+  cat_slc/20110324T123632.slc.par</span><br></code>
+
+  <p>Concatenate 2 SLCs and generate an output SLC. Use the offset
+  polynomial information in the OFF_par file to concatenate the
+  files. Use the doppler centroid information to perform the
+  interpolation.<br></p>
+
+  <p><strong>DESCRIPTION<br></strong><br>
+  <span style="font-style: italic;">SLC_cat</span> is a program to
+  concatenate 2 SLCs processed to the same doppler centroid. The
+  offset parameter file OFF_par is used to contain information on
+  spatial offset between the SLCs in both range and azimuth. The
+  program assumes that any phase discontinuity between the SLCs is
+  small.&nbsp; A 7 point SINC interpolator is used to resample the
+  SLC-2 into the geometry of SLC-1 using the offset polynomial
+  information contained in the OFF_par file. SLC-2 must have some
+  overlap with SLC-1.<br></p>
+
+  <p>SLC-2 nominally begins towards the end of SLC-1. The offset
+  between the SLCs should be estimated initially using the program
+  <a href="init_offset_orbit.html">init_offset_orbit</a>.&nbsp;
+  Then use <a href="offset_pwr.html">offset_pwr</a> and <a href=
+  "offset_fit.html">offset_fit</a> to determine the offset
+  polynomial between the SLCs. This last step is essential if the
+  <span style="font-style: italic;">azimuth_line_time</span> (time
+  interval between range lines) changes between SLC-2 and
+  SLC-1.&nbsp; The commands for concatenating a pair of TerraSAR-X
+  SLC data&nbsp; is shown below. Note that the SLC names have been
+  selected to include the time of day for the start of the SLC data
+  to differentiate the two SLCs in the track.&nbsp; The T delimeter
+  in the SLC file name seperates the day from the time of day in
+  UTC.<br></p><small><code style=
+  "color: blue; font-family: Courier New,Courier,monospace;">mkdir
+  cat_slc</code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <code style=
+  "color: blue; font-family: Courier New,Courier,monospace;">create_offset
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off &lt;
+  create_offset.in</code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <br>
+  <span style="font-family: Courier New,Courier,monospace;">#set
+  the location to estimate offset in last 1/8 SLC section of SLC-2
+  at line 24806</span><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <code style=
+  "font-family: Courier New,Courier,monospace;"><span style=
+  "color: blue;">init_offset_orbit slc/20110324T123632.slc.par
+  slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off 8346
+  24806.25<small><br></small><span style=
+  "color: rgb(0, 0, 7);">initial range offset: 0.0000&nbsp;&nbsp;
+  initial azimuth offset:
+  -16077.0871</span></span></code><code style=
+  "font-family: Courier New,Courier,monospace;"><br></code><br style="font-family: Courier New,Courier,monospace;">
+
+  <code style=
+  "font-family: Courier New,Courier,monospace; color: blue;">init_offset
+  slc/20110324T123632.slc slc/20110324T123637.slc
+  slc/20110324T123632.slc.par slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off 1 1 8346 24806.25 - -
+  7 512 512 1<br></code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <code style="font-family: Courier New,Courier,monospace;">offset
+  estimate range:&nbsp;&nbsp;&nbsp;&nbsp; -0.00194&nbsp;&nbsp;
+  azimuth: -16077.07295<br>
+  correlation SNR:&nbsp;&nbsp; 1401.461<br>
+  output ISP offset parameter file:
+  cat_slc/20110324T123632_20110324T123637.off<br>
+  <br style="font-family: Courier New,Courier,monospace;"></code>
+  <code style=
+  "font-family: Courier New,Courier,monospace;"><span style=
+  "color: blue;">offset_pwr slc/20110324T123632.slc
+  slc/20110324T123637.slc slc/20110324T123632.slc.par
+  slc/20110324T123637.slc.par
+  cat_slc/20110324T123632_20110324T123637.off
+  cat_slc/20110324T123632_20110324T123637.offs
+  cat_slc/20110324T123632_20110324T123637.snr</span></code><br style="font-family: Courier New,Courier,monospace;">
+
+  <br style=
+  "color: blue; font-family: Courier New,Courier,monospace;">
+  <code style=
+  "font-family: Courier New,Courier,monospace;"><span style=
+  "color: blue;">offset_fit
+  cat_slc/20110324T123632_20110324T123637.offs
+  cat_slc/20110324T123632_20110324T123637.snr
+  cat_slc/20110324T123632_20110324T123637.off
+  cat_slc/20110324T123632_20110324T123637.coffs - -
+  3</span></code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <br style="font-family: Courier New,Courier,monospace;">
+  <code style="font-family: Courier New,Courier,monospace;">final
+  range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00033&nbsp; -9.01314e-09&nbsp; -6.75986e-09</code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <code style="font-family: Courier New,Courier,monospace;">final
+  range offset poly. coeff. errors:&nbsp;&nbsp;
+  9.13611e-06&nbsp;&nbsp; 2.75036e-10&nbsp;&nbsp;
+  4.01921e-10</code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <br style="font-family: Courier New,Courier,monospace;">
+  <code style="font-family: Courier New,Courier,monospace;">final
+  azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -16077.08145&nbsp;&nbsp; 5.29725e-09&nbsp;&nbsp;
+  2.06473e-07</code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <code style="font-family: Courier New,Courier,monospace;">final
+  azimuth offset poly. coeff. errors:&nbsp;&nbsp;
+  1.31867e-05&nbsp;&nbsp; 3.96975e-10&nbsp;&nbsp;
+  5.80115e-10</code><br style=
+  "font-family: Courier New,Courier,monospace;">
+  <br style="font-family: Courier New,Courier,monospace;">
+  <code style="font-family: Courier New,Courier,monospace;">final
+  model fit std. dev. (samples) range:&nbsp;&nbsp; 0.0013&nbsp;
+  azimuth:&nbsp;&nbsp; 0.0019<br>
+  <br></code> <big>This analysis shows that there are a fixted
+  number of lines offset between SLC2 and SLC1. The script <a href=
+  "../../DIFF/html/SLC_cat_all.html">SLC_cat_all</a>&nbsp; located
+  in DIFF/scripts can be used to concatenate SLCs listed in two
+  SLC_tab files.<br>
+  <br>
+  This program can also be used to concatenate a pair of
+  interferograms if the geometry of the interferograms matches the
+  dimensions specified by the SLC/MLI parameter file. If a
+  multi-look interferogram has been generated, use the MLI
+  parameter files that describe the number of looks used to
+  generate the interferogram.&nbsp; In the case of concatenating
+  interferograms, set the <span style=
+  "font-style: italic;">dopflg</span> parameter to 0, to avoid
+  using the doppler centroid information of the SLCs.<br>
+  <br style="font-family: Courier New,Courier,monospace;">
+  </big></small> <strong>OPTIONS<br>
+  <br></strong> <strong style="font-weight: normal;">This program
+  can also be used to concatenate interferograms if the
+  interferogram is single-look with the same geometry as the SLC.
+  In this case it is necessary to set the <span style=
+  "font-style: italic;">iflg</span> command line parameter to 1
+  forcing the data type to be fcomplex.&nbsp;<br></strong>
+
+  <p><strong style="font-weight: normal;">The user can specify via
+  the <span style="font-style: italic;">dopflg</span> command-line
+  parameter to ingnore the Doppler centroid infromation when
+  interpolating data other tha SAR data. This is essential when
+  interpolating data that is not actually an SLC such as an
+  interferogram.</strong><br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a>,&nbsp; <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_fit.html">offset_fit</a>, <a href=
+  "../../DIFF/html/SLC_cat_all.html"><span style=
+  "text-decoration: underline;">SLC_cat_all</span></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="charles_werner.html">CW</a>, last change 2-Jul-2015
+</body>
+</html>

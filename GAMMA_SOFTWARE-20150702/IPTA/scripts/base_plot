@@ -1,0 +1,363 @@
+#!/usr/bin/perl
+use FileHandle;
+use List::Util qw[min max];
+
+$plt_flg = 0;
+$bpflg = 0;
+
+if (($#ARGV + 1) < 4){die <<EOS;}
+*** $0
+*** Copyright 2012, Gamma Remote Sensing, v1.0 5-Jul-2012 clw/uw ***
+*** Generate baseline plot and output file with perpendicular baselines and delta_T values using itab as input ***
+
+usage: $0 <SLC_tab> <SLC_par> <itab> <bperp_file> [plt_flg]
+
+    SLC_tab      (input) two column list of SLC filenames and SLC parameter filenames (including paths) (text)
+                   1. SLC filename  (includes path)
+                   2. SLC parameter filename (includes path)
+    SLC_par      (input) reference SLC parameter filename (include path)
+    itab         (input) interferogram table with 4 column format:
+                   1. row number in SLC_tab of the reference SLC
+		   2. row number in SLC_tab of SLC-2 of the interferogram
+		   3. line number in the itab
+		   4. flag used to indicate if this interferogram is used in IPTA processing (0:not used  1:used)
+    bperp_file   (output) list of dates, bperp and delta_T for interferogram pairs in the itab (text) (enter - for none)
+    pltflg       bperp plotting flag (enter - for default):
+                   0: none (default)
+                   1: output plot in PNG format
+                   2: screen output
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table SLC images and parameter files missing: $ARGV[0]\n";
+$orb1_par = $ARGV[1];
+-e $orb1_par or die "ERROR $0: reference rslc image parameter file does not exist: $orb1_par\n";
+$itab = $ARGV[2];
+$bpf = $ARGV[3];
+$log = "base_plot.log";
+
+if ($ARGV[3] ne "-"){
+  open(BP,">$bpf") or die "ERROR $0: cannot open output baseline file: $bpf\n";
+  $bpflg = 1;
+}
+$bp_plot = $itab.".png";
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+$time = localtime;
+print LOG "$0  @ARGV\n";
+print LOG "\n$0 processing started: $time \n";
+print LOG "reference SLC parameter file: $orb1_par\n";
+print LOG "input  ITAB file: $itab\n";
+print LOG "bperp text file:  $bpf\n\n";
+
+print "$0 processing started: $time \n";
+print "SLC_tab table SLC images and parameter files: $ARGV[0]\n";
+print "reference SLC parameter file: $orb1_par\n";
+print "input itab file:  $itab\n";
+print "bperp text file:  $bpf\n\n";
+
+if(($#ARGV + 1) >= 5){
+  if ($ARGV[4] ne "-"){
+    $plt_flg = $ARGV[4];
+  }
+  if ($plt_flg == 1){
+    print "output plot file: $bp_plot\n";
+  }
+}
+
+@date = extract_param($orb1_par,"date:");	   #determine image date
+@stime1 = extract_param($orb1_par, "start_time:"); #determine start time of SLC 1
+$st1 = $stime1[1];
+print "reference frame @date\n";
+$d1 = sprintf "%4d%02d%02d",$date[1],$date[2],$date[3];
+@sensor = extract_param($orb1_par,"sensor:");	#determine image format
+$s1 = $sensor[1];
+print "reference sensor: $s1\n\n";
+$mjd1 = julday($date[1],$date[2],$date[3]) + $st1/86400.;
+printf "reference SLC start time (s): %.5f\n",$st1;
+printf "reference SLC MJD: %.5f\n",$mjd1;
+$plt_title = "\"Radar Image Acquisitions\\nreference SLC: ".$ARGV[1]."\"";
+
+if($plt_flg > 0){
+  open (GNUPLOT, "|gnuplot");
+  print GNUPLOT <<EOPLOT;
+set title $plt_title font 'Verdana,16'
+set xdata time
+set timefmt "%Y%m%d"
+set format x "%b/%y"
+set xtics rotate by 270
+set grid
+set pointsize 1.1
+unset key
+set size 1,1
+set tmargin at screen 0.85
+set bmargin at screen 0.15
+set origin 0,0
+set ylabel "Perpendicular Baseline (m)" font 'Verdana,14'
+set xtics font 'Verdana,12'
+set ytics font 'Verdana,12'
+set mytics 5
+EOPLOT
+}
+
+$i = 1;
+LINE: while (<SLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+
+  $orb2_par = $fields[1];
+  @date = extract_param($orb2_par,"date:");	#determine image 2 date
+  @stime2 = extract_param($orb2_par, "start_time:"); #determine start time of image 2
+  $st2 = $stime2[1];
+  @sensor = extract_param($orb2_par,"sensor:");	#determine image format
+  $d2[$i-1] = sprintf "%4d%02d%02d",$date[1],$date[2],$date[3];
+
+  $mjd2 = julday($date[1],$date[2],$date[3]) + $st2/86400.;
+  $delta[$i-1] = $mjd2 - $mjd1;
+#  printf "SLC2 start time: %12.4f  MJD: %.5f\n", $st2, $mjd2;
+
+  $borb = `base_orbit $orb1_par $orb2_par base.out`;
+  print LOG "base_orbit $orb1_par $orb2_par base.out\n";
+  print LOG $borb, "\n";
+  @lines = split /^/m, $borb;	#split base_orbit output into lines
+
+  foreach $l1 (@lines) {	#examine each line
+    chomp $l1;
+    @tok = split /:/, $l1;	#break line on semicolon and check if "base perpendicular" is in th line
+    if ($tok[0] =~ m/baseline perpendicular/) {
+      $bperp[$i-1] = $tok[1];	#save bperp values
+      printf "%3d  ref.: %s  %s  Bperp:%10.4f  delta_T:%12.5f\n",$i, $d1, $d2[$i-1], $bperp[$i-1], $delta[$i-1];
+    }
+  }
+  $i++;
+}
+
+$nim = $i-1;
+print "\nnumber of SLC images: $nim\n";
+$ymin = min(@bperp);
+$ymax = max(@bperp);
+$xmin = min(@d2);
+$xmax = max(@d2);
+print "starting date: $xmin  ending date: $xmax\n";
+$jd_min = julday(substr($xmin,0,4),  substr($xmin,4,2), substr($xmin,6,2)) - 100;
+$jd_max = julday(substr($xmax,0,4),  substr($xmax,4,2), substr($xmax,6,2)) + 100;
+#print "starting julian day: $jd_min\n";
+#print "ending julian day:   $jd_max\n";
+
+($yr0, $m0, $day0) = caldat($jd_min);	#determine x axis plot range
+($yr1, $m1, $day1) = caldat($jd_max);
+$xmin = sprintf "%4d%02d%02d",$yr0,$m0,$day0;
+$xmax = sprintf "%4d%02d%02d",$yr1,$m1,$day1;
+print "starting plot date: $xmin  ending plot date: $xmax\n";
+
+$dy = $ymax - $ymin;	#set y axis plot range
+$ymin = $ymin - 0.05*$dy;
+$ymax = $ymax + 0.05*$dy;
+
+if($plt_flg == 1){
+  printf GNUPLOT "set terminal png size 800,600 font 'Verdana,14'\n";
+  printf GNUPLOT "set output \"$bp_plot\"\n";
+  print LOG "bperp plot file: $bp_plot \n";
+  print "bperp plot file:  $bp_plot\n";
+}
+
+if ($plt_flg == 2){	#plot to screen
+  my $os = $^O;
+  if ($os eq "darwin"){
+    printf GNUPLOT "set terminal aqua size 800 600 font 'Verdana,12'\n";
+  }
+  else {
+    printf GNUPLOT "set terminal wxt persist size 800,600 font 'Verdana,12'\n";
+  }
+}
+
+if($plt_flg >= 1){
+  printf GNUPLOT "set multiplot\n";
+  printf GNUPLOT "set xrange [\"$xmin\":\"$xmax\"]\n";
+  printf GNUPLOT "set yrange [$ymin:$ymax]\n";
+  printf GNUPLOT "plot '-' using 1:2:3 with labels right offset 0,.2 point tc lt 3 font 'Verdana,10'\n";
+
+  for ($j=0; $j < $nim; $j++) {
+    printf GNUPLOT "%s  %10.4f  %3d\n", $d2[$j], $bperp[$j], $j+1;
+  }
+
+  printf GNUPLOT "e\n";
+  printf GNUPLOT "set xrange [GPVAL_X_MIN:GPVAL_X_MAX]\n";
+  printf GNUPLOT "set yrange [GPVAL_Y_MIN:GPVAL_Y_MAX]\n";
+}
+
+$bp_ave = 0.0;
+$nbp = 0;
+open(ITAB,"<$itab") or die "ERROR $0: cannot output ITAB file: $itab\n";
+if($plt_flg >= 1){
+  printf GNUPLOT "plot '-' using 1:2:3 with labels right offset 0,.2 point lt 1 tc lt 1 font 'Verdana,10'\n";
+}
+
+$i = 1;
+LINE: while (<ITAB>) {	#read lines of processing list file
+  chomp $_;		#remove new line from record
+  next LINE if /^$/; 	#skip blank lines in processing list
+  next LINE if /^#/; 	#skip comments in processing list
+  @fields = split;	#extract the scene identifier and other parameters on the line if present
+  $kk = $fields[0];
+  $jj = $fields[1];
+  $nc = $fields[2];
+  $mask = $fields[3];
+  $k = $kk - 1;
+  $j = $jj - 1;
+
+  if($bpflg == 1){
+    printf BP "%4d  $d2[$k] $d2[$j]  %11.5f %11.4f %11.5f %11.5f %10.4f %10.4f\n",$nc,$bperp[$j] - $bperp[$k], $delta[$j] - $delta[$k], $delta[$k], $delta[$j], $bperp[$k], $bperp[$j];
+  }
+  printf "%4d  ref.: $d2[$k] $d2[$j] %3d  %3d Bperp:%10.4f  delta_T:%10.5f  MJD1:%11.4f  MJD2:%11.4f  Bperp1:%10.4f  Bperp2:%10.4f\n",$nc, $kk, $jj, $bperp[$j]-$bperp[$k], $delta[$j]-$delta[$k], $delta[$k], $delta[$j], $bperp[$k], $bperp[$j];
+  if($plt_flg >= 1){
+    printf GNUPLOT "%s  %10.4f  %3d\n", $d2[$k], $bperp[$k], $kk;
+    printf GNUPLOT "%s  %10.4f  %3d\n", $d2[$j], $bperp[$j], $jj;
+  }
+
+  $bp = abs($bperp[$j] - $bperp[$k]);
+  $dt = abs($delta[$j] - $delta[$k]);
+
+  if ($bp > 0.0){
+    if($nbp == 0){
+      $bperp_min = abs($bperp[$j] - $bperp[$k]);
+      $bperp_max = $bperp_min;
+      $dt_min = abs($delta[$j] - $delta[$k]); 
+      $dt_max = $dt_min;
+    }
+    else {
+      if ($bp > $bperp_max) {$bperp_max = $bp;}
+      if ($bp < $bperp_min) {$bperp_min = $bp;}
+      if ($dt > $dt_max) {$dt_max = $dt;}
+      if ($dt < $dt_min) {$dt_min = $dt;}
+    }
+    $bp_ave += abs($bperp[$j] - $bperp[$k]);
+    $nbp++;
+  }
+}
+
+if($plt_flg >= 1){	#plot lines from reference to each image that meets the criterea
+  printf GNUPLOT "e\n";
+  printf GNUPLOT "set label \"Bperp    min: %5.1f  max: %6.1f\" at graph .55,.10 tc lt 1 font 'Verdana,12'\n",$bperp_min, $bperp_max;
+  printf GNUPLOT "set label \"Delta_T min: %5.1f  max: %6.1f\" at graph .55,.05 tc lt 1 font 'Verdana,12'\n",$dt_min, $dt_max;
+
+  printf GNUPLOT "plot '-' using 1:2 with lines lw 0.5 lt 1\n";
+  close ITAB;
+  open(ITAB,"<$itab") or die "ERROR $0: cannot output ITAB file: $itab\n";
+
+  LINE: while (<ITAB>) {	#read lines of processing list file
+    chomp $_;			#remove new line from record
+    next LINE if /^$/; 		#skip blank lines in processing list
+    next LINE if /^#/; 		#skip comments in processing list
+    @fields = split;		#extract the scene identifier and other parameters on the line if present
+    $kk = $fields[0];
+    $jj = $fields[1];
+    $nc = $fields[2];
+    $mask = $fields[3];
+    $k = $kk - 1;
+    $j = $jj - 1;
+
+    printf GNUPLOT "%s  %10.4f\n", $d2[$k], $bperp[$k];
+    printf GNUPLOT "%s  %10.4f\n\n", $d2[$j], $bperp[$j];
+  }
+  printf GNUPLOT "e\n";
+  printf GNUPLOT "unset multiplot\n";
+}
+
+printf "\nnumber of baselines in the ITAB with length > 0: $nbp\n";
+if($nbp > 0){
+  $bp_ave /= $nbp;
+  printf "average bperp magnitude (m): %8.3f \n",$bp_ave;
+}
+print"\nnumber of SLC pairs in the itab file: $nc\n";
+if ($bpflg == 1){
+  printf "output bperp_file: $bpf\n";
+}
+if ($plt_flg == 1){
+  print "output plot file: $bp_plot\n";
+}
+
+$time = localtime;
+print LOG "\n $0 processing completed: $time \n";
+print "\n $0 processing completed: $time \n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";}
+  LOG->autoflush;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n\n";
+}
+
+sub julday {
+##################################
+# Julian Day from Gregorian Date #
+##################################
+
+use integer;
+my ( $y, $m, $d) = @_;
+#print "y,m,d: $y $m $d\n";
+my $jd = (1461 * ($y + 4800 +
+($m - 14) / 12)) / 4 + (367 *
+($m - 2 - 12 * (($m - 14) / 12)))
+/ 12 - (3 * (($y + 4900 + ($m - 14)
+/ 12) / 100)) / 4 + $d - 32075;
+#print "jd: $jd\n";
+return $jd;
+};
+
+sub caldat {
+##################################
+# Gregorian Date from Julian Day #
+##################################
+
+use integer;
+my ($d,$i,$j,$jd,$l,$m,$n,$y);
+$jd = shift;
+$l = $jd + 68569;
+$n = ( 4 * $l ) / 146097;
+$l = $l - ( 146097 * $n + 3 ) / 4;
+$i = ( 4000 * ( $l + 1 ) ) / 1461001;
+$l = $l - ( 1461 * $i ) / 4 + 31;
+$j = ( 80 * $l ) / 2447;
+$d = $l - ( 2447 * $j ) / 80;
+$l = $j / 11;
+$m = $j + 2 - ( 12 * $l );
+$y = 100 * ( $n - 49 ) + $i + $l;
+return ($y,$m,$d);
+};
+
+=pod
+
+Algorithms taken from Peter Meyer´s web site
+hermetic.magnet.ch/cal_stud/cal_art.htm
+
+Test numbers:
+Given $y = 1; $m = 1; $d = 1;   $jd == 1721426;
+Given $y = -4713; $m = 11; $d = 24;  $jd == 0;
+Given $y = 1858; $m = 11; $d = 16;   $jd == 2400000;
+
+$jd = julday(1858,11,16);
+printf "julian day 16-Nov-1858: %d\n", $jd;
+printf "date of julian day %d: %d %d %d\n\n",$jd, caldat($jd);
+
+=cut

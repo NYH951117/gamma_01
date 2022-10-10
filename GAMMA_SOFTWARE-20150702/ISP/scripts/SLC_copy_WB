@@ -1,0 +1,183 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use POSIX qw/ceil/;
+
+$nbeams = 5;	#number of WB ScanSAR beams
+
+if (($#ARGV + 1) < 2){die <<EOS ;}
+*** $0
+*** Copyright 2011, Gamma Remote Sensing, v1.1 9-Apr-2011 clw ***
+*** Create a new set of SLCs for all beams in a PALSAR WB ScanSAR image ***
+
+usage: $0 <SLC_tab> <SLC2_dir>
+    SLC_tab    (input) two column list of input SLC files and SLC ISP image parameter files (including paths) (text)
+    SLC2_dir   directory to contain copied segments of the input SLC data and the associated parameter files
+    NOTE: current directory is denoted using .
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of SLC images and parameter files does not exist: $ARGV[0]\n\n";
+print "SLC_tab table of SLC images and parameter files: $ARGV[0]\n"; 
+
+$slc2_dir = $ARGV[1];
+
+unless (-d $slc2_dir) {
+  $exit = system("mkdir -p $slc2_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $slc2_dir\n"
+}
+
+print "output resampled SLC directory: $slc2_dir\n";
+$time = localtime;
+print "processing start: $time\n\n";  
+$log = "$slc2_dir/SLC_copy_WB.log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "output resampled slc directory: $slc2_dir\n";
+print LOG "processing start: $time\n";  
+close LOG;
+$i = 0;
+ 
+LINE: while (<SLC_TAB>) {	#read lines of processing list file into $_
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+   
+  $slc = @fields[0]; 
+  $slc_par = @fields[1];
+  -e $slc or die "ERROR $0: SLC file does not exist: $slc\n";    
+  -e $slc_par or die "ERROR $0: ISP parameter file does not exist for the input SLC: $slc_par\n";
+  my ($s1, $dir1, $ext1) = fileparse($slc, qr/\.[^.]*/); #extension is the last bit after the last period 
+
+  if ($i == 0){
+      @format = extract_param($slc_par,"image_format:");
+    if (@format[1] eq "FCOMPLEX"){
+      $fcase = 1;
+    }
+    elsif (@format[1] eq "SCOMPLEX"){
+      $fcase = 4;
+    }  
+    else{ 
+      die "ERROR $0: input data is not FCOMPLEX or SCOMPLEX data format: $format[1]\n";
+    }
+  }
+
+  printf "SLC: %d  $slc $slc_par\n", $i+1;
+  @rec = extract_param($slc_par, "start_time:");
+  $t0[$i] = @rec[1];
+
+  @rec = extract_param($slc_par, "near_range_slc:");
+  $r0[$i] = @rec[1];
+  
+  @rec = extract_param($slc_par, "far_range_slc:");
+  $r2[$i] = @rec[1]; 
+
+  @rec = extract_param($slc_par, "range_samples:");
+  $nr[$i] = @rec[1];
+
+  @rec = extract_param($slc_par, "azimuth_lines:");
+  $naz[$i] = @rec[1];
+
+  @rec= extract_param($slc_par, "range_pixel_spacing:");
+  $rps[$i] = $rec[1];
+
+  @rec = extract_param($slc_par, "azimuth_line_time:");
+  $tazi[$i] = $rec[1];
+
+  printf "SLC start_time (s): %.6lf  r0 (m): %.3lf  r2 (m): %.3lf  nr: %d   naz: %d\n", $t0[$i], $r0[$i], $r2[$i], $nr[$i], $naz[$i]; 
+  printf "SLC range pixel spacing (m): %.6lf  azimuth line time (s): %.6le\n\n", $rps[$i], $tazi[$i];
+  $i = $i +  1;
+}
+
+my $itx = 0;
+$t0[$itx] > $t0[$_] or $itx = $_ for 1 .. $#t0;
+printf "maximum start time: $t0[$itx]  SLC: %d\n", $itx+1;
+
+#align all beams on the multi-look grid
+for ($i=0; $i < $nbeams; $i++) {
+  $dnaz[$i] = int(($t0[$itx] - $t0[$i])/$tazi[$itx] + 0.5);
+  printf "beam: %d  time offset: %.5le  line offset: %d\n",$i+1, $t0[4] - $t0[i], $dnaz[$i];
+
+  $nr0 = ($r0[$i] - $r0[0])/$rps[0];	#starting pixel number in the mosaicked image of the starting range sample for the current beam
+  printf "near slant range (m): %.3lf  difference to near range beam (m): %.3lf  range samples: %5d\n",$r0[$i], $r0[$i] - $r0[0], $nr0; 
+  $ix[$i] = 12 * ceil($nr0/12) - int(($r0[$i] - $r0[0])/$rps[0] + .5); #calculate offset so that multi-looked beams are not offset by fractional range samples
+
+  printf"range offset (samples) to start of output SLC: %d\n\n", $ix[$i];
+}
+
+for ($i=0; $i < $nbeams - 1; $i++) {
+  $ovr = $r2[$i] - ($r0[$i + 1] + $ix[$i + 1] * $rps[0]);
+  printf "SLC slant range overlap beams %d <--> %d:  %10.3f   range pixels: %d\n",$i+1, $i+2, $ovr, $ovr/$rps[0];
+}
+
+seek(SLC_TAB, 0, 0);
+$i = 0;
+print "\n";
+
+LINE: while (<SLC_TAB>) {
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  
+  $slc = @fields[0]; 
+  $slc_par = @fields[1];
+  my ($s1, $dir1, $ext1) = fileparse($slc, qr/\.[^.]*/); #extension is the last bit after the last period 
+  $slc2 = "$slc2_dir/$s1.slc";
+  $slc2_par = "$slc2_dir/$s1.slc.par"; 
+#  print "SLC_copy $slc $slc_par $slc2 $slc2_par $fcase - $ix[$i] - $dnaz[$i] $naz[$nbeams - 1]\n";
+  execute("SLC_copy $slc $slc_par $slc2 $slc2_par $fcase - $ix[$i] - $dnaz[$i] $naz[$nbeams - 1]",$log);
+  $i++;
+}
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open existing log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open new log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub nint {
+  my $x = $_[0]; 
+  my $n = int($x);
+  if ( $x > 0 ) {
+    if ( $x-$n > 0.5) {
+      return $n+1;
+    }
+    else {
+      return $n;
+    }
+  }
+  else {
+    if ( $n-$x > 0.5) {
+      return $n-1;
+    }
+    else {
+      return $n;
+    }
+  }
+}

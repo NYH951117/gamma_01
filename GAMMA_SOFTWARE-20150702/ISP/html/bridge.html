@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: bridge</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>bridge</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/bridge.c"><i>bridge.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  bridge - Phase unwrapping of disconnected areas using user
+  defined bridges.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>bridge &lt;int&gt; &lt;flag&gt; &lt;unw&gt;
+  &lt;bridge&gt; &lt;width&gt; [xmin] [xmax] [ymin]
+  [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;int&gt;</td>
+
+        <td>(input) interferogram (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;flag&gt;</td>
+
+        <td>(input)&nbsp; unwrapping flag file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;unw&gt;</td>
+
+        <td>(input/output)&nbsp; unwrapped phase&nbsp; (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bridge&gt;</td>
+
+        <td>(input) bridge data file (text format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[xmin]</td>
+
+        <td>offset to starting range pixel (default =
+        <b>0</b>)</td>
+      </tr>
+
+      <tr>
+        <td>[xmax]</td>
+
+        <td>offset last range pixel (default = <b>width-1</b>)</td>
+      </tr>
+
+      <tr>
+        <td>[ymin]</td>
+
+        <td>offset to starting azimuth row, relative to start
+        (default = <b>0</b>)</td>
+      </tr>
+
+      <tr>
+        <td>[ymax]</td>
+
+        <td>offset to last azimuth row, relative to start (default
+        = <b>nlines-1</b>)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>bridge 1352_1610.sm 1352_1610.flag 1352_1610.unw
+  1352_1610.bridges 2500</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  bridge reads smoothed interferogram, flagfile, the unwrapped
+  phase (unwrapped previously using <a href=
+  "grasses.html">grasses</a>) and the bridges file (containing
+  location coordinates of starting and ending location of bridges
+  and expected multiple of 2PI&nbsp; phase offset between the two
+  locations).</p>
+
+  <p>The format of the bridges file is found here below:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>column number of unwrapped pixel</td>
+
+        <td>row number of unwrapped pixel</td>
+
+        <td>column number of wrapped pixel</td>
+
+        <td>row number of wrapped pixel</td>
+
+        <td>multiples of 2PI to add or subtract. For example a
+        value of 0 means that the phases at the start and end of
+        the bridge are within PI</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>An example for a bridges file is found here below:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr align="center">
+        <td>712</td>
+
+        <td>1148</td>
+
+        <td>710</td>
+
+        <td>1160</td>
+
+        <td>0</td>
+      </tr>
+
+      <tr align="center">
+        <td>840</td>
+
+        <td>1210</td>
+
+        <td>830</td>
+
+        <td>1208</td>
+
+        <td>0</td>
+      </tr>
+
+      <tr>
+        <td style="text-align: center;">488</td>
+
+        <td style="text-align: center;">800</td>
+
+        <td style="text-align: center;">501</td>
+
+        <td style="text-align: center;">790</td>
+
+        <td style="text-align: center;">1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The bridges file is manually edited. The determination of the
+  coordinates of the wrapped and unwrapped pixel which shall be
+  connected by bridges is supported by the program rastree which
+  generates a SUN raster file&nbsp; or BMP file showing the wrapped
+  and unwrapped phases (the wrapped ones in darker colors). This
+  SUN raster file can be displayed using disras and the coordinates
+  found by clicking the desired locations.</p>
+
+  <p>bridge restarts unwrapping of the interferometric phase at the
+  end of each bridge with an unwrapped phase differing by less than
+  PI from the multiple of 2PI of the start of the bridge plus the
+  indicated multiple of 2PI phase offset. The program keeps track
+  of the unwrapped area. Once the unwrapped area is surrounded by
+  lines that cannot be crossed, these are the border of the data
+  and <em>branches of the trees</em>, it stops. To unwrap the
+  entire image it might be necessary to define additional bridges
+  and run bridge again.</p>
+
+  <p>The file containing the unwrapped phase is updated with the
+  additionally unwrapped phases. For data security reasons it is
+  recommended to backup the unwrapped phase file before running
+  bridge. The information on the unwrapped areas is written into
+  the flagfile. For each pixel a flag of 8 bits is stored. The
+  meaning of the individual bits is explained in the
+  <em>typedef_ISP.h</em> file. The phase unwrapped interferogram
+  can be displayed using the program <em>disrmg</em> or written to
+  a SUN raster file or BMP format image using <em>rasrmg</em>. The
+  information contained in the flagfile can be displayed with the
+  program <em>disflag</em> or presented as a SUN raster or BMP
+  format image using <em>rastree.</em></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "grasses.html">grasses.h</a>, <a href=
+  "ISP_display.html">disflag</a>, <a href=
+  "ISP_display.html">rasrmg</a>, <a href=
+  "ISP_display.html">disrmg</a>, <a href=
+  "ISP_display.html">rastree</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 18-Apr-2013.
+</body>
+</html>

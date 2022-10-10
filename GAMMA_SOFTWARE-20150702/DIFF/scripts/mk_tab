@@ -1,0 +1,57 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** Copyright 2012, Gamma Remote Sensing, v1.3 23-May-2012 clw ***
+*** Generate SLC_tab, MLI_tab, or RAW_list for processing  ***
+
+usage: $0 <dir> <ext-1> <ext-2> <tab>
+    dir   (input) directory including paths that contain the data files
+    ext-1 (input) pattern to select data files (examples: slc, raw...), (enter - for all files in the directory)
+    ext-2 (input) pattern to select parameter files that match the data (enter -  for none, examples: slc.par, raw_par, raw.par)
+    tab   (output) list of data filenames and associated parameter files (including paths) (text)
+
+    NOTE: The current directory is denoted using . 
+       
+EOS
+
+$ddir = $ARGV[0];
+$ext1 = $ARGV[1];
+$ext2 = $ARGV[2];
+
+open (TAB, ">$ARGV[3]") or die "ERROR: cannot open the output tab file: $ARGV[3]\n\n";
+-e $ddir or die "\nERROR $0: directory containing data does not exist: $ddir\n";
+print "output tab file: $ARGV[3]\n";
+
+if ($ext1 ne "-"){
+  @files1 = <$ddir/*$ext1>;
+}
+else {
+  @files1 = <$ddir/*>;
+}
+$len1 = $#files1 + 1;
+
+if ($ext2 ne "-") {
+  @files2 = <$ddir/*$ext2>;
+  $len2 = $#files2 + 1;
+  if ($len1 != $len2) {
+    print "ERROR: the number of files in the directory differ for the two extensions: $len1 $len2\n";
+    print "@files1\n";
+    print "@files2\n";
+    exit -1;
+  }
+  for ($i = 0; $i < $len1; $i++) {
+    print "$files1[$i]  $files2[$i]\n";
+    print TAB "$files1[$i]  $files2[$i]\n";
+  }
+}
+else {
+  for ($i = 0; $i < $len1; $i++) {
+    print "$files1[$i]\n";
+    print TAB "$files1[$i]\n";
+  }
+}
+
+exit 0;
+

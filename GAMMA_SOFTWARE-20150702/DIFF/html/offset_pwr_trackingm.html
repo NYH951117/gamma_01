@@ -1,0 +1,258 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: offset_pwr_trackingm</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_pwr_trackingm</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/offset_pwr_trackingm.c">offset_pwr_trackingm.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  offset_pwr_trackingm - estimates range and azimuth offset fields
+  for detectec (MLI) images using intensity tracking</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_pwr_trackingm &lt;pwr1&gt; &lt;pwr2&gt;
+  &lt;DIFF_par&gt; &lt;offs&gt; &lt;snr&gt; [rwin] [azwin]
+  [offsets] [N_OVR] [thres] [rstep] [azstep] [rstart] [rstop]
+  [azstart] [azstop] [pflag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;pwr1&gt;</td>
+
+        <td>(input) real valued intensity image 1 (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwr2&gt;</td>
+
+        <td>(input) real valued intensity image 2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>DIFF/GEO parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;offs&gt;</td>
+
+        <td>(output) offset estimates (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;snr&gt;</td>
+
+        <td>(output) offset estimation SNR (float)</td>
+      </tr>
+
+      <tr>
+        <td>[rwin]</td>
+
+        <td>search region size (range pixels, enter - for default
+        from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[azwin]</td>
+
+        <td>search region size (azimuth pixels, enter - for default
+        from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[offsets]</td>
+
+        <td>(output) range and azimuth offsets and SNR data in text
+        format, enter - for no output</td>
+      </tr>
+
+      <tr>
+        <td>[N_OVR]</td>
+
+        <td>offset measurement oversampling factor (integer,
+        default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>offset estimation quality threshold (enter - for
+        default=1.7)</td>
+      </tr>
+
+      <tr>
+        <td>[rstep]</td>
+
+        <td>step in range pixels (enter - for default: rwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[azstep]</td>
+
+        <td>step in azimuth pixels (enter - for default:
+        azwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[rstart]</td>
+
+        <td>starting range pixel (enter - for default: rwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[rstop]</td>
+
+        <td>ending range pixel (enter - for default: nr -
+        rwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[azstart]</td>
+
+        <td>starting azimuth line (enter - for default:
+        azwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[azstop]</td>
+
+        <td>ending azimuth line (enter - for default: nlines -
+        azwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[pflag]</td>
+
+        <td>print flag (default=0:print offset summary, 1:print all
+        offset data)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_pwr_trackingm 1352.mli 1610.mli 1352_1610.diff_par
+  1352_1610.offs 1352_1610.snr 32 32 1352_1610.offsets 2 7.0 10 10
+  400 1600 1200 2000</samp></p>
+
+  <p>Estimates range and azimuth offset fields (offsets of 1610.mli
+  relative to 1352.mli) using the speckle tracking algorithm using
+  a 32 x 32 pixels search chip size and a 32 x 32 pixel search
+  region size. An oversampling with a factor of 2 is applied. The
+  search is repeated every 10 range and every 10 azimuth pixels,
+  for the indicated reference image section.</p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p><em>offset_pwr_trackingm</em> estimates range and azimuth
+  offset fields of a pair of MLI in support of image
+  co-registration and offset tracking. The intensity tracking
+  algorithm is used. Notice that this algorithm requires features
+  in the detected images. The algorithm is not well suited for very
+  small search chip sizes (&lt; 16 x 16 pixels).</p>
+
+  <p>Throughout the image small MLI data chips are selected and
+  used to determine the local range and azimuth offset fields. For
+  each such offset estimation the intensity cross-correlation
+  function is calculated. Oversampling of the correlation functon
+  between the MLI images is supported. Normally this feature is
+  turned off, however if precision measurement of the offset field
+  is desired, increasing this value to 2, 3, or 4 will improve the
+  accuracy. If the FFTW routines are not used, then the
+  oversampling factor must itself be a power of 2. Values above 4
+  bring little or no benefit and will significantly slow the offset
+  measurement. The location of the correlation maximum is estimated
+  using a two-dimensional quadratic least squares fit.</p>
+
+  <p>The range and azimuth size of the rectangular chips used in
+  the calculation of the correlation function corresponds to the
+  search window sizes indicated. The search is centered at the
+  offsets indicated in the offset polynomials of the provided
+  offset parameter file.</p>
+
+  <p>The size of the search chips selected needs to be in-line with
+  the features that shall be used in the matching and with the
+  spatial dimension of expected variations in the offsets.</p>
+
+  <p>Offsets are calculated for the indicated section of the
+  reference MLI (pwr1) at the indicated range and azimuth step. The
+  related information is documented in the DIFF parameter file. For
+  most cases a SNR threshold of 7.0 for the acceptance of an offset
+  leads to good results. In cases of too low corelation the use of
+  larger swearch chip and window sizes is recommended. Usually an
+  oversampling rate of 2 leads already to very accurate offset
+  estimates. The offset for the cross-correlation function is
+  estimated using a two-dimensional least squares fit.</p>
+
+  <p>For a detailed investigation with many offsets estimated it is
+  strongly recommended to provide offset polynomials in the DIFF
+  parameter file. These polynomials are typically determined using
+  the programs <a href="offset_pwrm.html">offset_pwrm</a> and
+  <a href="offset_fitm.html">offset_fitm</a>.</p>
+
+  <p>The estimated offset fields and related matching SNR values
+  are written to binary output files of fcomplex (*.offs) and float
+  (*.snr) format. The offsets can be converted to offsets in the
+  original (reference) geometry using the program <a href=
+  "offset_trackingm.html">offset_trackingm</a>. Or the program
+  <a href="offset_fitm.html">offset_fitm</a> is used to cull the
+  offset field and use the least squares derived polynomial fit for
+  the offset between the two MLI images.</p>
+
+  <p>No search is conducted for chips with a NULL value in the
+  center of the search chips. Setting the MLI values of areas which
+  are not of interest to the NULL value may permit to strongly
+  reduce the required procesing time, while still covering the area
+  of interest at high spatial resolution (small range and azimuth
+  step).</p>
+
+  <p>The binary offsets file (*.offs) contains offsets in SAR image
+  pixels (of the reference image) in fcomplex format. The real
+  parts correspond to range offsets and the imaginary parts to
+  azimuth offsets. The positions of the offset estimates are
+  defined by the starting range and azimuth positions and the range
+  and azimuth steps, as documented in the DIFF parameter file.</p>
+
+  <p><b>OPTIONS</b><br>
+  Range and azimuth chip sizes / serach region sizes, and range and
+  azimuth steps can all be indicated on the command line,
+  permitting for example to use search chips, search windows, and
+  steps which are different in rnage and azimuth directions.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "DIFF_par.html">DIFF_par</a>, <a href=
+  "offset_trackingm.html">offset_trackingm</a>, <a href=
+  "offset_fitm.html">offset_fitm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "create_diff_par.html">create_diff_par</a>. .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 14-Feb-2005.
+</body>
+</html>

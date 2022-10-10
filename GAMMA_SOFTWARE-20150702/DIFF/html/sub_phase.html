@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: sub_phase</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>sub_phase</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/sub_phase.c">sub_phase.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  sub_phase - add or subtract unwrapped phase from an
+  interferogram</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sub_phase &lt;int-1&gt; &lt;unw-2&gt; &lt;DIFF_par&gt;
+  &lt;diff_int&gt; &lt;int_type&gt; [mode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;int-1&gt;</td>
+
+      <td>(input) complex or unwrapped phase interferogram 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;unw-2&gt;</td>
+
+      <td>(input) unwrapped phase interferogram 2 (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DIFF_par&gt;</td>
+
+      <td>(input) DIFF/GEO parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;diff_int&gt;</td>
+
+      <td>differential interferogram</td>
+    </tr>
+
+    <tr>
+      <td>&lt;int_type&gt;</td>
+
+      <td>int-1 interferogram type<br>
+      0: unwrapped phase (float)<br>
+      1: complex interferogram (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>[mode ]</td>
+
+      <td>subtract or add unwrapped phase:<br>
+      0: subtract unw-2 phase from int-1 (default)<br>
+      1: add unw-2 phase to int-1</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>sub_phase 19960115_19960115.int 19960115_19960115.sim_unw
+  4903 19960115_19960115.diff 1 0</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <a href="sub_phase.html">sub_phase</a>.</p>calculates a
+  differential interferogram by directly subtracting the phase of
+  unwrapped interferogram 2 from interferogram 1. Interferogram 1
+  can either be complex valued or real-valued unwrapped phase. In
+  the case where int-1 is complex-valued, the magnitude of int-1 is
+  copied to the differential interferogram output file. The user
+  also has the option of adding or subtracting the unwrapped phase.
+
+  <p><strong>OPTIONS</strong><br>
+  Phase subtraction of two interferograms when both interferograms
+  are complex-valued can be performed using program <a href=
+  "comb_interfs.html">comb_interfs</a> using phase scaling factors
+  of 1.0 and -1.0.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="comb_interfs.html">comb_interfs.c</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Mar-2007.</p>
+</body>
+</html>

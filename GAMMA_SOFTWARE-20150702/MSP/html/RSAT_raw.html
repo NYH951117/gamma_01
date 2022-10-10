@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: RSAT_raw</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>RSAT_raw</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/RSAT_raw.c">RSAT_raw.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  RSAT_raw - Generates MSP sensor parameter and processing
+  parameter files for Radarsat StripMap mode SAR data. This program
+  also reformats the raw SAR signal data to be compatible with the
+  MSP. This program may also be used to concatenate multiple raw
+  data frames.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>RSAT_raw
+  &lt;CEOS_leader&gt; &lt;SAR_param&gt; &lt;PROC_param&gt;
+  &lt;raw_data_files&gt; &lt;raw_out&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;CEOS_leader&gt;</td>
+
+      <td>(input) CEOS leader file for RADARSAT data provided by
+      CCRS</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>(output) MSP SAR Sensor Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>(output) MSP Processing Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_data_files&gt;</td>
+
+      <td>(input) Radarsat raw data file(s) to condition and
+      concatenate</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_out&gt;</td>
+
+      <td>(output) Radarsat conditioned raw output data file</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>RSAT_raw Bogota.lea RSAT.par pBogota.slc.par Bogota.raw
+  Bogota.fix</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  RSAT_raw reads the RADARSAT raw data file(s) in CEOS format. Each
+  record contains information on the spacecraft radar parameters
+  for that line. These parameters are used to determine values for
+  the Sensor Parameter file (usually called RSAT.par). This dffers
+  from the approach with ERS and JERS because of the numerous
+  Radarsat Modes including standard beam, fine beam and wide beam
+  StripMap modes. For ERS and JERS there are a set of existing
+  sensor parameter files in the $MSP_HOME/sensors directory.</p>
+
+  <p>The file header information is also used to generate the MSP
+  Processing Parameter File. State vectors contained in the CEOS
+  leader record are converted to earth fixed coordinates and used
+  for geolocation of the final products. Other parameters such as
+  the starting slant range, date, and timing information are
+  extracted from the CEOS leader. The program also reformats the
+  Radarsat raw data samples from two's complement binary to offset
+  binary to be compatible with the rest of the MSP processing
+  algorithms. The echo data records are range aligned since
+  different records have different lengths in the raw data
+  depending if a chirp replica has been included or not. A new
+  replica, inserted every 8 lines during StripMap mode operation,
+  is removed by <em>RSAT_raw</em>.</p>Multiple raw data frames may
+  be concatenated into one large strip. The limit for the maximum
+  length is determined by the maximum file size supported by the
+  operating system. Given the nominal size of Radarsat data frames,
+  the upper limit is approximately 7 frames.
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html#file%20a">SAR raw data
+  (&lt;orbit&gt;.raw)</a>.</p>
+  <hr align="left">
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 23-Apr-2003.</p>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: atm_mod_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>atm_mod_pt</h2>
+
+  <p><i>ANSI-C program:<a href=
+  "../src/atm_mod_pt.src">&nbsp;atm_mod_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  atm_mod_pt - &nbsp;Perform linear regression of atmospheric phase
+  with respect to height</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>atm_mod_pt &lt;plist&gt; &lt;pmask&gt; &lt;patm&gt;
+  &lt;phgt&gt; &lt;pmod&gt; [rec_num]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;patm&gt;</td>
+
+        <td>(input) unwrapped phase point data stack (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(input) &nbsp;heights at the points (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmod&gt;</td>
+
+        <td>(output) modelled phase values from the regression of
+        phase with respect to height (float)</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata to process (default -: all
+        records)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>atm_mod_pt plist pmsk1 pres1 phgt pmod
+  -<br></samp></p>determines the linear regression coefficients of
+  the residual phase with respect to height for all layers in the
+  pres1 stack<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code atm_mod_pt.c in ./IPTA/src, executable version
+  atm_mod_pt in ./IPTA/bin</p><strong>DESCRIPTION</strong><br>
+  This program is used to determine the height dependence of the
+  residual phase during interferometric point target analysis.
+  Depending on atmospheric conditions there is an altitude
+  dependence of the path delay with respect to altitude caused by
+  changes in the atmospheric water vapor and preassure profiles
+  between the acquisitions of the interferometric image pair. For
+  each interferogram in the stack, <span style=
+  "font-style: italic;">atm_mod_pt</span> estimates the parameters
+  of a linear model of the residual phase with respect to the
+  altitude values in the input height stack <span style=
+  "font-style: italic;">phgt</span>. The model consists of a phase
+  constant <span style=
+  "font-weight: bold; font-style: italic;">a0</span> in radians and
+  phase slope <span style="font-weight: bold;"><span style=
+  "font-style: italic;">a1</span></span> in unitis of radians per
+  meter.<br>
+  <br>
+  It is important that only phase due to atmosphere is present in
+  the points used to estimate the regression coefficients. For this
+  reason the point mask should be used to exclude points &nbsp;with
+  deformation from consideration in the regression. If there are
+  insuffient points to perform the regression, then the
+  coefficients are set 0.0.<br>
+  <br>
+  The output stack&nbsp; pmod has the height dependent unwrapped
+  phase &nbsp;as determined from the regression: <span style=
+  "font-style: italic;"><span style=
+  "font-weight: bold;">&nbsp;</span></span> <span style=
+  "font-weight: bold; font-style: italic;">pmod</span> <span style=
+  "font-weight: bold;">[i]</span> <span style=
+  "font-weight: bold; font-style: italic;">= a0 +
+  a1*hgt</span><span style="font-weight: bold;">[i]<span style=
+  "font-style: italic;">.</span></span> The program <a href=
+  "sub_phase_pt.html">sub_phase_pt</a> can then be used to remove
+  the modelled phase from all the points in the stack. The phase
+  model is calculated for all points where valid height values are
+  available not just those in the mask. Valid heights are defined
+  as non-zero values in the set of point heights.&nbsp;
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="sub_phase_pt.html">sub_phase_pt</a><a href=
+  "atm_mod_pt.html"><br></a> <a href="ccs_pt.html"></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 17-Jun-2006.
+</body>
+</html>

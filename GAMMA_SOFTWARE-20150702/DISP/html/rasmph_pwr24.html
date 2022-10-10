@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DISP Reference Manual: rasmph_pwr24</title>
+</head>
+
+<body>
+  <h1>GAMMA DISPLAY Package (DISP): Reference Manual</h1>
+  <hr>
+
+  <h2>rasmph_pwr24</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/rasmph_pwr24.c">rasmph_pwr24.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  rasmph_pwr24 - generate 24-bit SUN/BMP raster file of
+  interferogram phase + intensity image</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>rasmph_pwr24 &lt;cpx&gt; &lt;pwr&gt; &lt;width&gt;
+  [start_cpx] [start_pwr] [nlines] [pixavr] [pixavaz] [scale] [exp]
+  [LR] [rasf] [cc] [start_cc] [cc_min]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;cpx&gt;</td>
+
+        <td>(input) complex image (fcomplex, e.g.
+        interferogram)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwr&gt;</td>
+
+        <td>(input) intensity image (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row of cpx and pwr</td>
+      </tr>
+
+      <tr>
+        <td>[start_cpx]</td>
+
+        <td>starting line of cpx (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[start_pwr]</td>
+
+        <td>starting line of pwr (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to display (default=0: to end of
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[pixavr]</td>
+
+        <td>number of pixels to average in range (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[pixavaz]</td>
+
+        <td>number of pixels to average in azimuth (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[scale]</td>
+
+        <td>pwr display scale factor (default=1.)</td>
+      </tr>
+
+      <tr>
+        <td>[exp]</td>
+
+        <td>pwr display exponent (default=.35)</td>
+      </tr>
+
+      <tr>
+        <td>[LR]</td>
+
+        <td>left/right flipping flag, (default=1: normal, -1:
+        mirror image)</td>
+      </tr>
+
+      <tr>
+        <td>[rasf]</td>
+
+        <td>(output) 24-bit rasterfile (enter - for default=*.ras:
+        SUN raster format, *.bmp: BMP format)</td>
+      </tr>
+
+      <tr>
+        <td>[cc]</td>
+
+        <td>display threshold data file (float, e.g.
+        correlation)</td>
+      </tr>
+
+      <tr>
+        <td>[start_cc]</td>
+
+        <td>starting line of cc data file (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[cc_min]</td>
+
+        <td>pixels with cc values below cc_min are displayed using
+        greyscale (default=.2)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <samp>rasmph_pwr24 19960422_19960421.diff
+  19969421.rmli 1000 1 1 0 1 1 0.8 .35 1
+  19960422_19960421.diff.ras</samp></p>
+
+  <p>Generates an 24-bit SUN raster file of the complex valued
+  differential interferogram using the backscatter intensity image
+  for the image brightness.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">rasmph_pwr24</span> supports
+  the generation of a 24-bit SUN/BMP raster file image of the phase
+  of a complex valued interferogram displayed in color and the
+  image brightness corresponding to a backscatter intensity
+  image.</p>
+
+  <p>In the frame of an IPTA investigation the use of a 24-bit
+  SUN/BMP raster file may be an advantage due to the higher
+  visibility of fine details in the phase and intensity
+  information.</p>
+
+  <p>For areas of low coherence (below the indicated threshold),
+  the color is suppressed and the corresponding intensity is
+  displayed in grey. This avoids the high "color noise" of low
+  coherence areas.</p>
+
+  <p>Optionally, a sub-section of the entire image, multi-looking
+  in range and azimuth direction, or a left/right flipping can be
+  performed based on the command line options.<br></p>
+
+  <p>Note that all pixels with non-zero data value have non-zero
+  RGB values in the output image so that "no data" is represented
+  by RGB=0,0,0. If the image is converted to PNG or other format
+  that supports transparency, 0,0,0 pixels can then&nbsp; be
+  marked&nbsp; transparent. Using the Imagemagick convert
+  utility:<br></p>
+
+  <p><code>convert -transparent=black 19960421_19960422.diff.ras
+  19960421_1996-422.diff.png</code><br></p>
+
+  <p>will generate a PNG format image with regions with no data
+  marked<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="rasdt_pwr24">rasdt_pwr24</a>, <a href=
+  "http://www.imagemagick.org/script/index.php">http://www.imagemagick.org/script/index.php</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 13-Jul-2011.</p>
+</body>
+</html>

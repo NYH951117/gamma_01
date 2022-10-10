@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw021108 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: map_trans</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>map_section</h2>
+
+  <p><i>ANSI-C program:&nbsp;</i> <a href=
+  "../src/map_section.c">map_section.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">map_section</span> - Generate
+  the DEM parameter file of a specified region and optionally
+  extract this region from a geocoding lookup table. The program
+  also can calculate the bounding box in range-doppler coordinates
+  that covers the specified region. The lookup table values can be
+  offset to represent the bounding region.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>usage: map_section &lt;DEM_par&gt; &lt;n1&gt; &lt;e1&gt;
+  &lt;n2&gt; &lt;e2&gt; &lt;post_north&gt; &lt;post_east&gt;
+  &lt;DEM_par2&gt; [lt] [MLI_par] [cflg] [lt2]
+  [MLI_coord]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM parameter file describing the map
+        projection and geometry of the input lookup table</td>
+      </tr>
+
+      <tr>
+        <td>&lt;n1&gt;</td>
+
+        <td>northing map coordinate of the upper-left corner of the
+        map segment (enter - for value in DEM_par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;e1&gt;</td>
+
+        <td>easting&nbsp; map coordinate of the upper-left corner
+        of the map segment (enter - for value in DEM_par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;n2&gt;</td>
+
+        <td>northing map coordinate of the lower-right corner of
+        the map segment (enter - for value in DEM_par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;e2&gt;</td>
+
+        <td>easting&nbsp; map coordinate of the lower-right corner
+        of the map segment (enter - for value in DEM_par)<br>
+        NOTE: units for the corner coordinates depend on the
+        projection specified in the DEM_par<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;post_north&gt;</td>
+
+        <td>posting of the output lookup table for map samples in
+        northing (enter - to keep the posting in the DEM_par)<br>
+        NOTE: post_north must be a negative number to prevent the
+        DEM from flipping north/south when displayed<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;post_east&gt;</td>
+
+        <td>posting of the output lookup table in map coordinates
+        in easting&nbsp; (enter - to keep the posting in the
+        DEM_par)<br>
+        NOTE: post_east must be a positive number to prevent the
+        DEM from flipping east/west when displayed\<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;DEM_par2&gt;<br></td>
+
+        <td style="vertical-align: top;">(output) DEM parameter
+        file describing the geometry of the output lookup
+        table<br></td>
+      </tr>
+
+      <tr>
+        <td>[lt]</td>
+
+        <td style="height: 19.2px;">(input) lookup table for the
+        transformation from map geometry to radar Range-Doppler
+        Coordinates (RDC) (enter - for none)<br>
+        NOTE: The lookup table has the dimensions described by the
+        input DEM_par</td>
+      </tr>
+
+      <tr>
+        <td>[MLI_par1]</td>
+
+        <td>(input) MLI image parameter file with the geometry used
+        for the lookup table values (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[MLI_par2]</td>
+
+        <td>(input) MLI image parameter file with the geometry for
+        the image that will be terrain geocoded (enter - to be the
+        same as MLI_par1)</td>
+      </tr>
+
+      <tr>
+        <td>[cflg]</td>
+
+        <td>lookup table coordinate shift flag (enter - for
+        default)<br>
+        &nbsp;&nbsp;&nbsp; 0: do not subtract range and azimuth
+        offsets from the lookup table values (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: subtract range and azimuth offsets
+        from the lookup table values</td>
+      </tr>
+
+      <tr>
+        <td>[lt2]</td>
+
+        <td>(output) lookup table segment with the specified
+        posting: post_north and&nbsp; post_east (enter - for
+        none)</td>
+      </tr>
+
+      <tr>
+        <td>[MLI_coord]</td>
+
+        <td>(output) Rectangular region specified in MLI and SLC
+        coordinates covering the region of the lookup table (text
+        format)<br>
+        &nbsp; range_offset&nbsp;&nbsp; range samples&nbsp;&nbsp;
+        azimuth_offset&nbsp; azimuth_lines</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><code>map_section geo/wise.dem_par 40.28 -107.84 40.21 -107.78
+  -8.e-5 8.e-5 streeter.dem_par geo/wise_1.map_to_rdc
+  rmli_1_3/20100102_HH.rmli.par - 0 streeter_0.map_to_rdc
+  streeter.offsets</code><strong><br></strong></p>
+
+  <p>Calculates a new DEM parameter file based on the input DEM par
+  and the rectangular region defined by the parameters n1, e1, n2,
+  and e2. The map samples spacing is defined by the post_north and
+  post east parameters. These are set her to -8.e-5 and 8.e-5
+  respectively.&nbsp;&nbsp; The optional lookup table <span style=
+  "font-style: italic;">wise_1.map_to_rdc</span> is resampled to
+  match the specified region and posting.&nbsp; An MLI parameter
+  file is provided to permit bounds checking of the lookup table
+  values. In the where case (cflg : 0),&nbsp; no offset is applied
+  to the lookup table values. The input lookup table values are
+  interpolated to match the&nbsp; values of north/lat and east/lon
+  posting provided on the command line</p><code>map_section
+  geo/wise.dem_par 40.28 -107.84 40.21 -107.78 -8.e-5 8.e-5
+  streeter.dem_par geo/wise_1.map_to_rdc
+  rmli_1_3/20100102_HH.rmli.par - 1 streeter_0.map_to_rdc
+  streeter.offsets</code><strong><br></strong><br>
+  In this second example, <span style=
+  "font-style: italic;">cflg</span> has been set to 1 so that
+  offsets are applied to the lookup table. This means that the
+  input data in range-doppler coordinates must be extracted to
+  match the RDC bounding box calculated from the MLI_par1
+  parameters and the lookup table values. To use the resampled
+  lookup table,&nbsp; the MLI image section must be extracted using
+  the offset and size parameters printed to the screen and output
+  in the offsets file. <strong><br>
+  <br></strong> <code>map_section geo_30/ca.dem_par - - - - -12.5
+  12.5 geo_30_12_5/ca.dem_par geo_30/ca_1.map_to_rdc
+  mli_4_10/20070221.mli.par mli_2_5/20070221.mli.par 0
+  geo_30_12_5/ca.map_to_rdc geo_30_12_5/MLI_coord<br></code><br>
+  In this example the input lookup table at 30m posting is
+  resampled to 12.5 meter posting. The input lookup table contains
+  coordinates referring to positions in the slant range image with
+  4 range-looks and 10 azimuth looks while the output lookup table
+  contains coordinates referring to positions in an MLI image with
+  2 range looks and 5 azimuth looks.&nbsp; In this way calculation
+  for the lookup-table and geocoding refinement can be performed at
+  30 meters while the output products are resampled from higher
+  resolution images to 12.5 meters.<br>
+  <strong><br></strong>
+
+  <p><strong>DESCRIPTION</strong> <span style=
+  "font-style: italic;"><br></span></p>
+
+  <p><span style="font-style: italic;">map_section</span> is a
+  program that supports selection of a region of a data set in map
+  geometry such as a DEM or lookup table.&nbsp; The bounding box in
+  map coordinates is specified by the upper right and lower left
+  map coordinates.&nbsp; A new DEM parameter file is calculated
+  using the corner coordinates and the north and east posting
+  values. The units for the posting depend on the map projection
+  being either degrees for geographic coordinates (EQA) or meters
+  of the standard map projections or the radar specific SCH map
+  coordinate system.</p>
+
+  <p>If the user enters an existing lookup table in the geometry
+  described by the input lookup table. The values in the input
+  lookup table will be resampled to cover the region specified in
+  the new DEM parameter file with the specified posting. Bi-cubic
+  spline interpolation is used to resample the lookup table values
+  if this is required.</p>
+
+  <p>The user also has the option to provide a second MLI parameter
+  file to define the geometry of the data that will be resampled in
+  Range-Doppler coordinates. The bounding box of the data covered
+  in the map projection is calculated in Range Doppler coordinates.
+  This permits extraction of a section of the radar data to match
+  the associated region in the map geometry.&nbsp; The bounding box
+  in range doppler coordinates can be written to a text file. These
+  corner coordinates can then be used to extract the associated
+  region for the data in radar geometry.&nbsp; A new program
+  <a href="../../DISP/cpd.html">cpd</a> makes it easier to extract
+  a region from fcomplex or float images that do not have an
+  associated MLI parameter file.</p>
+
+  <p><strong>SEE ALSO</strong></p>
+
+  <p><a href="map_trans.html">map_trans</a>,&nbsp;<a href=
+  "dem_trans.html">dem_trans</a>, <a href=
+  "geocode.html">geocode</a>, <a href=
+  "geocode_back.html">geocode_back</a>, <a href=
+  "../../DISP/cpd.html">cpd</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-May-2014.
+</body>
+</html>

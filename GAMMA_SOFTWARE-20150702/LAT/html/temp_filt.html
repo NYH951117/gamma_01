@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: temp_filt</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>temp_filt</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/temp_filt.c">temp_filt.c</a></i> and <a href=
+  "../src/temp_filt_ad.c">temp_filt_ad.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  temp_filt - Multi-temporal filtering of co-registered data sets
+  of format float.<br>
+  temp_filt_ad - Multi-temporal filtering of co-registered data
+  sets of format float using adaptive spatial mean estimate.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>temp_filt &lt;data_tab&gt; &lt;width&gt; [waz] [wr]
+  [wt_flag] [zero_flag] [loffset] [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_tab&gt;</td>
+
+        <td>(input) two column list of the names of input and
+        output data files (float)<br>
+        &nbsp; input file 1&nbsp;&nbsp; output file 1<br>
+        &nbsp; input file 2&nbsp;&nbsp; output file 2<br>
+        &nbsp; ... &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;...</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[waz]</td>
+
+        <td>spatial averaging filter width in azimuth pixels
+        (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[wr]</td>
+
+        <td>spatial averaging filter width in range pixels
+        (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[wt_flag]</td>
+
+        <td>weighting function flag (default=0: uniform; 1: linear;
+        2: gaussian)</td>
+      </tr>
+
+      <tr>
+        <td>[zero_flag]</td>
+
+        <td>default: zero_flag=0 =&gt; 0.0 interpreted as missing
+        value zero_flag=1 =&gt; 0.0 interpreted as valid data
+        value</td>
+      </tr>
+
+      <tr>
+        <td>[loffset]</td>
+
+        <td>number of lines offset to starting line
+        (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to process (default: 0=entire
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><code><b>temp_filt_ad &lt;data_tab&gt; &lt;width&gt;
+  [zero_flag] [loffset] [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_tab&gt;</td>
+
+        <td>&nbsp;(input) three column list of the names of input
+        and output data files (float)<br>
+        &nbsp;&nbsp; input file 1&nbsp; spatially filtered file
+        1&nbsp; output file 1<br>
+        &nbsp;&nbsp; input file 2&nbsp; spatially filtered file
+        2&nbsp; output file 2<br>
+        &nbsp;&nbsp;&nbsp;
+        ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        ...&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        ...</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[zero_flag]</td>
+
+        <td>default: zero_flag=0 =&gt; 0.0 interpreted as missing
+        value zero_flag=1 =&gt; 0.0 interpreted as valid data
+        value</td>
+      </tr>
+
+      <tr>
+        <td>[loffset]</td>
+
+        <td>number of lines offset to starting line
+        (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to process (default: 0=entire
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>temp_filt data_tab 4912 9 9 1 0 0
+  500</samp></p>Multi-temporal filtering of 5 co-registered
+  multi-look intensity images, resulting in 5 filtered images. For
+  the estimation of spatial means a 9x9 window with linearly
+  decreasing weighting function is used. Null values (0.0) are
+  interpreted as missing values. Only the first 500 lines are
+  processed.
+
+  <p><samp>temp_filt_ad data_tab 4912 1</samp></p>Multi-temporal
+  filtering of 3 co-registered multi-look intensity images,
+  resulting in 3 filtered images. Priviously calculated minimum
+  mean square error ("Frost-filtered") are used as the (adaptive)
+  spatial mean estimates. 0.0 values are interpreted as valid
+  values.
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">temp_filt</span> and
+  <span style="font-style: italic;">temp_filt_ad</span> conduct
+  filtering of multi-temporal, co-registered SAR intensity images.
+  The approach used for the filtering of multi-temporal,
+  co-registered SAR intensity images is optimal under the
+  assumption of uncorrelated images (private communication S.
+  Quegan). The speckle reduction achieved for correlated images is
+  not optimal. For the filtering of rather uncorrelated ERS data
+  acquired during 35 day repeat orbits this filtering is very
+  appropriate and provides excellent speckle reduction for the
+  individual images.</p>
+
+  <p>The basic filtering equation used is:</p>
+
+  <p><img style="width: 124px; height: 65px;" src="eq6.gif" alt=
+  "equation 6" align="middle" border="1"></p>
+
+  <p>where:<br>
+  <i>i</i>= 1, ... ,<i>M</i>: file number<br>
+  <i>M</i>: number of input files<br>
+  <i>I<sub>j</sub></i>: Input intensity of image <i>i</i><br>
+  <i>J<sub>i</sub></i>: Filtered intensity of image <i>i</i><br>
+  <i><span style=
+  "font-family: Symbol;">sigma</span><sub>i</sub></i>: Spatial
+  average of input intensity of image <i>i</i></p>
+
+  <p>For the estimation of the spatial averages of the input
+  intensity images a moving weighted averaging filter is used by
+  the program temp_filt. The user can select between different
+  weighting functions and indicate the filter window size in range
+  and azimuth.</p>
+
+  <p>Null (0.0) values in the input file can either be interpreted
+  as missing data (by setting zero_flag = 0), or as valid data
+  values. In the case of the filtering of SAR data only the first
+  interpretation makes sense. There is the option to process a
+  sub-section of the input data by indicating the ofset to the
+  starting line (the default=0 indicates to start with the first
+  data line) and number of lines to process.</p>
+
+  <p>For M registered input files <span style=
+  "font-style: italic;">temp_filt</span> and <span style=
+  "font-style: italic;">temp_filt_ad</span> generate M temporally
+  filtered output files with reduced speckle noise. To produce a
+  single output image of the mean over the M registered input files
+  the program <a href="temp_lin_var.html">temp_lin_var</a> or
+  <a href="temp_log_var.html">temp_log_var</a> is used. In addition
+  the program <a href="lin_comb.html">lin_comb</a> allows to
+  calculate linear combinations of M registered input files.</p>
+
+  <p>The program <span style=
+  "font-style: italic;">temp_filt_ad</span> allows to uses
+  previously determined (adaptive) estimates of the spatial means.
+  Spatially adaptive estimation is supported by the program
+  <a href="frost.html">frost</a>.</p>
+
+  <p>The names of the input and output data files are stored in a
+  text file called the <span style=
+  "font-style: italic;">data_tab</span>&nbsp; in the argumenet
+  list. The <span style="font-style: italic;">data_tab</span>
+  consists of several columns. In <span style=
+  "font-style: italic;">temp_filt</span> the first column is the
+  input data file and the second column is the associated
+  temperally filtered output file. For <span style=
+  "font-style: italic;">temp_filt_ad</span> there are 3 columns in
+  the <span style="font-style: italic;">data_tab</span> file. The
+  first column is the input data file, the second is the spatially
+  filtered input data, and the third is the temporally filtered
+  output file.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Speckle reduction by multi-temporal filtering can be used as a
+  preparation step to the calculation of ratios and the temporal
+  variability of co-registered backscatter images.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="frost.html">frost</a>, <a href=
+  "lin_comb.html">lin_comb</a>, <a href=
+  "temp_lin_var.html">temp_lin_var</a>, <a href=
+  "temp_log_var.html">temp_log_var</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Apr-2009.</p>
+</body>
+</html>

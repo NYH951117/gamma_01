@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: gcp_phase</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>gcp_phase</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/gcp_phase.c"><i>gcp_phase.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  gcp_phase - extract unwrapped interferometric phases at Ground
+  Control Points (GCPs).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gcp_phase &lt;unw&gt; &lt;OFF_par&gt; &lt;gcp&gt;
+  &lt;gcp_ph&gt; [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;unw&gt;</td>
+
+        <td>(input) unwrapped interferometric phase</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP interferogram/offset parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;gcp&gt;</td>
+
+        <td>(input) ground control point data (text format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;gcp_ph&gt;</td>
+
+        <td>(output) ground control point data + extracted
+        unwrapped phase (text format)</td>
+      </tr>
+
+      <tr>
+        <td>[win_sz]</td>
+
+        <td>window size for averaging phase for each gcp, must be
+        odd (default=5)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gcp_phase 1352.unw 1352_1610.off 1352_1610.gcp
+  1352_1610.gcp_data 5</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  gcp_phase extracts for the ground control points the
+  corresponding unwrapped interferometric phase and writes it to
+  the GCP data file. The phase should be from the unwrapped
+  interferogram after adding back the topographic phase used to
+  generate the differential interferograms and facilitate
+  unwrapping.&nbsp;</p>
+
+  <p>There is the option in&nbsp; <a href=
+  "base_ls.html">base_ls</a> to a add back a phase trend that was
+  subtracted when flattening the interferogram using <a href=
+  "phase_slope_base.html">ph_slope_base</a> however this approach
+  is now rarely used. This is&nbsp; because phase unwrapping is
+  generally performed on a differential interferogram where the
+  phase from a simulated interferogram calculated using
+  <span style="font-style: italic;">phase_sim</span> (in the
+  DIFF/GEO package) , has been subtracted. This phase must be added
+  back using <span style="font-style: italic;">sub_phase</span> (in
+  the DIFF/GEO package).</p>
+
+  <p>These unwrapped phase values are used by the program&nbsp;
+  <a href="base_ls.html">base_ls</a> to estimate the corrections to
+  the baseline. The window size used for the estimation of the
+  unwrapped interferometric phase at the location of the ground
+  control points can be selected (only odd values can be selected),
+  the optimum value is typically 1 or 3&nbsp; depending on how much
+  smoothing has been performed.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "base_ls.html">base_ls</a>, <a href=
+  "phase_slope_base.html">ph_slope_base</a>, <a href=
+  "base_orbit.html">base_orbit</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Nov-2008.</p>
+</body>
+</html>

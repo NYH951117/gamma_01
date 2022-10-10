@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: rascc_mask_thinning</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>rascc_mask_thinning</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/rascc_mask_thinning.c">rascc_mask_thinning.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>rascc_mask_thinning</i> - Adaptive sampling reduction for
+  phase unwrapping validity mask.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>rascc_mask_thinning &lt;ras_in&gt; &lt;in_file&gt;
+  &lt;width&gt; &lt;ras_out&gt; [nmax] [thresh_1] ...
+  [thresh_nmax]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tr>
+      <td>&lt;ras_in&gt;</td>
+
+      <td>(input)validity mask (8-bit SUN rasterfile or BMP format
+      image)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;in_file&gt;</td>
+
+      <td>(input)file used for adaptive sampling reduction, e.g.
+      coherence (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row of in_file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>(output) validity mask with reduced sampling (8-bit SUN
+      rasterfile or BMP format image)</td>
+    </tr>
+
+    <tr>
+      <td>[nmax]</td>
+
+      <td>number of sampling reduction runs (default: 3)</td>
+    </tr>
+
+    <tr>
+      <td>[thresh_1]</td>
+
+      <td>first threshhold (used for smallest scale sampling
+      reduction)</td>
+    </tr>
+
+    <tr>
+      <td>[...]</td>
+
+      <td>further threshholds</td>
+    </tr>
+
+    <tr>
+      <td>[thresh_nmax]</td>
+
+      <td>threshhold nmax (used for largest scale sampling
+      reduction)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>rascc_mask_thinning 01608_02109.mask.ras 01608_02109.cc 2456
+  01608_02109.mask_thinned.ras 5 0.3 0.4 0.5 0.6 0.7</tt></p>
+
+  <p>Reads the input phase unwrapping validity mask and reduces the
+  sampling adaptively to the provided coherence. Five thinning runs
+  are conducted.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>rascc_mask_thinning</i> Reads the input phase unwrapping
+  validity mask and reduces the sampling adaptively to the provided
+  coherence. In low coherence areas (i.e. for high phase noise or
+  high phase gradient) the full sampling is maintained. In areas of
+  higher coherence (i.e. for lower phase noise and lower phase
+  gradients) the sampling is reduced.</p>
+
+  <p>The main reason for such adaptive thinning of the phase
+  unwrapping validity mask is to reduce the number of samples
+  considered in the global optimization step of the Minimum Cost
+  Flow (MCF) phase unwrapping technique. On one hand this technique
+  is memory intensive, on the other hand gllobal optimization is
+  wanted. In many cases masking and adaptive thinning of the
+  validity mask allow to reduce the number of samples allowing to
+  solve the MCF optimiation problem in a single step, i.e. without
+  patching of the data, which is the necessary aproach
+  otherwise.</p>
+
+  <p>The thinning is done in several runs. In a first run the
+  sampling is reduced in areas where the reference file value,
+  typically selected to be a coherence image, is above the first
+  threshhold indicated. In a second run additional thinning is
+  applied for areas where the reference file value is above the
+  second threshhold indicated, and so on. Consequently, the
+  threshold values indicated should rather increase, as larger
+  scale thinning is only applicable for very low phase
+  variation.</p>
+
+  <p>The targeted thinning is that the phase variation between the
+  retained points is small as compared to a full phase cycle.
+  Undersampling has to be avoided, as this will increase the
+  difficulty of the phase unwrapping.</p>
+
+  <p>The input validity mask is generated using the program
+  <a href="rascc_mask.html">rascc_mask</a> and it is used for phase
+  unwrapping with the program <a href="mcf.html">mcf</a>, to avoid
+  regions of high phase noise in the phase unwrapping.</p>
+
+  <p>For all pixels corresponding to masked pixels (i.e. pixels not
+  to be considered in the phase unwrapping) the validity mask
+  values are set to 0, respectively to black, i.e. (0,0,0).</p>
+
+  <p>The program <a href="interp_ad.html">interp_ad</a> can be used
+  to interpolate the unwrapped phases with the reduced sampling. In
+  order to have the full interferogram unwrapped these interpolate
+  the unwrapped phases can be used as a model and assuming that the
+  unwrapped phase value is always with an interval of (-PI,+PI) of
+  the model value. This step is supported by the program <a href=
+  "unw_model.html">unw_model</a> and permits to achieve an
+  unwrapped phase fully corresponding to the wrapped phase in the
+  sense that it is identical if re-wrapped.</p>
+
+  <p><b>OPTIONS</b><br>
+  None.</p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>NOTES</b><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="mcf.html">mcf</a>, <a href=
+  "rascc_mask.html">rascc_mask</a>, <a href=
+  "interp_ad.html">interp_ad</a>, <a href=
+  "unw_model.html">unw_model</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 27-Mar-2002.</p>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: spf_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>spf_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/spf_pt.c">spf_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  spf_pt - spatial filter and reference point bias removal for
+  point data (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>spf_pt &lt;plist&gt; &lt;pmask&gt; &lt;SLC_par&gt;
+  &lt;pdata_in&gt; &lt;pdata_out&gt; [rec_num] [type] [r_max]
+  [spf_type] [np_max] [pt_num] [mode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_out&gt;</td>
+
+        <td>(output) spatially filtered point data stack (same type
+        as pdata_in)</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata_in and pdata_out to process
+        (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>[spf_type ]</td>
+
+        <td>spatial filter type<br>
+        &nbsp;&nbsp;&nbsp; 0: uniform average (default for fcomplex
+        and scomplex data)<br>
+        &nbsp;&nbsp;&nbsp; 1: triangular weighted average<br>
+        &nbsp;&nbsp;&nbsp; 2: linear least-squares (default for
+        float data))<br></td>
+      </tr>
+
+      <tr>
+        <td>&nbsp;np_max</td>
+
+        <td>maximum number of neighbor points in the filter
+        (default 32, -: all points within search radius)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum radius (range samples, default: 64)</td>
+      </tr>
+
+      <tr>
+        <td>[w_func]</td>
+
+        <td>radial weighting function (0: 1.0 1:
+        1.0-radius/r_max)</td>
+      </tr>
+
+      <tr>
+        <td>[np_max]</td>
+
+        <td>maximum number of neighbor points in the filter
+        (default - : all points within search radius)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">pt_num<br></td>
+
+        <td style="vertical-align: top;">point number for local
+        filtering about a single point (beginning with 0)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">mode<br></td>
+
+        <td style="vertical-align: top;">processing mode
+        (default=0:spatial filtering 1:reference point bias
+        removal)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>spf_pt testsite.plist testsite.pmask 08256.rslc.par
+  testsite.punw1 testsite.punw2 14 2 25 1 12</samp></p>
+
+  <p>Conducts a spatial filtering of record 14 of the point data
+  stack testsite.punw1. Points within a radius of 25 SLC range
+  samples are identified, ordered by distance, and the nearest 12
+  (or fewer) used for the spatial filtering.</p>
+
+  <p><samp>spf_pt testsite.plist testsite.pmask 08256.rslc.par
+  testsite.punw1 testsite.punw2 - 2 25 1 -1</samp></p>
+
+  <p>Conducts a spatial filtering of all records of the point data
+  stack testsite.punw1. All points within a radius of 25 SLC range
+  samples are considered in the spatial filtering.</p>
+
+  <p><samp>spf_pt testsite.plist testsite.pmask 08256.rslc.par
+  testsite.punw1 testsite.punw2 - 2 200 1 12</samp></p>
+
+  <p>Conducts a spatial filtering of all records of the point data
+  stack testsite.punw1. Points within a very large radius (of 200
+  SLC range samples) are identified, ordered by distance, and the
+  nearest 12 (or fewer) are used for the spatial filtering. In this
+  case the criteria corresponds for the vast majority of points to
+  "using the 12 nearest points".&nbsp;<br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code spf_pt.c in ./IPTA/src, executable version spf_pt in
+  ./IPTA/bin</p><strong>DESCRIPTION</strong><br>
+  spf_pt supports the spatial filtering of point data stacks.
+  Either one or all records can be filtered. The points to be
+  considered in the filtering can be indicated through the spatial
+  radius (indicated in range samples) and the maximum number of
+  points considered, or just one of the two criteria by selecting
+  all records in the other criteria.Together with the point list a
+  point data stack of mask values can be indicated to consider or
+  ignore specific points. "-" can be indicated instead a pmask file
+  to consider all points of the list.<br>
+  <br>
+  Either one record or all records can be filtered. To select all
+  records in the stack enter "-"&nbsp; for the&nbsp; record number.
+  Different format types (0:fcomplex 1:scomplex 2:float, default -:
+  float) are supported. The format of the output point data stack
+  with the filtered values has the same type as the input point
+  data stack.<br>
+  <br>
+  The SLC parameter file associated with the point list coordinate
+  geometry is required to calculate ground distances between pairs
+  of points. Such distances are calculated using the ground range
+  sampling (calculated from slant range sampling and incidence
+  angle) and the azimuth spacing. The maximum search area radius is
+  indicated in SLC range samples. Only valid points, i.e. points
+  with a non-zero value in the mask are considered. For points with
+  a zero in the mask the output is set to the NULL value.
+
+  <p>For the spatial filtering constant weights or a linearly
+  decreasing ramp (linear with ground distance) can be selected.
+  Points with NULL values in the input data are not considered in
+  the search for the nearest points (they are not counted as points
+  in the filtering).&nbsp; For float data values, filtering based
+  upon a least-squares planner fit to the data values is the
+  default filtering method (spf_type = 2).&nbsp; This gives a
+  better estimate of the filtered data when the data points are not
+  uniformly distributed over the search region. This situation
+  occurs at the edges of&nbsp; data.<br></p>
+
+  <p>In single point filtering mode where parameter pt_num is set,
+  only the value of the data at point pt_num is altered, all other
+  points in the input data stack are copied. The values of the mask
+  array<br>
+  are taken into account during the copy operation such that points
+  with mask[i] = 0 are set to 0.<br></p>
+
+  <p>The average phase a single point can be viewed as a bias for
+  the differential phase at for the image since by definition, the
+  differential phase must be 0 at the reference point. Removal of
+  this bias removes a noise contribution in the regression
+  analysis.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, <a href="othmar_frey.html">OF</a>,
+  last change 29-Mar-2011.</p>
+</body>
+</html>

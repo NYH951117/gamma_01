@@ -1,0 +1,1396 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Users Guide: Examples</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric SAR Processor (ISP):</h1>
+
+  <h2>ISP Users Guide: Processing Example</h2>
+  <hr>
+
+  <p><a href="ISP_examples.html#interferogram">Interferogram
+  Calculation</a></p>
+
+  <p><a href="ISP_examples.html#phase_unwrapping">Phase
+  Unwrapping</a></p>
+
+  <p><a href="ISP_examples.html#height_map">Derivation of Height
+  Map</a></p>
+
+  <p><a href=
+  "ISP_examples.html#orthonormalization">Orthonormalization</a></p>
+  <hr>
+
+  <h2>Introduction</h2>
+
+  <p>In the following ISP processing example will be given to
+  support the using of the software.</p>
+
+  <p>The following directory structure is used:</p>
+
+  <table border="0">
+    <tbody>
+      <tr>
+        <td>./8059</td>
+
+        <td>Contains slc data and related parameter files of first
+        image (orbit 8059)</td>
+      </tr>
+
+      <tr>
+        <td>./8560</td>
+
+        <td>Contains slc data and related parameter files of second
+        image (orbit 8560)</td>
+      </tr>
+
+      <tr>
+        <td>./8059_8560</td>
+
+        <td>Contains interferometric data and related parameter
+        files</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><a name="interferogram" id="interferogram">Interferogram
+  generation</a></h2>
+
+  <h4>1. Read the input SLC data</h4>
+
+  <p>The starting point for generation of an interferogram is 2
+  Single Look Complex (SLC) images. These can be generated locally
+  using the Gamma MSP or read from CDROM (or tape) in processed
+  form from ESA or other processing facility.</p>
+
+  <p><strong>1. (Optional)To read SLC data from tape</strong><br>
+  The reading of SLC data from Tape and provided by a processing
+  and archiving facility (ESA-DPAF for example) is supported by a
+  number of shell scripts. Make directory ./8059 (8059 is the orbit
+  number) and run there the script ERS_ESA_SLC (or a similar script
+  for other processing facilities):</p>
+
+  <p><a href=
+  "ISP_scripts.html#ERS_ESA_SLC"><code><b>ERS_ESA_SLC</b></code></a><code><b>8059
+  /dev/rmt/0mn</b></code></p>
+
+  <table border="0">
+    <tbody>
+      <tr>
+        <td>Files</td>
+
+        <td>Contents</td>
+      </tr>
+
+      <tr>
+        <td>8059.vdf</td>
+
+        <td>Volume directory file</td>
+      </tr>
+
+      <tr>
+        <td>8059.ldr</td>
+
+        <td>SAR leader file</td>
+      </tr>
+
+      <tr>
+        <td>8059.slc</td>
+
+        <td>SAR SLC data</td>
+      </tr>
+
+      <tr>
+        <td>8059.nvdf</td>
+
+        <td>Volume directory file</td>
+      </tr>
+
+      <tr>
+        <td>8059.slc.ras</td>
+
+        <td>A 20-look SUN rasterfile image generated with <a href=
+        "ISP_display.html#ISP_sunraster">rasSLC</a></td>
+      </tr>
+
+      <tr>
+        <td>8059.slc.par</td>
+
+        <td>ISP SLC parameter file generated with <a href=
+        "par_all.html">par_ESA</a></td>
+      </tr>
+
+      <tr>
+        <td>8059.azspec</td>
+
+        <td>Azimuth spectrum obtained in the Doppler centroid
+        calculation using <a href=
+        "az_spec_SLC.html">az_spec_ESA</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Repeat the same procedure for the second data set (orbit
+  8560)</p>
+
+  <p>For SLC data processed with the Gamma MSP the ISP SLC
+  parameter file is generated using <a href=
+  "par_all.html">par_MSP</a>. The SLC data format is either a pair
+  of 4-byte floating point numbers (re,im) or a pair of short
+  integers. The parameter with keyword "image_format" in the SLC
+  parameter file is used to differentiate the two formats. If no
+  state vectors are present in the leader file state vector,
+  information can be extracted from ESA provided precision orbit
+  information files (PRC) using the program <a href=
+  "PRC_vec.html">PRC_vec</a>.</p>
+
+  <p><strong>2. Initial offset estimation</strong></p>
+
+  <p>In the following the working directory is assumed to be
+  ./8059_8560. There, the so called ISP processing/offset parameter
+  file 8059_8560.off is generated using <a href=
+  "create_offset.html">create_offset</a>. The ISP offset parameter
+  file contains information used in the interferometric processing,
+  such as file dimensions, geometric parameters, and the
+  registration offset polynomials:</p>
+
+  <p><a href=
+  "create_offset.html"><code><b>create_offset</b></code></a><code><b>8059.slc.par
+  8560.slc.par 8059_8560.off 1</b></code><br>
+  The last input variable indicates the registration algorithm that
+  will be used (1 for registration based on image intensity
+  cross-correlation, 2 for fringe visibility method)</p>
+
+  <p>Initial range and azimuth offsets between the two slc images
+  are estimated either manually by the operator (To do this the
+  operator is supported with the SLC image display program <a href=
+  "ISP_display.html">disSLC</a>) or automatically using <a href=
+  "init_offset.html">init_offset</a>. In order to avoid ambiguity
+  problems and still to achieve an accurate estimates init_offset
+  may first be run with multi-looking, followed by a second run at
+  single look resolution:<br>
+  <a href=
+  "init_offset.html"><code><b>init_offset</b></code></a><code><b>8059.slc
+  8560.slc 8059.slc.par 8560.slc.par 8059_8560.off 2
+  10</b></code><br>
+  <a href=
+  "init_offset.html"><code><b>init_offset</b></code></a><code><b>8059.slc
+  8560.slc 8059.slc.par 8560.slc.par 8059_8560.off 1
+  1</b></code></p>
+
+  <p>The initial offset estimate is written to 8059_8560.off. In
+  the second run the first estimate (as stored in 8059_8560.off) is
+  used as initial guess. Another possibility is to run the program
+  <a href="init_offset.html">init_offset</a> prior to the creation
+  of the ISP processing parameter file. In this case init_offset
+  also creates the ISP processing parameter file. This has the
+  advantage that the limits for the area to be used for the fine
+  registration can be determined taking into account the already
+  available initial registration offsets.</p>
+
+  <p><strong>3. Precision estimation of offset
+  polynomials</strong><br>
+  There are two methods for the precision (sub-pixel accuracy)
+  estimation of the range and azimuth offset polynomials included.
+  <b>The first method</b> is based on the image intensity. This
+  method does not depend on the level of coherence between the two
+  SLC and is computational efficient. The method requires at least
+  a minimum of image contrast. Notice that some of the ISP
+  processing parameter values have to be set appropriately for the
+  use of offset_pwr. The variables of
+  offset_estimation_starting_range etc. are to keep the search to
+  the region of valid SLC data. The more important parameters for
+  the search are:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>ISP processing parameter:</td>
+
+        <td>Example for appropriate values for use of
+        offset_pwr</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_range_samples:</td>
+
+        <td>32</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_azimuth_samples:</td>
+
+        <td>32</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_window_width:</td>
+
+        <td>64</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_window_height:</td>
+
+        <td>64</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_threshold::</td>
+
+        <td>7.0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><a href=
+  "offset_pwr.html"><code><b>offset_pwr</b></code></a><code><b>8059.slc
+  8560.slc 8059.slc.par 8560.slc.par 8059_8560.off 8059_8560.offs
+  8059_8560.snr 8059_8560.offsets</b></code></p>
+
+  <p><b>The second method</b> is based on the complex valued data.
+  For a large number of image segments this method searches for the
+  range and azimuth offsets resulting in the maximum level of
+  coherence. The method requires at least for a number of location
+  s in the image a sufficient level of coherence between the two
+  SLC. The method also works for very low image contrast. Again the
+  variables offset_estimation_starting_range etc. are to keep the
+  search to the region of valid SLC data. Appropriate values for
+  the more important parameters for this search are:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>ISP processing parameter:</td>
+
+        <td>Example for appropriate values for use of
+        offset_SLC</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_range_samples:</td>
+
+        <td>16</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_azimuth_samples:</td>
+
+        <td>16</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_window_width:</td>
+
+        <td>16</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_window_height:</td>
+
+        <td>16</td>
+      </tr>
+
+      <tr>
+        <td>offset_estimation_threshold::</td>
+
+        <td>3.0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><a href=
+  "offset_SLC.html"><code><b>offset_SLC</b></code></a><code><b>8059.slc
+  8560.slc 8059.slc.par 8560.slc.par 8059_8560.off 8059_8560.offs
+  8059_8560.snr</b></code></p>
+
+  <p>The quality of each individual offset estimate is determined.
+  If no estimates with good quality are achieved the registration
+  will fail. This may be a result of:<br>
+  - poor initial estimate<br>
+  - too large baseline<br>
+  - too much change (water, forest, high vegetation, long
+  acquisition time interval).</p>
+
+  <p>Both approaches determined a field of registration offsets
+  (file *.offs) and a corresponding quality measure field (*.snr).
+  Based on these the bilinear registration offset polynomial is
+  then determined using a least squares error method:</p>
+
+  <p><a href=
+  "offset_fit.html"><code><b>offset_fit</b></code></a><code><b>8059_8560.offs
+  8059_8560.snr 8059_8560.off 8059_8560.coffs 8059_8560.coffsets
+  3.0 4 0</b></code></p>
+
+  <p>The resulting registration offset polynomials for range and
+  azimuth offset are written to the ISP processing?offset parameter
+  file.</p>
+
+  <p><strong>4. Compute normalized interferogram and registered
+  intensity images</strong></p>
+
+  <p>Two different approaches are supported. <b>The first
+  approach</b> directly calculates the normalized interferogram and
+  the registered intensity images from the two (non-registered) SLC
+  and the registration function contained in the ISP processing
+  parameter file (*.off) without writing the registered SLC to a
+  file. This approach requires less disk space and is faster
+  because the interpolation and common spectral band filtering can
+  be applied in a single filtering step.</p>
+
+  <p><a href=
+  "interf_SLC.html"><code><b>interf_SLC</b></code></a><code><b>8059.slc
+  8560.slc 8059.slc.par 8560.slc.par 8059_8560.off 8059_8560.pwr1
+  8059_8560.pwr2 8059_8560.int 2 10</b></code></p>
+
+  <p>The two slc images are first filtered in range and azimuth
+  direction (common spectral band filtering) and then one image is
+  multiplied with the conjugate complex of the second image, and
+  normalized. Multi-looking in range (2-look in the example given)
+  and azimuth (10-looks) is applied in the interferogram
+  computation. The resulting interferogram consists of complex
+  values with the magnitude corresponding to the 20-look
+  interferometric correlation and the phase to the interferometric
+  phase. In addition the registered intensity images are calculated
+  applying the same multi-looking as for the interferogram. The
+  filtering-functions are accounted for, so that the image
+  intensities remain unchanged.</p>
+
+  <p><b>The second approach</b> resamples in a first step the
+  second SLC to the reference geometry (i.e. the geometry of the
+  first SLC).</p>
+
+  <p><a href=
+  "SLC_interp.html"><code><b>SLC_interp</b></code></a><code><b>8560.slc
+  8059.slc.par 8560.slc.par 8059_8560.off 8560.rslc
+  8560.rslc.par</b></code></p>
+
+  <p>The two co-registered SLC are then used to create the
+  interferogram. Common spectral band filtering is applied in the
+  interferogram generation step.</p>
+
+  <p><a href=
+  "SLC_intf.html"><code><b>SLC_intf</b></code></a><code><b>8059.slc
+  8560.rslc 8059.slc.par 8560.rslc.par 8059_8560.off 8059_8560.int
+  2 10</b></code></p>
+
+  <p>The two slc images are first filtered in range and azimuth
+  direction (common spectral band filtering) and then one image is
+  multiplied with the conjugate complex of the second image, and
+  normalized. Multi-looking in range (2-looks in the example given)
+  and azimuth (10-looks) is applied in the interferogram
+  computation. The resulting interferogram consists of complex
+  values with the magnitude corresponding to the 5-look
+  interferometric correlation and the phase to the interferometric
+  phase. The registered multi-look intensity images are calculated
+  in a separate step applying the same multi-looking as for the
+  interferogram.</p>
+
+  <p><a href=
+  "multi_look.html"><code><b>multi_look</b></code></a><code><b>8059.slc
+  8059.slc.par 8059.mli 8059.mli.par 2 10</b></code></p>
+
+  <p><a href=
+  "multi_look.html"><code><b>multi_look</b></code></a><code><b>8560.rslc
+  8560.rslc.par 8560.rmli 8560.rmli.par 2 10</b></code></p>
+
+  <p>In order to be consistent in the continuation it is
+  recommended to copy or link the multi-look intensity images to
+  the names used in the first approach.</p>
+
+  <p><code><b>ln -s 8059.mli 8059_8560.pwr1</b></code></p>
+
+  <p><code><b>ln -s 8560.rmli 8059_8560.pwr2</b></code></p>
+
+  <p>Independent of which approach was used the following files
+  were generated:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>File:</td>
+
+        <td>File name in example</td>
+      </tr>
+
+      <tr>
+        <td>SLC parameter file of reference SLC</td>
+
+        <td>8059.slc.par</td>
+      </tr>
+
+      <tr>
+        <td>ISP processing parameter file:</td>
+
+        <td>8059_8560.off</td>
+      </tr>
+
+      <tr>
+        <td>Normalized complex valued interferogram:</td>
+
+        <td>8059_8560.int</td>
+      </tr>
+
+      <tr>
+        <td>Image intensity file 1:</td>
+
+        <td>8059_8560.pwr1</td>
+      </tr>
+
+      <tr>
+        <td>Image intensity file 2:</td>
+
+        <td>8059_8560.pwr2</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>5. Estimation of interferometric baseline</strong></p>
+
+  <p>There are two ways to estimate the interferometric baseline at
+  this point.<br>
+  <b>The first method</b> calculates the baseline from the orbital
+  information, i.e. the state vectors given in the SLC Parameter
+  file:</p>
+
+  <p><a href=
+  "base_orbit.html"><code><b>base_orbit</b></code></a><code><b>8059.slc.par
+  8560.slc.par 8059_8560.base</b></code></p>
+
+  <p><b>The second method</b> estimates a baseline from the fringe
+  rate of the normalized interferogram using fft:</p>
+
+  <p><a href=
+  "base_est_fft.html"><code><b>base_est_fft</b></code></a><code><b>8059_8560.int
+  8059.slc.par 8059_8560.off 8059_8560.base 512</b></code></p>
+
+  <p>The second method is applied in particular if no state vectors
+  or state vectors of rather poor quality are available. In both
+  cases the estimated baseline coordinates and change rates (in TCN
+  coordinates) are written to the first two lines of the baseline
+  file.</p>
+
+  <p><strong>6. Curved Earth phase trend removal
+  ("flattening")</strong></p>
+
+  <p>The phase trend expected for a smooth curved Earth (ellipsoid,
+  height constant) is removed from the interferogram using:</p>
+
+  <p><a href=
+  "ph_slope_base.html"><code><b>ph_slope_base</b></code></a><code><b>8059_8560.int
+  8059.slc.par 8059_8560.off 8059_8560.base
+  8059_8560.flt</b></code></p>
+
+  <p>The phase of the resulting "flattened" interferogram does not
+  change as quickly as the interferogram with the orbital fringes
+  facilitating filtering and averaging operations.The flattened
+  interferogram retrieved using base_orbit for the Death Valley
+  site is shown below. Such a display is achieved using the program
+  <a href="ISP_display.html#dismph">dismph</a></p>
+
+  <p align="center"><img src="figures/dv_flt.jpg" alt=
+  "flattened interferogram (phase, coherence)" height="344" align=
+  "middle" border="1" width="300"></p>
+
+  <p>Figure: Death Valley, ERS-1 flattened interferogram
+  8059_8560.flt. One color cycle corresponds to 2&amp;pi
+  interferometric phase. The image brightness shows the
+  interferogram magnitude, which corresponds to the 5 look estimate
+  of the coherence. The "flattening" is not perfect due to small
+  errors in the state vectors. Another often way to display the
+  interferograms is to display the interferometric phase in color
+  and the backscatter intensity of image 1 as image brightness
+  (Program <a href=
+  "ISP_display.html#dismph_pwr">dismph_pwr</a>).</p>
+
+  <p align="center"><img src="figures/dv_fltp.jpg" alt=
+  "flattened interferogram (phase, pwr)" height="343" align=
+  "middle" border="1" width="300"></p>
+
+  <p>Figure: Death Valley, ERS-1 flattened interferogram
+  8059_8560.flt. Color corresponds to interferometric phase,
+  brightness to backscatter intensity.</p>
+
+  <p><strong>7. Estimation of degree of coherence</strong></p>
+
+  <p>The degree of coherence (interferometric correlation) is
+  estimated from the "flattened" interferogram.<br>
+  In the example 5x5 5-look pixels, i.e. 75 looks are used in the
+  coherence estimation. Using the program cc_wave the estimation is
+  done with a uniform, linear or gaussian weighting function.</p>
+
+  <p><a href=
+  "cc_wave.html"><code><b>cc_wave</b></code></a><code><b>8059_8560.flt
+  8059_8560.pwr1 8059_8560.pwr2 8059_8560.cc 750 5.0 5.0
+  1</b></code></p>
+
+  <p align="left">In the example the weight decrease linearly with
+  increasing distance for the center pixel. Non-integer window
+  sizes may be used (the program uses always odd integer value
+  sized windows, but with the weights set to represent the
+  non-integer window sizes.) To display the coherence (in color)
+  combined with the backscatter intensity of image 1 (as image
+  brightness) the program <a href=
+  "ISP_display.html#discc">dismph_cc</a> is used.</p>
+
+  <p align="center"><img src="figures/dv_cc.jpg" alt=
+  "dv coherence (cc, pwr1)" height="344" align="middle" border="1"
+  width="300"></p>
+
+  <p>Figure: Death Valley, ERS-1 coherence 8059_8560.cc. Color
+  corresponds to interferometric coherence, brightness to
+  backscatter intensity.</p>
+
+  <p><strong>8. Screen display of MSP/ISP images and generation of
+  SUN raster or BMP format files</strong></p>
+
+  <p>Special display tools are included to display the varies image
+  files generated by the ISP. These display tools allow to
+  visualize the data as well as the coordinates and data values at
+  the cursor location. Examples for the use of the display tools
+  are:</p>
+
+  <blockquote>
+    <p>1. To display the interferometric phase together with a
+    backscatter intensity image:</p>
+
+    <p><a href=
+    "ISP_display.html"><code><b>dismph_pwr</b></code></a><code><b>8059_8560.flt
+    8059_8560.pwr1 750</b></code></p>
+
+    <p>2. To display the interferometric correlation together with
+    a backscatter intensity image:</p>
+
+    <p><a href=
+    "ISP_display.html"><code><b>discc</b></code></a><code><b>8059_8560.cc
+    8059_8560.pwr1 750</b></code></p>
+
+    <p>3. To alternatively display the two backscatter intensity
+    images:</p>
+
+    <p><a href=
+    "ISP_display.html"><code><b>dis2pwr</b></code></a><code><b>8059_8560.pwr1
+    8059_8560.pwr2 750 750</b></code></p>
+  </blockquote>
+
+  <p>In addition SUN raster or BMP format files can be generated to
+  improve the portability of the results (for display and printing
+  with a wide range of image processing software). Examples
+  are:</p>
+
+  <blockquote>
+    <p>1. The generation of a SUN raster of the interferometric
+    phase together with a backscatter intensity image:</p>
+
+    <p><a href=
+    "ISP_display.html"><code><b>rasmph_pwr</b></code></a><code><b>8059_8560.flt
+    8059_8560.pwr1 750</b></code></p>
+
+    <p>2. The generation of a SUN raster image of the
+    interferometric correlation together with a backscatter
+    intensity image:</p>
+
+    <p><a href=
+    "ISP_display.html"><code><b>rascc</b></code></a><code><b>8059_8560.cc
+    8059_8560.pwr1 750</b></code></p>
+
+    <p>3. To generate a SUN raster image of a backscatter intensity
+    images:</p>
+
+    <p><a href=
+    "ISP_display.html"><code><b>raspwr</b></code></a><code><b>8059_8560.pwr1
+    750</b></code></p>
+  </blockquote>
+
+  <p>Both the display and SUN raster and BMP format generation
+  programs allow selection of an image sub-section and adjustment
+  of scaling factors. See <a href=
+  "ISP_display.html">ISP_display</a> for a complete list and
+  further documentation of the display and SUN raster/ BMP format
+  image types. At this point of the processing the following files
+  were generated:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>File:</td>
+
+        <td>File name in example</td>
+      </tr>
+
+      <tr>
+        <td>SLC parameter file of reference SLC</td>
+
+        <td>8059.slc.par</td>
+      </tr>
+
+      <tr>
+        <td>ISP processing parameter file:</td>
+
+        <td>8059_8560.off</td>
+      </tr>
+
+      <tr>
+        <td>ISP baseline file:</td>
+
+        <td>8059_8560.base</td>
+      </tr>
+
+      <tr>
+        <td>Normalized complex valued interferogram:</td>
+
+        <td>8059_8560.int</td>
+      </tr>
+
+      <tr>
+        <td>Flattened complex interferogram:</td>
+
+        <td>8059_8560.flt</td>
+      </tr>
+
+      <tr>
+        <td>Image intensity file 1:</td>
+
+        <td>8059_8560.pwr1</td>
+      </tr>
+
+      <tr>
+        <td>Image intensity file 2:</td>
+
+        <td>8059_8560.pwr2</td>
+      </tr>
+
+      <tr>
+        <td>Coherence image:</td>
+
+        <td>8059_8560.cc</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr>
+
+  <h2><a name="phase_unwrapping" id="phase_unwrapping">Phase
+  Unwrapping</a></h2>
+
+  <p>In the normalized interferogram the interferometric phase is
+  only known Modulo 2&amp;pi. As a consequence the interpretation
+  of the interferometric phase has to be preceeded by the
+  determination of the correct multiple of 2&amp;pi. This is done
+  in the procedure called phase unwrapping. The ISP supports two
+  quite different solutions to the phase unwrapping problem, namely
+  phase unwrapping using branch-cut region growing algorithms
+  similar to the one described by Rosen et al. (1994), and a phase
+  unwrapping using minimum cost flow (MCF) techniques and a
+  triangular irregular network (TIN).The later method is preferred
+  in most cases since in requires significantly less user
+  interaction. The main phase unwrapping procedures used by the ISP
+  include several steps:</p>
+
+  <p><strong>Steps used in branch-cut region growing phase
+  unwrapping:</strong></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>Processing steps</td>
+
+        <td>Related program(s)</td>
+      </tr>
+
+      <tr>
+        <td>Filtering of complex interferogram</td>
+
+        <td><a href="adapt_filt.html">adapt_filt</a> or <a href=
+        "adf.html">adf</a></td>
+      </tr>
+
+      <tr>
+        <td>Masking low correlation areas</td>
+
+        <td><a href="corr_flag.html">corr_flag</a></td>
+      </tr>
+
+      <tr>
+        <td>Masking neutron areas (optional)</td>
+
+        <td><a href="neutron.html">neutron</a></td>
+      </tr>
+
+      <tr>
+        <td>Determination of residues</td>
+
+        <td><a href="residue.html">residue</a></td>
+      </tr>
+
+      <tr>
+        <td>Connection of residues through neutral trees</td>
+
+        <td><a href="tree_cc.html">tree_cc</a> or <a href=
+        "tree_gzw.html">tree_gzw</a></td>
+      </tr>
+
+      <tr>
+        <td>Unwrapping of interferometric phase</td>
+
+        <td><a href="grasses.html">grasses</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In the case that image sections are disconnected through areas
+  of low coherence (as a result of a water surface, for example) or
+  layover so called bridges have to be built between the
+  disconnected areas in order to continue the phase unwrapping.
+  This is done with the following sequence which may be repeated
+  several times:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>Processing steps</td>
+
+        <td>Related program</td>
+      </tr>
+
+      <tr>
+        <td>Display wrapped/unwrapped areas</td>
+
+        <td><a href="ISP_display.html">rastree</a></td>
+      </tr>
+
+      <tr>
+        <td>Use "bridges" to continue phase unwrapping</td>
+
+        <td><a href="bridge.html">bridge</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In the following these steps are described in more detail.</p>
+
+  <p><strong>9. Adaptive filtering of interferometric
+  phase</strong></p>
+
+  <p>There are two central problems in the unwrapping of the phase
+  of an interferogram:<br>
+  a) phase noise<br>
+  b) discontinuity of the interferometric phase (caused for example
+  by lay-over)<br>
+  The first problem can be addressed by filtering. Caution has to
+  be used if the interferometric phase cannot be expected to be
+  constant over the area used for the filtering. The ISP includes a
+  program to filter the interferometric phase adaptive to the local
+  slope:</p>
+
+  <p><a href=
+  "adapt_filt.html"><code><b>adapt_filt</b></code></a><code><b>8059_8560.flt
+  8059_8560.flt.sm 750 0.25 1.5</b></code></p>
+
+  <p><code><b>or</b></code></p>
+
+  <p><a href=
+  "adf.html"><code><b>adf</b></code></a><code><b>8059_8560.flt
+  8059_8560.flt.sm 8059_8560.cc 750 .3</b></code></p>
+
+  <p>The filtered interferogram has the same format as the
+  unfiltered interferogram.</p>
+
+  <p>The program <em>adf</em> applies a non-linear filter based
+  upon the power spectrum to the data.Typical exponent parameters
+  for adf lie in the range of .2 to .5. For phase unwrapping it is
+  necessary to have an estimate of the local fringe quality after
+  filtering. Because of the degree of filtering varies over the
+  image, adf estimates the local phase standard deviation after
+  filtering and converts this to an effective correlation. This
+  'correlation' file is specified on the command line.</p>
+
+  <p><strong>10. Masking low correlation areas</strong></p>
+
+  <p>Areas of low interferometric correlation (below a
+  user-specified threshold) are not included in the phase
+  unwrapping due to too high phase noise. Such areas of low
+  correlation are masked using:</p>
+
+  <p><a href=
+  "corr_flag.html"><code><b>corr_flag</b></code></a><code><b>8059_8560.cc
+  8059_8560.flt.sm.flag 750 0.25</b></code></p>
+
+  <p>A phase unwrapping flag file is generated containing the low
+  correlation mask as well as further information which will be
+  determined later on.</p>
+
+  <p><strong>11. Generation of neutrons to exclude regions of
+  lay-over by generation of dense cuts(optional)</strong></p>
+
+  <p>Neutrons are treated by the unwrapping code as residues with
+  no charge. Therefore, these points are included in branch cuts
+  but do not contribute to the net charge of a tree. Adding
+  neutrons based on image intensity will cause lay-over to be
+  excluded from unwrapping because a dense network of branch cuts
+  will occur if any charged residues are present. The lay-over area
+  is detected simply by backscattering which is more than a user
+  specified factor higher than the average backscattering.</p>
+
+  <p><a href=
+  "neutron.html"><code><b>neutron</b></code></a><code><b>8059_8560.pwr1
+  8059_8560.flt.sm.flag 750 6.0</b></code></p>
+
+  <p>The neutrons are written to the phase unwrapping flag
+  file.</p>
+
+  <p><strong>12. Determination of residues</strong></p>
+
+  <p>Residues are locations around which a closed integral of the
+  phase differences (assuming phase differences in the interval
+  [-&amp;pi &amp;pi] leads to a non-zero result. Such location lead
+  to inconsistencies in the phase unwrapping process. The ISP marks
+  such locations using:</p>
+
+  <p><a href=
+  "residue.html"><code><b>residue</b></code></a><code><b>8059_8560.flt.sm
+  8059_8560.flt.sm.flag 750</b></code></p>
+
+  <p>The residues are written to the phase unwrapping flag
+  file.</p>
+
+  <p><strong>13. Connection of residues through neutral
+  trees</strong></p>
+
+  <p>In a next step positive and negative residues are "discharged"
+  through "neutral trees" using one of the program<br>
+  <a href=
+  "tree_cc.html"><code><b>tree_cc</b></code></a><code><b>8059_8560.flt.sm.flag
+  750</b></code><br>
+  or<br>
+  <a href=
+  "tree_gzw.html"><code><b>tree_gzw</b></code></a><code><b>8059_8560.flt.sm.flag
+  750</b></code><br>
+  During the unwrapping of the interferometric phase no neutral
+  trees will be crossed. Therefore, the result will be independent
+  of the path chosen for the unwrapping.</p>
+
+  <p><strong>14. Unwrapping of interferometric phase</strong></p>
+
+  <p>The phase unwrapping is started at a user-defined location
+  (default location is the image center) and continued by region
+  growing for the entire area connected to the starting location
+  avoiding low correlation areas and without crossing neutral
+  trees:</p>
+
+  <p><a href=
+  "grasses.html"><code><b>grasses</b></code></a><code><b>8059_8560.flt.sm
+  8059_8560.flt.sm.flag 8059_8560.flt.sm.unw 750</b></code></p>
+
+  <p>The phase unwrapping flag file contains the information which
+  area was unwrapped.<br>
+  The unwrapped interferometric phase is written to a real valued
+  data file which can be displayed, for example, using <a href=
+  "ISP_display.html">disrmg</a>.</p>
+
+  <p align="center"><img src="figures/3a.gif" alt="interferogram"
+  height="356" align="middle" border="1" width="348"></p>
+
+  <p>Figure: Complex interferogram showing wrapped interferometric
+  phase, intensity weighted by the interferometric correlation.
+  Areas of layover have low correlation and significant phase
+  discontinuities. Phase display is 2PI per color cycle.</p>
+
+  <p align="center"><img src="figures/3b.jpg" alt="interferogram"
+  height="356" align="middle" border="1" width="348"></p>
+
+  <p>Figure: Unwrapped interferometric phase with 20 PI per color
+  cycle. Also shown are residues (+: red, -: blue) and branch cuts
+  (black). Note that most residues come in +/- pairs. Chains of
+  residues occur along regions of lay-over.</p>
+
+  <p><strong>15. Construction of bridges between disconnected
+  regions</strong></p>
+
+  <p>The unwrapping may be continued in areas disconnected from the
+  already unwrapped area by constructing bridges between unwrapped
+  and not unwrapped locations. The multiple of 2&amp;pi at the not
+  unwrapped location will be estimated based on the reference
+  unwrapped phase and the expected multiple of 2&amp;pi offset
+  between the two locations (usually 0 as locations with comparable
+  topographic height will be selected). To construct the bridges
+  the wrapped and unwrapped areas together with the interferogram
+  phase a SUN rasterfile is generated using:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>rastree</b></code></a><code><b>8059_8560.flt.sm
+  8059_8560.flt.sm.unw 8059_8560.flag 750 1 0 1.0
+  8059_8560.unw.ras</b></code></p>
+
+  <p>The resulting SUN rasterfile is then displayed using:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>disrasz</b></code></a><code><b>8059_8560.flt.sm.unw.ras</b></code></p>
+
+  <p>Using this display showing which areas are already unwrapped
+  (bright colors) and which ones are not (darker colors) allows to
+  edit the ascii file 8059_8560.bridges which the following
+  content:</p>
+
+  <table border="0">
+    <tbody>
+      <tr>
+        <td>col of unwrapped location</td>
+
+        <td>row of unwrapped location</td>
+
+        <td>col of wrapped location</td>
+
+        <td>row of wrapped location</td>
+
+        <td>phase offset in 2&amp;pi</td>
+      </tr>
+
+      <tr>
+        <td>640</td>
+
+        <td>45</td>
+
+        <td>600</td>
+
+        <td>48</td>
+
+        <td>0</td>
+      </tr>
+
+      <tr>
+        <td>100</td>
+
+        <td>630</td>
+
+        <td>80</td>
+
+        <td>630</td>
+
+        <td>0</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>16. Unwrapping of disconnected area</strong></p>
+
+  <p>The bridges are then used to unwrap the phase in the
+  disconnected areas:<br>
+  <a href=
+  "bridge.html"><code><b>bridge</b></code></a><code><b>8059_8560.flt.sm
+  8059_8560.flt.sm.flag 8059_8560.flt.sm.unw 8059_8560.bridges
+  750</b></code><br>
+  The same procedure can be repeated with new bridges to unwrap
+  further disconnected areas.</p>
+
+  <p><strong>Steps used in Minimum Cost Flow (MCF) phase
+  unwrapping:</strong></p>
+
+  <p>The basic sequence is very short:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>Processing steps</td>
+
+        <td>Related program(s)</td>
+      </tr>
+
+      <tr>
+        <td>Filtering of complex interferogram (optional)</td>
+
+        <td><a href="adapt_filt.html">adapt_filt</a> or <a href=
+        "adf.html">adf</a></td>
+      </tr>
+
+      <tr>
+        <td>Generation of phase unwrapping validity mask
+        (optional)</td>
+
+        <td><a href="rascc_mask.html">rascc_mask</a></td>
+      </tr>
+
+      <tr>
+        <td>Phase unwrapping algorithm using MCF and
+        triangulation</td>
+
+        <td><a href="mcf.html">mcf</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>but very often a sequence as the following will be prefered to
+  better optimize robustness, efficiency, and accuracy.</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>Processing steps</td>
+
+        <td>Related program(s)</td>
+      </tr>
+
+      <tr>
+        <td>Filtering or multi-looking of complex interferogram
+        (optional)</td>
+
+        <td><a href="adapt_filt.html">adapt_filt</a>, <a href=
+        "adf.html">adf</a>, or <a href=
+        "multi_cpx.html">multi_cpx</a></td>
+      </tr>
+
+      <tr>
+        <td>Generation of phase unwrapping validity mask
+        (optional)</td>
+
+        <td><a href="rascc_mask.html">rascc_mask</a></td>
+      </tr>
+
+      <tr>
+        <td>Adaptive sampling reduction for validity mask
+        (optional)</td>
+
+        <td><a href=
+        "rascc_mask_thinning.html">rascc_mask_thinning</a></td>
+      </tr>
+
+      <tr>
+        <td>Phase unwrapping algorithm using MCF and
+        triangulation</td>
+
+        <td><a href="mcf.html">mcf</a></td>
+      </tr>
+
+      <tr>
+        <td>Weighted interpolation to fill gaps in unwrapped phase
+        image</td>
+
+        <td><a href="interp_ad.html">interp_ad</a></td>
+      </tr>
+
+      <tr>
+        <td>Use of interpolated unwrapped phase as model to unwrap
+        initial interferogram</td>
+
+        <td><a href="unw_model.html">unw_model</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In the following these steps are described in more detail.</p>
+
+  <p><strong>9. Adaptive filtering of interferometric
+  phase</strong></p>
+
+  <p>As in the phase unwrapping with branch-cut algorithms
+  interferogram filtering can be used to reduce the phase noise in
+  the complex interferogram. Multi-looking is another alternative
+  which has the additional advantage that the number of samples is
+  dramatically reduced. The big draw back in multi-looking is, of
+  course, that the sampling is reduced. This is acceptable for
+  areas with low phase gradients, but a problem in areas with large
+  phase gradients.</p>
+
+  <p><a href=
+  "adapt_filt.html"><code><b>adapt_filt</b></code></a><code><b>8059_8560.flt
+  8059_8560.flt.sm 750 0.25 1.5</b></code></p>
+
+  <p><code><b>or</b></code></p>
+
+  <p><a href=
+  "adf.html"><code><b>adf</b></code></a><code><b>8059_8560.flt
+  8059_8560.flt.sm 8059_8560.cc .3</b></code></p>
+
+  <p><code><b>or</b></code></p>
+
+  <p><a href=
+  "multi_cpx.html"><code><b>multi_cpx</b></code></a><code><b>8059_8560.flt
+  8059_8560.off 8059_8560.flt2 8059_8560.off2 2 2</b></code></p>
+
+  <p><strong>10. Generation of phase unwrapping validity
+  mask</strong></p>
+
+  <p>A phase unwrapping validity mask, i.e. a SUN raster or BMP
+  file with NULL (0,0,0) values for pixels which shall not be
+  considered in the MCF phase unwrapping, is generated using the
+  program rascc_mask. A file of type float, for example a coherence
+  image, is used and values below an indicated threshold are set to
+  NULL (0,0,0) in the output rasterfile. The use of a validity mask
+  is optional. It is mainly recommended for data with predominantly
+  high phase noise, as in the case of long-term differential
+  interferograms.</p>
+
+  <p><a href=
+  "rascc_mask.html"><code><b>rascc_mask</b></code></a><code><b>8059_8560.cc
+  8059_8560.pwr 750 1 1 0 1 1 0.25 0.1 0.9 1. .35 1
+  8059_8560.mask.ras</b></code></p>
+
+  <p><strong>11. Adaptive sampling reduction for phase unwrapping
+  validity mask.</strong></p>
+
+  <p>The spatial sampling of the phase unwrapping validity mask can
+  be reduced using the program rascc_mask_thinning. This thinning
+  of the points used in the consecutive phase unwrapping is done
+  adaptively to the phase variation (noise, gradient). In areas of
+  low phase variation sparser sampling is possible, which allows to
+  increase the efficiency of the MCF phase unwrapping. This step is
+  optional.</p>
+
+  <p><a href=
+  "rascc_mask_thinning.html"><code><b>rascc_mask_thinning</b></code></a><code><b>8059_8560.mask.ras
+  8059_8560.cc 750 8059_8560.mask_thinned.ras 5 0.3 0.4 0.5 0.6
+  0.7</b></code></p>
+
+  <p><strong>12. Phase unwrapping algorithm using Minimum Cost Flow
+  (MCF) and triangulation.</strong></p>
+
+  <p>Phase unwrapping of the filtered interferogram is done using
+  the program <em>mcf</em> . The validity mask with the reduced
+  sampling is used, the processing is done in a single patch. The
+  program indicates the memory requirements for the patch. If the
+  indicated memory requirement is larger than the available memory
+  of the computer it is recommended to reduce the size of the
+  patches, otherwise the optimization may be very time consuming
+  (if swap space is used). The unwrapped interferogram has only
+  non-zero values at locations which have non-zero values in the
+  validity mask. For this reason the file was named
+  8059_8560.unw_thinned. The steps to get full spatial coverage are
+  described below.</p>
+
+  <p><a href=
+  "mcf.html"><code><b>mcf</b></code></a><code><b>8059_8560.flt.sm
+  8059_8560.cc 8059_8560.mask_thinned.ras 8059_8560.unw_thinned 750
+  1 0 0 - - 1 1 - 325 300 0</b></code></p>
+
+  <p><strong>13. Weighted interpolation of gaps in unwrapped phase
+  data using adaptive window size.</strong></p>
+
+  <p>The gaps in the unwrapped phase image can be filled by
+  interpolation. An interpolator with an adaptive window size is
+  used, i.e. for the filling of small gaps a small window is used,
+  for the filling of larger gaps a larger window. This allows to
+  avoid unwanted filtering as would occur with a constant, and
+  therefore relatively large, window size. These interpolated
+  phases can be assumed to be close to the correct unwrapped
+  phases, at least within an interval (-PI,PI), and can therefore
+  be used as phase model in the sense of the program unw_model.</p>
+
+  <p><a href=
+  "interp_ad.html"><code><b>interp_ad</b></code></a><code><b>8059_8560.unw_thinned
+  8059_8560.unw_interp 750 32 8 16 2</b></code></p>
+
+  <p>The masking and adaptive sampling reduction result in a
+  significant reduction of the number of samples which have to be
+  considered in the MCF optimization. Apart from the gain in
+  efficiency this also allows to apply real global optimization
+  (i.e. without patch procesing) for relatively large
+  interferograms.</p>
+
+  <p><strong>14. Phase unwrapping using model of unwrapped
+  phase.</strong></p>
+
+  <p>The unwrapped phases are recalculated from the complex valued
+  interferogram (the filtered or unfiltered one can be used)
+  assuming that the phase values in the model correspond to the
+  correct unwrapped phase within the interval (-PI,PI). The
+  resulting unwrapped phase meets the condition that re-wrapping of
+  the unwrapped phase results in exactly the phase of the complex
+  interferogram, except for the constant offset defined through the
+  reference phase value (here 0.0) indicated for the reference
+  location (here pixel 148,213).</p>
+
+  <p><a href=
+  "unw_model.html"><code><b>unw_model</b></code></a><code><b>8059_8560.flt.sm
+  8059_8560.unw_interp 8059_8560.flt.sm.unw 750 148 213
+  0.0</b></code></p>
+
+  <p>or</p>
+
+  <p><a href=
+  "unw_model.html"><code><b>unw_model</b></code></a><code><b>8059_8560.flt
+  8059_8560.unw_interp 8059_8560.flt.unw 750 148 213
+  0.0</b></code></p>
+
+  <p>This procedure is also well suited for the unwrapping of
+  longer term differential interferograms with predominantly very
+  low coherence, except for built up areas. An example for this is
+  shown below.</p>
+
+  <p align="center"><img src="figures/4a.jpg" alt="lt coherence"
+  height="466" align="middle" border="1" width="300"></p>
+
+  <p>Figure: "Coherence" of a long term differential interferogram
+  (after filtering with adf), displayed using linear grey
+  scale.</p>
+
+  <p align="center"><img src="figures/4b.jpg" alt=
+  "lt wrapped phase" height="466" align="middle" border="1" width=
+  "300"></p>
+
+  <p>Figure: The "wrapped phase" of this long term differential
+  interferogram (after filtering with adf), is displayed using
+  color scale with 2PI per color cycle.</p>
+
+  <p align="center"><img src="figures/4c.jpg" alt=
+  "lt unwrapped phase" height="466" align="middle" border="1"
+  width="300"></p>
+
+  <p>Figure: The "unwrapped phase" of this long term differential
+  interferogram (using mcf program with a validity mask, but
+  without further sampling reduction), is displayed using a color
+  scale with 10PI per color cycle and the image brightness
+  corresponding to the backscatter intensity. The MCF and
+  triangulation network based technique permitted an efficient and
+  automated unwrapping with a global optimization.</p>
+  <hr>
+
+  <h2><a name="height_map" id="height_map">Height Map</a></h2>
+
+  <p><strong>17. Least square estimation of interferometric
+  baseline</strong></p>
+
+  <p>A first estimate of the interferometric baseline was
+  previously estimated based on the state vectors or on the fringe
+  frequency of the interferogram. Usually this baseline estimate is
+  not accurate enough for the calculation of the heights. A more
+  accurate baseline may be estimated based on a number of ground
+  control points. This is done in 3 steps:<br>
+  a) generation of a SUN raster or BMP format image<br>
+  b) selection of ground control points using the image created
+  above as a guide<br>
+  c) least square estimation of interferometric baseline<br>
+  Any 8-bit SUN raster or BMP format image of the test-site can be
+  used to determine the ground control points. A useful one is for
+  example the display of the unwrapped interferometric phase
+  together with the backscatter intensity obtained using:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>rasrmg</b></code></a><code><b>8059_8560.flt.sm.unw
+  8059_8560.pwr1 750 1 1 0 1 1 0.333 1.0 0.35 0.0 -1
+  8059_8560.flt.sm.unw.ras</b></code></p>
+
+  <p>In this example the display was left/right flipped in order to
+  obtain an image comparable to a map (and not a mirror image)</p>
+
+  <p>The ground control points can then be selected using:</p>
+
+  <p><a href=
+  "gcp_ras.html"><code><b>gcp_ras</b></code></a><code><b>8059_8560.flt.sm.unw.ras
+  -1 &gt; 8059_8560.gcp</b></code></p>
+
+  <p>The SUN rasterfile is displayed. Using the selection mouse
+  button ground control points can be selected and the
+  corresponding terrain heights (obtained form a map) written to
+  the data input window. Ground control points in flat areas are
+  preferred. Ground control points are best spread over the entire
+  image. Selection of at least a dozen ground control points is
+  recommended. Exiting the display window initiates the writing of
+  the ground control points to standard output, respectively to the
+  file indicated.</p>
+
+  <p>Once the ground control points are determined the
+  corresponding unwrapped interferometric phases can be extracted
+  from the unwrapped interferogram and written together with the
+  GCP coordinates to the GCP data file using the program <a href=
+  "gcp_phase.html">gcp_phase</a>:</p>
+
+  <p><a href=
+  "gcp_phase.html"><code><b>gcp_phase</b></code></a><code><b>8059_8560.flt.sm.unw
+  8059_8560.off 8059_8560.gcp 8059_8560.gcp_data 5</b></code></p>
+
+  <p>A least squares estimate of the interferometric baseline is
+  then obtained using:</p>
+
+  <p><a href=
+  "base_ls.html"><code><b>base_ls</b></code></a><code><b>8059.slc.par
+  8059_8560.off 8059_8560.gcp_data 8059_8560.base 1
+  4</b></code></p>
+
+  <p>The least squares estimation is rather critical and does not
+  always perform as desired. Therefore, it is recommended to
+  observe the quality control information written to the screen.
+  Reasons for non converting estimation are:<br>
+  - poor initial baseline estimate<br>
+  - poor selection of control points<br>
+  - too many free parameters specified for least squares
+  fitting<br>
+  - too small area specified for phase averaging</p>
+
+  <p>All the four mentioned problems can be worked on by different
+  use of the ISP.</p>
+
+  <p><strong>18. Interferometric estimation of heights and ground
+  ranges</strong></p>
+
+  <p>For the interferometric estimation of heights and ground
+  ranges the unwrapped interferometric phase and a good baseline
+  estimate are required. The estimation is done using:</p>
+
+  <p><a href=
+  "hgt_map.html"><code><b>hgt_map</b></code></a><code><b>8059_8560.flt.sm.unw
+  8059.slc.par 8059_8560.off 8059_8560.base 8059_8560.hgt
+  8059_8560.gr</b></code></p>
+
+  <p>The resulting height map in (slant range / azimuth
+  coordinates) may be displayed using:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>dishgt</b></code></a><code><b>8059_8560.hgt
+  8059_8560.pwr1 750</b></code></p>
+  <hr>
+
+  <h2><a name="orthonormalization" id=
+  "orthonormalization">Orthonormalization</a></h2>
+
+  <p><strong>19. Resample interferometric height map to orthonormal
+  coordinates</strong></p>
+
+  <p>The heights and ground ranges given in SAR coordinates (slant
+  range / azimuth) can be resampled to orthonormal coordinates
+  (along track, cross track) using the geometric information of the
+  interferometric heights and ground ranges. An additional data
+  set, usually one of the two backscatter intensity images is also
+  resampled to orthonormal coordinates:</p>
+
+  <p><a href=
+  "res_map.html"><code><b>res_map</b></code></a><code><b>8059_8560.hgt
+  8059_8560.gr 8059_8560.pwr1 8059.slc.par 8059_8560.off
+  8059_8560.rhgt 8059_8560.rpwr1</b></code></p>
+
+  <p>A SUN raster file of the resampled height map may be generated
+  using:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>rashgt</b></code></a><code><b>8059_8560.rhgt
+  8059_8560.rpwr1 750</b></code></p>
+
+  <p>A shaded relief in SUN raster format may be generated
+  using:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>rasshd</b></code></a><code><b>8059_8560.rhgt
+  750 20. 20.</b></code></p>
+
+  <p>or:</p>
+
+  <p><a href=
+  "ISP_display.html"><code><b>rashgt_shd</b></code></a><code><b>8059_8560.rhgt
+  8059_8560.rhgt 750 20. 20.</b></code></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 29-Jul-2002.</p>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="content-type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: PALSAR_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>PALSAR_proc</h2>
+
+  <p><i>ANSI-C program:&Acirc;&nbsp;<a href=
+  "../src/PALSAR_proc.c">PALSAR_proc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  PALSAR_proc - Generates MSP sensor parameter and processing
+  parameter files for PALSAR raw SAR data. This program also
+  reformats the raw SAR signal data to be compatible with the MSP.
+  Both EORC and ERSDAC formats are
+  supported.&Acirc;&nbsp;&Acirc;&nbsp;</p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>PALSAR_proc
+  &lt;CEOS_leader&gt; &lt;SAR_par&gt; &lt;PROC_par&gt;
+  &lt;raw_data_file&gt; &lt;raw_out&gt; [TX_POL]
+  [RX_POL]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file for PALSAR (LED...)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(output) MSP SAR Sensor Parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(output) MSP Processing parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_raw_data&gt;</td>
+
+        <td>(input) PALSAR CEOS format raw data file (IMG...)</td>
+      </tr>
+
+      <tr>
+        <td>[raw_out]</td>
+
+        <td>(output) PALSAR preprocessed and range-aligned output
+        data file</td>
+      </tr>
+
+      <tr>
+        <td>[TX_POL]</td>
+
+        <td>(input) extracted channel transmit polarization<br>
+        0: H (default) 1: V</td>
+      </tr>
+
+      <tr>
+        <td>[RX_POL]</td>
+
+        <td>(input) extracted channel receive polarization<br>
+        0: H (default) 1: V</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>PALSAR_proc&Acirc;&nbsp;LED-ALPSRP008240690-H1.0__A
+  palsar_20060321.par p20060321.slc.par
+  IMG-HH-ALPSRP008240690-H1.0__A 20060321.raw</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  PALSAR_proc reads the PALSAR CEOS leader file&Acirc;&nbsp;raw
+  data file in CEOS format (IMG...) and generates the MSP sensor
+  parameter file and sensor parameter file.&Acirc;&nbsp; Each echo
+  line contains information on the radar parameters for that line.
+  These parameters are used to determine values for the Sensor
+  Parameter file (usually called palsar_YYYYMMDD.par). This dffers
+  from the approach with ERS and JERS because of the numerous
+  PALSAR Modes for different look angles, resolution, and
+  polarization.</p>
+
+  <p>The file header information is used to generate the MSP
+  processing parameter file. State vectors contained in the CEOS
+  leader record are interpolated and used for geolocation of the
+  final products. Other parameters such as the starting slant
+  range, date, and timing information are extracted from the CEOS
+  leader or raw data line headers. The program reformats the raw
+  data samples to be compatible with the rest of the MSP processing
+  algorithms including setting null values to 255. The echo data
+  records are range aligned if a change has occurred in the range
+  delay.</p>
+
+  <p>PALSAR_proc can detect changes in the radar pulse repetition
+  frequency (PRF). The PRF is the reciprocal of the pulse
+  repetition interval (PRI). These changes occurr every few minutes
+  along-track. If a change occurs, then PALSAR_proc extracts the
+  part of the raw data file with the first PRF. The segment of the
+  raw data file acquired with the second value PRF can be extracted
+  by first using the program cp_data in the DISP package. The
+  extracted file can then be read using PALSAR_proc to generate a
+  second raw data set compatible with the MSP.</p>
+
+  <p><b>NOTE</b>: For EORC data, TX_POL and RX_POL are used to
+  document the polarization in the MSP PROC_par file. For ERSDAC
+  data, these parameters are used to extract the specified raw data
+  channel. In dual-pol mode, the TX_POL value is derived from the
+  SAR metadata and the command line value is ignored. In single-pol
+  mode, the TX_POL and RX_POL values are derived from the SAR
+  metadata, and the command line values are ignored.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html#file%20a">SAR raw data
+  (&lt;YYYYMMDD&gt;.raw)</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&Acirc;&copy;</a> Copyrights for
+  <a href="MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-May-2007.
+</body>
+</html>

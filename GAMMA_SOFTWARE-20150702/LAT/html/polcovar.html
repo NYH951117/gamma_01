@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>LAT Reference Manual: polcovar</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>polcovar</h2>
+
+  <p><i>ANSI-C program: <a title="polcovar" href=
+  "../src/polcovar.c">polcovar.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  polcovar - Calculate polarimetric covariance matrix C elements
+  from HH, HV, and VV SLC data</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>polcovar &lt;SLC-1&gt; &lt;SLC-2&gt; &lt;SLC-3&gt;
+  &lt;SLC1_par&gt; &lt;SLC2_par&gt; &lt;SLC3_par&gt; &lt;C&gt;
+  &lt;C_par&gt; &lt;rlks&gt; &lt;azlks&gt; [loff]
+  [nlines]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) HH single-look complex image (scomplex or
+        fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) HV single-look complex image (scomplex or
+        fcomplex format)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-3&gt;</td>
+
+        <td>(input) VV single-look complex image coregistered with
+        SLC-1 (scomplex or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) HH SLC image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) HV SLC image parameter file of SLC-2
+        coregistered with SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC3_par&gt;</td>
+
+        <td>(input) VV SLC image parameter file&nbsp; of SLC-3
+        coregistered with SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;C&gt;</td>
+
+        <td>(output) root file name of covariance matrix elements
+        (e.g. scene_id): .c11, .c22, .c33 (float), .c12, .c13, .c23
+        (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;C_par&gt;</td>
+
+        <td>(output) MLI image parameter file associated with the
+        covariance matrix element data files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks for the averaging window</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>number of azimuth looks for the averaging window</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line (default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (enter - for default:
+        entire file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3><strong>EXAMPLE</strong></h3>
+
+  <p><samp>polcovar slc/20080409_HH.slc slc/20080409_HV.slc
+  slc/20080409_VV.slc slc/20080409_HH.slc.par
+  slc/20080409_HV.slc.par slc/20080409_VV.slc.par
+  COV/20080409_HH_HV_VV COV/20080409_HH_HV_VV.cov_mli.par 3
+  6<br></samp></p>
+
+  <p style="text-align: left;">This calculates the elements of the
+  polarimetric covariance matrix c11, c22, c33, c12, c13, c23 and
+  stores them in the files with the root file name
+  COV/20080409_HH_HV_VV and ending in .c11, .c22, .c33, .c12, .c13,
+  .c23.</p>
+
+  <h3><strong>DESCRIPTION<br></strong></h3>The 3x3 covariance
+  matrix [1] contains information on the averaged polarimetric
+  signature of the illuminated scene and is the basis for further
+  polarimetric filtering and classification.<br>
+  For monostatic radar data the covariance matrix elements are
+  calculated from the HH, HV, and VV SLC data by spatial averaging
+  of products and averaging spatially.&nbsp; For each point the
+  feature vector <span style="font-weight: bold;">F</span> contains
+  the values of the complex scattering HH, HV, and VV, where HH is
+  the scattering with transmit H receive H, HV is transmit H,
+  receive V, and VV is transmit V and receive V.&nbsp; Essentially
+  all natural scatterers exhibit reciprocity such that HV = VH for
+  monostatic scattering. With this assumption, a feature vector
+  with 3 elements is sufficient to characterize the radar
+  backscatter polarimetric signature:<br>
+  <br>
+  The 3x3 covariance matrix <span style=
+  "font-weight: bold;">C</span> is given by:<br>
+  &nbsp;<br>
+  <span style="font-weight: bold;">C</span> = &lt;<span style=
+  "font-weight: bold;">F &middot; F</span><sup>*T</sup>&gt;<br>
+  <br>
+  The &lt;&gt; operator denotes a spatial averaging over the window
+  with dimensions <span style="font-style: italic;">rlks</span> in
+  range and <span style="font-style: italic;">azlks</span> in
+  azimuth.<br>
+  <br>
+  the coefficients on the diagonal C11, C22, and C33 are
+  real-valued and are proportional to the power in the each of the
+  3 channels.&nbsp; The off-diagonal elements are complex-valued
+  and contain the information on the relative phase between the
+  channels.&nbsp; The span is defined as the sum of&nbsp; the
+  diagonal matrix elements of the C matrix and has the same value
+  as the span of the coherence matrix T calculated by <a title=
+  "polcovar" href="polcoh.html">polcoh</a>. By construction, the
+  covariance matrix is Hermetian.<br>
+  <br>
+  [1] Lee, J. S., Eric Pottier, "Polarimetric Radar Imaging: from
+  Basics to Applications," Chapter 3, CRC Press, Boca Raton,
+  2008<br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="polcoh.html">polcoh</a>, <a title="pauli" href=
+  "pauli.html">pauli</a><a href="polcoh.html"></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change 5-Jul-2013
+</body>
+</html>

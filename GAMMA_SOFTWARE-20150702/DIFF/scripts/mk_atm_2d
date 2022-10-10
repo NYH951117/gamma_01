@@ -1,0 +1,155 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$mode = 1;
+$psc = 1.0;     #phase scaling factor for display
+$scale = .8;    #display intensity relative scale factor
+$exp = .35;	#display intensity exponent
+$diff_tab = '';
+$mask = '';
+$no_proc = 0;
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale, 'n'=> \$no_proc, 'p=f' => \$psc);
+
+if (($#ARGV + 1) < 5){die <<EOS ;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.0 7-Mar-2014 clw ***
+*** Perform linear regression of atmospheric phase with respect to height ***
+
+usage: $0 <DIFF_tab> <DIFF_tab_atm> <DEM_rdc> <mli> <mli_par> [mode] [mask]
+
+    DIFF_tab      (input) DIFF_tab file containing 2 column list of unwrapped diff. interferograms and delta_T values in decimal days
+    DIFF_tab_atm  output a DIFF_tab file containing 2 column list of unwrapped diff. interferograms with atmospheric trend removed and delta_T values in decimal days
+                  NOTE: the name for the diff_tab should be different than the diff_tab from mk_unw_2d to avoid overwiting the files
+    DEM_rdc       (input) terrain height in radar range-Doppler coordinates (meters, float, enter - for none)
+    mli           (input) MLI reference scene with the same dimensions as the interferogram
+    mli_par       (input) MLI parameter file of the reference scene
+    mask          mask file to exclude regions of strong motion (enter - for none, 8-bit Sun Raster or BMP format)
+    -n            (option) generate DIFF_tab only, no interferometric processing 
+    -s scale      (option) set image display scale factor (default: $scale)   
+    -e exp        (option) set image display exponent (default: $exp)
+    -p pscale     (option) set phase scaling for output display, 1 cycle = 2PI/pscale (default: $psc)
+EOS
+
+$diff_tab  = $ARGV[0];
+$diff_tab_atm = $ARGV[1];
+$dem_rdc   = $ARGV[2];
+$mli       = $ARGV[3];
+$mli_par   = $ARGV[4];
+
+if($#ARGV >= 5){
+  $mode = $ARGV[5];
+  ($mode >= 0  && $mode <= 1) or die "\nERROR: invalid processing mode: $mode\n";
+}
+
+if($#ARGV >= 6){
+  $mask = $ARGV[6];
+  if ($mask ne "-"){
+    -e $mask or die "ERROR $0: mask file specified on command line does not exist: $mask\n";
+  }
+}
+
+open(DIFF_TAB, "<$ARGV[0]") or die "\nERROR $0: input table of unwrapped phase interferograms does not exist: $ARGV[0]\n\n";
+print "DIFF_tab: $ARGV[0]\n";
+
+if ($diff_tab eq $diff_tab_atm) {
+  print "ERROR: the input and output DIFF_tab files have the same name, they must be different files $diff_tab  $diff_tab_atm\n";
+  exit(-1);
+}
+
+open(DIFF_TAB_ATM, ">$ARGV[1]") or die "\nERROR $0: cannot open output table of unwrapped phase interferograms with atmospheric trend removed: $ARGV[1]\n\n";
+print "DIFF_tab_atm: $ARGV[1]\n"; 
+
+$log = "mk_atm_2d.log";  
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+$time = localtime;
+print "start: $time  log file:  $log\n";
+
+-e $mli or die "ERROR $0: MLI reference image file does not exist: $mli\n";
+-e $mli_par or die "ERROR $0: MLI reference image parameter file does not exist: $mli_par\n";
+
+print "$0  @ARGV\n";
+print "DEM in RDC:  $dem_rdc\n";
+print "MLI background image: $mli\n";
+print "MLI image parameter file: $mli_par\n";
+print "display scale factor: $scale  exponent: $exp\n";
+
+print LOG "\n$0  @ARGV\n";
+print LOG "start: $time  log file:  $log\n\n";
+print LOG "DEM in RDC: $dem_rdc\n";
+print LOG "MLI background image: $mli\n";
+print LOG "MLI image parameter file: $mli_par\n";
+print LOG "display scale factor: $scale  exponent: $exp\n";
+close LOG;
+@width = extract_param($mli_par, "range_samples:");
+
+$n = 0;
+LINE: while (<DIFF_TAB>) {	#read lines of processing list file
+  $n++;
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $unw = $fields[0];
+  $delta_t = $fields[1];
+  $tstr = $fields[2];
+  
+  my ($s1, $dir1, $ext1) = fileparse($unw, qr/\.[^.]*/); #extension is the last bit after the last period
+  $atm = $dir1."/".$s1.".atm";
+  $atm_ras = $atm.".bmp";
+  
+  $unw_atm = $unw."_atm";
+  $unw_atm_ras = $unw_atm.".bmp";
+  printf DIFF_TAB_ATM "%s   %13.7f   %s\n", $unw_atm, $delta_t, $tstr;
+  printf "\nInterferogram: $n  %s   %13.7f   %s   length: %d\n", $unw_atm, $delta_t, $tstr, $#fields+1;
+
+  $diff_par = $dir1."/"."tmp.diff_par";
+  
+  next if $no_proc == 1; #skip around processing if $no_proc set by -n option on the command line 
+  execute("create_diff_par $mli_par $mli_par $diff_par 1 0", $log);  #create diff_par in order to run atm_mod
+  execute("atm_mod $unw $dem_rdc $diff_par $atm - - $mask", $log);  #mask file is blank if not provided
+  execute("rasrmg $atm $mli $width[1] 1 1 0 1 1 $psc $scale $exp 0.0 1 $atm_ras",$log);
+
+  execute("sub_phase $unw $atm $diff_par $unw_atm 0", $log);        #subtract atmosphereic phase trend
+  execute("rasrmg $unw_atm $mli $width[1] 1 1 0 1 1 $psc $scale $exp 0.0 1 $unw_atm_ras",$log);
+}
+
+$time = localtime;
+print "\n$0 processing end: $time\n";
+print LOG "\n$0 processing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+  if (-e $log){
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  }
+  else {
+    open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";
+  } 
+  LOG->autoflush;   
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+

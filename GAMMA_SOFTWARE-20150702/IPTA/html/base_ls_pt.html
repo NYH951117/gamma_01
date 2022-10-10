@@ -1,0 +1,240 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: base_ls_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>base_ls_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/base_ls_pt.c">base_ls_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  base_ls_pt - least squares baseline estimation using terrain
+  heights (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_ls_pt &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;ppos&gt; &lt;itab&gt; &lt;rec_num&gt; &lt;punw&gt;
+  &lt;phgt&gt; &lt;pbase&gt; [ph_flag] [bc_flag] [bn_flag]
+  [bcdot_flag] [bndot_flag] [bperp_min]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number to process (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw&gt;</td>
+
+        <td>(input) point data stack of unwrapped interferometric
+        phases (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(input) point data stack of terrain heights
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input/output) stack of baseline parameters
+        (binary)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>restore range phase ramp (default=0: do not restore 1:
+        restore)</td>
+      </tr>
+
+      <tr>
+        <td>[bc_flag]</td>
+
+        <td>cross-track baseline component estimate (0:orbit
+        derived 1:estimate from data, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[bn_flag]</td>
+
+        <td>normal baseline component estimate (0:orbit derived
+        1:estimate from data, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[bcdot_flag]</td>
+
+        <td>cross-track baseline rate estimate (0:orbit derived
+        1:estimate from data, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[bndot_flag]</td>
+
+        <td>normal baseline rate estimate (0:orbit derived
+        1:estimate from data, default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[bperp_min]</td>
+
+        <td>minimum perpendicular baseline required for L.S
+        estimation (m, default= 10.)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_ls_pt testsite.plist testsite.pmask testsite.ppar -
+  testsite.itab - testsite.punw testsite.phgt testsite.pbase
+  0</samp></p>
+
+  <p>Estimation of precision baselines for each interferometric
+  pair listed in the itab using a non-linear least squares error
+  analysis with unwrapped interferometric phases and height values
+  at each point of the point list.</p>
+
+  <p><samp>base_ls_pt testsite.plist testsite.pmask testsite.ppar -
+  testsite.itab 5 testsite.punw testsite.phgt testsite.pbase
+  0</samp></p>
+
+  <p>Estimation of precision baselines for record 5 of the point
+  data stacks using a non-linear least squares error analysis with
+  unwrapped interferometric phases and height values at each point
+  of the point list.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code base_ls_pt.c in ./IPTA/src, executable version
+  base_ls_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_ls_pt supports the estimation of precision baselines using
+  point data stacks of unwrapped interferometric phases and known
+  terrain height values.</p>
+
+  <p>In the IPTA stacks of baseline parameters in binary format are
+  used to organize the baseline information of sets of
+  interferometric pairs. Pairs are defined in the itab, an ascii
+  file with a table associating interferogram stack records with
+  pairs of SLC stack records. For each pair (line of itab, record
+  of point data stacks) the stack of baseline parameters contains a
+  record with the related baseline parameters which are the same
+  parameters as used in the baseline parameter file, i.e. initial
+  baseline, precision baseline, and phase constant.</p>
+
+  <p>The estimated precision baselines (in TCN coordinates) are
+  written to the related record in the stack of baseline
+  parameters, the binary format used to store baseline information
+  of stacks of interferograms. Either a single record or all
+  records can be considered. To consider all records indicate -
+  instead of a record number. Record numbers start with 1.</p>
+
+  <p>The points considered in the least squares fit are the points
+  defined through the point list and the related point mask.
+  Furthermore, points with a NULL (0.0) for the unwrapped phase or
+  the terrain height are excluded from the fit.</p>
+
+  <p>The computed baselines are used in the simulation of the
+  orbital phase trend and the topographic phase and in the
+  conversion of interferometric phase values to terain heights.</p>
+
+  <p>Attention needs to be used concerning the idea to provide
+  unwrapped phases corrected for the atmospheric delay and thereby
+  to improve the fit. The baseline related phase error tends to end
+  in the "atmospheric phase term", as it is also low frequency in
+  the spatial domain and random in the temporal domain.
+  Consequently, this will prevent the program from making the right
+  correction for the baseline.</p>
+
+  <p>On the command line it is possible to activate/deactivate the
+  modification of the phase constant and the individual components
+  of the baseline model. The along track baseline component is
+  asumbed to be 0 in any case.</p>
+
+  <p>Optionally, interpolated point position coordinates can be
+  used instead of the integer coordinates from the point list.</p>
+
+  <p>For very short baselines the solution tends to get instable
+  because of the neglectable influence of the topographic height on
+  the phase. To avoid problems a minimum perpendicular baseline
+  (e.g. 20m) can be set. For shorter baselines the precision
+  baseline is set to the initial baseline estimate.</p>
+
+  <p>Other programs to manipulate stacks of baseline parameters
+  include base_orbit_pt and base_par_pt. base_orbit_pt supports the
+  initial baseline estimation from orbit state vectors. base_par_pt
+  supports conversions between conventional baseline parameter
+  files (ascii) and the IPTA stacks of baseline parameters
+  (binary).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_orbit_pt.html">base_orbit_pt</a>, <a href=
+  "base_par_pt.html">base_par_pt</a>, <a href=
+  "baseline_file.html">baseline_file</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.
+</body>
+</html>

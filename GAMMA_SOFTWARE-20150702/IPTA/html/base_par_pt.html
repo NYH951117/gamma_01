@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: base_par_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>base_par_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/base_par_pt.c">base_par_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  base_par_pt - read, write, and update records of binary baseline
+  parameter stack<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_par_pt &lt;base&gt; &lt;pbase&gt; &lt;rec_num&gt;
+  &lt;rw_flag&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;base&gt;</td>
+
+        <td>(input/output) baseline file (text format,&nbsp; enter
+        - for output to stdout)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input/output) stack of baseline parameters
+        (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number (starts with 1, enter - for all (with
+        output to stdout only)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rw_flag&gt;</td>
+
+        <td>read/write flag<br>
+        &nbsp; 0: read from pbase<br>
+        &nbsp; 1: write to pbase<br>
+        &nbsp; 2: copy precision baseline parameters&nbsp; to
+        initial baseline in pbase given that the&nbsp; precision
+        baseline != 0.0<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><samp>base_par_pt</samp> 05263_24963<samp>.base pbase 3
+  1</samp></p>
+
+  <p>Writes the baseline parameters from 05263_24963.base to record
+  3 of the stack of baseline parameters pbase.</p>
+
+  <p><code><samp>base_par_pt</samp></code> <span style=
+  "font-family: monospace;">tmp</span><code><samp>.base pbase 3
+  0</samp></code></p>
+
+  <p>Writes the baseline parameters from record 3 of the stack of
+  baseline parameter stack .pbase to the baseline file
+  tmp.base.</p>
+
+  <p><code><samp>base_par_pt - pbase - 0</samp></code></p>
+
+  <p>Reads the baseline parameters from all records of the stack of
+  baseline parameters testsite.pbase and writes these to standard
+  output.</p>
+
+  <p><code>base_par_pt -&nbsp; pbase - 2</code></p>
+
+  <p>Copies the precision baselines to the orbit baselines in the
+  list of baseline pbase for all records where the precision
+  baseline is not zero</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code base_par_pt.c in ./IPTA/src, executable version
+  base_par_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">base_par_pt</span> supports the
+  conversion of baseline parameters between the two formats used,
+  which are baseline parameter files (text) and stacks of baseline
+  parameters (binary).</p>
+
+  <p>In the IPTA stacks of baseline parameters in binary format are
+  used to organize the baseline information of sets of
+  interferometric pairs. Pairs are defined in the itab, a
+  text&nbsp; file containing a table that associates interferogram
+  stack records with pairs of SLC stack records. For each pair
+  (line of itab, record of point data stacks) the stack of baseline
+  parameters contains a record with the related baseline parameters
+  identical with the text version of the baseline parameter file,
+  i.e. initial baseline, precision baseline, and phase
+  constant.</p>&lt;&gt;The estimated precision baselines (in TCN
+  coordinates) are written to the related record in the stack of
+  baseline parameters, the binary format used to store baseline
+  information of stacks of interferograms. Either a single record
+  or all records can be considered. To consider all records
+  indicate - instead of&nbsp; the record number. Record numbers
+  start with 1. <span style=
+  "font-style: italic;">base_par_pt</span> permits writing&nbsp;
+  the parameters of an individual baseline parameter file to the
+  indicated record of a stack of baseline parameters. It is
+  important to use the identical order in the baseline stack and
+  related point data stacks with interferometric data (as defined
+  in the itab). &lt;/&gt;&lt;&gt;<span style=
+  "font-style: italic;">base_par_pt</span> also permits to extract
+  the baseline parameters of an indicated record of the stack of
+  baseline parameters and to either write these parameters to an
+  individual baseline parameter file (ascii) or to print the
+  parameters to the screen (standard output) by indicating "-"
+  instead of a file name. If the stack file does not exist, it is
+  created. Specifying a record number larger than the highest
+  record number in a stack results in an increase of the stack
+  size.<br>
+  <br>
+  &lt;/&gt; <span style="font-style: italic;">base_par_pt</span>
+  has a mode (rw_flag = 2) where precision baselines can be copied
+  to the initial baseline for all records where the precision
+  baselins is not zero. This is useful when precision baselines
+  have been estimated only for a subset of the interferograms and a
+  new set of interferograms must be generated including some pairs
+  where no precision baseline exists. In such cases it is desired
+  to use the precision baselines for those pairs where it has been
+  determined.&lt;&gt;<br>
+  &lt;/&gt;
+
+  <p>Other programs to manipulate stacks of baseline parameters
+  include <span style="font-style: italic;">base_orbit_pt</span>
+  and base_ls_pt. <span style=
+  "font-style: italic;">base_orbit_pt</span> supports the initial
+  baseline estimation from orbit state vectors.<span style=
+  "font-style: italic;">base_ls_pt</span> supports the estimation
+  of precision baselines from unwrapped interferometric phases and
+  topographic heights.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_orbit_pt.html">base_orbit_pt</a>, <a href=
+  "base_ls_pt.html">base_ls_pt</a>, <a href=
+  "baseline_file.html">baseline_file</a>, <a href=
+  "typedef_ISP.h.html"><span style=
+  "text-decoration: underline;">typedef_ISP.h</span>.</a></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 4-Jan-2005</p>
+</body>
+</html>

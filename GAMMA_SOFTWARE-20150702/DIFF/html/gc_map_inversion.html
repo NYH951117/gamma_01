@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing -->
+<!-- uw010412 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: gc_map_inversion</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>gc_map_inversion</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/gc_map_inversion.c">gc_map_inversion.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  gc_map_inversion - Geocoding lookup table inversion.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gc_map_inversion &lt;gc_map&gt; &lt;width_in&gt;
+  &lt;gc_out&gt; &lt;width_out&gt; [nlines_out] [interp_mode]
+  [n_ovr] [rad_max] [nintr]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;gc_in&gt;</td>
+
+      <td>lookup table containing pairs of real valued output
+      coordinates (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width_in&gt;</td>
+
+      <td>width of gc_map</td>
+    </tr>
+
+    <tr>
+      <td>&lt;gc_out&gt;</td>
+
+      <td>inverted geocoding map corresponding to the new range and
+      azimuth pixel number)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width_out&gt;</td>
+
+      <td>width of output geocoding lookup table gc_out</td>
+    </tr>
+
+    <tr>
+      <td>[nlines_out]</td>
+
+      <td>number of lines of output data file (default=0: all lines
+      up to highest value)</td>
+    </tr>
+
+    <tr>
+      <td>[interp_mode]</td>
+
+      <td>resampling algorithm flag (default = 0)<br>
+      (0: 1/dist, 1: nearest neighbor, 2: SQR(1/dist), 3: const, 4:
+      Gaussian)</td>
+    </tr>
+
+    <tr>
+      <td>[n_ovr]</td>
+
+      <td>interpolation oversampling factor (default = 2)</td>
+    </tr>
+
+    <tr>
+      <td>[rad_max]</td>
+
+      <td>rad_max maximum interpolation search radius (default =
+      4*n_ovr: 8)</td>
+    </tr>
+
+    <tr>
+      <td>[nintr]</td>
+
+      <td>number of points required for interpolation when not
+      nearest neighbor (default = 4)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gc_map_inversion 8560_8059.utm_to_rdc_fine 1422
+  8560_8059.rdc_to_utm_fine 1696</samp></p>
+
+  <p>Inverts the (refined) geocoding lookup table. By default the
+  least squares fit interpolation algorithm is used.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code gc_map_inversion.c in ./src. For compilation adjust
+  and use Makefile: Executable version gc_map_inversion in
+  ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP and DIFF type definition files <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  gc_map_inversion inverts the input geocoding lookup table to
+  create a a lookup table that maps data in the reverse direction.
+  If the input data is a table that gives the range/Doppler SAR
+  image coordinates for every point on a uniform grid in the MAP
+  coordinate system, gc_map_inversion will calculate the
+  real-valued MAP coordinates at every point in the range/Doppler
+  SAR sample grid.</p>The reverse lookup table is generated using
+  the same algorithm as is used in <a href=
+  "geocode.html">geocode</a>, with the exception that input data
+  are the pixel grid coordinates in the map geometry ( [0,0]
+  [0,1]... [1,0] [1,1]... ) rather than an input image values.
+
+  <p>The interpolation of the irregularly sampled coordinates in
+  gc_map_inversion is implemented using either nearest neighbor or
+  convolutional interpolation methods. Different weighting
+  functions are selectable for the convolutional interpolation
+  including 1/distance, 1/distance**2, and Gaussian.</p>
+
+  <p>The combination of gc_map_inversion and geocode_back achieves
+  similar results to using <a href="geocode.html">geocode</a>
+  alone. The reverse lookup table produced by gc_map_inversion can
+  be efficiently applied to multiple data sets. For example, the
+  simulated image and resampled DEM produced by gc_map is in the
+  map coordinate system. To transform these into SAR coordinates,
+  the <a href="geocode_back.html">geocode_back</a>can be applied
+  twice, using the same reverse lookup table.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The output grid can be oversampled by a factor
+  <strong>n_over</strong> such that all data that can be used for
+  the interpolation can be stored. The size of the search region
+  for interpolation is given by rad_max while the number of points
+  used for interpolation is nintr</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2001.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Aug-2001.</p>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF&amp;GEO Reference Manual: DIFF&amp;GEO display
+  tools</title><!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing -->
+  <!-- uw/clw 11-Nov-2002 -->
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>DIFF&amp;GEO display tools</h2>
+
+  <p><strong>INTRODUCTION</strong><br>
+  There are two main approaches to display the various image
+  data:<br>
+  1. To use one of the display programs (names start with
+  <em>dis</em>).<br>
+  2. To first use one of the programs to generate a SUN raster or
+  BMF format files (names start with <em>ras</em>), and then to
+  display the output images with an external viewer such as
+  <em>xv</em>.<br>
+  <br>
+  (Notice that the SUN raster or BMP format files may also be
+  displayed with the program <em>disras</em> with several useful
+  features such as scroll bars, a zoom window, and the display of
+  the location of the cursor together with the local data
+  value.)<br></p>
+
+  <h3><a name="DIFF_display">Special DIFF&amp;GEO display
+  tools</a></h3>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><a href="GEO_display.html#disdem_par">disdem_par</a></td>
+
+      <td>Display DEM as shaded relief. Supported formats: EQA,
+      UTM, OMCH, TM, LCC, PS, PC, AEAC, LCC2, OM, HOM. For the
+      cursor location the map coordinates and the height are
+      displayed.</td>
+    </tr>
+
+    <tr>
+      <td><a href=
+      "GEO_display.html#disras_dem_par">disras_dem_par</a></td>
+
+      <td>Display SUN or BMP rasterfile in map geometry. For the
+      cursor location the map coordinates and the height are
+      displayed.</td>
+    </tr>
+
+    <tr>
+      <td><a href="gcp_2ras.html">gcp_2ras</a></td>
+
+      <td>Extract corresponding points in two SUN raster or BMP
+      format images. The images are displayed side by side and the
+      cooresponding points are selected using the mouse. The point
+      coordinates in two images are written to a text format
+      file.</td>
+    </tr>
+  </table>
+
+  <h3><a name="DIFF_sunraster">Special DIFF&amp;GEO tools to
+  generate SUN/BMP format images</a></h3>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><a href="DIFF_display.html#rasshd">rasshd</a></td>
+
+      <td>DEM as shaded relief (float)</td>
+    </tr>
+  </table>
+
+  <p><strong>USE</strong><br>
+  Information on the input required parameters is obtained by
+  running the programs without arguments.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_file_formats.html">DIFF_file_formats</a>, <a href=
+  "../src/"><tt>*/DIFF/src/</tt></a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Nov-2002.</p>
+</body>
+</html>

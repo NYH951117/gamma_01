@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: validate</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>validate</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/validate.c"><i>validate.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  validate - Validate a landuse map with an available landuse
+  inventory (both maps use the 8-bit SUN raster or BMP format).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>validate &lt;ras1&gt; &lt;nclass1&gt; &lt;class1[1]&gt;
+  ... &lt;class1[n]&gt; &lt;ras2&gt; &lt;nclass2&gt;
+  &lt;class2[1]&gt; ... &lt;class2[n]&gt; &lt;rasf_out&gt;
+  &lt;poly&gt; &lt;matrix&gt; [matrix_flag]
+  [accuracy_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;rasf_map&gt;</td>
+
+      <td>first input data file with INSAR landuse map (SUN raster:
+      *.ras, BMP: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;nclass1&gt;</td>
+
+      <td>number of classes to use for first input file (max. 16),
+      0 for all</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class1[1]&gt;</td>
+
+      <td>value for first class</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class1[2]&gt;</td>
+
+      <td>value for second class</td>
+    </tr>
+
+    <tr>
+      <td>...</td>
+
+      <td>further classes of first input file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class1[n]&gt;</td>
+
+      <td>value for last class</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rasf_inventory&gt;</td>
+
+      <td>second input data file with available landuse inventory
+      (SUN raster: *.ras, BMP: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;nclass2&gt;</td>
+
+      <td>number of classes to use for second input file (max. 16),
+      0 for all</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class2[1]&gt;</td>
+
+      <td>value for first class</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class2[2]&gt;</td>
+
+      <td>value for second class</td>
+    </tr>
+
+    <tr>
+      <td>...</td>
+
+      <td>factors for further input files</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class2[n]&gt;</td>
+
+      <td>value for last class</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rasf_out&gt;</td>
+
+      <td>output 8-bit raster image file (SUN raster: *.ras, BMP:
+      *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;poly&gt;</td>
+
+      <td>data file (input) with the polygons specifying where to
+      validate the classification</td>
+    </tr>
+
+    <tr>
+      <td>&lt;matrix&gt;</td>
+
+      <td>confusion matrix in percent (output)</td>
+    </tr>
+
+    <tr>
+      <td>[matrix_flag]</td>
+
+      <td>confusion matrix output flag (default = 1)<br>
+      0 : number of points<br>
+      1 : normalized to 1<br>
+      2 : normalized to 100 (percent)</td>
+    </tr>
+
+    <tr>
+      <td>[accuracy_flag]</td>
+
+      <td>compute user/prod./over. accuracies (1=YES, 0=NO,
+      default=YES)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><samp>validate landuse.tm.ras 1 5 land-use_mod.ras 4 7 8 9 10
+  validation.ras poly forest.perc</samp></p>
+
+  <p>Validate the forest class 5 of the landuse map
+  <em>landuse.tm.ras</em> with the four forest classes 7, 8, 9, and
+  10 of the landuse inventory <em>land-use_mod.ras</em> in the test
+  areas specified by poly. Write an output SUN raster format map
+  <em>validation.ras</em> with four colors corresponds to the four
+  elements of the confusion <em>matrix forest.perc.</em></p>
+
+  <p><samp>validate landuse.tm.ras 0 land-use_mod.ras 0
+  validation.ras poly landuse.perc</samp></p>
+
+  <p>The output SUN raster image <em>validation.ras</em> contains
+  different gray values for each element of the confusion matrix.
+  The confusion matrix normalized to 1 is written to the file
+  <em>forest.perc</em> together with the user, producer and overall
+  accuracy (in %) and the kappa coefficient.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code <em>validate.c</em> in $LAT_HOME./src. For
+  compilation adjust and use Makefile: Executableimage
+  <em>validate</em> in $LAT_HOME/bin</p>
+
+  <p><strong>AVAILABILITY</strong></p>
+
+  <p>Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The program validate allows to validate a landuse map with an
+  available landuse inventory. Both maps (in a co-registered
+  geometry) have to be supplied in 8-bit SUN rasterfile or BMP
+  format. The output image map is for visual interpretation of the
+  validation accuracy in the whole area. The accuracy is further
+  computed for the polygons specified in the file <em>poly</em>
+  specified on the command line. Selection of the polygon regions
+  is supported in the LAT with the program <a href=
+  "polyras.html">polyras</a>.</p>
+
+  <p>Two validation methods are possible: for each class
+  combination (all) or for a 2 classes combination.</p>
+
+  <p>In the first case, write 0 as number of classes to use; the
+  confusion matrix is written in a file, the output SUN rasterfile
+  contains different grey values for each element of the confusion
+  matrix. The confusion matrix may contain the number of pixels
+  corresponding to the different classes (case 0) or may be
+  normalized to 1 (case 1) or to 100 (case 2, i.e. in percent). The
+  elements of the ground truth (the landuse inventory) are written
+  in horizontal. Those of the landuse map to be validated in
+  vertical. In addition to the elements of the confusion matrix,
+  the user, producer and overall accuracy as well as the kappa
+  coeffient may be computed. The overall accuracy is given by the
+  sum over the diagonal elements of the matrix normalized by the
+  total number of pixels. The kappa coefficient corresponds to the
+  improvement of the classification in comparison to a result
+  obtained by chance agreement.</p>
+
+  <p>In the second case, the validation is made between two
+  classes. For both input maps, the class to validate may
+  correspond to more than one category (e.g. forest may include
+  coniferous and decidous); therefore, the number of categories and
+  their sequence in the maps have to be specified (write 1 and not
+  0 for the first class). The outputs are the elements of a 2x2
+  confusion matrix and a image (SUN raster or BMP format) with four
+  colors corresponding to the elements of the confusion matrix.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 17-Aug-2001.</p>
+</body>
+</html>

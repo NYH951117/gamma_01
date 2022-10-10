@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: MLI_cat</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>MLI_cat</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/MLI_cat.c"><i>MLI_cat.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  MLI_cat - Concatenate a pair of MLI images using bicubic spline
+  interpolation<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>MLI_cat &lt;MLI-1&gt; &lt;MLI-2&gt; &lt;MLI1_par&gt;
+  &lt;MLI2_par&gt; &lt;OFF_par&gt; &lt;MLI-3&gt;
+  &lt;MLI3_par&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI-1&gt;</td>
+
+        <td>(input) MLI-1 image single look float<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI-2&gt;</td>
+
+        <td>(input) MLI-2 image to be appended to MLI-1<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI1_par&gt;</td>
+
+        <td>(input) MLI-1 ISP image parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI2_par&gt;</td>
+
+        <td>(input) MLI-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset parameter file containing offset
+        polynomials between MLI-1 and MLI-2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI-3&gt;<br></td>
+
+        <td>(output) concatenated MLI</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI3_par&gt;</td>
+
+        <td>(output) ISP image parameter file for concatenated
+        image<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES<br></strong></p><code><span style=
+  "font-family: Courier New,Courier,monospace; color: rgb(31, 12, 251);">MLI_cat
+  mli/20110324T123632.mli mli/20110324T123637.mli
+  mli/20110324T123632.mli.par mli/20110324T123637.mli.par
+  cat_mli/20110324T123632_20110324T123637.off
+  cat_mli/20110324T123632.slc
+  cat_mli/20110324T123632.mli.par</span><br></code>
+
+  <p>Concatenate 2 MLI images and generate an output MLI. Use the
+  SLC offset polynomial information in the OFF_par file to
+  concatenate the files. MLI images must be single-look&nbsp;</p>
+
+  <p><strong>DESCRIPTION<br></strong><br>
+  <span style="font-style: italic;">MLI_cat</span> is a program to
+  concatenate 2 single-look MLI images. The offset parameter file
+  OFF_par is used to contain information on spatial offset between
+  the MLI images&nbsp; in both range and azimuth.&nbsp; A
+  bicubic-spline interpolation is used to append a resampled
+  version of MLI-2 on to the end of MLI-1.&nbsp; The offset
+  polynomial information is obtained from the SLC offset
+  measurements.&nbsp; See the documentation for SLC_cat that
+  describes the process for obtaining the offset polynomials in
+  range and azimuth.&nbsp; This program will be used primarily to
+  concatenate MLI images from interferograms<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a>,&nbsp; <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_fit.html">offset_fit</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="charles_werner.html">CW</a>, last change 14-Oct-2012.
+</body>
+</html>

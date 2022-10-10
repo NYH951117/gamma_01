@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ERS raw data processing</title>
+</head>
+
+<body>
+  <h1>ERS Raw Data Processing</h1>This is&nbsp; a Quickstart guide
+  on how to use the scripts <span style=
+  "font-style: italic;">ERS_pre_proc</span> and <span style=
+  "font-style: italic;">ERS_proc_all&nbsp;</span> to automate
+  processing a stack of raw ERS data sets &nbsp;to generate SLC and
+  MLI image products. The data stack should all cover the same
+  image frame.<br>
+  <br>
+  These scripts are run from the command line. Think of theses
+  scripts as as assistants to help you automate the&nbsp;processing
+  tasks. To become familiar practice with a stack of 1 or 2 images
+  to become familiar with the processing flow.&nbsp; Then you will
+  be ready to go and process a much larger stack. The maximum
+  number of images is essentially limited by your available disk
+  space :)&nbsp;&nbsp;<br>
+  <br>
+  The script functions are summarized below:<br>
+  <br>
+
+  <table style="text-align: left; width: 70%;" border="1"
+  cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td><span style=
+        "font-style: italic;">ERS_pre_proc&nbsp;</span></td>
+
+        <td>Generate MSP processing parameter files, extract DELFT
+        precision state vectors, determine Doppler parameters, and
+        generate processing parameter file for <span style=
+        "font-style: italic;">ERS_proc_all</span></td>
+      </tr>
+
+      <tr>
+        <td><span style=
+        "font-style: italic;">ERS_proc_all</span></td>
+
+        <td>Process the raw data sets and generate SLC and MLI
+        images, generate ISP image parameter files</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <span style="font-style: italic;">ERS_pre_proc</span> is used to
+  perform various pre-processing functions and generate a text
+  format data file (<span style=
+  "font-style: italic;">proc_list</span>)&nbsp; that contains
+  various additional processing parameters that are used by&nbsp;
+  <span style="font-style: italic;">ERS_proc_all</span>.
+  &nbsp;<span style="font-style: italic;">ERS_proc_all</span> takes
+  the <span style="font-style: italic;">proc list</span> and its
+  command line parameters to calculate a set of SLC images and MLI
+  images from the raw data.&nbsp; The scene specific Doppler
+  parameters and extent both in range and azimuth&nbsp;is specified
+  in the <span style="font-style: italic;">proc_list</span>.<br>
+
+  <h2>1. Raw data pre-processing using ERS_pre_proc</h2>To begin
+  processing select or create a directory on the disk where the raw
+  data and processed images will be stored. The data can be located
+  in different directories, though this is not recommended. You
+  should also have a directory where the Delft state vectors have
+  all been downloaded. See the HTML documentation on <span style=
+  "font-style: italic;">DELFT_proc2</span> for information on how
+  to download the state vectors.<br>
+  <br>
+  Next run <span style="font-style: italic;">ERS_pre_proc</span>
+  without arguments to get the following screen output:<br>
+  <br>
+  <code>*** ERS_pre_proc<br>
+  *** Copyright 2014, Gamma Remote Sensing, v3.9 3-Feb-2014 clw
+  ***<br>
+  *** ERS raw data pre-processing ***<br>
+  <br>
+  usage: ERS_pre_proc &lt;CEOS_list&gt; &lt;path_to_DELFT&gt;
+  &lt;out_dir&gt; &lt;log&gt; &lt;proc_list&gt; &lt;mode&gt;
+  [keyword] [value]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; CEOS_list&nbsp;&nbsp;&nbsp; (input) parameter
+  file with 1 column entry/record<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; 1. directory
+  (including path) containing CEOS data set from ERS&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; DELFT_path&nbsp; path to DELFT orbits
+  (example: /usr/local/data/DELFT)<br>
+  &nbsp;&nbsp;&nbsp; out_dir&nbsp;&nbsp;&nbsp;&nbsp; directory for
+  output fixed raw data files and processing parameter files<br>
+  &nbsp;&nbsp;&nbsp;
+  log&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (output)
+  ERS_pre_proc processing log file&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; proc_list&nbsp;&nbsp; (output) processing list
+  for use by ERS_proc_par and ERS_proc_all<br>
+  &nbsp;&nbsp;&nbsp; mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  processing mode:<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1: create
+  processing parameter files from CEOS leaders<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 2: fix raw
+  data files (read and scan for missing lines)&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 3: extract
+  and interpolate DELFT state vectors and update MSP processing
+  parameter files<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4:
+  estimate Doppler ambiguity and centroid<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;
+  &nbsp; &nbsp; 5: set value in the processing parameter files for
+  a keyword:value pair<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+  &nbsp; 6: generate processing list for use by ERS_proc_par and
+  ERS_proc_all<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 7: gzip
+  fixed raw data files<br>
+  &nbsp;&nbsp;&nbsp; keyword &nbsp;&nbsp;&nbsp; (mode 5) keyword in
+  the MSP processing parameter file (example:
+  doppler_polynomial)<br>
+  &nbsp;&nbsp;&nbsp; value&nbsp;&nbsp;&nbsp; (mode 5) new value
+  delimited by double quotes (example: "317.0 0. 0. 0.")<br>
+  <span style="font-style: italic;"><br></span></code> <span style=
+  "font-style: italic;">ERS_pre_proc</span> generates a set of MSP
+  processing parameter files, scans the raw data for missing lines,
+  range aligns the echoes, extracts and interpolates the DELFT
+  state vectors, estimates the Doppler ambiguity and centroid, and
+  generates the process list (called a <span style=
+  "font-style: italic;">proc_list</span>) used as input to the
+  scripts <span style="font-style: italic;">ERS_proc_par</span> and
+  <span style="font-style: italic;">ERS_proc_all</span> scripts.
+  There are series of steps (modes) that are run through to
+  accomplish the various functions This script is called several
+  times, stepping through the individual modes.<br>
+  <br>
+  To use <span style="font-style: italic;">ERS_pre_proc</span>, you
+  need to create a CEOS_list in a text editor which is a list of
+  the paths to the raw data sets. These are images of the raw data
+  sets.&nbsp; The CEOS data files should be copied to directories
+  with the names derived from the numerical date of acquisition
+  with the form YYYYMMDD (all numbers). By using this naming
+  convention the directories are in time order when listed.<br>
+  <br>
+  An example CEOS_list is shown below:<br>
+  <code><br>
+  19990915<br>
+  19991020</code><br>
+  <br>
+  Only the <code>dat_01.001</code> and <code>lea_01.001</code>
+  files are used<span style="font-style: italic;">.<br>
+  <br>
+  ERS_pre_proc</span> is called up several times stepping through
+  the modes and performing each of the raw data pre-processing
+  steps in sequence.
+
+  <h4>1. Read the CEOS leader files (LEA_01.001) and initialize and
+  generate the MSP processing parameter
+  files:</h4><code>ERS_pre_proc CEOS_list /e/Delft raw
+  ERS_pre_proc_1.log proc_list 1</code><br>
+  <br>
+  The processing parameter files are all placed in the directory
+  called raw. The text format log file is specified as <span style=
+  "font-style: italic;">ERS_pre_proc_1.log</span> and contains the
+  MSP commands and screen output from running those commands. The
+  processing parameter files have names of the form
+  pYYYYMMDD.slc.par
+
+  <h4>2. Scan the raw data for missing lines and range align the
+  raw data echoes.</h4>The script will call ERS_fix with
+  appropriate parameters for each of the data files in the CEOS
+  list:<br>
+  <br>
+  &nbsp;<code>ERS_pre_proc CEOS_list /e/Delft raw
+  ERS_pre_proc_2.log proc_list 2</code><br>
+  <br>
+  The fixed raw data files are written to the <span style=
+  "font-style: italic;">raw</span> output directory.
+
+  <h4>3. Extract and interpolate precision DELFT state
+  vectors</h4><code>ERS_pre_proc CEOS_list /e/Delft raw
+  ERS_pre_proc_3.log proc_list 3</code><br>
+  <br>
+  The state vectors are written to the processing parameter files
+  in the raw directory. The script assumes that you have downloaded
+  the latest state vectors for ERS-1 and ERS-2 from the TU-DELFT
+  web site:<br>
+  <a href=
+  "http://www.deos.tudelft.nl/AS/pieter/Local/ERS/index.html">http://www.deos.tudelft.nl/AS/pieter/Local/ERS/index.html.</a>&nbsp;
+  The ERS-1 state vectors should be in a directory&nbsp;
+  <code>ers1/eigen_gl04s</code> and the ERS-2 state vectors in a
+  directory <code>ers2/eigen_gl04s.</code><br>
+
+  <h4>4. Determine the Doppler centroid:</h4>The next step runs the
+  program azsp_IQ to estimate the Doppler centroid<code><br>
+  &nbsp;<br>
+  ERS_pre_proc CEOS_list /e/Delft raw ERS_pre_proc_4.log proc_list
+  4</code><br>
+  <br>
+  The Doppler centroid values are written into the MSP processing
+  parameter files
+
+  <h4>5. Generate the proc_list file used by ERS_proc_par and
+  ERS_proc_all&nbsp;</h4>The <span style=
+  "font-style: italic;">proc_list</span> has 9 columns, 1 line per
+  scene and contains information on the &nbsp;scene root file name
+  (YYYYMMDD), sensor parameter file and processing parameters:
+  &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  1. scene_identifier (example: 19960816)
+  &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  2. MSP sensor parameter file &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  3. offset in echoes to start of processed data (enter - for
+  default) &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  4. number of echoes to process (enter - for default)
+  &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  5. range offset in samples (enter - for default)
+  &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  6. number of range samples to process (enter - for default)
+  &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  7. Doppler centroid for scene (Hz) &nbsp;&nbsp;&nbsp;<br>
+  8. Doppler slope for scene (Hz/m) &nbsp;&nbsp;&nbsp;&nbsp;<br>
+  9. azimuth processing bandwidth fraction for scene (0 --&gt; 1.0,
+  default: .9)<br>
+  <br>
+  This is done using mode 6 of <span style=
+  "font-style: italic;">ERS_pre_proc</span>:<br>
+  <br>
+  <code>ERS_pre_proc CEOS_list /e/Delft raw ERS_pre_proc_6.log
+  proc_list 6</code><br>
+  <br>
+  An example <span style="font-style: italic;">proc_list</span>
+  &nbsp;file for the pair of frames is shown below:<br>
+  <br>
+  <code>19990915 ERS2_ESA.par&nbsp; - - - -&nbsp;&nbsp;26.8 0.0
+  0.8<br>
+  19991020 ERS2_ESA.par - - - -&nbsp;&nbsp;&nbsp;79.5 0.0
+  0.8</code><br>
+  <br>
+  The Doppler centroids are close to one another and the processing
+  bandwidth fraction is set to 0.8. The processing bandwidth
+  fraction is the fraction of the total signal azimuth bandwidth
+  used to generate the SLC image and should not be greater than .9
+  to avoid excessive azimuth ambiguities in the final SAR image.
+  The dashes in the other fields specify default processing extents
+  in range and azimuth and results in processing of the full frame.
+  <code><br>
+  <br>
+  ERS_proc_all proc_list1 raw e:/ slc mli 2 10 1</code><br>
+  <br>
+  Generally you will only need to run step 5 if you want to change
+  some default value in the processing parameter files and this is
+  not generally necessary. Also, step 7 should only be done after
+  processing of all the data to images is completed.<br>
+
+  <h2>2. Using ERS_proc_all to process raw data to SLC and MLI
+  images</h2><span style="font-style: italic;">ERS_proc_all</span>
+  uses the proc_list and fixed raw data to generate processing SLC
+  and MLI images. <code><br>
+  <br>
+  *** ERS_proc_all<br>
+  *** Copyright 2014, Gamma Remote Sensing, v3.3 3-Feb-2014 clw
+  ***<br>
+  *** ERS-1 and ERS-2 SAR image processing from RAW data ***<br>
+  <br>
+  usage: ERS_proc_all &lt;proc_list&gt; &lt;raw_dir&gt;
+  &lt;rc_dir&gt; &lt;SLC_dir&gt; &lt;MLI_dir&gt; &lt;rlks&gt;
+  &lt;azlks&gt; &lt;SLC_format&gt; [az_patch] [autof_min]<br>
+  &nbsp;&nbsp;&nbsp; proc_list&nbsp; (input) processing list (9
+  columns):<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp; &nbsp;&nbsp; 1. scene_identifier (example:
+  19960816)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; 2. MSP sensor
+  parameter file<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp; 3. offset in echoes to start of processed data
+  (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp; 4. number of echoes to process (enter - for
+  default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5. range
+  offset in samples (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 6. number
+  of range samples to process (enter - for default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp; &nbsp;
+  &nbsp;&nbsp; 7. Doppler centroid for scene (Hz)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 8. Doppler
+  slope for scene (Hz/m)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9. azimuth
+  processing bandwidth fraction for scene<br>
+  &nbsp;&nbsp;&nbsp; raw_dir&nbsp;&nbsp;&nbsp; &nbsp;data directory
+  containing fixed ERS raw data files<br>
+  &nbsp;&nbsp;&nbsp; rc_dir&nbsp;&nbsp;&nbsp; &nbsp; directory to
+  temporarily store intermediate range compressed data (example:
+  /tmp)<br>
+  &nbsp;&nbsp;&nbsp; SLC_dir&nbsp;&nbsp;&nbsp; &nbsp;directory to
+  store output SLC data<br>
+  &nbsp;&nbsp;&nbsp; MLI_dir&nbsp;&nbsp;&nbsp; &nbsp;directory to
+  store multilook intensity (MLI) files derived from the slc
+  data<br>
+  &nbsp;&nbsp;&nbsp; rlks&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  number of range looks to generate MLI images&nbsp;&nbsp;
+  (nominal: 1)<br>
+  &nbsp;&nbsp;&nbsp; azlks&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; number of
+  azimuth looks to generate MLI images (nominal: 5)<br>
+  &nbsp;&nbsp;&nbsp; SLC_format&nbsp; SLC image format
+  (0:FCOMPLEX&nbsp; 1:SCOMPLEX)<br>
+  &nbsp;&nbsp;&nbsp; az_patch&nbsp;&nbsp;&nbsp; azimuth patch size
+  (default: 6144)<br>
+  &nbsp;&nbsp;&nbsp; autof_min&nbsp;&nbsp; minimum SNR threshold
+  for autofocus, 0.0 for no autofocus (nominal = 10)<br>
+  &nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; NOTE:&nbsp; current directory is denoted by
+  .</code><br>
+  <br>
+  On the command line you must specify the directory where the
+  parameter files and raw data reside, the directories for output
+  SLC and MLI images, the number of range and azimuth looks for the
+  MLI images, the format of the SLC images, the size of the azimuth
+  patch and the minimum SNR threshold for autofocus. The autofocus
+  step may not be able to evaluate the focus error if the image has
+  no contrast, such as over the ocean. In this case it is usually
+  safe to turn off autofocus because the use of the precision state
+  vectors usually assures excellent image focus. In the case where
+  autofocus is not able to evaluate the focus error it can be
+  disabled by entering 0.0 for the <span style=
+  "font-style: italic;">autof_min</span> command line parameter and
+  the reprocessing.<br>
+  <br>
+  The nominal number of range and azimuth looks for the multi-look
+  intensity images is 1 look in range and 5 in azimuth. In addition
+  to the MLI images, Sun raster images of the MLI data are produced
+  and written into the MLI directory. To look at these images use
+  xv or other image display tool. Be sure to examine all the output
+  images to see if they are focused and otherwise acceptable. Log
+  files from processing each of the scenes is generated and stored
+  in the SLC directory under names YYYYMMDD_MSP.log<br>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014 <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "urs_wegmuller.html">UW</a>,&nbsp;<a href=
+  "tazio_strozzi.html">TS</a> last change 3-Feb-2014
+</body>
+</html>

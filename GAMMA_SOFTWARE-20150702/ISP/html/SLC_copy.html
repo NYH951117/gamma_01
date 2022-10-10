@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: SLC_copy</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_copy</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/SLC_copy.c"><i>SLC_copy.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_copy - Copy user defined image segment from input SLC
+  (fcomplex or scomplex) to output SLC (fcomplex or scomplex).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_copy &lt;SLC_in&gt; &lt;SLC_par_in&gt;
+  &lt;SLC_out&gt; &lt;SLC_par_out&gt; [fcase] [sc] [roff] [nr]
+  [loff] [nl] [swap_IQ] [header_lines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_in&gt;</td>
+
+        <td>(input) SLC (FCOMPLEX or SCOMPLEX format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par_in&gt;</td>
+
+        <td>(input) ISP SLC parameter file of input SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_out&gt;</td>
+
+        <td>(output) selected SLC section (FCOMPLEX or SCOMPLEX
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par_out&gt;</td>
+
+        <td>(output) ISP SLC parameter file of output SLC</td>
+      </tr>
+
+      <tr>
+        <td>[fcase]</td>
+
+        <td>data format conversion (enter - for default: output
+        format = input format)<br>
+        &nbsp; 1: FCOMPLEX --&gt; FCOMPLEX (default sc = 1.0)<br>
+        &nbsp; 2: FCOMPLEX --&gt; SCOMPLEX (default sc =
+        10000.0)<br>
+        &nbsp; 3: SCOMPLEX --&gt; FCOMPLEX (default sc =
+        0.0001)<br>
+        &nbsp; 4: SCOMPLEX --&gt; SCOMPLEX (default sc = 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[sc]</td>
+
+        <td>scale factor for input SLC data (enter - for
+        default)</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>offset to starting range sample (enter - for default:
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to copy (enter - for default=0,
+        to end of line)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line (enter - for default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines to copy (enter - for default = 0, to
+        end of line)</td>
+      </tr>
+
+      <tr>
+        <td>[swap_IQ]</td>
+
+        <td>swap data (enter - for default)<br>
+        &nbsp; 0: normal (default)<br>
+        &nbsp; 1: swap real/imaginary part of complex data<br>
+        &nbsp; 2: swap left/right (near/far range)</td>
+      </tr>
+
+      <tr>
+        <td>[header_lines]</td>
+
+        <td>number of input file header lines (enter - for default:
+        0)<br>
+        NOTE:&nbsp; CEOS format SLC data have 1 header line</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p>To extract 1000 lines of 1024 range pixels skipping 216 range
+  samples and 311 lines:</p>
+
+  <p><samp>SLC_copy 19990421.slc 19990421.slc.par
+  19990421_section.slc 19990421_section.slc.par 1 1.0 216 1024 311
+  1000</samp> (input and output SLC in fcomplex format)</p>
+
+  <p><samp>SLC_copy 19990421.slc 19990421.slc.par
+  19990421_section_esa.slc 19990421_section_esa.slc.par 4 1.0 216
+  1024 311 1000</samp> (input and output SLC in scomplex
+  format)</p>
+
+  <p><samp>SLC_copy 19990421.slc 19990421.slc.par
+  19990421_section.slc 19990421_section.slc.par 3 0.0001 216 1024
+  311 1000</samp> (input SLC in scomplex format, output SLC in
+  fcomplex format)</p>
+
+  <p><strong>DESCRIPTION<br>
+  <br></strong> <em>SLC_copy</em> extracts the user defined section
+  from the input SLC and writes it out as a new SLC image file.</p>
+
+  <p>The format of the input and output SLC can be individually
+  selected to be either fcomplex or scomplex. Data processed with
+  the In scomplex format each complex number consists of a pair of
+  (2-byte) short integer (4-bytes per samples). SLC data processed
+  by ESA PAFs is in given in scomplex format. MSP SLC images can be
+  either fcomplex or scomplex format depending on the user inputs
+  The following <font color="#FF0000">fcase</font> values have to
+  be selected for the 4 possible input/output format
+  combinations:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>fcase</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>Input Format</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>Output Format</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>Default Scale Factor</big></big></td>
+      </tr>
+
+      <tr>
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>1</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>fcomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>fcomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>1.0</big></big></td>
+      </tr>
+
+      <tr>
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>2</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>fcomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>scomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>10000.0</big></big></td>
+      </tr>
+
+      <tr>
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>3</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>scomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>fcomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>0.0001</big></big></td>
+      </tr>
+
+      <tr>
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>4</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>scomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>scomplex</big></big></td>
+
+        <td style="font-family: monospace; text-align: center;">
+        <big><big>1.0</big></big></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>A new SLC parameter file is created to describe the geometry
+  of the new image file.&nbsp; Starting, center, and ending times,
+  and the near, center and far slant ranges are calculated for the
+  selected SLC segment. The output SLC together with its parameter
+  file contains the full information needed for further
+  processing.&nbsp; The Doppler polynomial is adjusted for the
+  relative offset between the image segment and the original
+  image.</p>
+
+  <p>The pixel value can be scaled with a user-defined scale
+  factor. This is necessary when changing the SLC format. Notice
+  that the output real and imaginary parts need to be in the short
+  integer value range if scomplex is selected as output format. On
+  the other hand when converting data from scomplex&nbsp; to
+  fcomplex format a small factor is recommended to avoid too large
+  values that may cause overflow in later calculations.</p>
+
+  <p>Notice that both the real and imaginary part of the SLC values
+  are multiplied with the scale factor. For the first range pixel
+  and first azimuth line of the input SLC to coincide with the
+  output image select <samp>roff=0</samp> and <samp>loff=0</samp>,
+  respectively. The IQ_flag allows to reverse the order of real and
+  imaginary part of the SLC. This option was added some ESA_PAFs
+  distributed SLC data with the IQ&nbsp; values reversed.</p>
+
+  <p>Notice:&nbsp; CEOS format SLCs have 1 CEOS file header
+  line.&nbsp; SLC data produced by the MSP are without header
+  lines.&nbsp; <span style="font-weight: bold;"><br></span></p>
+
+  <p><strong>OPTIONS</strong><br>
+  The selected image section may extend outside of the range of
+  valid data of the input SLC. The NULL value assigned to these
+  values is (0.0,0.0) in fcomplex and (0,0) in scomplex format.
+  SLC_copy may also be used to compress MSP processed SLC data to
+  scomplex format with a reduction of the data volume by a factor
+  of 2.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a>, DISP program cp_data.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 10-Oct-2012
+</body>
+</html>

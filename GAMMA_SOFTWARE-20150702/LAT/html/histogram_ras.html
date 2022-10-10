@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: histogram_ras</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>histogram_ras</h2>
+
+  <p><i>ANSI-C programs:</i> <a href=
+  "../src/histogram_ras.c"><i>histogram_ras.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  histogram_ras - Calcualtes histogram_ras of test-area values
+  (polygon regions).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>histogram_ras &lt;ras_in&gt; &lt;polygon&gt;
+  &lt;histogram_rass&gt; &lt;mean/stdev&gt; &lt;percent&gt;
+  [lr_flag] [start] [stop]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;ras_in&gt;</td>
+
+      <td>input 8-bit SUN raster/BMP image file (SUN raster: *.ras,
+      BMP image format: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;polygon&gt;</td>
+
+      <td>polygon data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;histograms&gt;</td>
+
+      <td>calculated histograms (output)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mean/stdev&gt;</td>
+
+      <td>calculated mean/stdev (output)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;percent&gt;</td>
+
+      <td>calculated percent of histograms (output)</td>
+    </tr>
+
+    <tr>
+      <td>[lr_flag]</td>
+
+      <td>input left/right flipped (default=1: flipped; -1: not
+      flipped)</td>
+    </tr>
+
+    <tr>
+      <td>[start]</td>
+
+      <td>first histogram class (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[stop]</td>
+
+      <td>last histogram class (default=all values)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>histogram_ras 1352_1610.landuse.ras 1352_1610.poly
+  1352_1610.landuse.hist 1352_1610.landuse.dat
+  1352_1610.landuse.perc -1</samp></p>
+
+  <p>Extracts image values from the SUN raster file(landuse
+  classes) and writes for each polygon region the histogram, the
+  mean and stdev, and the percent to the output files.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code histogram_ras.c in $LAT_HOME/src. For compilation
+  adjust and use Makefile: Executable version histogram_ras in
+  ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>histogram_ras</em> extracts SUN rasterfile values for test
+  areas defined by polygons. For each polygon region the histogram,
+  mean, standard deviation, and percent are calculated and written
+  to the corresponding output files.The range between the selected
+  minimum and maximum values is used for the histogram. Each class
+  corresponds to a single image value, resulting in a maximum of
+  256 classes for an 8-bit image.</p>
+
+  <p>The program determines how many times values in a certain
+  interval are found for a certain polygon region. The result is
+  normalized with the total number of pixels, i.e. the sum of all
+  the histogram_ras values for a certain polygon is 1.0 If the
+  image is left/right flipped relative to the polygon coordinates
+  (respectively relative to the original SAR image geometry) the
+  left/right flipping flag has to be set to -1. The selection of
+  the polygon regions is supported with the program <a href=
+  "polyras.html"><em>polyras</em></a><em>.</em></p>
+
+  <p><strong>OPTIONS</strong><br>
+  The output histogram, mean and standard deviations, and percent
+  are written to textfiles and may therefore easily be imported,
+  displayed and printed by most commercial plotting software.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="polyras.html"><em>polyras</em></a>, <a href=
+  "histogram.html"><em>histogram</em></a>, <a href=
+  "display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  none.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pSLC</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>pSLC</h2>
+
+  <p>In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>pSLC is a point data stack of complex SLC values. The format
+  of pSLC corresponds to a point data stack (with multiple records)
+  of fcomplex (pairs of float) or scomplex (pairs of short
+  integer). For each point the record contains a complex SLC
+  value.</p>
+
+  <p>The number of records corresponds to the number of registered
+  SLC used. In general this number and the order of the records is
+  different from the number and order of interferograms
+  calculated.</p>
+
+  <p>Geometric information for an SLC is available in the SLC
+  parameter file. For a point data stack of SLC (pSLC) the SLC
+  parameter files of all SLC are organized in a stack of SLC
+  parameters with each record containing the SLC parameter file of
+  the corresponding record of the pSLC.</p>
+
+  <p>The size of a pSLC of fcomplex type is (number of SLC)*(number
+  of points in the list)*8 bytes. The size of a pSLC of scomplex
+  type is (number of SLC)*(number of points in the list)*4
+  bytes.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

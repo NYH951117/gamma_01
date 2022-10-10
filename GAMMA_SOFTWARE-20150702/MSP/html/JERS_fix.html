@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: JERS_fix</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>JERS_fix</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/JERS_fix.c">JERS_fix.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>JERS_fix</em> - Concatenation and
+  line adjustment of JERS SAR raw data files</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>JERS_fix &lt;SAR_param&gt;
+  &lt;PROC_param&gt; &lt;raw_in_1&gt; &lt;raw_in_2&gt; &lt;...&gt;
+  &lt;raw_out&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>JERS SAR Sensor parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>MSP processing parameter file (modified or created)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_in_1&gt;</td>
+
+      <td>1. input raw data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_in_2&gt;</td>
+
+      <td>2. input raw data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;...&gt;</td>
+
+      <td>Further input raw data files</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_out&gt;</td>
+
+      <td>Output conditioned raw data file</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong><samp>JERS_fix JERS-1.par
+  p961123.slc.par 961123_row205.raw 961123_row206.raw
+  961123_row207.raw 961123_row205-207.fix</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  JERS_fix reads and concatenates one or several consecutive JERS
+  raw data files, range adjusts the lines and writes out the
+  concatenated ("fixed") raw data file. The concatenation of raw
+  data files allows SAR processing of longer strips. The overlap
+  between the input raw data files is determined from the raw data.
+  Range shifts within one or several of the individual input raw
+  data files are considered as calculated from the raw data line
+  header. The program does not scan the data for missing data lines
+  (we are not aware of JERS raw data with missing lines).</p>
+
+  <p>The concatenated output raw data file consists of the header
+  line of the first input raw data file, followed by the raw data
+  records. The sizes of the headerline (usually 720 bytes), and the
+  data records (12700 bytes) are specified in the SAR sensor
+  parameter file. Each data record consists of a line header (412
+  bytes) and raw data (12288 bytes, zero padded if a shifted during
+  the adjustment).</p>
+
+  <p>Notice that sometimes JERS raw data without header line is
+  provided. Displaying a section of the JERS raw data file using
+  the MSP program <a href="MSP_display.html">disbyte</a>, prior to
+  the interpretation is therefore recommended. Adjustment of the
+  file header size parameter in the sensor parameter file (720
+  -&gt; 0) allows to process the raw data with zero file header
+  size. The file header size needs to be the same for all input raw
+  data files. JERS_fix updates the near slant range value in the
+  processing parameter file based on the information extracted from
+  the raw data line header.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  If a new MSP processing parameter file name is provided JERS_fix
+  creates a processing parameter file introducing the information
+  available from the raw data line headers. Notice that this
+  information is not sufficient for SAR processing. In particular
+  state vectors and the raw data starting time need to be
+  added.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "MSP_display.html">disbyte</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-Feb-2000.
+</body>
+</html>

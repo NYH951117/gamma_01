@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF&amp;GEO Reference Manual: pixel_area</title>
+</head>
+
+<body>
+  <h1><font size="5"><u>Gamma DIFF&amp;GEO: Reference
+  Manual</u></font></h1>
+  <hr>
+
+  <h2>pixel_area</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/pixel_area.c"><i>pixel_area.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  pixel_area - Calculate terrain-based sigma/gamma nought
+  normalization area in slant-range geometry.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>pixel_area &lt;MLI_par&gt; &lt;DEM_par&gt; &lt;DEM&gt;
+  &lt;lookup_table&gt; &lt;ls_map&gt; &lt;inc_map&gt;
+  &lt;pix_sigma0&gt; [pix_gamma0]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(input) ISP MLI or SLC image parameter file
+        (slant-range geometry)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM/MAP parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM&gt;</td>
+
+        <td>(input) DEM data file (or constant height value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lookup_table&gt;</td>
+
+        <td>(input) geocoding look-up table (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ls_map&gt;</td>
+
+        <td>(input) layover and shadow map (in map projection)
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;inc_map&gt;</td>
+
+        <td>(input) local incidence angle map (in map projection)
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pix_sigma0&gt;</td>
+
+        <td>(output) sigma nought normalization area (float, enter
+        - for none)&nbsp;<br></td>
+      </tr>
+
+      <tr>
+        <td>[pix_gamma0]</td>
+
+        <td>(output) gamma nought normalization area&nbsp; (float,
+        enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nstep]<br></td>
+
+        <td style="vertical-align: top;">number steps to divide
+        each dimension of the map pixels (default: 10)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>pixel_area 19960421.mli.par dv.dem_par dv.dem dv.utm_to_rdc
+  ls_map linc pix_sigma0 pix_gamma0</samp></p>
+
+  <p>Calculates the sigma nought and gamma nought normalization
+  area based on the effectively illuminated terrain surface using a
+  digital elevation model.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <a href="pixel_area.html">pixel_area</a> calculates the
+  illuminated area contributing to each individual pixel in
+  slant-range geometry using a digital elevation model. The total
+  illuminated area is determined by proceeding, pixel by pixel,
+  through the given DEM whereby small surface patches are
+  distributed and integrated according to their corresponding
+  range/azimuth pixel values as obtained from the geocoding look-up
+  table. In this way, improved sigma nought and gamma nought
+  normalization areas are obtained for scenes exhibiting strong
+  foreshortening and layover. This is useful for highly precise
+  terrain-corrected georeferencing of SAR images, where a refined
+  geocoding look-up table is obtained in an iterative way.
+  Furthermore, the improved normalization area estimation leads to
+  improved radiometric normalization of the terrain-induced
+  variation of the backscatter values in areas with strong
+  foreshortening and layover.<br></p>
+
+  <p>Normally each pixel of the map is divided into two triangles.
+  Each of these triangles is then subdivided in to a number of
+  facets. The number of facets is controlled by the <span style=
+  "font-style: italic;">nstep</span> command line parameter. The
+  total number of facets is <span style=
+  "font-style: italic;">nstep</span>**2 and strongly influences the
+  time required to calculate&nbsp; the pixel normalizaton maps. If
+  the lookup table is on a fine grid relative to the slant-range
+  resolution, the value of <span style=
+  "font-style: italic;">nstep</span> can be reduced to 8 or 6. In
+  the case were the map pixels are larger, then <span style=
+  "font-style: italic;">nstep</span> should be increased. When the
+  number of facets is insufficient,&nbsp; <span style=
+  "font-style: italic;">pix_sigma0</span> will have a rough texture
+  due to sampling errors. The value of nstep should be sufficient
+  such that <span style="font-style: italic;">pix_sigma0</span>
+  appears smooth.<br></p>
+
+  <p><a href="pixel_area.html">pixel_area</a> is called after
+  <a href="gc_map.html">gc_map</a>, or <a href=
+  "gc_map.html">gc_map_grd</a>, respectively, since it requires
+  three output products provided by these programs: the geocoding
+  look-up table, a layover/shadow mask, and a map of local
+  incidence angles, all given in map geometry of the map projection
+  of the given digital elevation model.</p>
+
+  <p>It is important to note that <a href=
+  "pixel_area.html">pixel_area</a> requires that <a href=
+  "gc_map.html">gc_map</a>, or <a href="gc_map.html">gc_map_grd</a>
+  was run with <span style="font-style: italic;">layover/shadow
+  mode ls_mode = 2: actual value</span> (and <span style=
+  "font-style: italic;">not</span> the default ls_mode = 1: linear
+  interpolation across these regions).</p>
+
+  <p>After a refinement of the look-up table pixel_area is
+  typically called again in order to calculate a refined version of
+  the illuminated pixel area based on the refined versions of the
+  geocoding look-up table, the layover/shadow mask, and the map of
+  local incidence angles.</p>
+
+  <p><a href="pixel_area.html">pixel_area</a> calculates the maps
+  of sigma nought and gamma nought normalization area, which
+  represents a simulation of the terrain-induced variation of radar
+  brightness, directly in slant-range coordinates.</p>
+
+  <p>By using the terrain-based normalization areas obtained from
+  pixel_area in combination with the ellipsoid-based ground-range
+  sigma/gamma nought pixel reference areas obtained from <a href=
+  "../../ISP/html/radcal_SLC.html">radcal_SLC</a> or <a href=
+  "../../ISP/html/radcal_SLC.html">radcal_MLI</a> an optimized
+  calibration of the SAR data to sigma nought and gamma nought
+  values is possible.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="gc_map.html">gc_map</a>, <a href=
+  "gc_map.html">gc_map_grd</a>, <a href="geocode.html">geocode</a>,
+  <a href="geocode_back.html">geocode_back</a>, <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "gc_map_inversion.html">gc_map_inversion</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "../../ISP/html/radcal_SLC.html">radcal_SLC</a>.</p>
+  <hr>
+  Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 17-Feb-2014.<br>
+</body>
+</html>

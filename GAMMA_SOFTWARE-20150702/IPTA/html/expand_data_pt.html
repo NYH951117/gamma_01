@@ -1,0 +1,212 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: expand_data_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>expand_data_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/expand_data_pt.c">expand_data_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  expand_data_pt - resample point data using an initial list and
+  data stack values&nbsp; (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>expand_data_pt &lt;plist&gt; &lt;pmask&gt;
+  &lt;SLC_par&gt; &lt;pdata_in&gt; &lt;plist_out&gt;
+  &lt;pmask_out&gt; &lt;pdata_out&gt; [rec_num] [type] [r_max]
+  [w_func] [np_max]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;plist_out&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) list of points to
+        resample pdata_in<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;pmask_out&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) output data mask
+        for plist_out<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_out&gt;</td>
+
+        <td>(output) spatially filterd point data stack (same type
+        as pdata_in)</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata_in and pdata_out to process
+        (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type (0:fcomplex 1:scomplex 2:float, default -:
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum radius (range samples, default: 64)</td>
+      </tr>
+
+      <tr>
+        <td>[w_func]</td>
+
+        <td>radial weighting function (0: 1.0 1:
+        1.0-radius/r_max)</td>
+      </tr>
+
+      <tr>
+        <td>[np_max]</td>
+
+        <td>maximum number of neighbor points in the filter
+        (default - : all points within search radius)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">pt_num<br></td>
+
+        <td style="vertical-align: top;">point number for local
+        filtering about a single point (beginning with 0)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>expand_data_pt site.plist site.pmask 08256.rslc.par
+  site.punw1 site.plist2 - site.punw2 14 2 25 1 12</samp></p>
+
+  <p>Performs spatial resampling of record 14 of the point data
+  stack site.punw1. Points within a radius of 25 SLC range samples
+  are identified, ordered by distance, and the nearest 12 (or
+  fewer) used for resampling the data at points specified by
+  site.plist2. The resampled data is written to record 14 of
+  site.punw2.<br></p>
+
+  <p><samp>expand_data_pt site.plist site.pmask 08256.rslc.par
+  site.punw1 site.plist2 - site.punw2 - 2 25 1 -1</samp></p>
+
+  <p>Performs spatial resampling of all records of the point data
+  stack site.punw1. All points within a radius of 25 SLC range
+  samples are identifed, ordered by distance, and the nearest 12
+  (or fewer) are used for resampling the data at point locations
+  specified by site.plist2.&nbsp; The resampled data are written to
+  the output stack site.punw2.<br></p>
+
+  <p><samp>expand_data_pt site.plist site.pmask 08256.rslc.par
+  site.punw1</samp> site.plist2 - <samp>site.punw2 - 2 200 1
+  12</samp></p>
+
+  <p>Performs spatial resampling of all records of the point data
+  stack site.punw1.&nbsp; All points within a very large radius (of
+  200 SLC range samples) are identified, ordered by distance, and
+  the nearest 12 (or fewer) are used for the resampling using
+  convolutional interpolation. In this case the criteria
+  corresponds for the vast majority of points to "using the 12
+  nearest points".&nbsp;<br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code expand_data_pt.c in ./IPTA/src, executable version
+  expand_data_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  expand_data_pt supports the spatial resampling of point data
+  stacks. Either one or all records can be resampled. The points to
+  be considered in the resampling can be indicated through the
+  spatial radius (indicated in range samples) and the maximum
+  number of points considered, or just one of the two criteria by
+  selecting all records in the other criteria.</p>
+
+  <p>Together with the point list a point data stack of mask values
+  can be indicated to consider or ignor specific points. "-" can be
+  indicated instead a pmask file to consider all points of the
+  list.<br>
+  Either one record or all records can be filtered. To select all
+  records "-" is indicated instead of a record number. Different
+  format types (0:fcomplex 1:scomplex 2:float, default -: float)
+  are supported. The format of the output point data stack with the
+  filtered values has the same type as the input point data
+  stack.</p>
+
+  <p>The SLC parameter file of point list coordinates is required
+  to calculate ground distances between pairs of points. Such
+  distances are calculated using the ground range sampling
+  (calculated from slant range sampling and incidence angle) and
+  the azimuth spacing. The maximum search area radius is indicated
+  in SLC range samples.</p>
+
+  <p>Only valid points, i.e. points with a non-zero value in the
+  mask are considered.<br></p>
+
+  <p>For the spatial filtering constant weights or a linearly
+  decreasing ramp (linear with ground distance) can be selected.
+  Points with NULL values in the input data are not considered in
+  the search for the nearest points (they are not counted as points
+  in the filtering).<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================--><a href=
+  "copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 22-Apr-2003.
+</body>
+</html>

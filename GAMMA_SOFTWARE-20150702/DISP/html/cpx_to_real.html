@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2000 Gamma Remote Sensing --><!-- tx000606 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DISPLAY Reference Manual: cpx_to_real</title>
+</head>
+
+<body>
+  <h1>Gamma DISPLAY: Reference Manual</h1>
+  <hr>
+
+  <h2>cpx_to_real</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/cpx_to_real.c">cpx_to_real.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cpx_to_real - Calculate real part, imaginary part, intensity,
+  magnitude, or phase from complex data.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>cpx_to_real &lt;cpx&gt; &lt;real&gt; &lt;width&gt;
+  &lt;type&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;cpx&gt;</td>
+
+        <td>comple-valued input data file (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;real&gt;</td>
+
+        <td>real-valued output data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>samples per line of the input fcomplex data</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>output data type<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: real part<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: imaginary part<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: intensity (re*re + im*im)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3: magnitude (sqrt(re*re + im*im))<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4: phase (atan2(im, re))<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>cpx_to_real 1352_1610.offs 1352.offs.re 128
+  0</samp></p>extracts estimated range offsets (=real part) from
+  complex valued offsets file.
+
+  <p><samp>cpx_to_real 1352_1610.offs 1352.offs.im 128
+  1</samp></p>extracts estimated azimuth offsets (=imaginary part)
+  from complex valued offsets file.
+
+  <p><samp>cpx_to_real 1352.slc 1352.mli 2500
+  2</samp></p>calculates single look backscatter intensity from SLC
+  image in fcomplex format.
+
+  <p><samp>cpx_to_real 1352_1610.flt 1352_1610.cc 2500
+  3</samp></p>the magnitude of complex valued interferograms
+  corresponds to a coherence estimate.
+
+  <p><samp>cpx_to_real 1352_1610.flt 1352_1610.phase 2500
+  4</samp></p>calculates the wrapped interferometric phase of a
+  complex valued interferogram
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">cpx_to_real</span> reads a file
+  of complex valued data (fcomplex) such provided in an
+  interferogram (*.int, *.flt), an offset estimation file (*.offs),
+  or a&nbsp;SLC image in fcomplex format and calculates for each
+  pixel either the real part, the imaginary part, the intensity,
+  the magnitude, or the phase, and writes out these data as a data
+  file in float format.</p>
+
+  <p>The magnitude is defined as the square root of the intensity;
+  i.e. intensity = re*re + im*im and magnitude = sqrt(re*re +
+  im*im).</p>
+
+  <p>The calculated phase values are expressed in radian in the
+  interval (-PI, +PI) and are equal to atan(imaginary/real)</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="tazio_strozzi.html">TS</a>, <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 11-Apr-2006.</p>
+</body>
+</html>

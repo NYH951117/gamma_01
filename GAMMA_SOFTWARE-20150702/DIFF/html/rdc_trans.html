@@ -1,0 +1,111 @@
+<!DOCTYPE doctype PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF Reference Manual: offset_fitm</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>rdc_trans</h2><i>ANSI-C program:&nbsp;<a href=
+  "../src/rdc_trans.c">rdc_trans.c</a></i>
+
+  <p>Derive lookup table for SLC/MLI coregistration (considering
+  terrain heights)&nbsp;</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <b><tt>rdc_trans &lt;MLI1_par&gt; &lt;DEM_RDC&gt;
+  &lt;MLI2_par&gt; &lt;lt&gt;</tt></b><br>
+  &nbsp;</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI1_par&gt;</td>
+
+        <td>(input) SLC/MLI ISP image parameter file of the
+        reference scene (dimensions of the DEM_RDC and lookup
+        table)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_RDC&gt;</td>
+
+        <td>(input) height map in RDC of MLI-1 (float, or constant
+        height value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI2_par&gt;</td>
+
+        <td>(input) SLC/MLI ISP image parameter file of MLI2
+        (lookup table values)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lt&gt;</td>
+
+        <td>(output) lookup table to resample MLI-2 to the
+        reference MLI-1 geometry(fcomplex)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>rdc_trans 05263.mli.par lan_rdc.dem 24936.mli.par
+  lt0</tt><br></p>
+
+  <p>Calculates the lookup table to resample MLI-2 into the
+  geometry of MLI-1 &nbsp;where MLI-1 was used to generate a
+  geocoded image. &nbsp;<br>
+  &nbsp;<b><br>
+  DESCRIPTION</b><br>
+  <i>rdc_trans</i> is used for generating a lookup table used to
+  resample one SLC image into the geometry of a reference SLC image
+  using the program&nbsp;<a href=
+  "SLC_interp_lt.html">SLC_interp_lt.c</a>. MLI images can also be
+  resampled using &nbsp;<a href=
+  "MLI_interp_lt.html">MLI_interp_lt.c</a> The lookup table
+  contains the range and azimuth pixel numbers of MLI-2 of the
+  associated pixel in MLI-1. &nbsp;See the documentation
+  &nbsp;on&nbsp;<a href=
+  "SLC_interp_lt.html">SLC_interp_lt.c</a>&nbsp; for a full
+  description of how to use this lookup table to perform precision
+  resampling of SLC images.&nbsp;</p>
+
+  <p>There are several advantages of using <span style=
+  "font-style: italic;">rdc_trans</span> in conjuction with
+  <a href="SLC_interp_lt.html">SLC_interp_lt.c</a>. Most important
+  is &nbsp;that the resampling is performed using a DEM resampled
+  into the SAR geometry. This means that offsets due to topography
+  are incorporatedin the lookup table. The offset model used by
+  SLC_interp is a simple polynomial that is sufficient for most
+  cases where offsets due to topography are less than 0.2 pixel.
+  However for higher resolution systems when combined with large
+  baselines, such as occurs with Radarsat, these topography related
+  offsets can exceed 1 pixel. In that case the approach using a
+  lookup table is required. Another advantage of using a lookup
+  table&nbsp; is that SLC images acquired using different
+  geometries, such ascending and descending tracks, can be
+  coregistered directly to one another.<br></p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="SLC_interp_lt.html">SLC_interp_lt.c</a>, <a href=
+  "MLI_interp_lt.html">MLI_interp_lt.c</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-May-2008.
+</body>
+</html>

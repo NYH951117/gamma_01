@@ -1,0 +1,250 @@
+#! /bin/csh -f
+
+echo "S1_deramp_TOPS_slave: Script to deramp a Sentinel-1 TOPS mode burst SLC co-registered slave SLC v1.1 19-Jun-2015 uw"
+echo " "
+if ($#argv < 3)then
+  echo "usage: S1_deramp_TOPS_slave <SLC_tab_slave> <SLC_ID_slave> <SLC_tab_ref> [RLK] [AZLK] [cleaning]"
+  echo "       SLC_tab_slave     (input) SLC_tab of S1 TOPS burst SLC slave (that is co-registered to reference) (e.g. 20141126.RSLC_tab)"
+  echo "       SLC_ID_slave      (input) ID for the S1 TOPS burst SLC slave files (e.g. 20141126)"
+  echo "       SLC_tab_ref       (input) SLC_tab of S1 TOPS burst SLC reference (e.g. 20141015.SLC_tab)"
+  echo "       RLK               number of range looks in the output MLI image (default=10)"
+  echo "       AZLK              number of azimuth looks in the output MLI image (default=2)"
+  echo "       cleaning          flag to indicate if deramped sub-swath SLCs (*.IW1.slc.deramp etc.) shall be deleted  (default = 1 --> deleted,  0: not deleted)"
+  echo " "
+  echo "       The filenames for the deramped data and the phase ramp are generated based on SLC_tab_slave"
+  echo "       20141126.RSLC_tab --> 20141126.RSLC_tab.deramp"
+  echo "       20141126.IW1.rslc --> 20141126.IW1.rslc.deramp, 20141126.IW1.rslc.deramp.par,"
+  echo "                             20141126.IW1.rslc.deramp.TOPS_par"
+  echo "       20141126          --> 20141126.rslc.deramp, 20141126.rslc.deramp.par"
+  exit
+endif
+
+# History:
+# 23-Jan-2015: initial version
+# 23-Jan-2015: replace 0.0 values in deramp phases with 0.0000001
+
+#defaults for input parameters
+set RLK = "10"
+set AZLK = "2"
+set cleaning = "1"   # 1: yes
+
+set SLC_tab_slave = $1
+set SLC_ID_slave = $2
+set SLC_tab_ref = $3
+set SLC_tab_slave_deramp = $1.deramp
+
+if ($#argv >= 4) set RLK = $4
+if ($#argv >= 5) set AZLK = $5
+if ($#argv >= 6) set cleaning = $6
+
+echo "test if required input/output files and directories exist"
+if (-e "$1" == 0) then 
+  echo "ERROR: SLC_tab_slave file ($1) does not exist"; exit(-1)
+endif 
+
+if (-e "$3" == 0) then 
+  echo "ERROR: SLC_tab_slave_ref file ($3) does not exist"; exit(-1)
+endif 
+
+#######################################################################################################
+
+echo "test if deramp phases for reference exist - if not then calculate those"
+
+if (1) then # determine the parameters in SLC_tab_slave_deramp
+  set tmp=`awk '(NR>=1){print $1}' $SLC_tab_ref`
+  set nrows=`echo "$tmp" | awk '(NR==1){print NF}'`
+  echo "SLC_tab_ref has $nrows rows"
+
+  set dph_exists = "1"   #  deramp phases for reference exist 
+  if ("$nrows" >= "1") then
+    set SLC=`awk '(NR==1){print $1}' $SLC_tab_ref `
+    set SLC_par=`awk '(NR==1){print $2}' $SLC_tab_ref `
+    set TOPS_par=`awk '(NR==1){print $3}' $SLC_tab_ref `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    set dph = "$SLC.deramp.dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp $dph"
+    if ( -e "$dph" == "0" )set dph_exists = "0"  
+  endif
+  if ("$nrows" >= "2") then
+    set SLC=`awk '(NR==2){print $1}' $SLC_tab_ref `
+    set SLC_par=`awk '(NR==2){print $2}' $SLC_tab_ref `
+    set TOPS_par=`awk '(NR==2){print $3}' $SLC_tab_ref `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    set dph = "$SLC.deramp.dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp $dph"
+    if ( -e "$dph" == "0" )set dph_exists = "0"  
+  endif
+  if ("$nrows" >= "3") then
+    set SLC=`awk '(NR==3){print $1}' $SLC_tab_ref `
+    set SLC_par=`awk '(NR==3){print $2}' $SLC_tab_ref `
+    set TOPS_par=`awk '(NR==3){print $3}' $SLC_tab_ref `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    set dph = "$SLC.deramp.dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp $dph"
+    if ( -e "$dph" == "0" )set dph_exists = "0"  
+  endif
+endif
+
+if ( "$dph_exists" == "1" ) then
+  echo "all required phase ramp files for the reference scene exist"
+else
+  echo "not all required phase ramp files for the reference scene exist"
+  echo "required phase ramp files for the reference scene are generated"
+  echo "S1_deramp_TOPS_reference $SLC_tab_ref"
+  S1_deramp_TOPS_reference $SLC_tab_ref
+  set dph_exists = "1"  
+endif
+
+#######################################################################################################
+
+# determine the parameters in SLC_tab_slave_deramp and the deramped SLCs
+
+if (1) then 
+  set tmp=`awk '(NR>=1){print $1}' $SLC_tab_slave`
+  set nrows=`echo "$tmp" | awk '(NR==1){print NF}'`
+  echo "SLC_tab_ref has $nrows rows"
+
+#####################
+  if ("$nrows" >= "1") then    # for first line of $SLC_tab_slave
+    set SLC=`awk '(NR==1){print $1}' $SLC_tab_slave `
+    set SLC_par=`awk '(NR==1){print $2}' $SLC_tab_slave `
+    set TOPS_par=`awk '(NR==1){print $3}' $SLC_tab_slave `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    set SLC_ref=`awk '(NR==1){print $1}' $SLC_tab_ref `
+    set SLC_ref_par=`awk '(NR==1){print $2}' $SLC_tab_ref `
+    set TOPS_par_deramp_ref=`awk '(NR==1){print $3}' $SLC_tab_ref `
+    set dph = "$SLC_ref.deramp.dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp $dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp" > $SLC_tab_slave_deramp
+
+    create_diff_par $SLC_par - tmp.diff_par 1 0
+    set width = `awk '$1 == "range_samples:" {print $2}' $SLC_par` 
+    # replace 0.0 in $dph with 0.0000001
+    replace_values $dph 0.0 0.0000001 $dph.tmp $width 0 2
+
+    echo "sub_phase $SLC $dph.tmp tmp.diff_par $SLC_deramp 1 0"
+    sub_phase $SLC $dph.tmp tmp.diff_par $SLC_deramp 1 0
+
+    /bin/rm tmp.diff_par
+    /bin/rm $dph.tmp
+    /bin/cp $SLC_ref_par $SLC_deramp_par
+    /bin/cp $TOPS_par_deramp_ref $TOPS_par_deramp
+  endif
+
+#####################
+  if ("$nrows" >= "2") then   # for second line of $SLC_tab_slave
+    set SLC=`awk '(NR==2){print $1}' $SLC_tab_slave `
+    set SLC_par=`awk '(NR==2){print $2}' $SLC_tab_slave `
+    set TOPS_par=`awk '(NR==2){print $3}' $SLC_tab_slave `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    set SLC_ref=`awk '(NR==2){print $1}' $SLC_tab_ref `
+    set SLC_ref_par=`awk '(NR==2){print $2}' $SLC_tab_ref `
+    set TOPS_par_deramp_ref=`awk '(NR==2){print $3}' $SLC_tab_ref `
+    set dph = "$SLC_ref.deramp.dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp $dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp" >> $SLC_tab_slave_deramp
+
+    create_diff_par $SLC_par - tmp.diff_par 1 0
+    set width = `awk '$1 == "range_samples:" {print $2}' $SLC_par` 
+    # replace 0.0 in $dph with 0.0000001
+    replace_values $dph 0.0 0.0000001 $dph.tmp $width 0 2
+
+    echo "sub_phase $SLC $dph.tmp tmp.diff_par $SLC_deramp 1 0"
+    sub_phase $SLC $dph.tmp tmp.diff_par $SLC_deramp 1 0
+
+    /bin/rm tmp.diff_par
+    /bin/rm $dph.tmp
+    /bin/cp $SLC_ref_par $SLC_deramp_par
+    /bin/cp $TOPS_par_deramp_ref $TOPS_par_deramp
+  endif
+
+#####################
+  if ("$nrows" >= "3") then   # for third line of $SLC_tab_slave
+    set SLC=`awk '(NR==3){print $1}' $SLC_tab_slave `
+    set SLC_par=`awk '(NR==3){print $2}' $SLC_tab_slave `
+    set TOPS_par=`awk '(NR==3){print $3}' $SLC_tab_slave `
+    # echo "$SLC $SLC_par $TOPS_par"
+    set SLC_deramp = "$SLC.deramp"
+    set SLC_deramp_par = "$SLC.deramp.par"
+    set TOPS_par_deramp = "$SLC.deramp.TOPS_par"
+    set SLC_ref=`awk '(NR==3){print $1}' $SLC_tab_ref `
+    set SLC_ref_par=`awk '(NR==3){print $2}' $SLC_tab_ref `
+    set TOPS_par_deramp_ref=`awk '(NR==3){print $3}' $SLC_tab_ref `
+    set dph = "$SLC_ref.deramp.dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp $dph"
+    echo "$SLC_deramp $SLC_deramp_par $TOPS_par_deramp" >> $SLC_tab_slave_deramp
+
+    create_diff_par $SLC_par - tmp.diff_par 1 0
+    set width = `awk '$1 == "range_samples:" {print $2}' $SLC_par` 
+    # replace 0.0 in $dph with 0.0000001
+    replace_values $dph 0.0 0.0000001 $dph.tmp $width 0 2
+
+    echo "sub_phase $SLC $dph.tmp tmp.diff_par $SLC_deramp 1 0"
+    sub_phase $SLC $dph.tmp tmp.diff_par $SLC_deramp 1 0
+
+    /bin/rm tmp.diff_par
+    /bin/rm $dph.tmp
+    /bin/cp $SLC_ref_par $SLC_deramp_par
+    /bin/cp $TOPS_par_deramp_ref $TOPS_par_deramp
+  endif
+
+endif
+
+if (1) then   # generate SLC mosaic of deramped slave SLC
+  echo "SLC_mosaic_S1_TOPS $SLC_tab_slave_deramp $SLC_ID_slave.rslc.deramp  $SLC_ID_slave.rslc.deramp.par $RLK $AZLK 0"
+  SLC_mosaic_S1_TOPS $SLC_tab_slave_deramp $SLC_ID_slave.rslc.deramp  $SLC_ID_slave.rslc.deramp.par $RLK $AZLK 0
+endif
+
+
+#######################################3
+
+# cleaning
+
+if ( "$cleaning" ) then
+  set tmp=`awk '(NR>=1){print $1}' $SLC_tab_slave_deramp`
+  set nrows=`echo "$tmp" | awk '(NR==1){print NF}'`
+  echo "SLC_tab_slave_deramp has $nrows rows"
+
+  if ("$nrows" >= "1") then
+    set SLC=`awk '(NR==1){print $1}' $SLC_tab_slave_deramp `
+    set SLC_par=`awk '(NR==1){print $2}' $SLC_tab_slave_deramp `
+    set TOPS_par=`awk '(NR==1){print $3}' $SLC_tab_slave_deramp `
+    /bin/rm "$SLC $SLC_par $TOPS_par"
+  endif
+  if ("$nrows" >= "2") then
+    set SLC=`awk '(NR==2){print $1}' $SLC_tab_slave_deramp `
+    set SLC_par=`awk '(NR==2){print $2}' $SLC_tab_slave_deramp `
+    set TOPS_par=`awk '(NR==2){print $3}' $SLC_tab_slave_deramp `
+    /bin/rm "$SLC $SLC_par $TOPS_par"
+  endif
+  if ("$nrows" >= "3") then
+    set SLC=`awk '(NR==3){print $1}' $SLC_tab_slave_deramp `
+    set SLC_par=`awk '(NR==3){print $2}' $SLC_tab_slave_deramp `
+    set TOPS_par=`awk '(NR==3){print $3}' $SLC_tab_slave_deramp `
+    /bin/rm "$SLC $SLC_par $TOPS_par"
+  endif
+endif
+
+#######################################3
+
+
+echo ""
+echo "deramped TOPS mosaic SLC and SLC_par: $SLC_ID_slave.rslc.deramp  $SLC_ID_slave.rslc.deramp.par"
+echo "WARNING: $SLC_ID_slave.rslc.deramp.par contains the state vectors of the reference"
+
+exit

@@ -1,0 +1,208 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: stacking</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO Reference Manual</h1>
+  <hr>
+
+  <h2>stacking.c</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/stacking.c">stacking.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  stacking -&nbsp; Stacking of multiple unwrapped differential
+  interferometric phases to estimate deformaton rate in units of
+  radians/year<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>stacking &lt;diff_tab&gt; &lt;width&gt; &lt;ph_rate&gt;
+  &lt;sig_ph_rate&gt; &lt;sig_ph&gt; &lt;roff&gt; &lt;loff&gt; [nr]
+  [nl] [np_min] [tscale]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>data_tab</td>
+
+        <td>&nbsp;(input) 2 column list of unwrapped differential
+        interferograms and delta_T values in days (text)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line of the interferograms in the
+        stack<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;ph_rate&gt;</td>
+
+        <td>(output) average phase rate determined from a weighted
+        sum of phases (radians/year, float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;sig_ph_rate&gt;<br></td>
+
+        <td>(output) standard deviation of the estimated phase rate
+        (radians/year, float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;sig_ph&gt;</td>
+
+        <td>(output) standard deviation of the residual phases
+        (enter - for none, radians, float)</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>range pixel offset to center of the phase reference
+        region<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[loff]<br></td>
+
+        <td style="vertical-align: top;">line offset to center of
+        the phase reference region<br></td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to average in the phase
+        reference region (enter - for default: 16)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines average in the phase reference region
+        (enter - for default: 16)</td>
+      </tr>
+
+      <tr>
+        <td>[np_min]<br></td>
+
+        <td>min. number of phase values required to accept phase
+        rate estimate (enter - for default = nfiles)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[tscale]<br></td>
+
+        <td style="vertical-align: top;">time scale used for phase
+        rate calculation (enter - for default):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: radians/day<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: radians/year (default)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE:<br></strong><br>
+  <samp><code style="font-weight: bold;">stacking&nbsp;diff_tab
+  600&nbsp;ph_rate&nbsp;ph_rate_sigma ph_sigma 148 304 8 8
+  9</code><br></samp></p>calculates the stacked phase of unwrapped
+  interferograms listed in the diff_tab file with entries:<br>
+  <br>
+  <code>20030404_20020924.adf.unw -192<br>
+  20030404_20021018.adf.unw -168<br>
+  20030404_20021111.adf.unw -144<br>
+  20030404_20021229.adf.unw&nbsp; -96<br>
+  20030404_20030122.adf.unw&nbsp; -72<br>
+  20030404_20030311.adf.unw&nbsp; -24<br>
+  20030404_20030428.adf.unw&nbsp;&nbsp; 24<br>
+  20030404_20030522.adf.unw&nbsp;&nbsp; 48<br>
+  20030404_20030615.adf.unw&nbsp;&nbsp; 72<br>
+  20030404_20030709.adf.unw&nbsp;&nbsp; 96<br>
+  20030404_20030802.adf.unw&nbsp; 120<br>
+  <br></code> The phase &nbsp;reference point region is
+  &nbsp;centered at range pixel 148, line 304 in the
+  &nbsp;interferogram stack. The reference region is 8 x 8 in
+  size.&nbsp; &nbsp;
+
+  <p><strong>DESCRIPTION</strong><code><br>
+  <span style="font-weight: bold;">stacking</span></code> is used
+  to estimate the linear rate of differential phase using a set of
+  unwrapped differential interferograms. A set of unwrapped
+  differerential interferograms&nbsp;are isted in the <span style=
+  "font-weight: bold;">diff_tab</span> along with the time interval
+  in days of SLC-2 relative to the reference SLC-1. There is one
+  line/per differential interferogram with the path to the
+  differential interferogram in column 1, and the time interval (in
+  days) of the interferogram in column 2. If a # is placed in the
+  first column of the line, the line is ignored. The program also
+  calculates the standard deviation of the phase rate (sigma)
+  relatives.</p>
+
+  <p>The individual interferogram phases are weighted by the time
+  interval in estimating the phase rate (<span style=
+  "font-style: italic;">ph_rate</span>). The underlying assumption
+  is that atmospheric statistics are stationary for the set of N
+  interferograms. The formulas for the estimated phase rate and the
+  varience for each point in the&nbsp; image are given by:<br></p>
+
+  <div style="text-align: center;">
+    <img style="width: 897px; height: 182px;" alt="" src=
+    "stacking_formula.png"><br>
+  </div>
+
+  <p style="text-align: center;"><br></p>
+
+  <p>where the time interval for each interferogram is <span style=
+  "font-style: italic;">delta_t</span><span style=
+  "font-style: italic;">.</span> The phase rate can be converted to
+  deformation rate using the program&nbsp;<a href=
+  "dispmap.html">dispmap.</a></p>
+
+  <p>The phase measurments are relative to a spatial reference
+  point as specified&nbsp;on the command line. Each interferogram
+  has its own phase offset that is determined by averaging
+  interferogram values about the reference point. The size of the
+  reference region is also specified on the command line in terms
+  of width and height.&nbsp; This offset is subtracted from the
+  phase values used in estimating the deformation rate. &nbsp;
+  Typically the error of the phase rate will increase with
+  increasing distance from the the reference point as the
+  contribution of the phase errors due to atmosphere and baseline
+  error increases.&nbsp; All differential phases are estimated
+  relative to the reference point.<br></p>
+
+  <p>The user can specify the minimum number of interferograms with
+  valid phase values that are required to estimate the phase. The
+  default value for <span style=
+  "font-style: italic;">np_min</span>&nbsp; is conservatively set
+  by default to the number of interferograms in the <span style=
+  "font-style: italic;">diff_tab</span>. Setting a lower threshold
+  value for <span style="font-style: italic;">np_min</span>
+  increases the coverage for the <span style=
+  "font-style: italic;">ph_rate</span> estimates because each
+  nterferogram may not have been entirely unwrapped.<br></p>
+
+  <p>The user can select the time scale for the output to be either
+  days or years using the tscale parameter<br></p>
+
+  <p><strong>SEE ALSO</strong>:<br></p>
+
+  <p><a href="../html/dispmap.html">dispmap</a><br></p>
+  <hr>
+  <a style="text-decoration: underline;" href=
+  "copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  last change 3-Aug-2011
+</body>
+</html>

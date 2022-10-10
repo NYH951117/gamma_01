@@ -1,0 +1,1088 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>Differential Interferometry and Geocoding Software
+  Documentation: Table of Contents</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing -->
+</head>
+
+<body>
+  <h1><font size="5"><u>GAMMA Differential Interferometry and
+  Geocoding Software (DIFF&amp;GEO):</u></font></h1>
+
+  <h2><u>DIFF&amp;GEO Reference Manual</u></h2>
+  <hr>
+
+  <h2><u>Contents</u></h2>
+
+  <h3>Generation of Parameter Files, Preprocessing, Quality
+  Control, and Display</h3>
+
+  <table style="width: 1061px; height: 363px;" border="1">
+    <tbody>
+      <tr>
+        <td><a href="create_diff_par.html">create_diff_par</a></td>
+
+        <td>Creation and editing of DIFF parameter files used for
+        image registration, geocoding, and differential
+        interferometry</td>
+      </tr>
+
+      <tr>
+        <td><a href="create_dem_par.html">create_dem_par</a></td>
+
+        <td>Creation and editing of DEM parameter files</td>
+      </tr>
+
+      <tr>
+        <td><a href="extract_gcp.html">extract_gcp</a></td>
+
+        <td>Automated extraction of height control points from
+        height map in SAR</td>
+      </tr>
+
+      <tr>
+        <td><a href="DIFF_display.html#DIFF_display">DIFF&amp;GEO
+        display and GCP tools</a></td>
+
+        <td>Display image files with geographic coordinates and
+        selection of ground control points (GCPs) (located in the
+        DISP package)</td>
+      </tr>
+
+      <tr>
+        <td><a href="DIFF_display.html">raster image
+        generation</a></td>
+
+        <td>Generation of SUN raster and BMP format images (located
+        in the DISP package)</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_CS_geo.html">par_CS_geo</a></td>
+
+        <td>Generate ISP and DIFF/GEO parameter files and extract
+        data for COSMO-SkyMed GEC (Level 1C) products</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "par_EORC_PALSAR_geo.html">par_EORC_PALSAR_geo</a></td>
+
+        <td>Generate ISP and DIFF/GEO parameter files and extract
+        data from CEOS Level 1.5 PALSAR products</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_JERS_geo.html">par_JERS_geo</a></td>
+
+        <td>Generate ISP and DIFF/GEO parameter files and extract
+        data from CEOS Level 2.1 JERS data products</td>
+      </tr>
+
+      <tr>
+        <td><a href="par_KS_geo.html">par_KS_geo</a></td>
+
+        <td>Generate ISP and DIFF/GEO parameter files and extract
+        data for KOMPSAT-5 GEO (Level 1C) products</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "par_RISAT_geo.html">par_RISAT_geo</a><br></td>
+
+        <td style="vertical-align: top;">Generate DEM parameter
+        file, MLI image, and MLI parameter file for RISAT-1 GeoTIFF
+        products<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="par_TX_geo.html">par_TX_geo</a></td>
+
+        <td>Generate ISP and DIFF/GEO parameter files and extract
+        data from for Terrasar-X GEC and EEC data products</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "par_UAVSAR_geo.html">par_UAVSAR_geo</a><br></td>
+
+        <td style="vertical-align: top;">Generate DEM parameter
+        file for GRD products from UAVSAR annotation file
+        (*.ann)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Geocoding and Image Registration Programs</h3>
+
+  <table style="width: 1061px;" border="1">
+    <tbody>
+      <tr>
+        <td><a href="coord_to_sarpix.html">coord_to_sarpix</a></td>
+
+        <td>Calculate SAR image pixel number of indicated map
+        coordinate</td>
+      </tr>
+
+      <tr>
+        <td><a href="coord_trans.html">coord_trans</a></td>
+
+        <td>Map projection transformation for single
+        coordinate</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "data2xyz.html">data2xyz</a></td>
+
+        <td style="vertical-align: top;">Convert geocoded float
+        data to triplets of float: (northing, easting,
+        data_value)<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="dem_RDC_list.html">dem_RDC_list</a></td>
+
+        <td>Generate coordinate lists in Range-Doppler Coordinates
+        (RDC) and DEM coordinates using a lookup table</td>
+      </tr>
+
+      <tr>
+        <td><a href="dem_gradient.html">dem_gradient</a></td>
+
+        <td>Calculation of DEM normal or gradient vectors</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "dem_trans.html">dem_trans</a></td>
+
+        <td style="vertical-align: top;">Coordinate/projection
+        transformation for DEM (Digital Elevation Model)
+        data<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "dem_xyz.html">dem_xyz</a></td>
+
+        <td style="vertical-align: top;">Convert DEM in a map
+        projection to Cartesian XYZ coordinates<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="gc_map.html">gc_map</a></td>
+
+        <td>Derivation of geocoding lookup table and DEM products
+        from DEM in map geometry and SAR imaging geometry
+        parameters</td>
+      </tr>
+
+      <tr>
+        <td><a href="gc_map_fd.html">gc_map_fd</a></td>
+
+        <td>Derivation of geocoding lookup table and DEM products
+        from DEM in map geometry and SAR imaging geometry
+        parameters using a table of Doppler parameters</td>
+      </tr>
+
+      <tr>
+        <td><a href="gc_map.html">gc_map_grd</a></td>
+
+        <td>Derivation of geocoding lookup table and DEM products
+        from DEM in map geometry and SAR imaging geometry
+        parameters for SAR image in ground-range coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="gc_insar.html">gc_insar</a></td>
+
+        <td>Derivation of geocoding lookup table from (INSAR
+        derived) DEM in SAR geometry, SAR imaging geometry
+        parameters, and map projection parameters</td>
+      </tr>
+
+      <tr>
+        <td><a href="gc_map_fine.html">gc_map_fine</a></td>
+
+        <td>Geocoding lookup table refinement</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "gc_map_inversion.html">gc_map_inversion</a></td>
+
+        <td>Geocoding lookup table inversion</td>
+      </tr>
+
+      <tr>
+        <td><a href="gec_map.html">gec_map</a></td>
+
+        <td>Derivation of geocoding lookup table for ellipsoid
+        corrected geocoding</td>
+      </tr>
+
+      <tr>
+        <td><a href="gcp_2ras.html">gcp_2ras</a></td>
+
+        <td>Extract corresponding points in two SUN raster or BMP
+        format images. The images are displayed side by side and
+        corresponding points are selected using the mouse. The
+        point coordinates in two images are written to a text
+        format file.</td>
+      </tr>
+
+      <tr>
+        <td><a href="gec_map.html">gec_map_grd</a></td>
+
+        <td>Derivation of geocoding lookup table for ellipsoid
+        corrected geocoding of SAR image in ground-range
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="geocode.html">geocode</a></td>
+
+        <td>Resample data in map geometry into range-Doppler
+        geometry using a lookup table.</td>
+      </tr>
+
+      <tr>
+        <td><a href="geocode_back.html">geocode_back</a></td>
+
+        <td style="height: 19px;">Resample data in radar
+        coordinates into map coordinates using a lookup table.</td>
+      </tr>
+
+      <tr>
+        <td><a href="init_offsetm.html">init_offsetm</a></td>
+
+        <td>Initial offset estimation for real-valued intensity
+        (float) image pair</td>
+      </tr>
+
+      <tr>
+        <td><a href="interp_real.html">interp_real</a></td>
+
+        <td>Registration of real valued data using nearest
+        neighbor, spline or spline-log interpolation
+        algorithms)</td>
+      </tr>
+
+      <tr>
+        <td><a href="interp_cpx.html">interp_cpx</a></td>
+
+        <td>Registration of complex valued data (interpolation
+        algorithm)</td>
+      </tr>
+
+      <tr>
+        <td><a href="look_vector.html">look_vector</a></td>
+
+        <td>Calculation of SAR look-vector direction (pointing
+        towards SAR) in map geometry</td>
+      </tr>
+
+      <tr>
+        <td><a href="map_section.html">map_section</a></td>
+
+        <td>Generate the DEM parameter file of a specified region
+        and extract this region from a geocoding lookup table</td>
+      </tr>
+
+      <tr>
+        <td><a href="dem_trans.html">map_trans</a></td>
+
+        <td>Coordinate/projection transformation for data and
+        lookup tables<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="MLI_interp_lt.html">MLI_interp_lt</a></td>
+
+        <td>MLI image resampling via a lookup table and sinc
+        interpolation</td>
+      </tr>
+
+      <tr>
+        <td><a href="mosaic.html">mosaic</a></td>
+
+        <td>Mosaic geocoded images with same format, map
+        projection, and pixel spacing parameters (input data file
+        names on the command line)</td>
+      </tr>
+
+      <tr>
+        <td><a href="multi_mosaic.html">multi_mosaic</a></td>
+
+        <td>Mosaic geocoded images with same format, map
+        projection, and pixel spacing parameters (input data file
+        names in an text format file)</td>
+      </tr>
+
+      <tr>
+        <td><a href="offset_fitm.html">offset_fitm</a></td>
+
+        <td>Determination of registration polynomial from offset
+        field</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "offset_list_fitm.html">offset_list_fitm</a></td>
+
+        <td>Calculate fine registration polynomial for geocoding
+        from control point list</td>
+      </tr>
+
+      <tr>
+        <td><a href="offset_pwr_list.html">offset_pwr_list</a></td>
+
+        <td>Offsets between SLC images at positions specified by a
+        list using intensity cross-correlation</td>
+      </tr>
+
+      <tr>
+        <td><a href="offset_pwrm.html">offset_pwrm</a></td>
+
+        <td>Determination of registration offset field for real
+        valued image pair using intensity cross-correlation</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "offset_pwr_trackingm.html">offset_pwr_trackingm</a></td>
+
+        <td>Estimate range and azimuth offset fields for MLI images
+        using intensity tracking</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "offset_trackingm.html">offset_trackingm</a></td>
+
+        <td>Convert range and azimuth offsets files to a
+        displacement map.</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "pixel_area.html">pixel_area</a><br></td>
+
+        <td style="vertical-align: top;">Calculate terrain-based
+        sigma0 and gamma0 normalization area in slant-range
+        geometry<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="ras_clist.html">ras_clist</a></td>
+
+        <td>Draw coordinate list locations on a SUN/BMP raster
+        image</td>
+      </tr>
+
+      <tr>
+        <td><a href="resamp_image.html">resamp_image</a></td>
+
+        <td>&nbsp;Resample 2D data by linear scale factors in x and
+        y</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "rotate_image.html">rotate_image</a><br></td>
+
+        <td style="vertical-align: top;">Rotate an image about the
+        image center by a specified angle<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="rdc_trans.html">r</a><a href=
+        "rdc_trans.html">dc_trans</a></td>
+
+        <td>Derive lookup table for SLC/MLI coregistration
+        (considering terrain heights)</td>
+      </tr>
+
+      <tr>
+        <td><a href="sarpix_coord.html">sarpix_coord</a></td>
+
+        <td>Calculate map coordinate of indicated SAR image
+        pixel</td>
+      </tr>
+
+      <tr>
+        <td><a href="SLC_diff_intf.html">SLC_diff_intf</a></td>
+
+        <td>Calculate a differential interferogram using
+        coregistered SLC data and a simulated interferogram
+        generated using a DEM and baseline model</td>
+      </tr>
+
+      <tr>
+        <td><a href="SLC_interp_lt.html">SLC_interp_lt</a></td>
+
+        <td>SLC image resampling via a lookup table and SINC
+        interpolation</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "SLC_interp_lt_S1_TOPS.html">SLC_interp_lt_S1_TOPS</a></td>
+
+        <td>Resample Sentinel-1 TOPS (IW mode) SLC using a lookup
+        table and SLC offset polynomials for refinement</td>
+      </tr>
+
+      <tr>
+        <td><a href="WSS_interp.html">WSS_interp</a></td>
+
+        <td>ASAR Wide-Swath complex image resampling using 2-D SINC
+        interpolation</td>
+      </tr>
+
+      <tr>
+        <td><a href="WSS_interp_lt.html">WSS_interp_lt</a></td>
+
+        <td>ASAR Wide-Swath SLC complex image resampling via a
+        lookup table and&nbsp; 2-D SINC interpolation</td>
+      </tr>
+
+      <tr>
+        <td><a href="WSS_intf.html">WSS_intf</a></td>
+
+        <td>Calculate multi-look interferogram from co-registered
+        ASAR Wide-Swath SLC images</td>
+      </tr>
+
+      <tr>
+        <td style="width: 170.15px;"><a href=
+        "WSS_mosaic.html">WSS_mosaic</a></td>
+
+        <td style="width: 874.85px;">Mosaic MLI images and
+        interferograms from the 5 subswaths of the ASAR SCANSAR
+        into single images</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>SAR Intensity Image and Interferogram Simulation
+  Programs</h3>
+
+  <table style="width: 1061px; height: 123px;" border="1">
+    <tbody>
+      <tr>
+        <td><a href="geocode.html">geocode</a></td>
+
+        <td>Simulate SAR image intensity based on height map and
+        SAR imaging geometry</td>
+      </tr>
+
+      <tr>
+        <td><a href="phase_sim.html">phase_sim</a></td>
+
+        <td>Simulate unwrapped phase based on height map in SAR
+        Range-Doppler Coordinates (RDC), Doppler centroid model,
+        and linear baseline model</td>
+      </tr>
+
+      <tr>
+        <td><a href="phase_sim_orb.html">phase_sim_orb</a></td>
+
+        <td>Simulate unwrapped interferometric phase based on
+        height map in SAR Range-Doppler Coordinates (RDC), Doppler
+        centroid model, orbital state vectors, slant range and
+        image timing information</td>
+      </tr>
+
+      <tr>
+        <td style="width: 121.817px;"><a href=
+        "phase_sum.html">phase_sum</a></td>
+
+        <td style="width: 923.183px;">Calculate sum of input 2-D
+        (float) phase files such as a stack of unwrapped
+        interferograms (a-b, b-c, c-d...)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Differential Interferometry Programs</h3>
+
+  <table style="width: 1060px; height: 358px;" border="1">
+    <tbody>
+      <tr>
+        <td><a href="atm_mod.html">atm_mod</a></td>
+
+        <td>Perform linear regression&nbsp; of atmospheric phase
+        with respect to height</td>
+      </tr>
+
+      <tr>
+        <td><a href="base_add.html">base_add</a></td>
+
+        <td>Addition of 2 baseline files</td>
+      </tr>
+
+      <tr>
+        <td><a href="comb_interfs.html">comb_interfs</a></td>
+
+        <td>Combination of complex interferograms with optional
+        integer phase scaling</td>
+      </tr>
+
+      <tr>
+        <td><a href="dh_map_orb.html">dh_map_orb</a></td>
+
+        <td>Calculate delta height from differential
+        interferometric phase using state vectors for baseline
+        calculation</td>
+      </tr>
+
+      <tr>
+        <td><a href="diff_ls_fit.html">diff_ls_fit</a></td>
+
+        <td>Estimation of phase scaling factors using least squares
+        fitting method</td>
+      </tr>
+
+      <tr>
+        <td><a href="diff_ls_unw.html">diff_ls_unw</a></td>
+
+        <td>Subtract unwrapped phase 2 from unwrapped phase 1 (with
+        least squares fitting for phase scaling)</td>
+      </tr>
+
+      <tr>
+        <td><a href="dispmap.html">dispmap</a></td>
+
+        <td>Displacement map generation from unwrapped differential
+        phase</td>
+      </tr>
+
+      <tr>
+        <td><a href="dispmap_vec.html">dispmap_vec</a></td>
+
+        <td>Calculation of displacement vector field from
+        displacement direction and measured component</td>
+      </tr>
+
+      <tr>
+        <td><a href="dispmap_vec2.html">dispmap_vec2</a></td>
+
+        <td>Calculation of displacement vector field from 2
+        measured components (asc./desc.)</td>
+      </tr>
+
+      <tr>
+        <td><a href="quad_fit.html">quad_fit</a></td>
+
+        <td>Estimation of 2-D quadratic model phase function from a
+        differential interferogram</td>
+      </tr>
+
+      <tr>
+        <td><a href="quad_sub.html">quad_sub</a></td>
+
+        <td>Subtraction of quadratic model phase function from a
+        differential interferogram</td>
+      </tr>
+
+      <tr>
+        <td><a href="scale_base.html">scale_base</a></td>
+
+        <td>Unwrapped phase scaling with scale factors determined
+        from baseline files</td>
+      </tr>
+
+      <tr>
+        <td><a href="sub_phase.html">sub_phase</a></td>
+
+        <td>Subtract unwrapped phase 2 from either complex or
+        unwrapped interferogram 1</td>
+      </tr>
+
+      <tr>
+        <td><a href="stacking.html">stacking</a></td>
+
+        <td>Stacking of multiple differential interferograms</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>DIFF&amp;GEO Scripts (csh, tcsh)</h3>A number of scripts are
+  included to support the efficient use of the <span style=
+  "font-weight: bold;">DIFF&amp;GEO</span>. Scripts are often used
+  to implement processing sequences.<br>
+  The scripts may also be taken as examples on how to write new
+  scripts, matching the exact user demands.<br>
+  <br>
+
+  <table style="width: 1061px;" border="1">
+    <tbody>
+      <tr>
+        <td><a href="../scripts/2PASS_INT">2PASS_INT</a></td>
+
+        <td>2-pass differential interferometry using complex
+        interferogram (not flattened) and DEM in map
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/2PASS_UNW">2PASS_UNW</a></td>
+
+        <td>2-pass differential interferometry using unwrapped
+        phase and DEM in map coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/GEC_MLI">GEC_MLI</a></td>
+
+        <td>Ellipsoid corrected SAR geocoding of MLI image to UTM
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="../script/GEC_GRD">GEC_GRD</a></td>
+
+        <td>Ellipsoid corrected SAR geocoding of ground-range (GRD)
+        image to UTM coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/GTC_MLI">GTC_MLI</a></td>
+
+        <td>Terrain corrected SAR geocoding of MLI image to map
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/GTC_GRD">GTC_GRD</a></td>
+
+        <td>Terrain corrected SAR geocoding of ground-range (GRD)
+        image to map coordinates</td>
+      </tr>
+
+      <tr>
+        <td style="height: 19.2px;"><a href=
+        "../scripts/S1_coreg_overlap">S1_coreg_overlap</a></td>
+
+        <td>Determine azimuth refinement using spectral
+        diversitymethod, based on phase of burst overlap
+        double-difference interferograms</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "S1_coreg_subswath_overlap.html">S1_coreg_subswath_overlap</a></td>
+
+        <td>Determine azimuth refinement using spectral diversity
+        method based on phase of subswath overlap double difference
+        interferograms</td>
+      </tr>
+
+      <tr>
+        <td><a href="S1_coreg_TOPS.html">S1_coreg_TOPS</a></td>
+
+        <td>Runs S1 TOPS SLC co-registration sequence using
+        iterative matching refinements and iterative spectral
+        diversity refinements and calculates the resulting
+        differential interferogram</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "S1_deramp_TOPS_reference.html">S1_deramp_TOPS_reference</a></td>
+
+        <td>Deramp a Sentinel-1 TOPS mode burst SLC reference</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "S1_deramp_TOPS_slave.html">S1_deramp_TOPS_slave</a></td>
+
+        <td>Deramp a Sentinel-1 TOPS mode burst SLC slave (that is
+        co-registered to the indicated reference) also generates
+        SLC mosaic for deramped burst SLC slave</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "file:///Users/cw/SVN_repos/GAMMA_SOFTWARE/current_version/DIFF/html/S1_poly_overlap.html">
+        S1_poly_overlap</a></td>
+
+        <td>Generates polygons for burst overlap areas for
+        Sentinel-1 TOPS data</td>
+      </tr>
+
+      <tr>
+        <td style="width: 136.033px;"><a href=
+        "../scripts/UNWRAP_DIFF">UNWRAP_DIFF</a></td>
+
+        <td style="width: 908.967px;">Unwrap phase using
+        information from DIFF parameter file, no adaptive
+        filtering</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Perl Scripts for Differential Interferogram Generation, Data
+  Format Transformation, Data Extraction, and Display</h3>A number
+  of scripts have be written to facilitate processing of stacks of
+  differential interferograms<br>
+  <br>
+
+  <table style="width: 1062px; height: 632px;" border="1"
+  cellpadding="7" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "base_calc.html">base_calc</a><br></td>
+
+        <td style="vertical-align: top;">Generate interferogram
+        table from a list of SLC parameters (SLC_tab) and
+        constraints on baseline length, time interval and if the
+        interferogram set is single or multiple reference. Generate
+        baseline-time network plot and output file with
+        perpendicular baselines and delta_T values. Also generates
+        a list of dates, bperp and delta_T for interferogram pairs
+        in the itab.<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "base_plot.html">base_plot</a></td>
+
+        <td style="vertical-align: top;">Generate baseline-time
+        network plot and output file with perpendicular baselines
+        and delta_T values. Also generates a list of dates, bperp
+        and delta_T for interferogram pairs in the itab.<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/float2dem.pl">float2dem.pl</a></td>
+
+        <td>Convert GeoTIFF files containing Float32 data in
+        geographic coordinates (EQA) to binary (big endian float).
+        Also generates a DEM parameter file describing the image
+        map geometry.</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_diff_2d.html">mk_adf_2d</a></td>
+
+        <td>Adaptive filtering (adf) of a set of differential
+        interferograms</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_diff_2d.html">mk_base_2d</a></td>
+
+        <td>Estimate precision baselines from unwrapped phase and
+        DEM in range-Doppler coordinates</td>
+      </tr>
+
+      <tr>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_diff_2d.html">mk_diff_2d</a></td>
+
+        <td>Calculate 2D diff. interferograms using RSLC_tab, itab,
+        DEM and deformation rate in Range-Doppler Coordinates
+        (RDC)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "mk_diff_2d.html">mk_hgt_2d</a></td>
+
+        <td style="vertical-align: top;">Calculate height maps from
+        a stack of unwrapped differential interferograms</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_diff_2d.html">mk_int_2d</a></td>
+
+        <td>Calculate 2D interferograms (*.int, *.diff) without
+        subtraction of simulated phase</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_itab.html">mk_itab</a></td>
+
+        <td>Generate ITAB file to generate interferograms between
+        adjacent SLCs</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_kml.html">mk_kml</a></td>
+
+        <td>Generate a Google Earth KML file for a PNG, JPEG, or
+        BMP format image in geographic coordinates
+        (lat./lon)&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_mli_all.html">mk_mli_all</a></td>
+
+        <td>Calculate MLI images generate multi-temporal MLI from a
+        set of SLCs</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "mk_diff_2d.html">mk_quad_2d</a><br></td>
+
+        <td style="vertical-align: top;">Estimate and subtract a
+        quadratic polynomial fit from a stack of differential
+        interferograms<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_tab.html">mk_tab</a></td>
+
+        <td>Generate SLC_tab, MLI_tab, or RAW_list for
+        processing</td>
+      </tr>
+
+      <tr>
+        <td><a href="mk_diff_2d.html">mk_unw_2d</a></td>
+
+        <td>Unwrap a stack of differential interferograms</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "SLC_copy_all.html">SLC_copy_all</a><br></td>
+
+        <td style="vertical-align: top;">Create a new set of SLC
+        data files by copying a&nbsp; segment from an existing set
+        of SLC data files<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="SLC_ovr_all.html">SLC_ovr_all</a></td>
+
+        <td>Range oversample a set of SLC data listed in the
+        SLC_tab and write to an output directory</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "swap_bytes_all.html">swap_bytes_all</a><br></td>
+
+        <td style="vertical-align: top;">Swap byte order of a list
+        of data files and store in a specified directory<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3><strong>Perl Scripts for SLC Coregistration and Terrain
+  Geocoding</strong></h3>
+
+  <table style="text-align: left; width: 1063px; height: 314px;"
+  border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "../scripts/ASF_GEO_proc">ASF_geo_proc</a><br></td>
+
+        <td style="vertical-align: top;">Preprocessing of a set of
+        ASF SLC images using par_ASF_SLC<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "../scripts/ASF_GEO_proc_ALOS">ASF_geo_proc_ALOS</a><br></td>
+
+        <td style="vertical-align: top;">Preprocessing of ASF SLC
+        images including ALOS polarimetric data sets<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "SLC_cat_all.html">SLC_cat_all</a><br></td>
+
+        <td style="vertical-align: top;">Concatenate pairs of
+        sequential SLC frames to create a stack of larger
+        images<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "SLC_copy_all.html">SLC_copy_all</a><br></td>
+
+        <td style="vertical-align: top;">Create a new set of SLC
+        data by copying a common segment from an existing set of
+        SLC data<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "SLC_resamp_all.html">SLC_resamp_all</a><br></td>
+
+        <td style="vertical-align: top;">Resample a set of SLC
+        images to a common reference using a polynomial offset
+        model&nbsp;<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "SLC_resamp_lt_all.html">SLC_resamp_lt_all</a><br></td>
+
+        <td style="vertical-align: top;">Resample a set of SLC
+        images to a common reference scene using a lookup table
+        derived from a DEM in radar coordinates and orbit state
+        vectors<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "mk_geo_radcal.html">mk_geo_radcal</a><br></td>
+
+        <td style="vertical-align: top;">Terrain geocoding of SAR
+        images with lookup table refinement and resample DEM to SAR
+        Range-Doppler Coordinates (RDC) including radiometric
+        calibration<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "mk_geo.html">mk_geo_data</a></td>
+
+        <td style="vertical-align: top;">Terrain geocoding of data
+        sets in SAR Range-Doppler Coordinates (slant
+        range)<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/srtm2dem">srtm2dem</a></td>
+
+        <td>Convert GeoTIFF format DEM downloaded from USGS or
+        CGIAR to Gamma format DEM and DEM parameter file</td>
+      </tr>
+
+      <tr>
+        <td><a href="../scripts/utm2dem.pl">utm2dem.pl</a></td>
+
+        <td>Convert GeoTIFF format DEM in UTM projection to Gamma
+        DEM and DEM parameter files</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>File Formats and Auxiliary Files</h3>
+
+  <table style="width: 1062px; height: 377px;" border="1">
+    <tbody>
+      <tr>
+        <td><a href="datums.h.html">datums.h</a></td>
+
+        <td>File containing Ellipsoid Datum Parameter list</td>
+      </tr>
+
+      <tr>
+        <td><a href="ellipsoids.h.html">ellipsoids.h</a></td>
+
+        <td>File containing Ellipsoid Parameter list</td>
+      </tr>
+
+      <tr>
+        <td><a href=
+        "projection_params.h.html">projection_params.h</a></td>
+
+        <td>File containing Map Projection Parameter list</td>
+      </tr>
+
+      <tr>
+        <td><a href="typedef_ISP.h.html">typedef_ISP.h</a></td>
+
+        <td>File containing structure definitions used by Gamma
+        Interferometric SAR Processor (ISP) and also by many DIFF
+        programs</td>
+      </tr>
+
+      <tr>
+        <td><a href="typedef_DIFF.h.html">typedef_DIFF.h</a></td>
+
+        <td>File containing structure definitions used by Gamma
+        Differential Interferometry Software (DIFF)</td>
+      </tr>
+
+      <tr>
+        <td><a href="DIFF_file_formats.html#SLC_data">SLC
+        data</a></td>
+
+        <td>Format description for SAR SLC data files (e.g.
+        YYYYMMDD.slc)</td>
+      </tr>
+
+      <tr>
+        <td><a href="DIFF_file_formats.html#complex_data">complex
+        format data</a></td>
+
+        <td>Format description for complex data file, *.slc, *.int,
+        *.flt, *diff, *.rslc, ...</td>
+      </tr>
+
+      <tr>
+        <td><a href="DIFF_file_formats.html#real_data">real format
+        data</a></td>
+
+        <td>Format description for real-valued (float) data *.mli,
+        *.cc, *.unw, *.hgt, *.rmli,&nbsp; ...</td>
+      </tr>
+
+      <tr>
+        <td><a href="baseline_file.html">*.base</a></td>
+
+        <td>Format description for baseline file (e.g.
+        YYYYMMDD_YYYYMMDD.base)</td>
+      </tr>
+
+      <tr>
+        <td><a href="OFF_par.html">*.off</a></td>
+
+        <td>Format description for offset and interferogram
+        parameter file (e.g. YYYYMMDD_YYYYMMDD.off)</td>
+      </tr>
+
+      <tr>
+        <td><a href="SLC_par.html">*.par</a></td>
+
+        <td>Format description and definitions for SLC parameter
+        file (e.g. YYYYMMDD.par)</td>
+      </tr>
+
+      <tr>
+        <td><a href="DEM_par.html">DEM_par</a></td>
+
+        <td>Format description and definitions for DEM parameter
+        file <i>scene_name.dem_par</i></td>
+      </tr>
+
+      <tr>
+        <td><a href="DIFF_par.html">DIFF_par</a></td>
+
+        <td>Format description and definitions for DIFF parameter
+        file (*.diff_par)</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr>
+  <a href="copyright.html"></a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="charles_werner.html">CW</a>, last change 1-Jul-2015.
+</body>
+</html>

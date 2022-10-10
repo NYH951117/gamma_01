@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ISP Reference Manual: par_S1_GRD</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate GRD parameter and image files for Sentinel-1 GRD
+  data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_S1_GRD.c">par_S1_GRD.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_S1_GRD- calculate calibrated MLI and ground-range image files
+  from&nbsp; Sentinel-1 ground-range image products</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_S1_GRD &lt;GeoTIFF&gt; &lt;annotation_XML&gt;
+  &lt;calibration_XML&gt; &lt;noise_XML&gt; &lt;MLI_par&gt;
+  &lt;MLI&gt; [GRD_par] [GRD] [eflg]<br></b></code></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;GeoTIFF&gt;</td>
+
+        <td>(input)image data file in GeoTIFF format
+        (s1a-iw*grd*.tiff)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;annotation_XML&gt;</td>
+
+        <td>(input) Sentinel-1 L1 XML annotation file&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>&lt;calibration_XML&gt;</td>
+
+        <td>(input)Sentinel-1 L1 radiometric calibration XML file
+        (- no radiometric calibration), generate output as
+        sigma0</td>
+      </tr>
+
+      <tr>
+        <td>&lt;noise_XML&gt;</td>
+
+        <td>(input) Sentinel-1 L1 noise XML file (enter - to not
+        add back thermal noise<br>
+        NOTE: The L1 GRD product has thermal noise subtracted,
+        enter noise_XML <span style=
+        "text-decoration: underline;">to add</span> back thermal
+        noise</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(output)MLI parameter file (example:
+        yyyymmdd_pp.mli.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI&gt;</td>
+
+        <td>(output)MLI data file (example: yyyymmdd_pp.mli)</td>
+      </tr>
+
+      <tr>
+        <td>[GRD_par]</td>
+
+        <td>(output) GRD parameter file (example:
+        yyyymmdd_pp.grd.par, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[GRD]</td>
+
+        <td>(output) GRD data file (example: yyyymmdd_pp.grd, enter
+        - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[eflg]</td>
+
+        <td>GR-SR grid extrapolation flag:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: no extrapolation of the GR-SR
+        grid beyond the grid boundaries<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: permit extrapolation of the
+        GR-SR grid to cover the entire image (default)<br>
+        NOTE: extrapolation of the GR-SR grid may introduce
+        geocoding errors</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <code>par_S1_GRD&nbsp;
+  measurement/s1a-iw1-grd-vv-20140809t165546-20140809t165611-001866-001c20-004.tiff&nbsp;
+  annotation/s1a-iw1-grd-vv-20140809t165546-20140809t165611-001866-001c20-004.xml
+  annotation/calibration/calibration-s1a-iw1-grd-vv-20140809t165546-20140809t165611-001866-001c20-004.xml
+  -</code> <code><code>20140809_iw1_vv.mli.par
+  20140809_iw1_vv.mli</code> 20140809_iw1_vv.grd.par&nbsp;
+  20140809_iw1_vv.grd<br></code></p>
+
+  <p>Reads the the Sentinel-1 GeoTIFF format ground-range image and
+  calibration annotation files and produce both slant-range and
+  ground range products for SWATH 1.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">par_S1_GRD</span> reads a
+  Sentinel-1 ground-range detected (GRD) format and produces both
+  an MLI&nbsp; an GRD images. The GRD SML annotation contains a set
+  of approximately 30 ground-range&nbsp; (GR-SR) polynomials. These
+  polynomials are used to solve for the ground-range of each MLI
+  sample using an equation solver. The reason for this approach is
+  that the the SR-GR polynomials have significant errors relative
+  to to the GR-SR polynomials used to generate the product.&nbsp;
+  For each position in the slant-range geometry of the MLI, the
+  position in the GRD geometry is calculated. A bicubic
+  interpolation of the GRD image values is then performed to
+  determine the MLI sample value.</p>
+
+  <p>Sentinel GRD products have the unique characteristic that the
+  reference height of the ellipsoid used for the calculation of the
+  GRD image changes along-track. The Sentinel radar processor
+  produces images in slant-range geometry. These data are detected
+  and resampled to the GRD geometry.&nbsp; The program par_S1_GRD
+  resamples the ground-range data back to the original slant-range
+  geometry taking into account this along-track variation in
+  reference height.</p>
+
+  <p>Radiometric calibration of the data can also be performed to
+  convert the data to sigma0.&nbsp; The GRD product contains
+  calibration and noise lookup tables in XML format. These lookup
+  tables have typically 25 rows and about 500 columns. The row
+  positions and column positions are also provided in the XML
+  metadata.&nbsp; The calibration LUT is interpolated for each
+  pixel in ground-range geometry, and applied to the data prior to
+  resampling to MLI geometry.</p>
+
+  <p><span style=
+  "text-decoration: underline; font-weight: bold;">Note that an
+  estimate of the thermal noise provided in the noise LUT has
+  already been subtracted from the GRD product as provided by
+  ESA.&nbsp; Therefore the noise XML LUT should not be entered on
+  the command line.&nbsp; Only in the case where the user wants to
+  add back the estimated thermal noise should the noise_XML file be
+  entered on the command line.&nbsp;<br></span></p>
+
+  <p>The output data are float format, a 4 byte floating point
+  number is used to represent the intensity of each image sample.
+  The program also generates MLI i and GRD image parameter
+  files.&nbsp; Enter -&nbsp; for the names of the GRD products if
+  they should not be produced.</p>
+
+  <p>Current produced ESA GRD image products do not provide
+  sufficient coordinate conversion polynomials (Ground-Range to
+  Slant-range) to cover the full azimuth extent of the image. In
+  order to get an image that covers the full area of the product in
+  slant-range geometry, the existing polynomials must be
+  extrapolated at the end of the image.&nbsp; By default, this
+  extrapolation is now carried out by par_S1_GRD. In areas were
+  there are rapid changes in the terrain it is likely that this
+  will lead to some geocoding errors at the end of the image where
+  extrapolation of the polynomials was performed.&nbsp; The
+  geocoding errors are on the error in reference altitude used to
+  produce the&nbsp; Ground-range to Slant-range polynomial.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,&nbsp;</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Jun-2015.
+</body>
+</html>

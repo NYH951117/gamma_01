@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: create_proc_par</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>create_proc_par</h2>
+
+  <p><i>(ANSI-C program) <a href=
+  "../src/create_proc_par.c">create_proc_par.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>create_proc_par</em> - Supports
+  the creation and editing of MSP processing parameter files.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>create_proc_par
+  &lt;SAR_param&gt; &lt;PROC_param&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>MSP SAR sensor Parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>MSP processing parameter file</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong><samp>create_proc_par ERS1_ESA.par
+  p8560.slc.par</samp></p>
+
+  <p><strong>DESCRIPTION<br></strong><em>create_proc_par</em>
+  creates an MSP Processing Parameter file and supports editing of
+  the parameter values for existing files. Generally this program
+  is used only to modify the processing parameters for which
+  specific parameter generation program does not exit. The MSP uses
+  two parameter files for SAR processing. The MSP sensor parameter
+  file describes the raw data format and the SAR system parameters
+  that do not change from pass to pass. The processing parameter
+  file has the scene dependent parameters and values of parameters
+  selected by the user for processing of this particular scene. The
+  sensor parameter file does not change, while the values of the
+  processing parmaeters are scene dependent.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Oct-2000.
+</body>
+</html>

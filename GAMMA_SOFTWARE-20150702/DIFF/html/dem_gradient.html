@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: dem_gradient</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>dem_gradient</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dem_gradient.c">dem_gradient.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  dem_gradient - Calculate elevation and orientation angles of the
+  DEM normal or gradient vector magnitude</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dem_gradient &lt;DEM/MAP_par&gt; &lt;DEM&gt;
+  &lt;theta&gt; &lt;phi&gt; &lt;mag&gt; [mode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM/MAP_par&gt;</td>
+
+        <td>(input) DEM/MAP parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM&gt;</td>
+
+        <td>(input) DEM data file (or constant height value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;theta&gt;</td>
+
+        <td>(output) elevation angle of DEM normal/gradient vector
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phi&gt;</td>
+
+        <td>(output) orientation angle of DEM normal/gradient
+        vector (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mag&gt;</td>
+
+        <td>(output) magnitude of the gradient vector (float)</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>normal/gradient vector selection mode (default=1:
+        gradient vector, 0: normal vector</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>dem_gradient aoi.dem_par aoi.dem aoi.grad_theta
+  aoi.grad_phi aoi_grad_mag 1</samp></p>
+
+  <p>Calculate the DEM gradient vector elevation (theta) angle,
+  orientation (phi) angle, and DEM gradient magnitude (in map
+  geometry) .</p>
+
+  <p><samp>dem_gradient aoi.dem_par aoi.dem aoi.norm_theta
+  aoi.norm_phi aoi_grad_mag 0</samp></p>
+
+  <p>Calculates the DEM normal vector elevation (theta) angle,
+  orientation (phi) angle, and dem gradient magnitude.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  dem_gradient calculates the terrain height normal or gradient
+  vector direction in map geometry. The magnitude of the DEM
+  gradient is also calculated</p>
+
+  <p>Based on the DEM geometry the terrain height normal or
+  gradient vector is calculated for each pixel of the DEM/map
+  section specified in the DEM parameter file. The gradient
+  direction vector is expressed in the local map coordinates
+  through the elevation angle and the orientation angle, both
+  calculated at each map pixel. The magnitude of the gradient
+  vector is also calculated</p>
+
+  <p>The map projection is defined in the DEM/map prameter
+  file.</p>
+
+  <p>The output direction (surface normal or gradient) vector
+  elevation and orientation angles and DEM gradient magnitude are
+  stored in separate binary files (float). The surface gradient
+  vector is defined as the projection of the surface normal on the
+  srface plane which corresponds to the local direction of steepest
+  descent. In displacement mapping applicaions motion along this
+  direction is an often used assumption (e.g. landslides,
+  glaciers). The elevation angle is defined as the angle between
+  the horizontal surface and the look vector with positive angles
+  indicating sensor positions above the surface. The orientation
+  angle is defined as the angle between the East direction and the
+  projection of the look vector on the horizontal surface plan. The
+  orientation angle increases towards north, with the North
+  direction corresponding to PI/2 (and south to -PI/2). Both angles
+  are expresed in radians.</p>
+
+  <p>An important use of DEM gradient expressed in map geometry is
+  the interpretation of surface deformation - the DINSAR approach
+  provides the deformation component in the look vector
+  direction.</p>
+
+  <p>The look vector information as provided by the program
+  dem_gradient and the (assumed) deformation direction fields as
+  calculated by dem_gradient are used to calculate the 3D
+  displacement fields from differential interferometric
+  observations as supporrted by the program <a href=
+  "dispmap_vec.html">dispmap_vec</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="look_vector.html">look_vector</a>, <a href=
+  "dispmap_vec.html">dispmap_vec</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Dec-2009.</p>
+</body>
+</html>

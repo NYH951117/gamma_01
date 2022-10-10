@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: ORRM orbit state vector file:
+  &lt;orbit &gt;.orrm</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>ORRM orbit state vector file: &lt;orbit&gt;.orrm</h2>
+
+  <p><i>(ASCII-file)</i></p>
+
+  <p><strong>NAME</strong><br>
+  &lt;orbit&gt;.orrm - contains orbit state vector data from ESA,
+  but is now obsolete. The file contains the state vectors and
+  velocities for the sensor (ERS-1). The state vectors and
+  velocities are used to estimate the interferometric baseline. The
+  precision orbit product *.PRC has replaced this older format for
+  state vectors.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  Non-executable and obsolete.</p>
+
+  <p><strong>EXAMPLE</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>
+        <pre>
+<samp>ORRM_911021MCCF0183.E102:18:27
+0 0 15266 0 15266 86340000 1991/10/21 0:51: 7
+15266 0 1346 1669.252283 -1781.4552 6718.5946 -6.8175479 2.2782278 2.2926923 0
+15266 60000 1346 1257.8307 -1639.5883 6842.8982 -6.8918049 2.4492421 1.8494171 0
+15266 120000 1346 842.8012 -1487.7264 6940.3805 -6.9377854 2.6112437 1.3989348 0
+15266 180000 1346 425.8638 -1326.4368 7010.6614 -6.9553996 2.7633585 0.9430021 0
+</samp>
+</pre>
+      </td>
+    </tr>
+  </table>
+
+  <p>(Example represents ORRM orbit state vector file: *.orrm for
+  orbit 1352. In addition to the orbit data for orbit 1352 it
+  contains data for further orbits, starting with orbit 1346).</p>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong><br>
+  The first two lines contain auxiliary data. The format and
+  parameters for line 3 and continuation are as follows (line
+  format is defined in the ISP type definition file
+  <em>typedef_ISP.h</em>:<br></p>
+
+  <table border="0">
+    <tr>
+      <td>3. line and following (int mjd, utc, orb_num, double x,
+      y, z, vx, vy, vz, int TAI_UTC_delta):</td>
+    </tr>
+  </table>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>mdj:</td>
+
+      <td>modified Julian date, which is (julian date-2433282.5)
+      e.g.: 1.1.1990 = 14610</td>
+    </tr>
+
+    <tr>
+      <td>utc:</td>
+
+      <td>time (in msec) since midnight UTC</td>
+    </tr>
+
+    <tr>
+      <td>orb_num:</td>
+
+      <td>orbit number</td>
+    </tr>
+
+    <tr>
+      <td>x, y, z:</td>
+
+      <td>sensor position (in km) in Conventional Terrestrial
+      System</td>
+    </tr>
+
+    <tr>
+      <td>vx, vy, vz:</td>
+
+      <td>sensor velocity (in km/sec) in Conventional Terrestrial
+      System</td>
+    </tr>
+
+    <tr>
+      <td>TAI_UTC_delta:</td>
+
+      <td>difference (in sec) between the International Atomic Time
+      and UTC</td>
+    </tr>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;orbit&gt;.orrm - contains ORRM orbit data as provided by ESA.
+  The ORRM orbit state vector file contains the state vectors and
+  velocities for the sensor (ERS-1). The state vectors and
+  velocities are used to estimate the interferometric baseline. The
+  program <em>state_vec</em> interprets the ORRM orbit state vector
+  file and writes state vectors to the SLC parameter file. This
+  format is now obsolete and no longer supported by ESA.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The ORRM orbit state vector file &lt;orbit&gt;.orrm is not
+  required if the state vectors from the SLC leader/header files
+  are available.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "state_vec.html">state_vec</a>, <a href="orbit.par.html">SLC
+  parameter file</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Jan-2000.</p>
+</body>
+</html>

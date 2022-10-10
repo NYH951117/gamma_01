@@ -1,0 +1,208 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     GTC_MLI: script to run program sequence for terrain corrected   ###
+###              SAR geocoding of MLI image to map coordinates          ###                                
+###########################################################################
+### by Urs Wegmuller 020730
+### modified clw 050428 for Win32 compatibility, use temp files for inputs
+### to create_diff_par
+###
+###########################################################################
+echo " "
+echo "GTC_MLI: terrain corrected SAR geocoding of MLI image to map coordinates"
+if ($#argv < 7)then
+  echo " "
+  echo "usage: GTC_MLI <MLI> <MLI_par> <DEM> <DEM_par> <gtc> <DEM_seg> <DEM_seg_par> [ovr] [rlks] [azlks]"
+  echo "       MLI         (input) multi-look intensity (MLI) image in slant range geometry (float)"
+  echo "       MLI_par     (input) SLC/MLI parameter file of input MLI"
+  echo "       DEM         (input) Digital elevation model (DEM) in map geometry"
+  echo "       DEM_par     (input) DEM/MAP parameter file for input DEM"
+  echo "       gtc         (output) GTC geocoded output image in map geometry (float)"
+  echo "       DEM_seg     (output) DEM segment covering SAR image (oversampled)"
+  echo "       DEM_seg_par (output) DEM/MAP parameter file for output DEM segment"
+  echo "       ovr         DEM oversampling factor in Easting/Northing (default=1)"
+  echo "       rlks        range multi-looking factor (done prior to geocoding, default=1)"
+  echo "       azlks       azimuth multi-looking factor (done prior to geocoding, default=1)"
+  echo " "
+  echo "Remarks: similar resolution of multi-looked image and geocoded image is recommended"
+  echo "         if an existing DEM_seg_par is indicated its parameters are used as provided"
+  echo "         quality checking of the fine registration accuracy is recomended"
+  exit
+endif
+
+set MLI = $1
+set MLI_par = $2
+set DEM = $3
+set DEM_par = $4
+set gtc = $5
+set DEM_seg = $6
+set DEM_seg_par = $7
+  if(-e "$DEM_seg_par")echo "WARNING: an existing DEM/MAP parameter file is used: $DEM_seg_par"
+
+set ovr = 1.
+if ($#argv >= 8)set ovr = $8
+set rlks = 1
+if ($#argv >= 9)set rlks = $9
+set azlks = 1
+if ($#argv >= 10)set azlks = $10
+
+### define file names which are not defined on command line
+set map_to_rdc = "$MLI.map_to_rdc" 		# initial geocoding lookup table
+set MAP_to_RDC = "$MLI.MAP_to_RDC" 		# refined geocoding lookup table
+set sim_sar_map = "$MLI.sim_sar_map" 		# simulated sar image in map geoemtry
+set sim_sar_rdc = "$MLI.sim_sar_rdc" 		# simulated sar image in range doppler SAR geoemtry
+set diff_par = "$MLI.diff_par" 			# Create (DIFF&GEO-)DIFF&GEO parameter file
+
+if (1) then
+  echo $1 $2 $3 $4 $5 $6 $7 $8 $9 $10
+  echo $MLI $MLI_par $DEM $DEM_par $gtc $DEM_seg $DEM_seg_par $ovr $rlks $azlks
+endif
+
+#######################################################################################
+###   Check if input files exist                                                    ###
+#######################################################################################
+
+if (1) then 
+   if( -e "$MLI" == 0 ) then 
+     echo "ERROR: input file $MLI not found"
+     exit
+   endif
+   if( -e "$MLI_par" == 0 ) then 
+     echo "ERROR: input file $MLI_par not found"
+     exit
+   endif
+   if( -e "$DEM" == 0 ) then 
+     echo "ERROR: input file $DEM not found"
+     #exit
+   endif
+   if( -e "$DEM_par" == 0 ) then 
+     echo "ERROR: input file $DEM_par not found"
+     exit
+   endif
+endif
+
+#######################################################################################
+###   Multi-looking in slant range geometry (prior to geocoding)                    ###
+#######################################################################################
+
+if (1) then 
+       if(-e "$MLI_par.tmp")/bin/rm $MLI_par.tmp
+       multi_look_MLI $MLI $MLI_par $MLI.tmp $MLI_par.tmp $rlks $azlks
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Initial Geocoding lookup table derivation:                       ###
+      #########################################
+if(1) then
+      echo ""
+      echo "Generation of geocoding lookup table"
+      nice gc_map $MLI_par.tmp - $DEM_par $DEM $DEM_seg_par $DEM_seg $map_to_rdc $ovr $ovr $sim_sar_map
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Resample the simulated SAR intensity image to SAR geometry:       ###
+      ###########################################################
+if (1) then
+      ### determine width and number of lines of multi_looked MLI
+      echo ""
+      set width =  `awk '$1 == "range_samples:" {print $2}' $MLI_par.tmp`      
+      set nlines =  `awk '$1 == "azimuth_lines:" {print $2}' $MLI_par.tmp`      
+      echo "width of multi-looked image in slant range geometry:           $width"
+      echo "number of lines of multi-looked image in slant range geometry: $nlines"
+      ### determine width and number of lines of geocoded image
+      set dem_width =  `awk '$1 == "width:"  {print $2}' $DEM_seg_par`      
+      set dem_nlines = `awk '$1 == "nlines:" {print $2}' $DEM_seg_par`      
+      echo "width of DEM segment used for geocoding:                       $dem_width"
+      echo "number of DEM segment used for geocoding:                      $dem_nlines"
+      echo ""
+      echo "Resampling the simulated SAR intensity image to SAR geometry"
+      nice geocode $map_to_rdc $sim_sar_map $dem_width $sim_sar_rdc $width $nlines 0 0
+endif
+
+if (1) then
+      echo ""
+      echo "The simulated and real SAR image can be displayed using"
+      echo "dis2pwr $MLI.tmp $sim_sar_rdc $width $width"
+      echo ""
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Fine registration step:                                           ###
+      ######################
+if (1) then
+       if(-e $diff_par) /bin/rm $diff_par
+       echo 'geo_par 0 0 24 24 128 128 7.0' > diff_par.in
+       create_diff_par $MLI_par.tmp - $diff_par 1 < diff_par.in
+
+       # estimation of the registration polynomial using offset_pwrm with few
+       # (8x8) large (256x256 pixels) search windows 
+       #offset_pwrm $sim_sar_rdc $MLI.tmp $diff_par $MLI.offs $MLI.snr 256 256 $MLI.offsets 1 8 8 7.0
+       #offset_fitm $MLI.offs $MLI.snr $diff_par $MLI.coffs $MLI.coffsets 7.0 3
+
+       # precision estimation of the registration polynomial using offset_pwrm with many
+       # (24x24) smaller search windows (128x128 pixel chips)  
+       offset_pwrm $sim_sar_rdc $MLI.tmp $diff_par $MLI.offs $MLI.snr 128 128 $MLI.offsets 1 32 32 7.0
+       offset_fitm $MLI.offs $MLI.snr $diff_par $MLI.coffs $MLI.coffsets 7.0 3 > $diff_par.out
+       #rm $MLI.offs $MLI.snr $MLI.offsets $MLI.coffs $MLI.coffsets
+endif
+
+#######################################################################################
+###   lookup table refinement; the refined look-up table $MAP_to_RDC describes the  ###
+###   direct transformation between map and sar coordinates (with refinement)       ###
+#######################################################################################
+
+if (1) then
+       set dem_width =  `awk '$1 == "width:"  {print $2}' $DEM_seg_par`      
+       gc_map_fine $map_to_rdc $dem_width $diff_par $MAP_to_RDC 1
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Resampling of multi-looked image from SAR to map geometry:        ###
+      #########################################################
+if(1) then
+      ### determine width of multi_looked MLI
+      set width =  `awk '$1 == "range_samples:" {print $2}' $MLI_par.tmp`      
+      echo "width of multi-looked image in slant range geometry: $width"
+      ### determine width and number of lines of geocoded image
+      set dem_width =  `awk '$1 == "width:"  {print $2}' $DEM_seg_par`      
+      set dem_nlines = `awk '$1 == "nlines:" {print $2}' $DEM_seg_par`      
+      echo "width of geocoded image: $dem_width"
+      echo "number of lines of geocoded image: $dem_nlines"
+      echo ""
+      echo "Resampling of multi-looked image from SAR to map geometry"
+      if(-e "$gtc")/bin/rm $gtc
+      nice geocode_back $MLI.tmp $width $MAP_to_RDC $gtc $dem_width $dem_nlines 2 0
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Generation of SUN rasterfile of GTC geocoded image:               ###
+      ###################################################
+if(1) then
+      ### determine width of geocoded image
+      set dem_width =  `awk '$1 == "width:"  {print $2}' $DEM_seg_par`      
+      echo ""
+      echo "Generation of SUN rasterfile of GTC geocoded image"
+      nice raspwr $gtc $dem_width 1 0 1 1 1. .35 1 $gtc.ras
+      echo ""
+      echo ""
+      echo "disras_dem_par $gtc.ras $DEM_seg_par"
+      echo ""
+      echo "allows to display the rasterfile of the GTC geocoded image "
+      echo "together with the map coordinates at the cursor location."
+      echo ""
+endif
+
+echo End of GTC_MLI
+    
+###                                                                     ###
+###########################################################################

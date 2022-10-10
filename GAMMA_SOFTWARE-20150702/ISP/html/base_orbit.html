@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: base_orbit</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>base_orbit</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/base_orbit.c"><i>base_orbit.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  base_orbit - computes interferometric baseline from ERS state
+  vectors given in the SLC parameter files of the interferometric
+  pair.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_orbit &lt;SLC1_par&gt; &lt;SLC2_par&gt;
+  &lt;baseline_file&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>parameter file for reference SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>parameter file for SLC-2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;baseline_file&gt;</td>
+
+        <td>baseline file (text format, enter - for none)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_orbit 1352.par 1610.par 1352_1610.base</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_orbit reads state vectors in SLC parameter files, computes
+  interferometric baselines and generates baseline parameter file.
+  The baseline parameter file is used for the removal of the
+  average phase trend of the interferogram and for the computation
+  of the heights. The baseline is estimated as the vector between
+  the tracks when the second track passes through the Doppler cone
+  of the reference track. No output baseline file is written if "-"
+  is specified.&nbsp;</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The interferogram fringe rate can be used to estimate the
+  perpendicular baseline component&nbsp;using <a href=
+  "base_est_fft.html">base_est_fft</a>, or in combination with
+  offsets and orbit information using <a href=
+  "base_init.html">base_init</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_est_fft.html">base_est_fft</a>, <a href=
+  "base_init.html">base_init</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-May-2005.
+</body>
+</html>

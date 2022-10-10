@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: mask_op</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>mask_op</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/mask_op.c">mask_op.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  mask_op - perform logical operations on mask files (Sun raster or
+  BMP format).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mask_op &lt;mask-1&gt; &lt;mask-2&gt; &lt;mask_out&gt;
+  &lt;mode&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;mask-1&gt;</td>
+
+      <td>(input) mask 1 SUN raster *.ras, or BMP *.bmp format,
+      8-bits/pixel</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mask-2&gt;</td>
+
+      <td>(input) mask 1 SUN raster *.ras, or BMP *.bmp format,
+      8-bits/pixel</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mask-out&gt;</td>
+
+      <td>(output) mask 1 SUN raster *.ras, or BMP *.bmp
+      format</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mode&gt;</td>
+
+      <td>logical operation:</td>
+    </tr>
+
+    <tr>
+      <td></td>
+
+      <td>0: mask-1 AND mask-2</td>
+    </tr>
+
+    <tr>
+      <td></td>
+
+      <td>1: mask-1 OR mask-2</td>
+    </tr>
+
+    <tr>
+      <td></td>
+
+      <td>2: NOT mask-1</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>mask_op cc.ras region.ras cc_region.ras 0</samp></p>
+
+  <p>The output cc_region.ras is the logical AND of cc.ras and
+  region.ras. All pixels where either cc.ras or region.ras are 0,
+  are marked as 0 in the output mask cc_region.ras.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code mask_op.c in ./src. For compilation adjust and use
+  Makefile: Executable version <samp>mask_op</samp> in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  Calculate logical operations on mask files stored in 8-bit Sun
+  Raster of BMP format. The operations can either be AND, where
+  corresponding pixels in both images must be greater than 0, OR,
+  where either can be &gt; 0, and the logical negation of mask-1.
+  The value 0 is false and any value &gt; 1 is TRUE. If the files
+  are different sizes the output mask size is the size of
+  mask-1.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  awi, <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, MS, last change 27-Nov-2008.</p>
+</body>
+</html>

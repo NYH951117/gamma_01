@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: interp_real</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>interp_real</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/interp_real.c">interp_real.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  interp_real - real-valued image geometric resampling using
+  nearest-neighbor or bicubic spline interpolation.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>interp_real &lt;image-2&gt; &lt;DIFF_par&gt;
+  &lt;resamp_image&gt; [loff] [nlines] [imode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;image2&gt;</td>
+
+      <td>(input)real-valued (FLOAT) image to be resampled to
+      geometry of reference image-1 geometry</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DIFF_par&gt;</td>
+
+      <td>DIFF parameter file containing biquadratic offset
+      polynomial coefficients</td>
+    </tr>
+
+    <tr>
+      <td>&lt;resamp_image&gt;</td>
+
+      <td>(output) resampled image in the geometry of image-1</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>starting line in map (relative to start of image-1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to interpolate (enter - for all lines in
+      the file)</td>
+    </tr>
+
+    <tr>
+      <td>[imode]</td>
+
+      <td>interpolation mode:<br>
+      &nbsp; 0:&nbsp; nearest-neighbor<br>
+      &nbsp; 1:&nbsp; bicubic spline (default)<br>
+      &nbsp; 2:&nbsp; bicubic log-spline</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>interp_real 19960422.mli diff.par 19990422.rmli</samp></p>
+
+  <p>Resamples the real-valued image 19960422.mli according to
+  biquadratic registration function stored in DIFF_par using
+  bicubic spline interpolation.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>interp_real</em> reads the real-valued input data file and
+  carries out a geometric transformation given by a bi-quadratic
+  polynomial. The bi-quadratic registration function is obtained
+  from range and azimuth offset data processed using <a href=
+  "offset_fitm.html">offset_fitm</a>.</p>
+
+  <p>The user can select the resampling interpolator to be either
+  nearest neighbor, bicubic spline, or bicubic log-spline. For
+  bi-cubic log-spline interpolation, the logarithm of the values
+  are interpolated. The log-spline algorithm may be preferred for
+  interpolation of non-negative data because it prevents negative
+  values in the output resampled image.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The starting line (relative to the reference geometry of image-1)
+  and the number of output lines (of output image) may be
+  selected.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "offset_fitm.html">offset_fitm</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Aug-2008.</p>
+</body>
+</html>

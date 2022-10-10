@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: looks</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>looks</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/looks.c">looks.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  looks - Equivalent number of looks (ENL) estimation for
+  (homogeneous) test areas (polygon regions).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>looks &lt;data&gt; &lt;width&gt; &lt;polygon&gt; &gt;
+  [outfile]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data&gt;</td>
+
+      <td>(input) intensity file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>&lt;polygon&gt;</td>
+
+      <td>polygon data file</td>
+    </tr>
+
+    <tr>
+      <td>&gt;</td>
+
+      <td>&gt; sign to redirect standard output</td>
+    </tr>
+
+    <tr>
+      <td>[outfile]</td>
+
+      <td>output filename (default=stdout)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>looks 1352_1610.pwr 2500 1352_1610.poly1 &gt;
+  1352_1610.poly1.ENL</samp></p>Estimation of ENL for file
+  1352_1610.pwr using polygon regions defined in 1352_1610.poly1.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code looks.c in ./src. For compilation adjust and use
+  Makefile: Executable version looks in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  looks estimates of the equivalent number of looks (ENL) from the
+  data.</p>
+
+  <p>The ENL estimation is based on the statistics of homogeneous
+  test areas within a real valued image (usually the SAR
+  backscatter intensity). Therefore, such homogeneous test areas
+  are first selected using the program <a href=
+  "polyras.html">polyras</a>. Ideal test areas are large and
+  homogeneous. The two estimators used assume that the pixel
+  variation is due to speckle random noise only. Other variation
+  will result in an underestimation of the ENL.</p>
+
+  <p>Once the polygons are determined the ENL can be estimated. The
+  program looks extracts the values for the test areas and
+  calculates the arithmetic mean, the standard deviation, and the
+  geometric mean.</p>
+
+  <p>Two different methods are used to estimate the ENL.</p>
+
+  <p>The first method is based on the Method of Moments. The ENL is
+  calculated by<br>
+  <samp>ENL = SQR(arithmetic_mean/standard_deviation)</samp><br>
+  This method is well adapted if no a priori knowledge about the
+  pixels distribution is available.</p>
+
+  <p>The second method is based on Maximum Likelyhood estimation.
+  The estimator is uses the arithmetic and geometric means. For the
+  exact functions we refer to Bruniquel J. and A. Lopes,
+  Multi-variate optimal speckle reduction in SAR imagery, Int. J.
+  Remote Sensing, Vol. 18, No. 3, pp. 603-627, 1997. It is found
+  that the second method is a more accurate way to estimate the ENL
+  in a test area of limited size.</p>
+
+  <p>The estimated ENL are written to standart output. This allows
+  to either display it on the screen or to redirect it to an
+  ascii-file.</p>
+
+  <p>The ENL is of interest to monitor the effect the speckle
+  reduction achieved with filtering and averaging. Notice that the
+  avaraging of two pixels will double the ENL only if the two looks
+  are uncorrelated.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "polyras.html">polyras</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  none.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

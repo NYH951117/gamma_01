@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: MSP display programs</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>MSP_display</h2>
+
+  <p><i>(ANSI C programs)</i></p>
+
+  <p>The display programs were moved to the DISP package.</p>
+
+  <p><strong>INTRODUCTION</strong><br>
+  There are two main approaches to display the various image
+  data:<br>
+  1. To use one of the display programs (names start with
+  <em>dis</em>) to directly display the data directly on the screen
+  using the XView toolkit libraries.<br>
+  2. To first use one of the programs to generate a SUN raster or
+  BMP format image (names start with <em>ras</em>), and then to
+  display the image using an external viewer such as <em>xv</em> or
+  <em>disrasz.</em></p>
+
+  <h3><a name="MSP_display"></a>MSP display tools</h3>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td><a href="#dis2SLC">dis2SLC</a></td>
+
+      <td>Display magnitude of two complex data sets and rapidly
+      switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="#disbyte">disbyte</a></td>
+
+      <td>Display byte data</td>
+    </tr>
+
+    <tr>
+      <td><a href="#dismph">dismph</a></td>
+
+      <td>Display magnitude and phase of complex data (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="#dismph_fft64">dismph_fft64</a></td>
+
+      <td>Display magnitude of complex data (float) and fft for
+      cursor location</td>
+    </tr>
+
+    <tr>
+      <td><a href="#dismph_ub">dismph_ub</a></td>
+
+      <td>Display magnitude and phase of complex data (IQ unsigned
+      byte)</td>
+    </tr>
+
+    <tr>
+      <td><a href="#dispwr">dispwr</a></td>
+
+      <td>Display magnitude of real data (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="#disrasz">disrasz</a></td>
+
+      <td>Display image data in SUN raster or BMP format images
+      (8-bit)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <h3><a name="MSP_sunraster"></a>MSP tools to generate SUN raster
+  or BMP format images</h3>
+
+  <p>There are additional notes on the programs</p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td><a href="#rasSLC">rasSLC</a></td>
+
+      <td>Magnitude of complex SAR data (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="#rasbyte">rasbyte</a></td>
+
+      <td>Signed byte data</td>
+    </tr>
+
+    <tr>
+      <td><a href="#rasmph">rasmph</a></td>
+
+      <td>Interferometric phase/interferometric correlation</td>
+    </tr>
+
+    <tr>
+      <td><a href="#raspwr">raspwr</a></td>
+
+      <td>Backscatter intensity (power law scaling)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <h3>Display Programs</h3>
+
+  <p>All input data that have floating point have the data stored
+  in single-precision (32 bits) representation. Complex values and
+  slope data are stored as pairs of single-precision (32-bit)
+  numbers. Intensity, correlation, heights, and phase are all
+  stored as single-precision floating point numbers unless
+  otherwise noted.</p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <th>Program</th>
+
+      <th>Input Parameter(s)</th>
+
+      <th>Color</th>
+
+      <th>Brightness</th>
+    </tr>
+
+    <tr>
+      <td><a name="disbyte"></a>disbyte</td>
+
+      <td>signed byte data</td>
+
+      <td>none</td>
+
+      <td>value</td>
+    </tr>
+
+    <tr>
+      <td>&nbsp;<a name="disSLC"></a>disSLC</td>
+
+      <td>floating point complex data</td>
+
+      <td>none</td>
+
+      <td>value</td>
+    </tr>
+
+    <tr>
+      <td><a name="dismph"></a>dismph</td>
+
+      <td>complex data (interferograms)</td>
+
+      <td>phase</td>
+
+      <td>magnitude</td>
+    </tr>
+
+    <tr>
+      <td><a name="dismph_ub"></a>dismph_ub</td>
+
+      <td>complex as pairs unsigned byte data (IQ raw data)</td>
+
+      <td>phase</td>
+
+      <td>magnitude</td>
+    </tr>
+
+    <tr>
+      <td><a name="dispwr"></a>dispwr</td>
+
+      <td>intensity</td>
+
+      <td>none</td>
+
+      <td>value (power-law scale)</td>
+    </tr>
+
+    <tr>
+      <td><a name="disrasz"></a>disrasz</td>
+
+      <td>SUN raster and BMP format images</td>
+
+      <td>image lookup table</td>
+
+      <td>image lookup table</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <h3>Programs to generate SUN raster and BMP format images</h3>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <th>Program</th>
+
+      <th>Input Parameter(s)</th>
+
+      <th>Color</th>
+
+      <th>Brightness</th>
+    </tr>
+
+    <tr>
+      <td><a name="rasSLC"></a>rasSLC</td>
+
+      <td>complex Single Look Complex</td>
+
+      <td>none</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasbyte"></a>rasbyte</td>
+
+      <td>byte data</td>
+
+      <td>none</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="rascc"></a>rascc</td>
+
+      <td>correlation, intensity</td>
+
+      <td>correlation</td>
+
+      <td>intensity of the second file</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasmph"></a>rasmph</td>
+
+      <td>complex (interferogram)</td>
+
+      <td>phase</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="raspwr"></a>raspwr</td>
+
+      <td>intensity</td>
+
+      <td>none</td>
+
+      <td>value (power-law scale)</td>
+    </tr>
+  </table><br>
+  <br>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-April-2000.
+</body>
+</html>

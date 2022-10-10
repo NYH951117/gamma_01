@@ -1,0 +1,1097 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: SLC_par</title>
+</head>
+
+<body align="justify">
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC Parameter File</h2>
+
+  <p>(ASCII file) such as &lt;orbit&gt;.par</p>
+
+  <p><strong>NAME</strong><br>
+  &lt;orbit&gt;.par - contains parameter values describing the
+  SLC/MLI/PRI data file. This information is used throughout the
+  processing.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  None.</p>
+
+  <p><strong>EXAMPLE</strong><br>
+  20322.slc.par, is an SLC parameter file for a SLC (single look
+  complex) image data set (in slant range geometry).<br>
+  02166.VV.PRI.par, is an SLC parameter file for a PRI (precision
+  image, detected) image data set (in ground range
+  geometry).<br></p>
+
+  <p>GAMMA Interferometric SAR Processor - SLC Parameter File<br>
+  Contains parameters associated with the SLC, MLI, PRI data in
+  slant range or ground range geometry.</p>
+
+  <p>This is an example of an SLC parameter file of an SLC image
+  (in slant range geometry):</p>
+
+  <table border="0">
+    <tr>
+      <td>title:</td>
+
+      <td>orbit 20322</td>
+    </tr>
+
+    <tr>
+      <td>sensor:</td>
+
+      <td>ERS1</td>
+    </tr>
+
+    <tr>
+      <td>date:</td>
+
+      <td>1995 10 22</td>
+    </tr>
+
+    <tr>
+      <td>start_time:</td>
+
+      <td>37330.44200 s</td>
+    </tr>
+
+    <tr>
+      <td>center_time:</td>
+
+      <td>37334.98800 s</td>
+    </tr>
+
+    <tr>
+      <td>end_time:</td>
+
+      <td>37339.53300 s</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_line_time:</td>
+
+      <td>5.9527273e-04 s</td>
+    </tr>
+
+    <tr>
+      <td>line_header_size:</td>
+
+      <td>12</td>
+    </tr>
+
+    <tr>
+      <td>range_samples:</td>
+
+      <td>2500</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_lines:</td>
+
+      <td>15273</td>
+    </tr>
+
+    <tr>
+      <td>range_looks:</td>
+
+      <td>1</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_looks:</td>
+
+      <td>1</td>
+    </tr>
+
+    <tr>
+      <td>image_format:</td>
+
+      <td>SCOMPLEX</td>
+    </tr>
+
+    <tr>
+      <td>image_geometry:</td>
+
+      <td>SLANT_RANGE</td>
+    </tr>
+
+    <tr>
+      <td>range_scale_factor:</td>
+
+      <td>1.0000000</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_scale_factor:</td>
+
+      <td>1.0000000</td>
+    </tr>
+
+    <tr>
+      <td>center_latitude:</td>
+
+      <td>47.0380 degrees</td>
+    </tr>
+
+    <tr>
+      <td>center_longitude:</td>
+
+      <td>6.8970 degrees</td>
+    </tr>
+
+    <tr>
+      <td>heading:</td>
+
+      <td>195.0770 degrees</td>
+    </tr>
+
+    <tr>
+      <td>range_pixel_spacing:</td>
+
+      <td>7.904000 m</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_pixel_spacing:</td>
+
+      <td>3.971000 m</td>
+    </tr>
+
+    <tr>
+      <td>near_range_slc:</td>
+
+      <td>8.51757441e+05 m</td>
+    </tr>
+
+    <tr>
+      <td>center_range_slc:</td>
+
+      <td>8.61638450e+05 m</td>
+    </tr>
+
+    <tr>
+      <td>far_range_slc:</td>
+
+      <td>8.71519610e+05 m</td>
+    </tr>
+
+    <tr>
+      <td>first_slant_range_polynomial:</td>
+
+      <td>0.00000 0.00000 0.00000e+00 0.00000e+00 0.00000e+00
+      0.00000e+00 s m 1 m^-1 m^-2 m^-3</td>
+    </tr>
+
+    <tr>
+      <td>center_slant_range_polynomial:</td>
+
+      <td>0.00000 0.00000 0.00000e+00 0.00000e+00 0.00000e+00
+      0.00000e+00 s m 1 m^-1 m^-2 m^-3</td>
+    </tr>
+
+    <tr>
+      <td>last_slant_range_polynomial:</td>
+
+      <td>0.00000 0.00000 0.00000e+00 0.00000e+00 0.00000e+00
+      0.00000e+00 s m 1 m^-1 m^-2 m^-3</td>
+    </tr>
+
+    <tr>
+      <td>incidence_angle:</td>
+
+      <td>24.8620 degrees</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_deskew:</td>
+
+      <td>ON</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_angle:</td>
+
+      <td>90.0000 degrees</td>
+    </tr>
+
+    <tr>
+      <td>radar_frequency:</td>
+
+      <td>5.30000e+09 Hz</td>
+    </tr>
+
+    <tr>
+      <td>adc_sampling_rate:</td>
+
+      <td>1.89600e+07 Hz</td>
+    </tr>
+
+    <tr>
+      <td>chirp_bandwidth:</td>
+
+      <td>1.55500e+07 Hz</td>
+    </tr>
+
+    <tr>
+      <td>prf:</td>
+
+      <td>1.67990e+03 Hz</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_proc_bandwidth:</td>
+
+      <td>7.64600e+02 Hz</td>
+    </tr>
+
+    <tr>
+      <td>doppler_polynomial:</td>
+
+      <td>4.50338e+02 0.00e+00 0.00e+00 0.00e+00 Hz Hz/m Hz/m^2
+      Hz/m^3e</td>
+    </tr>
+
+    <tr>
+      <td>receiver_gain:</td>
+
+      <td>23.000 dB</td>
+    </tr>
+
+    <tr>
+      <td>calibration_gain:</td>
+
+      <td>0.000 dB</td>
+    </tr>
+
+    <tr>
+      <td>sar_to_earth_center:</td>
+
+      <td>7.15769483e+06 m</td>
+    </tr>
+
+    <tr>
+      <td>earth_radius_below_sensor:</td>
+
+      <td>6.36673403e+06 m</td>
+    </tr>
+
+    <tr>
+      <td>earth_semi_major_axis:</td>
+
+      <td>6.37814400e+06 m</td>
+    </tr>
+
+    <tr>
+      <td>earth_semi_minor_axis:</td>
+
+      <td>6.35675500e+06 m</td>
+    </tr>
+
+    <tr>
+      <td>number_of_state_vectors:</td>
+
+      <td>5</td>
+    </tr>
+
+    <tr>
+      <td>time_of_first_state_vector:</td>
+
+      <td>37329.88600 s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_interval:</td>
+
+      <td>2.60000 s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_1:</td>
+
+      <td>4837191.35 950299.47 5189453.59 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_1:</td>
+
+      <td>5570.23920 -913.9411 -5012.2472 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_2:</td>
+
+      <td>4851657.52 947916.74 5176401.20 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_2:</td>
+
+      <td>5556.29460 -918.7148 -5026.9039 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_3:</td>
+
+      <td>4866087.37 945521.61 5163310.75 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_3:</td>
+
+      <td>5542.30750 -923.4765 -5041.5237 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_4:</td>
+
+      <td>4880480.80 943114.12 5150182.33 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_4:</td>
+
+      <td>5528.27810 -928.2262 -5056.1066 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_5:</td>
+
+      <td>4894837.69 940694.29 5137016.04 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_5:</td>
+
+      <td>5514.20640 -932.9638 -5070.6524 m/s m/s m/s</td>
+    </tr>
+  </table>
+
+  <p>This is an example of an SLC parameter file of an ASAR PRI
+  image (IS3 swath, medium resolution, in ground range
+  geometry):</p>
+
+  <table border="0">
+    <tr>
+      <td>title:</td>
+
+      <td>
+      ASA_IMM_1PXPDE20020730_095830_000001002008_00108_02166_0066.N1</td>
+    </tr>
+
+    <tr>
+      <td>sensor:</td>
+
+      <td>ASAR_IS3_VV</td>
+    </tr>
+
+    <tr>
+      <td>date:</td>
+
+      <td>2002 7 30</td>
+    </tr>
+
+    <tr>
+      <td>start_time:</td>
+
+      <td>35910.48150 s</td>
+    </tr>
+
+    <tr>
+      <td>center_time:</td>
+
+      <td>35961.35653 s</td>
+    </tr>
+
+    <tr>
+      <td>end_time:</td>
+
+      <td>36012.23156 s</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_line_time:</td>
+
+      <td>1.1250559241e-02 s</td>
+    </tr>
+
+    <tr>
+      <td>line_header_size:</td>
+
+      <td>0</td>
+    </tr>
+
+    <tr>
+      <td>range_samples:</td>
+
+      <td>1473</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_lines:</td>
+
+      <td>9045</td>
+    </tr>
+
+    <tr>
+      <td>range_looks:</td>
+
+      <td>5</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_looks:</td>
+
+      <td>8</td>
+    </tr>
+
+    <tr>
+      <td>image_format:</td>
+
+      <td>SHORT</td>
+    </tr>
+
+    <tr>
+      <td>image_geometry:</td>
+
+      <td>GROUND_RANGE</td>
+    </tr>
+
+    <tr>
+      <td>range_scale_factor:</td>
+
+      <td>1.0000000</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_scale_factor:</td>
+
+      <td>1.0000000</td>
+    </tr>
+
+    <tr>
+      <td>center_latitude:</td>
+
+      <td>52.1855505 degrees</td>
+    </tr>
+
+    <tr>
+      <td>center_longitude:</td>
+
+      <td>5.8036200 degrees</td>
+    </tr>
+
+    <tr>
+      <td>heading:</td>
+
+      <td>-160.8640513 degrees</td>
+    </tr>
+
+    <tr>
+      <td>range_pixel_spacing:</td>
+
+      <td>75.000000 m</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_pixel_spacing:</td>
+
+      <td>75.000000 m</td>
+    </tr>
+
+    <tr>
+      <td>near_range_slc:</td>
+
+      <td>0.0000 m</td>
+    </tr>
+
+    <tr>
+      <td>center_range_slc:</td>
+
+      <td>55200.0000 m</td>
+    </tr>
+
+    <tr>
+      <td>far_range_slc:</td>
+
+      <td>110400.0000 m</td>
+    </tr>
+
+    <tr>
+      <td>first_slant_range_polynomial:</td>
+
+      <td>35910.48150 860339.62500 4.12729e-01 5.53613e-07
+      -2.71989e-13 -1.26107e-21 s m 1 m^-1 m^-2 m^-3</td>
+    </tr>
+
+    <tr>
+      <td>center_slant_range_polynomial:</td>
+
+      <td>35960.60276 859626.18750 4.12642e-01 5.54071e-07
+      -2.72390e-13 -1.27753e-21 s m 1 m^-1 m^-2 m^-3</td>
+    </tr>
+
+    <tr>
+      <td>last_slant_range_polynomial:</td>
+
+      <td>36010.72400 858905.81250 4.12555e-01 5.54533e-07
+      -2.72795e-13 -1.29337e-21 s m 1 m^-1 m^-2 m^-3</td>
+    </tr>
+
+    <tr>
+      <td>incidence_angle:</td>
+
+      <td>28.0840 degrees</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_deskew:</td>
+
+      <td>ON</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_angle:</td>
+
+      <td>90.0000 degrees</td>
+    </tr>
+
+    <tr>
+      <td>radar_frequency:</td>
+
+      <td>5.3310044e+09 Hz</td>
+    </tr>
+
+    <tr>
+      <td>adc_sampling_rate:</td>
+
+      <td>1.9207680e+07 Hz</td>
+    </tr>
+
+    <tr>
+      <td>chirp_bandwidth:</td>
+
+      <td>1.25400e+07 Hz</td>
+    </tr>
+
+    <tr>
+      <td>prf:</td>
+
+      <td>2112.59131 Hz</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_proc_bandwidth:</td>
+
+      <td>45.79026 Hz</td>
+    </tr>
+
+    <tr>
+      <td>doppler_polynomial:</td>
+
+      <td>133.43103 -3.67699e-03 2.82522e-08 -6.09030e-24 Hz Hz/m
+      Hz/m^2 Hz/m^3</td>
+    </tr>
+
+    <tr>
+      <td>receiver_gain:</td>
+
+      <td>7.9934 dB</td>
+    </tr>
+
+    <tr>
+      <td>calibration_gain:</td>
+
+      <td>0.000 dB</td>
+    </tr>
+
+    <tr>
+      <td>sar_to_earth_center:</td>
+
+      <td>7156795.0895 m</td>
+    </tr>
+
+    <tr>
+      <td>earth_radius_below_sensor:</td>
+
+      <td>6364832.9707 m</td>
+    </tr>
+
+    <tr>
+      <td>earth_semi_major_axis:</td>
+
+      <td>6378137.0000 m</td>
+    </tr>
+
+    <tr>
+      <td>earth_semi_minor_axis:</td>
+
+      <td>6356752.3141 m</td>
+    </tr>
+
+    <tr>
+      <td>number_of_state_vectors:</td>
+
+      <td>5</td>
+    </tr>
+
+    <tr>
+      <td>time_of_first_state_vector:</td>
+
+      <td>35910.48150 s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_interval:</td>
+
+      <td>12.45437 s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_1:</td>
+
+      <td>4093944.3300 900769.2700 5800310.1300 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_1:</td>
+
+      <td>6191.2877 -890.0012 -4221.8666 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_2:</td>
+
+      <td>4170698.0300 889539.9600 5747241.9800 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_2:</td>
+
+      <td>6134.1182 -913.2274 -4300.0301 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_3:</td>
+
+      <td>4246733.0100 878023.0100 5693204.6400 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_3:</td>
+
+      <td>6075.8742 -936.1938 -4377.4997 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_4:</td>
+
+      <td>4322036.0100 866221.6300 5638207.2300 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_4:</td>
+
+      <td>6016.5728 -958.8998 -4454.2047 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_5:</td>
+
+      <td>4396593.8800 854139.1500 5582258.9600 m m m</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_5:</td>
+
+      <td>5956.2190 -981.3343 -4530.1911 m/s m/s m/s</td>
+    </tr>
+  </table>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong><br>
+  The formats are defined in the ISP type definition file
+  typedef_ISP.h</p>
+
+  <table border="0">
+    <tr>
+      <td>title:</td>
+
+      <td>ascii text, identification and description of SLC/MLI/PRI
+      data set</td>
+    </tr>
+
+    <tr>
+      <td>sensor:</td>
+
+      <td>ascii text, identification and description of sensor</td>
+    </tr>
+
+    <tr>
+      <td>date:</td>
+
+      <td>image acquisition date (year month day)</td>
+    </tr>
+
+    <tr>
+      <td>start_time:</td>
+
+      <td>SLC/MLI/PRI data start time (s)</td>
+    </tr>
+
+    <tr>
+      <td>center_time:</td>
+
+      <td>SLC/MLI/PRI data center time (s)</td>
+    </tr>
+
+    <tr>
+      <td>end_time:</td>
+
+      <td>SLC/MLI/PRI data end time (s)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_line_time:</td>
+
+      <td>time per azimuth line (s)</td>
+    </tr>
+
+    <tr>
+      <td>line_header_size:</td>
+
+      <td>SLC/MLI/PRI data line (record) header size (in
+      bytes)</td>
+    </tr>
+
+    <tr>
+      <td>range_samples:</td>
+
+      <td>complex samples per range line (SLC/MLI/PRI image
+      width)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_lines:</td>
+
+      <td>number of SLC/MLI/PRI image lines</td>
+    </tr>
+
+    <tr>
+      <td>range_looks:</td>
+
+      <td>multi-looking factor in range (integer)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_looks:</td>
+
+      <td>multi-looking (presum) faxctor in azimuth (integer)</td>
+    </tr>
+
+    <tr>
+      <td>image_format:</td>
+
+      <td>image format, valid formats are: FCOMPLEX, SCOMPLEX,
+      FLOAT, SHORT, BYTE (ascii text)</td>
+    </tr>
+
+    <tr>
+      <td>image_geometry:</td>
+
+      <td>image geometry, valid image geometries are: SLANT_RANGE,
+      GROUND_RANGE, GEOCODED (ascii text)</td>
+    </tr>
+
+    <tr>
+      <td>range_scale_factor:</td>
+
+      <td>range pixel spacing scale factor (= 1.0 except for data
+      which were resampled to a different geometry</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_scale_factor:</td>
+
+      <td>azimuth pixel spacing scale factor (= 1.0 except for data
+      which were resampled to a different geometry</td>
+    </tr>
+
+    <tr>
+      <td>center_latitude:</td>
+
+      <td>SLC/MLI/PRI image center latitude (decimal degrees)</td>
+    </tr>
+
+    <tr>
+      <td>center_longitude:</td>
+
+      <td>SLC/MLI/PRI image center longitude (decimal degrees</td>
+    </tr>
+
+    <tr>
+      <td>heading:</td>
+
+      <td>orbit heading (decimal degrees), North = 0.0 deg.</td>
+    </tr>
+
+    <tr>
+      <td>range_pixel_spacing:</td>
+
+      <td>SLC/MLI/PRI image range pixel spacing (m)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_pixel_spacing:</td>
+
+      <td>SLC/MLI/PRI image azimuth pixel spacing (m)</td>
+    </tr>
+
+    <tr>
+      <td>near_range_slc:</td>
+
+      <td>near swath slant / ground range (m)</td>
+    </tr>
+
+    <tr>
+      <td>center_range_slc:</td>
+
+      <td>center swath slant / ground range (m)</td>
+    </tr>
+
+    <tr>
+      <td>far_range_slc:</td>
+
+      <td>far swath slant / ground range (m)</td>
+    </tr>
+
+    <tr>
+      <td>first_slant_range_polynomial:</td>
+
+      <td>first polynomial to calculate slant range from ground
+      range<br>
+      sr0[0] contains the reference orbit time for the polynomial,
+      slant range = sr0[1] + sr0[2]*(GR-r0) + sr0[3]*(GR-r0)**2 +
+      sr0[4]*(GR-r0)**3 + sr0[5]*(GR-r0)**4 (r0 is the ground range
+      of the first pixel)</td>
+    </tr>
+
+    <tr>
+      <td>incidence_angle:</td>
+
+      <td>center swath incidence angle (degrees)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_deskew:</td>
+
+      <td>azimuth deskew of SLC/MLI/PRI (ON, OFF)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_angle:</td>
+
+      <td>antenna azimuth angle (+90=Right side looking, -90.0=left
+      side looking) (degrees)</td>
+    </tr>
+
+    <tr>
+      <td>radar_frequency:</td>
+
+      <td>SAR frequency (Hz)</td>
+    </tr>
+
+    <tr>
+      <td>adc_sampling_rate:</td>
+
+      <td>Analog digital converter sampling rate (Hz)</td>
+    </tr>
+
+    <tr>
+      <td>chirp_bandwidth:</td>
+
+      <td>SAR chirp bandwidth (Hz)</td>
+    </tr>
+
+    <tr>
+      <td>prf:</td>
+
+      <td>pulse repetition frequency (Hz)</td>
+    </tr>
+
+    <tr>
+      <td>azimuth_proc_bandwidth:</td>
+
+      <td>azimuth SAR processing bandwidth (Hz)</td>
+    </tr>
+
+    <tr>
+      <td>doppler_polynomial:</td>
+
+      <td>doppler polynomial (third order in slant range)</td>
+    </tr>
+
+    <tr>
+      <td>receiver_gain:</td>
+
+      <td>SAR receiver attenuator gain (dB)</td>
+    </tr>
+
+    <tr>
+      <td>calibration_gain:</td>
+
+      <td>relative or absolution radiometric calibration gain
+      factor (dB)</td>
+    </tr>
+
+    <tr>
+      <td>sar_to_earth_center:</td>
+
+      <td>distance from SAR sensor to Earth center (m)</td>
+    </tr>
+
+    <tr>
+      <td>earth_radius_below_sensor:</td>
+
+      <td>Earth radius below sensor (m)</td>
+    </tr>
+
+    <tr>
+      <td>earth_semi_major_axis:</td>
+
+      <td>Earth reference ellipsoid semi-major axis (m)</td>
+    </tr>
+
+    <tr>
+      <td>earth_semi_minor_axis:</td>
+
+      <td>Earth reference ellipsoid semi-minor axis (m)</td>
+    </tr>
+
+    <tr>
+      <td>number_of_state_vectors:</td>
+
+      <td>number of state vectors listed in this file/TD&gt;</td>
+    </tr>
+
+    <tr>
+      <td>time_of_first_state_vector:</td>
+
+      <td>time of first state vector (s)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_interval:</td>
+
+      <td>time interval between state vectors (s)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_1:</td>
+
+      <td>(x,y,z)-coordinates of state vector 1 (m)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_1:</td>
+
+      <td>(x,y,z)-coordinates of velocity of state vector 1
+      (m/sec)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_2:</td>
+
+      <td>(x,y,z)-coordinates of state vector 2 (m)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_2:</td>
+
+      <td>(x,y,z)-coordinates of velocity of state vector 2
+      (m/sec)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_3:</td>
+
+      <td>(x,y,z)-coordinates of state vector 3 (m)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_3:</td>
+
+      <td>(x,y,z)-coordinates of velocity of state vector 3
+      (m/sec)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_4:</td>
+
+      <td>(x,y,z)-coordinates of state vector 4 (m)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_4:</td>
+
+      <td>(x,y,z)-coordinates of velocity of state vector 4
+      (m/sec)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_position_5:</td>
+
+      <td>(x,y,z)-coordinates of state vector 5 (m)</td>
+    </tr>
+
+    <tr>
+      <td>state_vector_velocity_5:</td>
+
+      <td>(x,y,z)-coordinates of velocity of state vector 5
+      (m/sec)</td>
+    </tr>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;orbit&gt;.slc.par, &lt;orbit&gt;.mli.par,
+  &lt;orbit&gt;.pri.par, - contain parameter values describing the
+  SLC/MLI/PRI data file. The SLC parameter file is used throughout
+  the GAMMA software ISP, DIFF&amp;GEO, GEO, LAT, DISP.</p>
+
+  <p>For SLC data processed with the Gamma Modular SAR Processor
+  (MSP) the SLC parameter file is generated from the MSP Processing
+  Parameter file p&lt;orbit&gt;.slc.par using <a href=
+  "par_all.html">par_MSP</a>. For SLC/MLI/PRI data processed by an
+  external processing facility, one of the included programs to
+  interpret the CEOS leader file provided with the SLC/MLI/PRI data
+  can be used to extract the parameters for the SLC parameter
+  file.</p>
+
+  <p>The formats used in &lt;orbit&gt;.par are defined in the in
+  ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "par_all.html">SLC parameter files</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&#169;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Nov-2002.</p>
+</body>
+</html>

@@ -1,0 +1,123 @@
+#!/usr/bin/perl
+use FileHandle;
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2014, Gamma Remote Sensing, v1.3 16-Jan-2014 clw ***
+*** Generate pMLI point data stack and pMLI_par parameter stack from float type raster images ***
+
+usage: $0 <MLI_TAB> <plist> <pmask> <pSLC_par> <pdata> <rec_num>
+    MLI_tab  (input) two column list of data filenames and MLI parameter filenames (including paths) (text format)
+              NOTE: The raster input data must have the same geometry as described in the MLI parameter file
+    plist    (input) point list (enter - for none) (int)
+    pmask    (input) point data stack of mask values (uchar, set to - to accept all points)
+    pMLI_par (output) stack of MLI parameters for the resampled SLC data (enter - for none)(binary) 
+    pdata    (output) point data stack of MLI values (enter - for none)(float data format)    
+    rec_num  record number in the output point data stack (starting with 1, default: - for all)  
+EOS
+
+open(MLI_TAB, "<$ARGV[0]") or die "ERROR $0: MLI_tab of scene MLI files does not exist: $ARGV[0]\n";
+$pt	  = $ARGV[1];
+$pmask    = $ARGV[2];
+
+if ($ARGV[3] ne "-"){      
+  $pMLI_par = $ARGV[3];
+  (-e "$pMLI_par") and system("rm -f $pMLI_par");	#if the MLI parameter stack already exists, erase it
+  $pflg = 1
+}
+
+if ($ARGV[4] ne "-"){
+  $pMLI     = $ARGV[4];
+  (-e "$pMLI") and system("rm -f $pMLI");	#if the MLI data stack already exists, erase it
+  $sflg = 1;
+}    
+
+$rec = $ARGV[5];
+($rec =~ /\d+$/ and ($rec > 0)) or $rec eq "-" or die "ERROR $0: invalid record number: $rec\n";
+
+$log = "MLI2pt.log";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+$time = localtime;
+print "start: $time  log file: $log\n";
+print "MLI_tab: $ARGV[0]\n";
+
+if ($ARGV[1] ne "-"){print "point list: $ARGV[1]  pmask: $ARGV[2]\n";}
+if ($ARGV[3] ne "-"){print "output MLI parameter stack: $ARGV[3]\n";}
+if ($ARGV[4] ne "-"){print "output MLI stack: $ARGV[4]\n";}
+if ($ARGV[1] ne "-"){
+  if ($pmask ne "-"){system "npt $pt $pmask";}
+  else {system "npt $pt";}
+} 
+
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n";
+print LOG "MLI_tab: $ARGV[0]\n";
+if ($ARGV[1] ne "-"){print LOG "point list: $ARGV[1]  pmask: $ARGV[2]\n";}
+if ($ARGV[3] ne "-"){print LOG "output MLI parameter stack: $ARGV[3]\n";}
+if ($ARGV[4] ne "-"){print LOG "output MLI stack: $ARGV[4]\n";}
+if ($ARGV[1] ne "-"){
+  if ($pmask ne "-"){execute("npt $pt $pmask",$log);}
+  else {execute("npt $pt",$log);}
+} 
+
+$rn = 0;
+$type = 2;  #float data type
+
+LINE: while (<MLI_TAB>) {
+  chomp $_;		#remove new line from record
+  next LINE if /^$/; 	#skip blank lines in orbs list
+  next LINE if /^#/;
+  $time = localtime;
+  $rn++;
+  next LINE if (($rec ne "-") && ($rec != $rn));	#go to next line of specific record number and it does not match 
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $rmli = @fields[0];
+  $rmli_par = @fields[1];
+  print LOG "\n*** $rmli  record: $rn  time: $time ***\n"; 
+  print     "\n*** $rmli  record: $rn  time: $time ***\n";
+
+  @rlks = extract_param($rmli_par,"range_looks:");	#extract MLI image parameters
+  @azlks = extract_param($rmli_par,"azimuth_looks:");
+  @width = extract_param($rmli_par,"range_samples:");
+  print "width: $width[1]   range looks: $rlks[1]   azimuth looks: $azlks[1]\n";
+  print LOG "width: $width[1]   range looks: $rlks[1]   azimuth looks: $azlks[1]\n";
+
+  if($pflg == 1){
+    execute("SLC_par_pt $rmli_par $pMLI_par $rn 1",$log);
+  }
+  if($sflg == 1){
+    execute("d2pt $rmli $width[1] $pt $rlks[1] $azlks[1] $rmli_par $type",$log);
+  }  
+}
+
+$time = localtime;
+print "\nprocessing end: $time\n";
+print LOG "\nprocessing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+

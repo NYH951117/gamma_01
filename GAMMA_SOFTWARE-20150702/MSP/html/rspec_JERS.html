@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: rspec_JERS</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>rspec_JERS</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/rspec_JERS.c">rspec_JERS.c</a></i></p>
+
+  <p><strong>NAME</strong><br clear="all">
+  <em>rspec_JERS</em> - Range spectra estimation for&nbsp;
+  JERS-1&nbsp; stripmap raw data</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>rspec_JERS &lt;SAR_par&gt; &lt;PROC_par&gt;
+  &lt;signal_data&gt; &lt;range_spec&gt; [nr_samp] [nl_spec] [loff]
+  [nlines] [nr_ext] [fr_ext]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>MSP SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>MSP Processing Parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>raw&nbsp; SAR data (IQ format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;range_spec&gt;</td>
+
+        <td>range spectra data file for RFI suppression</td>
+      </tr>
+
+      <tr>
+        <td>[nr_samp]</td>
+
+        <td>number of range samples (enter - for default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[nl_spec]</td>
+
+        <td>number of lines used to estimate spectrum (enter - for
+        default=1024)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset in echos for first line to process (enter - for
+        default from PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to process (enter - for default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[nr_ext];</td>
+
+        <td>near range swath extension in samples (default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[fr_ext]</td>
+
+        <td>near range swath extension in samples (default from
+        PROC_par)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>rspec_JERS JERS-1.par p19961116.slc.par 19961116.raw
+  19961116.psd</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">rspec_JERS</span> estimates the
+  range power spectrum for suppression of radio frequency
+  interference &nbsp;(RFI) for both JERS-1 and PALSAR stripmap raw
+  SAR data.The range power spectrum is calculated every
+  <em>nl_spec</em> (nominal value: <em>nl_spec</em> = 1000, about
+  every .6 seconds)&nbsp; lines for the SAR&nbsp; raw data. The FFT
+  size and number of lines to include in the estimation are defined
+  by the user. <em>rspec_JERS</em> generates range spectra used to
+  identify Radio Frequency Interference (RFI). The range
+  compression program <a href="pre_rc_JERS.html">pre_rc_JERS</a>
+  &nbsp; uses this information to notch the range chirp matched
+  filter thereby suppressing the RFI.</p>
+
+  <p><em>rspec_JERS</em> has the capability to provide spectra with
+  additional data points for extending the processed image swath
+  beyond the region of full resolution. The nominal number of
+  samples in the range compressed data is the number of echo
+  samples processed minus the number of samples in the range chirp.
+  Outside of the nominal full resolution swath are two bands, one
+  in the near range and the other in the far range. Both of these
+  bands are as wide as the range chirp width in samples. Across
+  these bands the resolution degrades linearly starting at the full
+  resolution and going to zero. These regions also fade in
+  intensity proportional to the loss in resolution due to the
+  decreasing number of echo samples for these image pixels. The
+  user can specify the swath extension for both the near and far
+  range in the processing parameter file or via the command line
+  parameters <em>nr_ext</em> and <em>fr_ext</em> .</p>
+
+  <p>The individual range power spectra may be extracted from the
+  *.psd files with <a href="extract_psd.html">extract_psd</a> and
+  and plotted using<em>gnuplot.</em> The format of the text file
+  produced by <a href="extract_psd.html">extract_psd</a> is pairs
+  of numbers (sample number, spectrum value).</p>
+
+  <p>Notice: The values of the nr_samp, nr_ext, and fr_ext values
+  must be identical when running <em>rspec_JERS</em> and
+  <em>pre_rc_JERS</em>; otherwise the RFI range spectra will not
+  have the same size and the pre_rc_JERS will exit.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "pre_rc_JERS.html">pre_rc_JERS</a>, <a href="proc_par.html">MSP
+  Processing Parameter File</a>, <a href=
+  "extract_psd.html">extract_psd</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Jun-2012
+</body>
+</html>

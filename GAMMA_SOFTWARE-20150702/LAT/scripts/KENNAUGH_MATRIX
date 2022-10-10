@@ -1,0 +1,235 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     KENNAUGH_MATRIX: script to run LAT program sequence to create   ###
+###                      one element of the Kennaugh matrix             ###
+###			 simplified formulation based on the T matrix   ###                                
+###########################################################################
+### version 1.1 - ms  2010114                                           ###
+###                                                                     ###
+###########################################################################
+
+
+echo " "
+echo "KENNAUGH_MATRIX: Kennaugh matrix derivation from elements of scattering matrix"
+
+if ($#argv < 9)then
+  echo " "
+  echo "usage: KENNAUGH_MATRIX <T11> <T22> <T33> <T12> <T13> <T23> <nlines> <KNG> <elem>"
+  echo "  "
+  echo "       T11      (input) Coherence matrix T11 component (-: if not required)"
+  echo "       T22      (input) Coherence matrix T22 component (-: if not required)"
+  echo "       T33      (input) Coherence matrix T33 component (-: if not required)"
+  echo "       T12      (input) Coherence matrix T12 component (-: if not required)"
+  echo "       T13      (input) Coherence matrix T13 component (-: if not required)"
+  echo "       T23      (input) Coherence matrix T23 component (-: if not required)"
+  echo "       nlines   (input) width of input dataset"
+  echo "       KNG      (output) Kennaugh matrix file name, e.g. date or orbit number"
+  echo "       elem     (input) element of Kennaugh matrix"
+  echo "				1 : K11 = T11/2 + T22/2 + T33/2 "
+  echo "				2 : K12 = Re(T12)"
+  echo "				3 : K13 = Re(T13)"
+  echo "				4 : K14 = Im (T23)"
+  echo "				5 : K22 = T11/2 + T22/2 - T33/2"
+  echo "				6 : K23 = Re(T23)"
+  echo "				7 : K24 = Im(T13)"
+  echo "				8 : K33 = T11/2 - T22/2 + T33/2"
+  echo "				9 : K34 = -Im(T12)"
+  echo "			       10 : K44 = -T11/2 + T22/2 + T33/2"
+  echo " "
+  exit
+endif
+
+
+set t11 = $1
+set t22 = $2
+set t33 = $3
+set t12 = $4
+set t13 = $5
+set t23 = $6
+set nlines = $7
+set kng = $8
+set elem = $9
+
+echo " "
+echo " "
+
+
+switch ($elem)
+	case 1:
+		# Kennaugh matrix K11 = A0 + B0 = T11/2 + T22/2 + T33/2 
+		if (("$t11" == "-") || ("$t22" == "-") || ("$t33" == "-"))  then
+			echo "The dataset for the computation of K11 has not been defined correctly"
+			echo "The T11, T22 and T33 components must be specified"
+			echo " "
+			exit
+		else
+
+			echo "Computing K11 - FLOAT format"
+			echo "lin_comb 3 $t11 $t22 $t33 0 0.5 0.5 0.5 $kng.k11 $nlines - - 1 1 1"
+			nice lin_comb 3 $t11 $t22 $t33 0 0.5 0.5 0.5 $kng.k11 $nlines - - 1 1 1 
+			echo " "
+			echo "The file $kng.k11 has been generated - FLOAT format"
+			echo " "
+
+		endif
+		breaksw
+	case 2:
+		# Kennaugh matrix K12 = C = Re(T12)
+		if ("$t12" == "-") then
+			echo "The dataset for the computation of K12 has not been defined correctly"
+			echo "The T12 component must be specified"
+			echo " "
+			exit
+		else
+
+			echo "Computing K12 - FLOAT format"
+			echo "cpx_to_real $t12 $kng.k12 $nlines 0"
+			nice cpx_to_real $t12 $kng.k12 $nlines 0
+			echo " "
+			echo "The file $kng.k12 has been generated - FLOAT format"
+			echo " "
+		endif
+		breaksw
+	case 3:
+		# Kennaugh matrix K13 = H = Re(T13)
+		if ("$t13" == "-") then
+			echo "The dataset for the computation of T13 has not been defined correctly"
+			echo "The T13 component must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K13 - FLOAT format"
+			echo "cpx_to_real $t13 $kng.k13 $nlines 0"
+			nice cpx_to_real $t13 $kng.k13 $nlines 0
+
+			echo " "
+			echo "The file $kng.k13 has been generated - FLOAT format"
+			echo " "
+		endif
+		breaksw
+	case 4:
+		# Kennaugh matrix K14 = F = Im (T23)
+		if ("$t23" == "-") then
+			echo "The dataset for the computation of K14 has not been defined correctly"
+			echo "The T23 component must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K14 - FLOAT format"
+			echo "cpx_to_real $t23 $kng.t14 $nlines 1"
+			nice cpx_to_real $t23 $kng.t14 $nlines 1	
+			echo " "
+			echo "The file $kng.k14 has been generated - FLOAT format"
+			echo " "	
+		endif
+		breaksw
+	case 5:
+		# Kennaugh matrix C22 = A0 + B = T11/2 + T22/2 - T33/2
+		if (("$t11" == "-") || ("$t22" == "-") || ("$t33" == "-"))  then
+			echo "The dataset for the computation of K11 has not been defined correctly"
+			echo "The T11, T22 and T33 components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K22 - FLOAT format"
+			echo "lin_comb 3 $t11 $t22 $t33 0 0.5 0.5 -0.5 $kng.k22 $nlines - - 1 1 1 "
+			nice lin_comb 3 $t11 $t22 $t33 0 0.5 0.5 -0.5 $kng.k22 $nlines - - 1 1 1 	
+			echo " "
+			echo "The file $kng.k22 has been generated - FLOAT format"
+			echo " "
+		endif
+		breaksw
+	case 6:
+		# Kennaugh matrix K23 = E = Re(T23)
+		if ("$t23" == "-")  then
+			echo "The dataset for the computation of K23 has not been defined correctly"
+			echo "The T23 component must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K23 - FLOAT format"
+			echo "cpx_to_real $t23 $kng.k23 $nlines 0"
+			nice cpx_to_real $t23 $kng.k23 $nlines 0
+			echo " "
+			echo "The file $kng.k23 has been generated - FLOAT format"
+			echo " "
+		endif
+		breaksw
+	case 7:
+		# Kennaugh matrix K24 = G = Im(T13)
+		if ("$t13" == "-")  then
+			echo "The dataset for the computation of K24 has not been defined correctly"
+			echo "The T13 component must be defined"
+			echo " "
+			exit
+		else		
+			echo "Computing K24 - FLOAT format"
+			echo "cpx_to_real $t13 $kng.k24 $nlines 1"
+			nice cpx_to_real $t13 $kng.k24 $nlines 1	
+			echo " "
+			echo "The file $kng.k24 has been generated - FLOAT format"
+			echo " "
+
+		endif
+		breaksw
+	case 8:
+		# Kennaugh matrix K33 = A0 - B = T11/2 - T22/2 + T33/2
+		if (("$t11" == "-") || ("$t22" == "-") || ("$t33" == "-"))  then
+			echo "The dataset for the computation of K33 has not been defined correctly"
+			echo "The T11, T22 and T33 components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K33 - FLOAT format"
+			echo "lin_comb 3 $t11 $t22 $t33 0 0.5 -0.5 0.5 $kng.k33 $nlines - - 1 1 1"
+			nice lin_comb 3 $t11 $t22 $t33 0 0.5 -0.5 0.5 $kng.k33 $nlines - - 1 1 1
+			echo " "
+			echo "The file $kng.k33 has been generated - FLOAT format"
+			echo " "
+		endif
+		breaksw
+	case 9:
+		# Kennaugh matrix K34 = D = -Im(T12)
+		if ("$t12" == "-") then
+			echo "The dataset for the computation of K34 has not been defined correctly"
+			echo "The T12 component must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K44 - FLOAT format"
+			echo "cpx_to_real $t12 tmp1 $nlines 1"
+			nice cpx_to_real $t12 tmp1 $nlines 1
+			echo "lin_comb 1 tmp1 0 -1 $kng.k34 $nlines - - 1 1 1"
+			nice lin_comb 1 tmp1 0 -1 $kng.k34 $nlines - - 1 1 1	
+			echo " "
+			echo "The file $kng.k44 has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm tmp*
+		endif
+		breaksw
+	case 10:
+		# Kennaugh matrix K44 = -A0 + B0 = -T11/2 + T22/2 + T33/2
+		if (("$t11" == "-") || ("$t22" == "-") || ("$t33" == "-"))  then
+			echo "The dataset for the computation of K44 has not been defined correctly"
+			echo "The T11, T22 and T33 components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing K44 - FLOAT format"
+			echo "lin_comb 3 $t11 $t22 $t33 0 -0.5 0.5 0.5 $kng.k44 $nlines - - 1 1 1"
+			nice lin_comb 3 $t11 $t22 $t33 0 -0.5 0.5 0.5 $kng.k44 $nlines - - 1 1 1
+			echo " "
+			echo "The file $kng.k44 has been generated - FLOAT format"
+			echo " "
+		endif
+		breaksw
+endsw
+
+echo End of KENNAUGH_MATRIX
+
+
+
+
+
+

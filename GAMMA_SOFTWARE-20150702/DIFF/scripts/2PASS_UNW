@@ -1,0 +1,135 @@
+#! /bin/csh -fe
+###########################################################################
+###   2PASS_UNW: script for 2-pass differential interferometry sequence ###
+###           using:                                                    ###
+###           - unwrapped phase image (flattened or not flattened)      ###                                
+###           - DEM in map coordinates (to calculate topographic phase) ###                                
+###########################################################################
+### by Urs Wegmuller 97.12.11 modified Charles Werner 97.12.25
+###
+###########################################################################
+echo " "
+echo "2PASS_UNW: 2-pass differential interferometry approach using:"
+echo "       - unwrapped phase image (flattened or not flattened)"
+echo "       - DEM in map coordinates (to calculate topographic phase)"
+if ($#argv < 14)then
+  echo " "
+  echo "usage: 2PASS <slc_par> <off> <base> <DEM_par> <lat_ovr> <lon_ovr> <DEM_gc_par> <DEM_gc> <pwr> <MAP_to_RDC>"
+  echo "             <unw> <reramp> <diff_unw>"
+  echo "       slc_par     (input) reference slc/mli geometry parameter file"
+  echo "       off         (input) ISP offset/interferogram parameter file, enter - if geocoding SLC or MLI data"
+  echo "       base        (input) ISP baseline file"
+  echo "       DEM_par     (input) DEM parameter file"
+  echo "       DEM         (input) DEM data file"
+  echo "       lat_ovr     latitude DEM oversampling factor"
+  echo "       lon_ovr     longitude DEM oversampling factor"
+  echo "       DEM_gc_par  DEM segment parameter file used for geocoding"
+  echo "       DEM_gc      (output) segment of DEM used for geocoding"
+  echo "                   interpolated if lat_ovr > 1  or lon_ovr > 1"
+  echo "       pwr         (input) SAR intensity image (for fine registration)"
+  echo "       MAP_to_RDC  (output) refined geocoding lookup table"
+  echo "       unw         (input) unwrapped interferometric phase (diff+topo)"
+  echo "       reramp      flag indicating if flat Earth phase trend has to be added"
+  echo "                   back to unw (1=reramp, 0=no reramp)"
+  echo "       diff_unw    (output) unwrapped differential phase"
+  echo " "
+  exit
+endif
+
+set slc_par = $1
+set off = $2
+set base = $3
+set DEM_par = $4
+set DEM = $5
+set lat_ovr = $6
+set lon_ovr = $7
+set DEM_gc_par = $8
+set DEM_gc = $9
+set pwr = $10
+set MAP_to_RDC = $11
+set unw = $12
+set reramp_flag = $13
+set diff_unw = $14
+
+set HGT_SIM = "HGT_SIM" 			# DEM transferred into SAR geometry with MAP_to_RDC
+set TOPO_UNW = "TOPO_UNW"			# Simulated unwrapped topographic phase
+set diff_par = "diff_par" 			# Create (DIFF&GEO-)DIFF&GEO parameter file
+set unw_reramp = "unw_reramp"
+
+###########################################################################
+#
+###########################################################################
+###   Geocoding using DEM, including fine registration:                 ###
+      ################################################
+if(1) then
+  echo ""
+  echo "Geocoding using DEM, including fine registration"
+  echo "GC_MAP $slc_par $off $DEM_par $DEM $lat_ovr $lon_ovr $DEM_gc_par $DEM_gc $pwr $MAP_to_RDC - - - -"
+  GC_MAP $slc_par $off $DEM_par $DEM $lat_ovr $lon_ovr $DEM_gc_par $DEM_gc $pwr $MAP_to_RDC - - - -
+endif
+
+###########################################################################
+###   Transformation of DEM to SAR coordinates:  $HGT_SIM:              ###
+      #######################################################
+if(1) then
+  echo ""
+  set map_width = `awk '$1 == "width:" {print $2}' $8`
+  set width = `awk '$1 == "interferogram_width:" {print $2}' $2`
+  echo "map segment width: $map_width       SAR/INSAR data width: $width"
+  echo ""
+  echo "Transformation of DEM to SAR coordinates:  $HGT_SIM"
+  echo "geocode $MAP_to_RDC $DEM_gc $map_width $HGT_SIM $width 0 0 0"
+  nice geocode $MAP_to_RDC $DEM_gc $map_width $HGT_SIM $width 0 0 0
+endif
+
+###########################################################################
+###   Simulation of unwrapped topographic phase:  $TOPO_UNW:             ###
+      #######################################################
+if(1) then
+  echo ""
+  echo "Simulation of unwrapped topographic phase:  $TOPO_UNW"
+  echo "phase_sim $slc_par $off $base $HGT_SIM $TOPO_UNW 0 0"
+  nice phase_sim $slc_par $off $base $HGT_SIM $TOPO_UNW 0 0
+endif
+
+###########################################################################
+###   Add back flat Earth phase trend to $unw:                          ###
+      #######################################
+if(1) then
+  if( $reramp_flag == "1" )then
+    echo ""
+    echo "Add back flat Earth phase trend to $unw"
+    echo "reramp $slc_par $off $base $unw $unw_reramp 0"
+    nice reramp $slc_par $off $base $unw $unw_reramp 0
+  else 
+    echo ""
+    echo "set symbolic link for $unw_reramp to $unw"
+    echo "ln -s $unw $unw_reramp"
+    ln -s $unw $unw_reramp
+  endif
+endif
+
+###########################################################################
+###   LS-fit determination of phase scaling factors:                    ###
+      #############################################
+if(1) then
+  echo ""
+  echo "LS-fit determination of phase scaling factors"
+  echo "diff_ls_fit $unw_reramp $TOPO_UNW $diff_par 32 32"
+  nice diff_ls_fit $unw_reramp $TOPO_UNW $diff_par 32 32
+endif
+
+###########################################################################
+###   Subtraction of topographic phase (using phase scaling factors):   ###
+      ##############################################################
+if(1)then
+  echo ""
+  echo " Subtraction of topographic phase using phase scaling factors:"
+  echo "diff_ls_unw $unw_reramp $TOPO_UNW $diff_par $diff_unw 0"
+  nice diff_ls_unw $unw_reramp $TOPO_UNW $diff_par $diff_unw 0
+endif
+
+echo End of 2PASS_UNW
+    
+###                                                                     ###
+###########################################################################

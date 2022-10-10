@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Reference Manual: orrm_file</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>orrm_file</h2>
+
+  <p>ORRM orbit state vector file (ASCII-file): such as
+  &lt;orbit&gt;.orrm</p>
+
+  <p><strong>NAME<br></strong><em>&lt;orbit&gt;.orrm</em> -
+  contains ORRM orbit data as provided by ESA. The ORRM orbit state
+  vector file contains the state vectors and velocities for the
+  sensor (ERS-1). The state vectors and velocities are used to
+  estimate the interferometric baseline.</p>
+
+  <p><strong>EXAMPLE</strong><br>
+  ORRM_911021MCCF0183.E102:18:27<br>
+  0 0 15266 0 15266 86340000 1991/10/21 0:51: 7<br>
+  15266 0 1346 1669.252283 -1781.4552 6718.5946 -6.8175479
+  2.2782278 2.2926923 0<br>
+  15266 60000 1346 1257.8307 -1639.5883 6842.8982 -6.8918049
+  2.4492421 1.8494171 0<br>
+  15266 120000 1346 842.8012 -1487.7264 6940.3805 -6.9377854
+  2.6112437 1.3989348 0<br>
+  15266 180000 1346 425.8638 -1326.4368 7010.6614 -6.9553996
+  2.7633585 0.9430021 0<br>
+  ...<br>
+  (Example represents ORRM orbit state vector file:
+  &lt;1352&gt;.orrm for orbit 1352. In addition to the orbit data
+  for orbit 1352 it contains data for further orbits, starting with
+  orbit 1346)</p>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong><br>
+  The first two lines contain auxiliary data. The format and
+  parameters for line 3 and continuation line format is defined in
+  the MSP type definition file <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a><br clear="all">
+  <br>
+  <font size="+1">int mjd, utc, orb_num, double x, y, z, vx, vy,
+  vz, int TAI_UTC_delta</font></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td width="14%">mdj &nbsp;</td>
+
+      <td width="86%">&nbsp;modified Julian date, which is (julian
+      date-2433282.5) e.g.: 1.1.1990 = 14610</td>
+    </tr>
+
+    <tr>
+      <td width="14%">&nbsp;utc</td>
+
+      <td width="86%">&nbsp;time (in msec) since midnight UTC</td>
+    </tr>
+
+    <tr>
+      <td width="14%">&nbsp;orb_num</td>
+
+      <td width="86%">&nbsp;num: orbit number</td>
+    </tr>
+
+    <tr>
+      <td width="14%">&nbsp;x, y, z</td>
+
+      <td width="86%">&nbsp;sensor position (in km) in Conventional
+      Terrestrial System</td>
+    </tr>
+
+    <tr>
+      <td width="14%">&nbsp;vx, vy, vz:</td>
+
+      <td width="86%">&nbsp;sensor velocity (in km/sec) in
+      Conventional Terrestrial System</td>
+    </tr>
+
+    <tr>
+      <td width="14%">&nbsp;TAI_UTC_delta:</td>
+
+      <td width="86%">difference (in sec) between the International
+      Atomic Time and UTC</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;orbit&gt;.orrm - contains ORRM orbit data as provided by ESA.
+  The ORRM orbit state vector file contains the state vectors and
+  velocities for the sensor (ERS-1).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The ORRM orbit state vector file &lt;orbit&gt;.orrm is not
+  required if the state vectors from the SAR raw data leader/header
+  files are available.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "state_vec.html">state_vec</a>, <a href="proc_par.html">SAR
+  Processing parameter file</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 22-Mar-2000.
+</body>
+</html>

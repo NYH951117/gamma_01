@@ -1,0 +1,244 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     COH_MATRIX: script to run LAT program sequence to create        ###
+###                 one element of the coherency matrix                 ###                                
+###########################################################################
+### version 1.1 - ms  2010114                                           ###
+###                                                                     ###
+###########################################################################
+
+
+echo " "
+echo "COH_MATRIX: coherency matrix derivation from elements of scattering matrix"
+
+if ($#argv < 6)then
+  echo " "
+  echo "usage: COH_MATRIX <SLC_HH> <SLC_HV> <SLC_VV> <nlines> <COH> <elem>"
+  echo "  "
+  echo "       SLC_HH      (input) SLC HH-polarization (-: if not required) (FCOMPLEX)"
+  echo "       SLC_HV      (input) SLC HV-polarization (-: if not required) (FCOMPLEX)"
+  echo "       SLC_VV      (input) SLC VV-polarization (-: if not required) (FCOMPLEX)"
+  echo "       nlines      (input) width of input SLC"
+  echo "       COH         (output) Coherency matrix file name, e.g. date or orbit number"
+  echo "       elem        (input) element of coherency matrix"
+  echo "				1 : T11"
+  echo "				2 : T12"
+  echo "				3 : T13"
+  echo "				4 : T21"
+  echo "				5 : T22"
+  echo "				6 : T23"
+  echo "				7 : T31"
+  echo "				8 : T32"
+  echo "				9 : T33"
+  echo " "
+  exit
+endif
+
+
+set slc_hh = $1
+set slc_hv = $2
+set slc_vv = $3
+set nlines = $4
+set coh = $5
+set elem = $6
+
+echo " "
+echo " "
+
+switch ($elem)
+	case 1:
+		# Coherency matrix T11 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-")) then
+			echo "The dataset for the computation of T11 has not been defined correctly"
+			echo "The HH and VV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T11 - FLOAT format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1
+			echo "cpx_to_real tmp1 tmp2 $nlines 2"
+			nice cpx_to_real tmp1 tmp2 $nlines 2
+			echo "lin_comb 1 tmp2 0 0.5 $coh.t11 $nlines"
+			nice lin_comb 1 tmp2 0 0.5 $coh.t11 $nlines
+			echo " "
+			echo "The file $coh.t11 has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 2:
+		# Coherency matrix T12 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-")) then
+			echo "The dataset for the computation of T12 has not been defined correctly"
+			echo "The HH and VV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T12 - FCOMPLEX format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp2 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp2 $nlines - - 1 1 1
+			echo "product_cpx tmp1 tmp2 tmp3 $nlines - - 1"
+			nice product_cpx tmp1 tmp2 tmp3 $nlines - - 1
+			echo "lin_comb_cpx 1 tmp3 0 0 0.5 0 $coh.t12 $nlines - - 1 1 1" 
+			nice lin_comb_cpx 1 tmp3 0 0 0.5 0 $coh.t12 $nlines - - 1 1 1 
+			echo " "
+			echo "The file $coh.t12 has been generated - FCOMPLEX format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 3:
+		# Coherency matrix T13 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-") || ("$slc_hv" == "-")) then
+			echo "The dataset for the computation of T13 has not been defined correctly"
+			echo "The HH, VV and HV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T13 - FCOMPLEX format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1
+			echo "product_cpx tmp1 $slc_hv $coh.t13 $nlines - - 1"
+			nice product_cpx tmp1 $slc_hv $coh.t13 $nlines - - 1
+			echo " "
+			echo "The file $coh.t13 has been generated - FCOMPLEX format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 4:
+		# Coherency matrix T21 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-")) then
+			echo "The dataset for the computation of T21 has not been defined correctly"
+			echo "The HH and VV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T21 - FCOMPLEX format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp2 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp2 $nlines - - 1 1 1
+			echo "product_cpx tmp2 tmp1 tmp3 $nlines - - 1"
+			nice product_cpx tmp2 tmp1 tmp3 $nlines - - 1
+			echo "lin_comb_cpx 1 tmp3 0 0 0.5 0 $coh.t21 $nlines - - 1 1 1" 
+			nice lin_comb_cpx 1 tmp3 0 0 0.5 0 $coh.t21 $nlines - - 1 1 1 
+			echo " "
+			echo "The file $coh.t21 has been generated - FCOMPLEX format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 5:
+		# Coherency matrix T22 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-")) then
+			echo "The dataset for the computation of T22 has not been defined correctly"
+			echo "The HH and VV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T22 - FLOAT format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1
+			echo "cpx_to_real tmp1 tmp2 $nlines 2"
+			nice cpx_to_real tmp1 tmp2 $nlines 2
+			echo "lin_comb 1 tmp2 0 0.5 $coh.t22 $nlines"
+			nice lin_comb 1 tmp2 0 0.5 $coh.t22 $nlines
+			echo " "
+			echo "The file $coh.t22 has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 6:
+		# Coherency matrix T23 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-") || ("$slc_hv" == "-")) then
+			echo "The dataset for the computation of T23 has not been defined correctly"
+			echo "The HH, VV and HV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T23 - FCOMPLEX format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1
+			echo "product_cpx tmp1 $slc_hv $coh.t23 $nlines - - 1"
+			nice product_cpx tmp1 $slc_hv $coh.t23 $nlines - - 1
+			echo " "
+			echo "The file $coh.t23 has been generated - FCOMPLEX format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 7:
+		# Coherency matrix T31 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-") || ("$slc_hv" == "-")) then
+			echo "The dataset for the computation of T31 has not been defined correctly"
+			echo "The HH, VV and HV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T31 - FCOMPLEX format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 1 0 tmp1 $nlines - - 1 1 1
+			echo "product_cpx $slc_hv tmp1 $coh.t31 $nlines - - 1"
+			nice product_cpx $slc_hv tmp1 $coh.t31 $nlines - - 1
+			echo " "
+			echo "The file $coh.t31 has been generated - FCOMPLEX format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 8:
+		# Coherency matrix T32 
+		if (("$slc_hh" == "-") || ("$slc_vv" == "-") || ("$slc_hv" == "-")) then
+			echo "The dataset for the computation of T32 has not been defined correctly"
+			echo "The HH, VV and HV components must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T32 - FCOMPLEX format"
+			echo "lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1"
+			nice lin_comb_cpx 2 $slc_hh $slc_vv 0 0 1 0 -1 0 tmp1 $nlines - - 1 1 1
+			echo "product_cpx $slc_hv tmp1 $coh.t32 $nlines - - 1"
+			nice product_cpx $slc_hv tmp1 $coh.t32 $nlines - - 1
+			echo " "
+			echo "The file $coh.t32 has been generated - FCOMPLEX format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+	case 9:
+		# Coherency matrix T33 
+		if ("$slc_hv" == "-") then
+			echo "The dataset for the computation of T33 has not been defined correctly"
+			echo "The HV component must be specified"
+			echo " "
+			exit
+		else
+			echo "Computing T33 - FLOAT format"
+			echo "cpx_to_real $slc_hv tmp1 $nlines 2"
+			nice cpx_to_real $slc_hv tmp1 $nlines 2
+			echo "lin_comb 1 tmp1 0 2 $coh.t33 $nlines - - 1 1 1"
+			nice lin_comb 1 tmp1 0 2 $coh.t33 $nlines - - 1 1 1
+			echo " "
+			echo "The file $coh.t33 has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+		breaksw
+endsw
+
+echo End of COH_MATRIX
+

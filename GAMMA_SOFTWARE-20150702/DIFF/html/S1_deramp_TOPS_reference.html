@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2015 Gamma Remote Sensing --><!-- uw20150629 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual:
+  S1_deramp_TOPS_reference</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>S1_deramp_TOPS_reference</h2>
+
+  <p><i>C-shell script: <a href=
+  "../scripts/S1_deramp_TOPS_reference">S1_deramp_TOPS_reference</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">S1_deramp_TOPS_reference
+  -</span> Script to deramp a Sentinel-1 TOPS mode burst SLC
+  reference.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>S1_deramp_TOPS_reference &lt;SLC_tab&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) 3 column list of TOPS burst SLC reference (SLC,
+        SLC_par, TOPS_par; row order IW1, IW2, IW3)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>S1_deramp_TOPS_reference 20141003.SLC_tab</samp></p>
+
+  <p>Conducts a deramping of the reference burst SLC data. The
+  filenames for the deramped data and the phase ramp are generated
+  based on SLC_tab.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>S1_deramp_TOPS_reference</em> is used to deramp the burst SLC
+  data of a S1 TOPS reference scene. For each burst the azimuth
+  phase ramp caused by the Doppler Centroid variation is calculated
+  and subtracted. Both the deramped data (as burst SLC, i.e. with
+  the individual files for each sub-swath) and the phase ramps
+  subtracted (in the same format, but using float values) are
+  generated.</p>
+
+  <p>The filenames for the output files are automatically generated
+  based on the filenames of the input data. The output SLC_tab for
+  the deramped burst SLC consists of the SLC_tab name with
+  ".deramp". Similarly, the burst SLC file names of the deramped
+  data are generated:<br>
+  20141003.RSLC_tab --&gt; 20141003.RSLC_tab.deramp<br>
+  20141003.IW1.rslc --&gt; 20141003.IW1.rslc.deramp<br>
+  20141003.IW1.rslc.par --&gt; 20141003.IW1.rslc.deramp.par<br>
+  20141003.IW1.rslc.TOPS_par --&gt;
+  20141003.IW1.rslc.deramp.TOPS_par<br>
+  The corresponding file names for the deramp phases subtracted
+  are:<br>
+  20141003.IW1.rslc.deramp.dph, 20141003.IW2.rslc.deramp.dph, and
+  20141003.IW3.rslc.deramp.dph.</p>
+
+  <p>The azimuth spectra of the deramped data should be in the base
+  band and centered and should not vary in azimuth direction. To
+  check the spectra you can use the program
+  <em>dismph_fft</em>.</p>
+
+  <p>Deramping of the S1 TOPS data may be used to apply
+  oversampling in offset tracking, apply common band filtering in
+  azimuth direction or to apply split-beam interferometry, or to
+  use the spectral diversity criteria in the IPTA for the point
+  target candidate identification (program <em>sp_stat</em>). For
+  differential interferoemtry, on the other hand, deramping of the
+  S1 IWS data is not necessary.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  To deramp a co-registered slave burst SLC with the same phase
+  ramps as used to deramp the reference burst SLC the program
+  <a href="S1_deramp_TOPS_slave.html">S1_deramp_TOPS_slave.html</a>
+  can be used.</p>
+
+  <p>To generate an SLC mosaic of the deramped burst SLC reference
+  the ISP program <em>SLC_mosaic_S1_TOPS</em> is used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href=
+  "S1_deramp_TOPS_slave.html">S1_deramp_TOPS_slave.html</a>,
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "Sentinel-1_users_guide.pdf">Sentinel-1 Users Guide</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 29-Jun-2015</p>
+</body>
+</html>

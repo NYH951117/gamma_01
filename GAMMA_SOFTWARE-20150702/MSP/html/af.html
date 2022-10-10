@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: af</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>af</h2>
+
+  <p><i>ANSI-C program: <a href="../src/af.c">af.c</a></i></p>
+
+  <p><strong>NAME</strong> <em>autof</em> - Estimation of effective
+  along-track velocity for SAR processing using cross-correlation
+  of azimuth looks</p>
+
+  <p><strong>SYNOPSIS</strong> <code>af &lt;SAR_par&gt;
+  &lt;PROC_par&gt; &lt;SLC&gt; [rwin] [azwin] [dr] [daz] [thres]
+  [update_flg] [a1_flg] [b0_flg] [offsets] [dac_flg] [n_ovr] [roff]
+  [azoff]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td width="151">&lt;SAR_par&gt;</td>
+
+        <td width="529">(input) MSP SAR sensor parameter
+        file<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">&lt;PROC_par&gt;</td>
+
+        <td width="529">(input) MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td width="151">&lt;SLC&gt;</td>
+
+        <td width="529">(input) (input) single-look complex
+        image</td>
+      </tr>
+
+      <tr>
+        <td width="151">[rwin]</td>
+
+        <td width="529">range window size (enter - for default:
+        1024)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[azwin]</td>
+
+        <td width="529">azimuth window size (enter - for default:
+        4096)<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[dr]<br></td>
+
+        <td width="529">range sample increment (enter - for
+        default: 1024,&nbsp; enter 0 for single patch)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[daz]<br></td>
+
+        <td style="vertical-align: top;">azimuth line increment
+        (enter - for default: 4096,&nbsp; enter 0 for single
+        patch)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[thres]</td>
+
+        <td style="vertical-align: top;">offset estimation SNR
+        threshold (enter - for default:&nbsp;&nbsp; 10.000)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[update_flg]</td>
+
+        <td width="529">&nbsp;update effective velocity flag (enter
+        - for default: 1)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no update of effective velocity in PROC_par file<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: update effective velocity in PROC_par (default)<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[a1_flg]</td>
+
+        <td width="529">fit a1 for first derivative of the
+        effective velocity w.r.t.range<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: yes<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[b0_flg]</td>
+
+        <td width="529">fit b0 for first derivative of the
+        effective velocity w.r.t. along-track time<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: yes<br></td>
+      </tr>
+
+      <tr>
+        <td width="151">[offsets]</td>
+
+        <td width="529">(output) range and azimuth offsets and SNR
+        data in text format, enter - for no output<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[dac_flg]</td>
+
+        <td style="vertical-align: top;">Doppler ambiguity
+        correction flag<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: Doppler centroid remains unchanged: exit if Doppler
+        ambiguity error detected<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: Doppler centroid ambiguity corrected (default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[n_ovr]</td>
+
+        <td style="vertical-align: top;">SLC oversampling factor
+        (1,2,4: enter - for default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[roff]</td>
+
+        <td style="vertical-align: top;">range offset for single
+        patch center<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[azoff]<br></td>
+
+        <td style="vertical-align: top;">azimuth offset for single
+        patch center<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong> <samp>af ERS2_CCRS.par
+  p19991020.slc.par 19991020.slc 1024 4096 - - 10</samp></p>
+
+  <p>states that the <span style="font-style: italic;">af</span>
+  program should use the SAR sensor parameter file <span style=
+  "font-style: italic;">ERS2_CCRS.par</span> and SAR parameter file
+  <span style="font-style: italic;">p19991020.slc.par</span> to
+  analyze the SLC <span style=
+  "font-style: italic;">10001020.slc</span>.&nbsp; The autofocus
+  analysis is performed on patches that are 1024 pixels in range
+  and 4096 azimuth lines. The default increment between patches is
+  selected using the -&nbsp; - values for parameters <span style=
+  "font-style: italic;">dr</span> and <span style=
+  "font-style: italic;">daz</span>. The SNR threshold of 10 is used
+  to exclude estimates with possibly large errors in the range and
+  azimuth offsets.</p>
+
+  <p><strong>DESCRIPTION</strong> <em>af</em> calculates an
+  estimate of the along-track velocity of the radar platform using
+  cross correlation of images derived from different segments
+  ("looks") of the azimuth doppler spectrum. An azimuth shift
+  between these two images is proportional to a platform velocity
+  error. <span style="font-style: italic;">af</span> selects a set
+  of patches covering the entire SLC mage, generates the two looks,
+  and estimates a velocity error for each patch.</p>
+
+  <p>To use <span style="font-style: italic;">af,</span> first
+  process the range-compressed data using az_proc with the
+  effective velocity derived from the state vectors. After this,
+  apply <span style="font-style: italic;">af</span> and determine
+  an update for the effective velocity and reprocess the full frame
+  using <span style="font-style: italic;">az_proc</span>. Then
+  check the image focus by rerunning <span style=
+  "font-style: italic;">af</span>.&nbsp; Do not run <span style=
+  "font-style: italic;">af</span> multiple times before
+  reprocessing the image!</p>
+
+  <p>Each of the sub-aperture images is formed from a bandwidth
+  equal to 0.35 times the radar PRF. Typically the processing
+  bandwidth for an SLC is 0.8*PRF and hence the frequency
+  separation between looks is .45*PRF.&nbsp; The two looks are
+  obtained by filtering the image using an FIR bandpass
+  filter.&nbsp;&nbsp; After filtering the images are detected and
+  cross-correlated using a 2D FFT to measure the range and azimuth
+  offsets. A biquadratic interpolator determines the offset
+  correlation peak with sub-pixel accuracy.&nbsp;</p>
+
+  <p>Range offsets occur only if there is uncompensated range
+  migration in the processor. This can occur when the doppler
+  centroid is incorrect by some multiple of the PRF and termed a
+  <span style="font-style: italic;">doppler ambiguity
+  errror.</span>&nbsp;&nbsp; Azimuth offsets between the looks
+  indicate an error in the azimuth chirp rate. This error in chirp
+  rate is directly proportional to an error in the along-track
+  velocity.&nbsp; See the references: <span style=
+  "text-decoration: underline;">Synthetic Aperture Radar: Systems
+  and Signal Processing</span>,&nbsp; J. Curlander and R.
+  MacDonough, Wiley Interscience, 1991, Chapter 5 and&nbsp;
+  D<span style="text-decoration: underline;">igital Processing of
+  Synthetic Aperture Data,&nbsp; Algorithms and
+  Implemenation</span>, Ian Cumming and Frank Wong, Artech House,
+  2005, Chapter 13.</p>
+
+  <p>Low correlation and inaccurate offset measurement can occur if
+  the scene is devoid of contrast, such as over the open ocean or
+  on an ice sheet. A threshold for the SNR of the correlation
+  signal can be specified on the command line as the parameter
+  <u style="font-style: italic;">thres</u> and has a default value
+  of 10.&nbsp; The size of the SLC patches is specified by the
+  parameters <span style="font-style: italic;">rwin</span> and
+  <span style="font-style: italic;">azwin</span>, with the spacing
+  between patches by the parameters <span style=
+  "font-style: italic;">dr</span> and <span style=
+  "font-style: italic;">daz</span>.&nbsp; A recommended patch size
+  is 1024 range samples by 4096 azimuth lines.&nbsp; The
+  <span style="font-style: italic;">dr</span> and <span style=
+  "font-style: italic;">daz</span> parameters are set by default to
+  2*rwin and 2*azwin respectively resulting in approximately 6
+  estimates in a single ERS frame.</p>
+
+  <p>The program has the option to turn on or off the update of the
+  effective velocity parameter in the MSP <span style=
+  "font-style: italic;">PROC_par.</span> As a final check, it may
+  in some cases be useful to turn off the update. Similarly, the
+  user can select if the doppler centroid should be updated if
+  there is a large range shift between looks indicating a possible
+  ambiguity error in the doppler centroid.&nbsp;</p>
+
+  <p>Since multiple measurements are made over the scene,
+  <span style="font-style: italic;">af</span> is able to find areas
+  with good correlation. A fit of the autofocus derived velocity
+  with respect to azimuth and slant range is possible if the
+  <span style="font-style: italic;">a1_flg</span> and <span style=
+  "font-style: italic;">b0_flg</span> command line parameters are
+  set to 1. This may be useful when processing very long data
+  stips.&nbsp; By default,&nbsp; the effective velocity estimate is
+  the only estimated&nbsp; parameter.&nbsp; Note that the the
+  azimuth processor <span style=
+  "font-style: italic;">az_proc</span> takes into account earth
+  curvature in using the effective velocity parameter from the
+  <span style="font-style: italic;">PROC_par.</span> The polynomial
+  parameters a1 and b0 specify across-track and along-track
+  corrections to the effective velocity value calculated and used
+  by <span style="font-style: italic;">az_proc</span>.</p>
+
+  <p><strong>SEE ALSO</strong> <a href="MSP_users_guide.html">Users
+  Guide</a>, <a href="typedef_MSP.h.html">typedef_MSP.h</a>,
+  <a href="proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Sep-2010.
+</body>
+</html>

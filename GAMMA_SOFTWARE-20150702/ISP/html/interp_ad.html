@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: interp_ad</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>interp_ad</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/interp_ad.c">interp_ad.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>interp_ad</i> - Weighted interpolation of gaps in 2D data
+  using adaptive interpolati</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>interp_ad &lt;data_in&gt; &lt;data_out&gt;
+  &lt;width&gt; [r_max] [np_min] [np_max] [w_mode] [type]
+  [cp_data]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) 2D raster data with gaps</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>(output) data with gaps filled by interpolation</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum interpolation window radius (default(-):
+        16)</td>
+      </tr>
+
+      <tr>
+        <td>[np_min]</td>
+
+        <td>minimum number of points used for the interpolation
+        (default(-): 16)</td>
+      </tr>
+
+      <tr>
+        <td>[np_max]</td>
+
+        <td>maximum number of points used for the interpolation
+        (default(-): 16)</td>
+      </tr>
+
+      <tr>
+        <td>[w_mode]</td>
+
+        <td>weighting mode: 0:constant, 1: 1-(r/r_max),&nbsp; 2:
+        1-(r/r_max)**2,&nbsp; 3: exp(-2.*SQR(r/r_max))&nbsp;
+        (default(-): 1-(r/r_max))</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>input/output data format: 0:FCOMPLEX, 1:SCOMPLEX,
+        2:FLOAT, 3:INT, 4:SHORT (default(-): float)</td>
+      </tr>
+
+      <tr>
+        <td>[cp_data]</td>
+
+        <td>0: do not copy input data values to output 1: copy
+        input data values to output (default)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>interp_ad 01608_02109.unw 01608_02109.unw_fill 2456 16 8 16 2
+  2</tt></p>
+
+  <p>Missing values can be filled in a 2-D raster data file using
+  this program. In the example gaps in an unwrapped phase image are
+  filled using linear weighted interpolation. The command line
+  parameters specify that at least 8 points and at most 16 points
+  are required for the interpolation. The search region has a
+  radius of 16 pixels. The weights used in the interpolation are
+  <em>1-(r/r_max)**2</em>.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  Fills gaps in image data of various data formats using weighted
+  linear interpolation. The interpolation window varies in size
+  adaptively. The main application of <em>interp_ad</em> is in
+  filling missing values in spatially incomplete unwrapped phase
+  images. <a href="interp_ad.html">interp_ad&nbsp;</a>&nbsp; is
+  also used to to interpolate smoothed offset measurements for use
+  with program <a href=
+  "SLC_interp_map.html">SLC_interp_map</a>.<br></p>
+
+  <p>The data formats supported include: fcomplex, scomplex, float,
+  int, and short. Gaps in the input data are indicated by the
+  corresponding NULL value (0.0, 0, etc.).<br>
+  To fill in an identified gap available data near the gap are
+  sought and interpolated. The search for valid data values is
+  restricted to a maximum radius of <em>r_max</em> sample spacings.
+  A minimum number of valid points are required and a maximum
+  number of valid points are accepted for the interpolation. This
+  makes the effective interpolation window size adaptive .<br></p>
+
+  <p>The advantage of the adaptive window size is that larger gaps
+  can be filled (interpolated) using a large window, but at the
+  same time small gaps are filled using a small window, which
+  reduces the filtering effect of the interpolation.</p>
+
+  <p>The interpolation uses a weighted sum of the points in the
+  vicinity of the desired point weighted by a function of distance.
+  The user has the option to select a function that is uniform,
+  linear, inverse square, or inverse exponential. The weight is
+  related is a function of the ratio of the distance between the
+  center of the interpolation window and the search radius. If
+  there are less than the minimum required number of valid points
+  in the region defined by the sarch radius, the output value is
+  set to the NULL value.</p>
+
+  <p>The last parameter <em>cp_data</em> can be used to prevent
+  copying of the the input data to the output file. In this case,
+  the locally smoothed values are saved for the entire image. This
+  is advantageous for smoothing offset maps obtained using <a href=
+  "offset_pwr.html">offset_pwr</a> and&nbsp; <a href=
+  "offset_SLC.html">offset_SLC</a>, that usually have gaps.</p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="SLC_interp_map.html">SLC_interp_map,</a> <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>,&nbsp; <a href=
+  "offset_fit.html">offset_fit</a>, and <a href=
+  "OFF_par.html">OFF_par</a>.<br></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a>Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-May-2006 clw.
+</body>
+</html>

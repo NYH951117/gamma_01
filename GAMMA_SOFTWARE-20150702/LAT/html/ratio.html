@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: ratio</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ratio</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ratio.c">ratio.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ratio - Estimate ratio of image data values: d1/d2&nbsp; (float
+  data).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ratio &lt;d1&gt; &lt;d2&gt; &lt;rati&gt; &lt;width&gt;
+  [bx] [by] [wgt_flg]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;d1&gt;</td>
+
+        <td>(input) data file 1 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;d2&gt;</td>
+
+        <td>(input) data file 2 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ratio&gt;</td>
+
+        <td>(output) ratio: d1/d2&nbsp; (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row of the input image</td>
+      </tr>
+
+      <tr>
+        <td>[bx]</td>
+
+        <td>number of range samples to average before evaluating
+        ratio (default: 5)</td>
+      </tr>
+
+      <tr>
+        <td>[by]</td>
+
+        <td>number of azimuth lines to average before evaluating
+        ratio (default: bx)</td>
+      </tr>
+
+      <tr>
+        <td>[wgt_flg]</td>
+
+        <td>weighting flag<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: no weighting function applied
+        (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: linear weighting function<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2: Gaussian weighting
+        function</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ratio 19990915.mli 19991020.mli 19990915_19991020.ratio
+  2456 15 15 1</samp></p>
+
+  <p>In the selected example both images are averaged using a 15 x
+  15 pixels window before the ratio between the averaged images
+  19990915.mli/19991020.mli is calculated.&nbsp;</p>
+
+  <p><strong>DESCRIPTION</strong></p><span style=
+  "font-style: italic;">ratio</span> estimates the ratio between
+  two data files. In the case of radar images it is very important
+  to first sufficiently filter the individual images before
+  calculation of the ratio. This is due to radar speckle noise in
+  the backscatter data. The program ratio does this filtering using
+  an running average with user-defined filter size and optional
+  weighting function. The input and the output data are binary
+  files of type float.<br>
+  <br>
+  The size of the window used for the filtering and the weighting
+  function to apply may be specified. For weights_flag:0 no spatial
+  weighting function is applied to the data, i.e. all filter
+  coefficients are set to 1. For weights_flag=1 a linear triangular
+  weighting function is applied, i.e. the filter coefficients
+  decrease linearly with increasing distance to the center of the
+  filter window. For weights_flag=2, a Gaussian weighting function
+  is applied, i.e. the filter coefficients decrease with increasing
+  distance to the center of the filter window following a Gauss
+  function.<br>
+  The ratio of two radar backscatter images reflects the relative
+  change. Calculating the ratio and converting the result to dB
+  scale is equal to expressing both backscatter images in dB scale
+  and then taking the difference between the first and the second
+  image. The result may be converted to dB scale with the program
+  <a href="linear_to_dB.html">linear_to_dB</a>. Instead of the
+  built in running average filtering adaptive filtering may be
+  preferred using the program <a href="frost.html">frost</a>.
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "linear_to_dB.html">linear_to_dB</a>, <a href=
+  "frost.html">frost</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Feb-2015.</p>
+</body>
+</html>

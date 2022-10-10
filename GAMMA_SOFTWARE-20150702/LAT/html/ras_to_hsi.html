@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: ras_to_hsi</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ras_to_hsi</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ras_to_hsi.c"><i>ras_to_hsi.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  ras_to_hsi - Combine 3 raster (SUN or BMP) raster images into
+  hue/saturation/intensity (HSI) 24-bit composite raster image.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_to_hsi &lt;HUE&gt; &lt;SATURATION&gt;
+  &lt;INTENSITY&gt; &lt;ras_out&gt; [LR]
+  [color_table_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;HUE&gt;</td>
+
+        <td>input (8-bit) SUN or BMP format raster image to be used
+        for the HUE channel</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SATURATION&gt;</td>
+
+        <td>input (8-bit) SUN&nbsp; or BMP format raster image to
+        be used for the SATURATION channel</td>
+      </tr>
+
+      <tr>
+        <td>&lt;INTENSITY&gt;</td>
+
+        <td>input (8-bit) SUN&nbsp; or BMP format raster image to
+        be used forthe INTENSITY channel</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_out&gt;</td>
+
+        <td>output&nbsp; 24-bit SUN&nbsp; or BMP format raster
+        image</td>
+      </tr>
+
+      <tr>
+        <td>[LR]</td>
+
+        <td>image mirror flag:<br>
+        &nbsp;&nbsp;&nbsp; 1: normal (default)<br>
+        &nbsp;&nbsp; -1: mirror image<br></td>
+      </tr>
+
+      <tr>
+        <td>[color_table_flag]</td>
+
+        <td>color table flag<br>
+        &nbsp; 0: use (red+green+blue)/3 as value (default)<br>
+        &nbsp; 1: scale input values linearly to 255<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <code><samp>ras_to_hsi 19990421_19990422.unw.ras</samp>
+  19990421_19990422<samp>.cc.ras</samp>
+  19990421_19990422<samp>.pwr1.ras</samp>
+  19990421_19990422<samp>.unw_hsi.ras 1 0</samp></code></p>
+
+  <p>Combines the 3 input 8-bit SUN raster images into an HSI
+  24-bit&nbsp; Sun format raster image. It is assumed that the 3
+  input images are all 8-bit greyscale coded images.</p>
+
+  <p><samp>ras_to_hsi</samp>
+  <code>19990421_19990422</code><samp>.soil_moisture.bmp&nbsp;</samp><samp>unity.bmp</samp>
+  <code>19990421.mli</code><samp>.bmp</samp>
+  <code>19990421_19990422</code><samp>.soil_moisture.bmp 1
+  1</samp></p>
+
+  <p>Combines the soil moisture map (which may contain for example
+  just 5 levels of soil moisture) with the backscatter image. The
+  soil moisture information is color coded (i.e. used as hue
+  channel), the backscatter intensity is used as image brightness
+  (i.e. intensity channel). As saturation channel a file containing
+  just 1.0 values was used.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>ras_to_hsi</em> supports the visualization of data by
+  combination of 3 8-bit images in SUN raster or BMP format into a
+  single hue/saturation/intensity (HSI) image.This visualization
+  tool was mainly designed for images containing a grey scale
+  coding of one parameter. Images with both the coherence (as
+  color) and intensity (as brightness), or phase (as color) and the
+  intensity (as brightness) are not useful as inputs.The data
+  numbers (DN) values in the images are mapped through the color
+  table to RGB triplets. As an example, a black and white image
+  contains only the values 0 and 1. The color table values
+  associated are (0,0,0) and (255,255,255). With a selection of the
+  color_table_flag = 0 the two values are interpreted as 0 and 255,
+  resulting in almost the same color in the HSI image. With a
+  selection of the color_table_flag = 1 the two values are
+  interpreted as 0 and 1. The entity of occurring values, in this
+  case 2, is then homogeneously spread over the entire color wheel
+  values (0,255) resulting in the values 0 and 128 resulting in
+  complementary colors in the HSI image. Images appropriate as
+  input for <em>ras_to_hsi</em> may be generated using the programs
+  such as <em>ras_linear</em> and <em>ras_dB</em>.</p>
+
+  <p>The display of multiple channels is very important for the
+  interpretation of the results. A phase image or a soil moisture
+  map, for example, show little land features making the
+  orientation in such an image very difficult. In combination with
+  a backscatter or coherence image this problem is solved and the
+  phase or soil moisture information may be associated to surface
+  features.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ras_to_rgb.html">ras_to_rgb</a>, <a href=
+  "display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Sep-2011</p>
+</body>
+</html>

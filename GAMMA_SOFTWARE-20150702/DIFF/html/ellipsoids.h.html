@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw980702 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: ellipsoids.h</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>ellipsoids.h</h2>
+
+  <p>List of Ellipsoid Parameter Sets.</p>
+
+  <p>To display the current list contained in ellipsoids.h press
+  <a href="../src/ellipsoids.h">here.</a></p>
+
+  <p>Used by the programs <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "coord_trans.html">coord_trans</a> to support the Ellipsoid
+  Parameter definition.</p>
+
+  <p>Each line of the list contains the following parameters
+  (corresponding to the structure <code>ELLIPS</code> defined in
+  <a href="typedef_DIFF.h.html">typedef_DIFF.h</a>:<br></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><strong>Structure Elements</strong></td>
+
+      <td><strong>Example</strong></td>
+
+      <td><strong>Definition</strong></td>
+    </tr>
+
+    <tr>
+      <td>name[80]</td>
+
+      <td>Airy 1830</td>
+
+      <td>name of datum</td>
+    </tr>
+
+    <tr>
+      <td>ellips_num</td>
+
+      <td>1</td>
+
+      <td>ellipsoid number (line in the list)</td>
+    </tr>
+
+    <tr>
+      <td>ra</td>
+
+      <td>6377563.396</td>
+
+      <td>semi-major axis [m]</td>
+    </tr>
+
+    <tr>
+      <td>rec_f</td>
+
+      <td>299.3249646</td>
+
+      <td>reciprocal of flattening (1/f)</td>
+    </tr>
+  </table>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_users_guide.html">Users Guide</a>, <a href=
+  "datums.h.html">datums.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "coord_trans.html">coord_trans</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Jul-1998.</p>
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: mcf_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>mcf_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/mcf_pt.c">mcf_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  mcf_pt - Minimum Cost Flow phase unwrapping for point data stack
+  (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mcf_pt &lt;plist&gt; &lt;pmask&gt; &lt;pint&gt;
+  &lt;rec_num&gt; &lt;pwgt&gt; &lt;mask&gt; &lt;punw&gt; [rps]
+  [azps] [np_ref] [phref_flag] &lt;rlks&gt;
+  &lt;azlks&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pint&gt;</td>
+
+        <td>(input) point data stack of interferograms
+        (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number to process (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwgt&gt;</td>
+
+        <td>(input) point data stack of weight factors (float,
+        value range 0 -&gt; 1.0, enter - for uniform weight)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mask&gt;</td>
+
+        <td>(input) validity mask (SUN raster or BMP format, value
+        0 -&gt; pixel not used, enter - for no mask)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw&gt;</td>
+
+        <td>(output) point data stack of unwrapped phases
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>[rps]</td>
+
+        <td>range pixel spacing (default= 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[azps]</td>
+
+        <td>azimuth pixel spacing (default = 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[np_ref]</td>
+
+        <td>phase reference point number (beginning from 0,
+        default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[phref_flag]</td>
+
+        <td>flag to set phase value at phase reference point<br>
+        0: use initial value (default)<br>
+        1: set phase to 0.0 at initial point)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>mask file range looks relative to the point SLC
+        coordinates, required if mask specified</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>mask file azimuth looks relative to the point SLC
+        coordinates, required if mask specified</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>mcf_pt pt pmask3 pdiff4_sm 3 - diff4_sm_unw_mask.ras
+  pdiff4_sm_unw 20 20 125677 1 1 5</samp></p>
+
+  <p>Conducts MCF phase unwrapping for record 3 of the input stack
+  of interferograms. Point masks (pmask3), and a mask in raster
+  format (diff4_sm_unw_mask.ras) are considered. Uniform weights
+  are used. The distances used in the cost calculations consider
+  the indicated range and azimuth spacings. Point 125677 is used as
+  reference and the phase at this reference point is the initial
+  value is set to 0.0. The mask raster file has 1 range look and 5
+  azimuth looks relative to the SLC coordinates</p><samp>mcf_pt pt
+  pmask3 pdiff4_sm - - - pdiff4_sm_unw 20 20 125677 1</samp>
+
+  <p>Conducts MCF phase unwrapping for all records of the input
+  stack of interferograms. Point masks (pmask3) alone determines
+  which points are considered. Uniform weights are used. The
+  distances used in the cost calculations consider the indicated
+  range and azimuth spacings. Point 125677 is used as reference and
+  the phase at this reference point is the initial value is set to
+  0.0.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  mcf_pt conducts Minimum Cost flow (MCF) phase unwrapping for
+  interferograms in point data format. This can be done for a
+  single record of the stack of interferograms or all records.</p>
+
+  <p>The coordinates of the points considered are defined in the
+  point list. The optional mask file (in point data format)
+  indicates for each point if it is valid (1, i.e. considered) or
+  not valid (0, excluded). In addition, a mask can be provided in
+  2-D raster format. Points in areas of 0 value are excluded.</p>
+
+  <p>The input interferograms are provided as a point data stack.
+  This stack is of fcomplex type. The type of the output stack of
+  unwrapped interferograms is of float format.</p>
+
+  <p>Unwrapped phases are calculated for each valid point of the
+  point list. Valid points are points with a non-zero input
+  interferogram value, a non-zero point mask value (if provided),
+  and a non-zero raster mask value (if provided).</p>
+
+  <p>The unwrapping is conducted for the valid points of a single
+  record. Delaunay triangulation is used to generate an optimized
+  irregular triangular network of the points to be unwrapped.</p>
+
+  <p>The minimum cost flow (MCF) algorithm is used to minimize the
+  total cost associated with phase discontinuities in the scene
+  associated with noise, and layover. The user supplies weights
+  (usually related to the spatial coherence) used to calculate
+  where discontinuities (i.e. network flow) are preferred. Regions
+  of low weight have low costs for phase jumps whereas areas of
+  high cost tend to exclude such discontinuies in the unwrapped
+  phase.</p>
+
+  <p>Each triangle is a node in the network. If integration of the
+  phase around a triangle indicates a a positive phase disconituity
+  (residue) then the node is marked as contributing flow to the
+  network. A negative phase discontinuity at a node is marked as
+  accepting flow from the network. The cost of flow in an arc
+  connecting adjacent nodes is derived from the weight factors
+  provided. In full 2-D interferograms typically, the
+  interferometric correlation is used as weight file. For isolated
+  points this maz not be an appropriate measure. The weight may
+  also be set to a uniform factor.</p>
+
+  <p>The MCF algorithm solves for the flow in the arcs that
+  minimizes the net cost. The implemented MCF solution is based on
+  the successive shortest path (SSP) method.</p>
+
+  <p>The unwrapped phases are written to the output point data
+  stack of unwrapped phases at the indicated record number.</p>
+
+  <p>If a new output stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.</p>
+
+  <p>An alternative to the "spatial" unwrapping supported by mcf_pt
+  is the unwrapping through the baseline-time-regression analysis
+  as supported by def_mod_pt and multi_def_pt. The advantage of
+  mcf_pt is that it is also feasible for small number of
+  interferometric pairs. For very large stacks def_mod_pt and
+  multi_def_pt are preferred.</p>
+
+  <p>The reliability of mcf_pt is improved if differential
+  interferograms are unwrapped. The better the model subtracted the
+  more robust the unwrapping. In the case that the interferogram is
+  within PI/2 of the simulated phase (model) another alternative
+  for the unwrapping is unw_model_pt.</p>
+
+  <p>To display the complex or real valued input or output
+  interferograms contained in the point data stack the programs
+  pt2data or pt2d can be used to convert the point data to raster
+  data format which can then be displayed using conventional
+  display programs.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="unw_model_pt.html">unw_model_pt</a>, <a href=
+  "def_mod_pt.html">def_mod_pt</a>,<a href=
+  "def_mod_pt.html">multi_def_pt</a>, <a href=
+  "pt2data.html">pt2data</a>,<a href="pt2d.html">pt2d</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 18-Jun-2008.</p>
+</body>
+</html>

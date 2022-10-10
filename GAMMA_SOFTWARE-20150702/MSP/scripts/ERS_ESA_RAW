@@ -1,0 +1,29 @@
+#! /bin/csh -f
+if ($#argv < 2)then
+  echo "READ annotated ERS raw data tape"
+  echo "usage: ERS_ESA_RAW <orbit> <device>"
+  echo "       orbit   orbit number"
+  echo "       device  EXABYTE tape device name; example: /dev/rmt/0mn" 
+  exit
+endif
+
+set EXABYTE = $2
+setenv TAPE $EXABYTE
+
+echo "Reading ERS annotated raw data tape..."
+
+echo "Reading CEOS volume directory file: $1.vdf"
+dd bs=360 if=$EXABYTE of=$1.vdf
+
+echo "Reading CEOS leader file: $1.ldr"
+dd bs=16384 if=$EXABYTE of=$1.ldr
+
+echo "Reading ESA raw data file: $1.raw"
+dd bs=11644 if=$EXABYTE conv=sync of=$1.raw
+
+echo "Reading CEOS null volume directory file: $1.nvdf"
+dd bs=360 if=$EXABYTE of=$1.nvdf
+
+mt rew
+
+echo "ERS_ESA_RAW completed"

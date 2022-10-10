@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 1998 Gamma Remote Sensing --><!-- uw980812 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: temp_log_var</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>temp_log_var</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/temp_log_var.c">temp_log_var.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  temp_log_var - Estimate (logarithmic) mean and standard deviation
+  of co-registered data sets of format float.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>temp_log_var &lt;data_tab&gt; &lt;mean&gt; &lt;stdev&gt;
+  &lt;width&gt; [waz] [wr] [wt_flag] [zero_flag] [loffset]
+  [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_tab&gt;</td>
+
+        <td>(input) single column list of the names of input data
+        files (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mean&gt;</td>
+
+        <td>(output) temporal variability, standard deviation in
+        dB(float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;stdev&gt;</td>
+
+        <td>(output) temporal variability
+        (stdev/pow(mean,norm_pow)) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[waz]</td>
+
+        <td>spatial averaging filter width in azimuth pixels
+        (default = 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[wr]</td>
+
+        <td>spatial averaging filter width in range pixels (default
+        = 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[wt_flag]</td>
+
+        <td>weighting function flag (weighting function (0:uniform
+        (default) 1:linear 2:gaussian)</td>
+      </tr>
+
+      <tr>
+        <td>[zero_flag]</td>
+
+        <td>zero_flag (0: data value 0.0 interpreted as missing
+        data (default))</td>
+      </tr>
+
+      <tr>
+        <td>[loffset]</td>
+
+        <td>offset to starting line (default = 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to process (0:entire file
+        (default))</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>temp_log_var data_tab log_mean log_stdev 4912 9 9 1 0 0
+  500</samp></p>
+
+  <p>The <span style="font-style: italic;">data_tab</span> input
+  file is a single column with the names of the 5 input data
+  files:</p>14002.rmli&nbsp;<br>
+  14503.rmli&nbsp;<br>
+  15004.rmli<br>
+  15505.rmli<br>
+  16006.rmli<br>
+  <br>
+  Calculates the mean and standard deviation of the co-registered
+  multi-look intensity images, using logarithmic (dB) scale. For
+  the estimation of spatial means a 9x9 window with linearly
+  decreasing weighting function is used. Null values (0.0) are
+  interpreted as missing values. Only the first 500 lines are
+  processed.
+
+  <p><strong>DESCRIPTION</strong><br>
+  temp_log_var calculates the temporal mean and normalized standard
+  deviation of multi-temporal, co-registered SAR intensity images,
+  based on the spatially averaged image values in logarithmic (dB)
+  scale.</p>
+
+  <p>The basic equations used to estimate the temporal mean and
+  normalized standard deviation are:</p>
+
+  <p><img src="eq3.gif" alt="equation for lin-mean" align="middle"
+  border="1"></p>
+
+  <p><img src="eq4.gif" alt="equation for lin-stdev" align="middle"
+  border="1"></p>
+
+  <p>where:<br>
+  <i>&nbsp; j</i>= 1, ... ,<i>M</i>: file number<br>
+  <i>&nbsp; M</i>: number of input files<br>
+  <i>&nbsp; I<sub>j</sub></i>: Input intensity of image
+  <i>j</i><br>
+  <i>&nbsp; temp_lin_mean</i>: temporal mean (using linear
+  scale)<br>
+  <i>&nbsp; temp_lin_stdev</i>: temporal normalized standard
+  deviation (using linear scale)</p>
+
+  <p>For the estimation of the spatial averages of the input
+  intensity images a moving weighted averaging filter is used. The
+  user can select between different weighting functions and
+  indicate the filter window size in range and azimuth. The spatial
+  averaging uses the linear scale (absolute values, not dB values).
+  Logarithmic scale is only used for the temporal averaging and
+  standard deviation calculation.</p>
+
+  <p>The standard deviation of the local mean (estiamted by spatial
+  averaging) of the backscatter intensity expressed in logarithmic
+  (dB) scale is an useful measure for the temporal variability of
+  the backscattering. Null (0.0) values in the input file can
+  either be interpreted as missing data (by setting zero_flag = 0),
+  or as valid data values.</p>
+
+  <p>There is the option to process a sub-section of the input data
+  by indicating the ofset to the starting line (the default=0
+  indicates to start with the first data line) and number of lines
+  to process.</p>
+
+  <p>For M registered input files temp_log_var generates mean and
+  standard deviation output files. To produce M filtered output
+  images use the program <a href="temp_filt.html">temp_filt</a>. To
+  calculate the temporal averaging and standard deviation based on
+  the spacially averaged values in linear scale, use the program
+  <a href="temp_lin_var.html">temp_lin_var</a> In addition the
+  program <a href="lin_comb.html">lin_comb</a> has the facility to
+  calculate linear combinations of M registered input files.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="lin_comb.html">lin_comb</a>, <a href=
+  "temp_filt.html">temp_log_var</a>, <a href=
+  "temp_lin_var.html">temp_lin_var</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change7-Apr-2009.
+</body>
+</html>

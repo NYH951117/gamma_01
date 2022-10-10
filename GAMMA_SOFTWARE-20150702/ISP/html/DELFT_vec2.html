@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: DELFT_vec2</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>DELFT_vec2</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/DELFT_vec2.c">DELFT_vec2.c</a></i></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>SLC image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DELFT_dir&gt;</td>
+
+        <td>directory containing Delft orbit arclist and ODR files
+        for ERS-1, ERS-2 or ENVISAT)<br>
+        NOTE: enter . to specify the current directory</td>
+      </tr>
+
+      <tr>
+        <td>[nstate]</td>
+
+        <td>number of state vectors to generate (enter - for
+        default (&gt;= 15)<br></td>
+      </tr>
+
+      <tr>
+        <td>[interval]</td>
+
+        <td>time interval between state vectors in the ISP image
+        parameter file (s) (default: 10.0)</td>
+      </tr>
+
+      <tr>
+        <td>[ODR]</td>
+
+        <td>ODR file to use (include path) rather than ODR file
+        determined from the Delft orbit arclist</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>DELFT_vec2&nbsp;199960421.slc.par
+  /raid/Delft/ers1/eigen_gl04s</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>DELFT_vec2</em> uses ERS-1, ERS-2, and ENVISAT position state
+  vectors available by the Technical University of Delft to
+  generate position and velocity state vectors for use by the
+  MSP.&nbsp;Details on the Delft orbit data are available at the
+  web site <a href=
+  "http://www.deos.tudelft.nl/ers/precorbs">http://www.deos.tudelft.nl/ers/precorbs</a>.&nbsp;
+  The orbit position data from Delft is provided as binary Orbital
+  Data Record (ODR) files along with an arclist text file
+  specifying the start and stop times for each of the ODR files.
+  Recently these state vectors have been recomputed and the
+  improved orbit data are available from <a href=
+  "http://www.deos.tudelft.nl/AS/pieter/Local/ERS/index.html">http://www.deos.tudelft.nl/AS/pieter/Local/ERS/index.html.</a></p>
+
+  <p>The ISP image state vectors include both the position and
+  velocity. Since the ODR data provide only the platform position,
+  <em>DELFT_vec2</em> calculates the velocity vector for each state
+  vector in the ODR file. <em>DELFT_vec2</em> calculates the number
+  of state vectors required to cover the scene with sufficient
+  overlap of the scene start and end.. The default number of state
+  vectors is 7, though any value up to 64 can be specifiied on the
+  command line.&nbsp;</p>
+
+  <p>The time interval between the ODR state vectors is 60 sec.
+  &nbsp;<span style="font-style: italic;">DELFT_vec2</span>
+  resamples the state vector data to evenly spaced set of
+  vectors&nbsp; (default 10.0 sec interval) and writes the
+  interpolated state vectors into the ISP image parameter file.
+  &nbsp;The default time interval value should be at least 5 sec.
+  Furthermore there should be several state vectors both before and
+  after the data interval to obtain the most accurate interpolation
+  in the ISP and DIFF/GEO processing.</p>
+
+  <p>Each ODR data have best accuracy after a time specified in the
+  ODR header that is some hours after the time of the first state
+  vector in the ODR file. In cases where no ODR file is available
+  with the data at the highest accuracy, the user can specify a
+  specific ODR file to use on the command line. <span style=
+  "font-style: italic;">DELFT_vec2</span> checks to see if the ODR
+  file covers the time period of the SAR imge file.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ISP_file_formats.html">ISP Image Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Sep-2011.
+</body>
+</html>

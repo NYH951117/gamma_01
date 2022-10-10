@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: frame</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>frame</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/frame.c"><i>frame.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  frame - generates a frame with specified widtharound data. This
+  frame position may either be specified or be added to the
+  existing image contour.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>frame &lt;data_in&gt; &lt;data_out&gt; &lt;width&gt;
+  &lt;format_flag&gt; &lt;dx1&gt; &lt;dx2&gt; &lt;dy1&gt;
+  &lt;dy2&gt; [nflag] [null_value] [frame_value]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data_in&gt;</td>
+
+      <td>input data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;data_out&gt;</td>
+
+      <td>output data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>line width (samples/row)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;format_flag&gt;</td>
+
+      <td>input/output data format flag 0: float (REAL*4), 1:
+      fcomplex, 2: int (INTEGER*4), 3: short (INTEGER*2), 4:
+      unsigned char, 5: SUN raster or BMP format image (8, or 24
+      bit).</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dx1&gt;</td>
+
+      <td>left side frame width (pixels)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dx2&gt;</td>
+
+      <td>right side frame width (pixels)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dy1&gt;</td>
+
+      <td>top side frame width (lines)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dy2&gt;</td>
+
+      <td>bottom side frame width (lines)</td>
+    </tr>
+
+    <tr>
+      <td>[nflag]</td>
+
+      <td>flag indicating if already existing NULL values should be
+      added to frame width (default: 0=no, 1=yes)</td>
+    </tr>
+
+    <tr>
+      <td>[null_value]</td>
+
+      <td>NULL value (of input data, default = 0.0); for fcomplex
+      two values, and for SUN raster or BMP format images, 3 values
+      should be provided.</td>
+    </tr>
+
+    <tr>
+      <td>[frame_value]</td>
+
+      <td>Value to use for frame (default = 0.0), for fcomplex two
+      values, and for SUN raster or BMP format images, 3 values
+      should be provided.</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>frame 1352_1610.pwr1 1352_1610.pwr1_frame 2500 0 16 16 24
+  24 0 0.0 0.0</samp></p>
+
+  <p><samp>frame 1352_1610.rgb.ras 1352_1610.rgb.ras_frame 2500 5 4
+  4 6 6 1 0 0 0 255 255 255</samp></p>
+
+  <p>In the second example already existing black border plus the
+  specified additional pixels are set to white.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code frame.c in ./src. For compilation adjust and use
+  Makefile: Executable version frame in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  Frame allows to set the values around the borders on the four
+  sides of an image data set to a NULL value. This is of interest
+  in cases where the data along the edges are not well defined, for
+  example,as a consequence of filtering etc. Frame allows to remove
+  unwanted data along the image borders after processing . Borders
+  can either be defined by a fixed width, or as the width with NULL
+  values plus a fixed width. The second option is useful in the
+  case of geocoded data (with non-vertical/horizontal data
+  bounds).</p>
+
+  <p>The program can be applied to images with the following data
+  formats:</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>ID Number</td>
+
+      <td>Format</td>
+    </tr>
+
+    <tr>
+      <td>0</td>
+
+      <td>float (REAL*4)</td>
+    </tr>
+
+    <tr>
+      <td>1</td>
+
+      <td>fcomplex (pairs of REAL*4)</td>
+    </tr>
+
+    <tr>
+      <td>2</td>
+
+      <td>int (INTEGER*4)</td>
+    </tr>
+
+    <tr>
+      <td>3</td>
+
+      <td>short (INTEGER*2)</td>
+    </tr>
+
+    <tr>
+      <td>4</td>
+
+      <td>unsigned char (8-bit)</td>
+    </tr>
+
+    <tr>
+      <td>5</td>
+
+      <td>SUN raster or BMP format image files (8 or 24 bit
+      depth)</td>
+    </tr>
+  </table>
+
+  <p>In the case of fcomplex, SUN raster, or BMP format images,
+  where pixels are characterized by 2 and 3 values, respectively,
+  only one of the values has to be equal to the NULL value in order
+  to interpret the value as NULL This excludes data where one of
+  the channels has no data.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The frame width can be individually selected for each side of the
+  image.</p>
+
+  <p>The value assigned as NULL value (used for the frame) can be
+  defined by the user. In the case of SUN raster or BMP format
+  iamges, the border can be set to white (255 255 255), instead of
+  black (0 0 0).</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="LAT_file_formats.html">LAT_file_formats</a>, <a href=
+  "display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  none.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

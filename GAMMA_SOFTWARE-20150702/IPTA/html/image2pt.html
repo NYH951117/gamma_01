@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: image2pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>image2pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/image2pt.c">image2pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  image2pt - generate point list of all non-zero pixels of 2-D data
+  file</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>image2pt &lt;f_in&gt; &lt;width&gt; &lt;plist&gt;
+  &lt;rlks&gt; &lt;azlks&gt; &lt;type&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;f_in&gt;</td>
+
+      <td>(input) 2-D image data file (various types
+      supported)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row of f_in</td>
+    </tr>
+
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(output) point list of coordinates of all non-zero points
+      (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rlks&gt;</td>
+
+      <td>range looks of f_in relative to SLC reference (default -:
+      1)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;azlks&gt;</td>
+
+      <td>azimuth looks of f_in relative to SLC reference (default
+      -: 1))</td>
+    </tr>
+
+    <tr>
+      <td>&lt;type&gt;</td>
+
+      <td>data type (0:fcomplex 1:scomplex 2:float 3:int 4:short
+      5:byte 6:SUN/BMP raster)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>image2pt testsite.mask.ras 1000 testsite.plist 1 5
+  6</samp></p>
+
+  <p>Generates a point list of coordinates with a point for each
+  non-zero pixel of the input image (testsite.mask.ras). The input
+  image geometry corresponds to the SLC reference geometry
+  multi-looked in range and azimuth (indicated look numbers).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code image2pt.c in ./IPTA/src, executable version image2pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>image2pt supports the generation of point lists. A point list
+  of coordinates with a point for each non-zero pixel of the input
+  image (testsite.mask.ras) is created. The input image geometry
+  corresponds to the SLC reference geometry multi-looked in range
+  and azimuth (indicated look numbers).</p>
+
+  <p>When using a multi-looked image only one point is written to
+  the point list. This means that in areas of non-zero image values
+  the points in the list will have a range and azimuth sampling
+  correspoding to the range and azimuth look numbers.</p>
+
+  <p>image2pt supports for example the generation of point lists
+  which include all points for a specific area of the image, as may
+  be required for an in depth investigation. On the other hand
+  classification tools and interactive tools can be used to tune
+  the input data file to generate user-defined point lists.</p>
+
+  <p>Other programs to generate new point lists are mkgrid,
+  merge_pt, prox_pt, pwr_stat, and sp_stat.</p>
+
+  <p>Programs to validate existing point lists are qc_pt and
+  expand_pt.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="expand_pt.html">expand_pt</a>, <a href=
+  "merge_pt.html">merge_pt</a>, <a href="mkgrid.html">mkgrid</a>,
+  <a href="prox_pt.html">prox_pt</a>, <a href=
+  "pwr_stat.html">pwr_stat</a>, <a href="qc_pt.html">qc_pt</a>,
+  <a href="sp_stat.html">sp_stat</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

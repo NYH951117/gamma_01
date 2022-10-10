@@ -1,0 +1,329 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF Reference Manual: offset_list_fitm</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_list_fitm</h2><i>ANSI-C program: <a href=
+  "../src/offset_list_fitm.c">offset_list_fitm.c</a></i>
+
+  <p><i>offset_list_fitm</i> calculates fine registration
+  polynomials for geocoding from control point list.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <b><tt>offset_list_fitm &lt;cp_list&gt; &lt;DIFF_par&gt;
+  &lt;DEM_par&gt; [lookup_table] [lt_type] [type1] [type2]
+  [coffsets] [poly_order] [interact_flag} [trans_list]</tt></b><br>
+  &nbsp;</p>
+
+  <table border cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;cp_list&gt;</td>
+
+        <td>(input) list with registration control point (CP)
+        coordinates:<br>
+        CP_nr ref_col ref_row col2 row2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input/output) DIFF&amp;GEO parameter file (for output
+        of fine registration polynomial)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM/MAP parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[lookup_table]</td>
+
+        <td>(input) geocoding lookup table (required to convert
+        between map pixel numbers and SAR pixel numbers,
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>[lt_type]</td>
+
+        <td>lookup table type 1: map_to_rdc, 2: rdc_to_map
+        (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[type1]</td>
+
+        <td>reference coordinate type (default=1: SAR (col,row)
+        pixel numbers, 2: map (col,row) pixel numbers, 3: map
+        (East,North) coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>[type2]</td>
+
+        <td>image 2 coordinate type (default=1: SAR (col,row) pixel
+        numbers, 2: map (col,row) pixel numbers, 3: map
+        (East,North) coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>[coffsets]</td>
+
+        <td>(output) list of culled registration offsets (ASCII
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[poly_order]</td>
+
+        <td>polynomial order parameter (1,3,4,6, default: 4)</td>
+      </tr>
+
+      <tr>
+        <td>[interact_flag]</td>
+
+        <td>interactive culling of input data (1=YES, 0=NO,
+        default=NO)</td>
+      </tr>
+
+      <tr>
+        <td>[trans_list]</td>
+
+        <td>transformed coordinate list using model</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>offset_list_fitm i1_i2.cp_list i1_i2.diff_par
+  i1_i2.utm.dem_par i1_i2.utm_to_rdc 1 1 3</tt></p>
+
+  <p>Derives the 6-parameter regression polynomial based on the
+  registration control point list (with SAR (col,row) pixel numbers
+  indicated for the reference image 1 and UTM map coordinates
+  indicated for the image 2), to be used for the refinement of the
+  lookup table i1_i2.utm_to_rdc (which is lt_type=1 as it was
+  generated using <a href="gc_map.html">gc_map</a> or <a href=
+  "gc_map.html">gc_map_grd</a>).</p>
+
+  <p><tt>offset_list_fitm i1_i2.cp_list i1_i2.diff_par
+  i1_i2.utm.dem_par i1_i2.rdc_to_utm 2 1 3</tt></p>
+
+  <p>Derives the 6-parameter regression polynomial based on the
+  registration control point list (with SAR (col,row) pixel numbers
+  indicated for the reference image 1 and UTM map coordinates
+  indicated for the image 2), to be used for the refinement of the
+  lookup table i1_i2.rdc_to_utm (which is lt_type=2 as it was
+  generated using <a href="gc_insar.html">gc_insar</a>).</p>
+
+  <p><b>DESCRIPTION</b></p>
+
+  <p><i>offset_list_fitm</i> computes range and azimuth
+  registration offset polynomials from manually determined control
+  point coordinates which are provided in the cp_list ASCII file.
+  The cp_list contains for each control point the control point
+  number and the coordinates of the control point in the reference
+  image and in image 2. These coordinates can be provided as SAR
+  image pixel numbers, map pixel numbers, or map coordinates. An
+  example for such a cp_list with reference coordinates provided as
+  MAP image pixel numbers (col,row) and UTM map coordinates
+  (Easting, Northing) may look as follows:</p>
+
+  <table border cellpadding="7">
+    <tbody>
+      <tr>
+        <td>1</td>
+
+        <td>413</td>
+
+        <td>240</td>
+
+        <td>256250</td>
+
+        <td>824250</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+
+        <td>812</td>
+
+        <td>120</td>
+
+        <td>254345</td>
+
+        <td>825450</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+
+        <td>984</td>
+
+        <td>782</td>
+
+        <td>257255</td>
+
+        <td>825080</td>
+      </tr>
+
+      <tr>
+        <td>...</td>
+
+        <td>...</td>
+
+        <td>...</td>
+
+        <td>...</td>
+
+        <td>...</td>
+      </tr>
+
+      <tr>
+        <td>21</td>
+
+        <td>840</td>
+
+        <td>724</td>
+
+        <td>257650</td>
+
+        <td>829800</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Such an cp_list is manually edited, supported by visualization
+  tools to display the SAR image and other digital products.</p>
+
+  <p>It is recommended to first transform a SAR image to the map
+  geometry, using the initial geocoding lookup table, which makes
+  the geometries of a reference map and the SAR image very much
+  alike - allowing to much facilitate the control point
+  identification.</p>
+
+  <p>The lookup table type allows to distinguish between lookup
+  tables pointing from map to SAR geometry (such as *.utm_to_rdc,
+  as derived using <a href="gc_map.html">gc_map</a> or <a href=
+  "gc_map.html">gc_map_grd</a>) and lookup tables pointing in the
+  opposite direction (such as *.rdc_to_utm, as derived using
+  <a href="gc_insar.html">gc_insar</a>, i.e. when geocoding based
+  on INSAR derived heights). In the first case all coordinates are
+  transformed to SAR pixel numbers; the offset polynomials are in
+  the SAR image geometry (in SAR pixel number units). In the second
+  case all coordinates are transformed to map pixel numbers; the
+  offset polynomials are in the map geometry (in map pixel number
+  units).</p>
+
+  <p>Based on the control point coordinates the program determines
+  registration offsets. The offset data are culled before fitting
+  the offsets using the least-squares method. Points can be
+  rejected if offset values deviate more than an indicated multiple
+  of the standard deviation of the fit.</p>
+
+  <p>This offset estimates culling can be done either automatically
+  or interactively. The program queries the user in the interactive
+  mode for the SNR and maximum range and azimuth errors. Offset
+  data above the threshold (culled data) are then used to determine
+  a new global fit to the estimates. Typically in the first round
+  of culling, the points 3 or more standard deviations away from
+  the global fit are rejected.</p>
+
+  <p>The formats and definitions of the individual parameters in
+  the are ISP offset/processing parameter file are found in the ISP
+  and DIFF&amp;GEO type definition files <i>typedef_ISP.h</i>
+  <i>typedef_DIFF.h</i> and in the description of the DIFF/GEO
+  parameter file and in the description of the <a href=
+  "create_diff_par.html">create_diff_par</a>&nbsp; and <a href=
+  "create_diff_par.html">create_diff_par</a>&nbsp; programs. The
+  coordinates of the image section selected to be processed are
+  relative to the image 1.</p>
+
+  <p>The 6-parameter polynomials used to model the range and
+  azimuth offsets are of the type:<br>
+  <tt>range_offset = A0 + A1*range + A2*azimuth + A3*range*azimuth
+  + A4*range*range + A5*azimuth*azimuth</tt><br>
+  <tt>azimuth_offset = B0 + B1*range + B2*azimuth +
+  B3*range*azimuth</tt> <tt>+ B4*range*range +
+  B5*azimuth*azimuth</tt></p>
+
+  <p>The polynomial order can be indicated on the command line.
+  Valid orders are 1,3,4. The corresponding polynomials are (r:
+  range pixel number, az: azimuth pixel number):<br>
+  &nbsp;</p>
+
+  <table border cellpadding="7">
+    <tbody>
+      <tr>
+        <td>Order</td>
+
+        <td>Polynomial Model</td>
+      </tr>
+
+      <tr>
+        <td>1</td>
+
+        <td><tt>A0</tt></td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+
+        <td><tt>A0 + A1*r + A2*az</tt></td>
+      </tr>
+
+      <tr>
+        <td>4</td>
+
+        <td><tt>A0 + A1*r + A2*az + A3*r*az</tt></td>
+      </tr>
+
+      <tr>
+        <td>6</td>
+
+        <td><tt>A0 + A1*r + A2*az + A3*r*az + A4*r^2 +
+        A5*az^2</tt></td>
+      </tr>
+    </tbody>
+  </table><br>
+  In the case of noisy data the fit a polynomial with less terms
+  may lead to a more stable fit. In such a case the use of a 3
+  parameter polynomial may be preferred over the use of the 4 or 6
+  parameter models. A possible approach is to first derived a 3
+  parameter polynomial and to reject estimates which are far away
+  from this fit. Then in a second step the culled offsets (coffs)
+  are used to derive the least squares fit for the 4 or 6 parameter
+  polynomial.
+
+  <p><b>SEE ALSO</b><br>
+  <a href="init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_fitm.html">offset_fitm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,&nbsp; <a href=
+  "gc_map.html">gc_map</a>, <a href="gc_map.html">gc_map_grd</a>,
+  <a href="gc_insar.html">gc_insar</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 1-Jul-2015.
+</body>
+</html>

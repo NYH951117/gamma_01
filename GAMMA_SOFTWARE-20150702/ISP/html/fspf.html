@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: fspf</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>fspf</h2>
+
+  <p><i>ANSI-C program: <a href="../src/fspf.c">fspf.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>fspf</i> - Fast spatial filter for 2D data</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>fspf &lt;data_in&gt; &lt;data_out&gt; &lt;width&gt;
+  [type] [r_max] [spf_type] [MLI_par]</tt><br>
+  &nbsp;</samp></p>
+
+  <table cellspacing="1" border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input)&nbsp; image data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>(output) spatially filtered image data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type (enter - for default) :<br>
+        &nbsp; 0: fcomplex<br>
+        &nbsp; 1: scomplex<br>
+        &nbsp; 2: float (default)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum radius range samples (enter - for default:
+        16)</td>
+      </tr>
+
+      <tr>
+        <td>[spf_type]</td>
+
+        <td>spatial filter type:<br>
+        &nbsp;&nbsp;&nbsp; 0: uniform average (default for fcomplex
+        and scomplex data)<br>
+        &nbsp;&nbsp;&nbsp; 1: triangular weighted average: 1 -
+        (r/r_max)<br>
+        &nbsp;&nbsp;&nbsp; 2: quadratic weighted average: 1 -
+        (r/r_max)**2<br>
+        &nbsp;&nbsp;&nbsp; 3: Gaussian weighted average:
+        exp(-2.*(r**2/r_max**2))<br>
+        &nbsp;&nbsp;&nbsp; 4: linear least-squares (default for
+        float data)</td>
+      </tr>
+
+      <tr>
+        <td>[MLI_par]</td>
+
+        <td>MLI or SLC parameter file with the same number of looks
+        as the data that are being filtered</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><span style="font-weight: bold;">EXAMPLES</span><br>
+  <tt>fspf 19990915_19991020.unw 19990915_19991020.unw_spf 2456 0
+  100 3</tt></p>
+
+  <p>Conducts a fast spatial filtering on the unwrapped phase
+  values stored in the 2-D data set <tt>19990915_19991020.unw</tt>
+  (float). Pixels within a radius of 100 pixels are taken into
+  account for the the spatial filtering. The data type of the input
+  and output data set is float. The spatial filter type chosen is a
+  quadratic weighted average (1 - (r/r_max)**2).</p>
+
+  <p><tt>fspf 20130906_102231_20130906_102101.diff fspf2.diff 5598
+  0 16 0 20130906_102231u.mli.par</tt></p>
+
+  <p>Conducts a fast spatial filtering on the unwrapped phase
+  values stored in the 2-D data set
+  <tt>20130906_102231_20130906_102101.diff</tt> (fcomplex). Pixels
+  within a radius of 16 range pixels are taken into account for the
+  the spatial filtering. The sensor type is read from the MLI
+  parameter file that in this case is GPRI data. The spatial filter
+  type chosen is a uniform weight
+  average.</p><b>DESCRIPTION</b><br>
+
+  <p>In the estimation of orbital phase trends and long-wavelength
+  atmospheric path delays spatial filtering with large filter
+  windows is frequently applied in an ISP processing. Using
+  <a href="file:///home/cw/gamma_software/ISP/html/interp_ad.html">interp_ad</a>
+  or <a href=
+  "file:///home/cw/gamma_software/ISP/html/adf.html">adf</a> such
+  filtering is supported, but in the case of very large windows it
+  is very slow. The main objective of the program fspf is to
+  provide a useful alternative for such filtering which is
+  computationally much more efficient. <span style=
+  "font-style: italic;">fspf</span> can be used for both complex
+  valued point interferograms (e.g. <span style=
+  "font-style: italic;">diff</span> obtained after subtracting of
+  the simulated topographic phase, or re-wrapped residual phases
+  from a regression analysis) or float data (residual phases,
+  atmospheric path delays).</p>
+
+  <p>It is also possible to filter interferograms, both complex and
+  unwrapped phase from the Gamma Portable Radar Interferometer
+  (GPRI) by specifying an MLI_par. The MLI_par parameter file must
+  have the same geometry and number of looks as the interferogram
+  file or other data that are filtered using <span style=
+  "font-style: italic;">fspf</span>. The program determines the
+  sensor type from the MLI_par. If the data are from the GPRI, the
+  program resamples the data to a uniform rectangular grid,
+  different from the native polar format of the GPRI data. The data
+  are resampled to a rectangular grid, filtered, and then resampled
+  to the output grid taking into account the variation in azimuth
+  pixel spacing as a function of range that is characteristic of
+  polar scanned GPRI data.</p>
+
+  <p>In the case where the MLI_par is specified for SAR data (not
+  GPRI), the ground range pixel spacing is calculated from the
+  incidence angle at the center of the swath. The data are
+  resampled to a uniform grid in ground-range before filtering and
+  then resampled to the original grid after filtering. This is
+  useful for cases where the interferogram pixels are not close to
+  square with respect to azimuth and ground-range in the multi-look
+  image geometry.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="interp_ad.html">interp_ad,</a> <a href=
+  "adf.html">adf</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a>Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 1-Jul-2015 of/clw.
+</body>
+</html>

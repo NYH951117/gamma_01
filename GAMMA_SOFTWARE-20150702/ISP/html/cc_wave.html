@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: cc_wave</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>cc_wave</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/cc_wave.c"><i>cc_wave.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  cc_wave - coherence estimation from normalized interferogram and
+  co-registered intensity images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>cc_wave &lt;interf&gt; &lt;pwr1&gt; &lt;pwr2&gt;
+  &lt;corr&gt; &lt;width&gt; [bx] [by] [wgt_flag] [xmax] [ymin]
+  [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;interf&gt;</td>
+
+        <td>complex interferogram</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwr1&gt;</td>
+
+        <td>(input) intensity image of the first scene (or -)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwr2&gt;</td>
+
+        <td>(input) intensity image of the second scene (or -)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;corr &gt;</td>
+
+        <td>output correlation filename</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[bx]</td>
+
+        <td>coherence window size (columns) (default = 5.0)</td>
+      </tr>
+
+      <tr>
+        <td>[by]</td>
+
+        <td>coherence window size (rows) (default = 5.0)</td>
+      </tr>
+
+      <tr>
+        <td>[wgt_flag]</td>
+
+        <td>weighting function:<br>
+        &nbsp; 0: constant (default)<br>
+        &nbsp; 1: triangular<br>
+        &nbsp; 2: gaussian<br>
+        &nbsp; 3: none (phase only)</td>
+      </tr>
+
+      <tr>
+        <td>[xmin]</td>
+
+        <td>starting range pixel offset (default = <b>0</b>)</td>
+      </tr>
+
+      <tr>
+        <td>[xmax]</td>
+
+        <td>last range pixel offset (default = <b>width-1</b>)</td>
+      </tr>
+
+      <tr>
+        <td>[ymin]</td>
+
+        <td>starting azimuth row offset, relative to start (default
+        = <b>0</b>)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ymax&gt;</td>
+
+        <td>last azimuth row offset, relative to start of SLC-1
+        (default = <b>nlines-1</b>)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>&nbsp;NOTE: omitting pwr1 and pwr2 or setting wflg = 3 selects
+  a coherence estimate algorithm that only<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; uses the complex
+  interferogram values. In the case of wflg = 3, only the
+  interferogram phase is used.</p>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>cc_wave 1352_1610.flt 1352_1610.pwr1 1352_1610.pwr2
+  1352_1610.cc 2500 5.0 5.0 1<br>
+  cc_wave 1352_1610.flt - - 1352_1610.cc 2500 4.5 4.5 2</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>cc_wave</em> estimates the interferometric coherence from the
+  normalized interferogram and the co-registered intensity images.
+  Alternatively the complex-valued interferogram can be used
+  alone.</p>
+
+  <p>The second estimator is selcted when only a normalized complex
+  interferogram is provided. To ommit the intensity images pwr1 and
+  pwr2, place a - on the command line as a place holder. This
+  second type of estimator must be used for interferograms filtered
+  using non-linear filtering as with the adf program.</p>
+
+  <p>For both estimators a weighting function can be selected by
+  the user. Supported weighting functions are constant (0),
+  &nbsp;linear (1),&nbsp; gaussian (2) &nbsp;and none (3). If none
+  is selected,&nbsp; the complex interferogram amplitude is ignored
+  and only the interferometric phase is considered.</p>
+
+  <p>For constant weigting, the weight is 1.0 for pixels which are
+  located closer than half of the indicated distance of the center
+  pixel, and 0.0 for other pixels.<br>
+  Triangular weighting decreases linearly with increasing distance
+  from the center pixel. For the gaussian weighting function the
+  weights are calculated using a gauss function of the distance
+  from the center pixel. The advantage of using a weighting
+  function is an improved frequency response of the averaging
+  kernel. The estimated degree of coherence is written as output to
+  the file <b>&lt;corr&gt;</b>.</p>
+
+  <p>The correlation can be displayed using the&nbsp;<a href=
+  "ISP_display.html">discc</a> program and raster images produced
+  using <a href="ISP_display.html">rascc</a> in the DISP
+  package.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_display.html">discc</a>, <a href=
+  "ISP_display.html">rascc</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 1-Mar-2006.</p>
+</body>
+</html>

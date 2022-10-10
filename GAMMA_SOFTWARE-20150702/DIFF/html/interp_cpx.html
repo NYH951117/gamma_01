@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: interp_cpx</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>interp_cpx</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/interp_cpx.c">interp_cpx.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  interp_cpx - FCOMPLEX valued image resampling based on
+  biquadratic registration function using 2-D interpolation.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>interp_cpx &lt;image-2&gt; &lt;DIFF_par&gt;
+  &lt;resamp_image&gt; [loff] [nlines] [imode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;image2&gt;</td>
+
+      <td>(input)FCOMPLEX image to be resampled to geometry of
+      reference image-1 geometry</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DIFF_par&gt;</td>
+
+      <td>DIFF parameter file containing the registration
+      polynomial coefficients</td>
+    </tr>
+
+    <tr>
+      <td>&lt;resamp_image&gt;</td>
+
+      <td>(output) resampled image in the geometry of image-1</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>starting line in map (relative to start of image-1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to interpolate (enter - for all lines in
+      the file)</td>
+    </tr>
+
+    <tr>
+      <td>[imode]</td>
+
+      <td>interpolation mode:<br>
+      &nbsp; 0:&nbsp; nearest-neighbor<br>
+      &nbsp; 1:&nbsp; bicubic spline<br>
+      &nbsp; 2:&nbsp; 9-pt SINC (default)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>interp_cpx 19960421_19960422.diff
+  19960421_19960422.diff_par
+  19960421_19960422.rdiff</samp></p>Resamples complex valued data
+  set ( 19960421_19960422.diff) according to the biquadratic
+  registration polynomial function stored in the DIFF_par using 2-D
+  SINC interpolator.
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>interp_cpx</em> reads the FCOMPLEX valued input data file and
+  carries out a geometric transformation according to the the
+  biquadratic registration polynomial stored in the DIFF_par
+  parameter file. The user can select between nearest neighbor,
+  bicubic spline or SINC interpolation. SINC interpolation is the
+  default interpolation mode. The biquadratic registration function
+  is determined and stored in the DIFF parameter file using the
+  programs <a href="offset_pwrm.html">offset_pwrm</a> and <a href=
+  "offset_fitm.html">offset_fitm</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The starting line (relative to the reference geometry of image-1)
+  and the number of output lines (of output image) may be
+  selected.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "interp_cpx_nn.html">interp_cpx_nn</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "offset_fitm.html">offset_fitm</a> .</p>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 10-Aug-2008.</p>
+</body>
+</html>

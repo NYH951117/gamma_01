@@ -1,0 +1,8 @@
+#! /bin/csh -fe
+echo " "
+echo "+++ NOTICE: Program par_RSI has been replaced by par_RSI_ERS +++"
+echo "+++ NOTICE: Please replace all calls to par_RSI ++++++++++++++++"
+echo " "
+par_RSI_ERS $1 $2 
+echo ""
+

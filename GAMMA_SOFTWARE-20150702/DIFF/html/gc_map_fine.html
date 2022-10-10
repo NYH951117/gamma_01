@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>DIFF&amp;GEO Reference Manual: gc_map_fine</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing -->
+  <!-- uw020730 -->
+</head>
+
+<body>
+  <h1><font size="5"><u>Gamma DIFF&amp;GEO: Reference
+  Manual</u></font></h1>
+  <hr>
+
+  <h2>gc_map_fine</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/gc_map_fine.c"><i>gc_map_fine.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  gc_map_fine - Geocoding lookup table correction using offset
+  polynomials from the DIFF parameter file.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gc_map_fine &lt;gc_in&gt; &lt;width&gt; &lt;DIFF_par&gt;
+  &lt;gc_out&gt; [ref_flt]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;gc_in&gt;</td>
+
+      <td>(input) geocoding lookup table</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>(input) width of lookup table (samples)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DIFF_par&gt;</td>
+
+      <td>(input) DIFF/GEO parameter file containing fine
+      registration polynomial coefficients</td>
+    </tr>
+
+    <tr>
+      <td>&lt;gc_out&gt;</td>
+
+      <td>(output) (output) refined geocoding lookup table</td>
+    </tr>
+
+    <tr>
+      <td>[ref_flg]</td>
+
+      <td>offsets are relative to the reference image for offset
+      determination.<br>
+      0: actual SAR image reference,<br>
+      1: simulated image reference (default)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gc_map_fine 19960621.lt0 1422 19969621.diff_par
+  19960621.lt1</samp></p>
+
+  <p>Applies the fine registration function to the input lookup
+  table to create the refined output lookup table which
+  characterizes the refined geocoding transformation in a single
+  step. In this example the simulated SAR image is used as
+  reference.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <a href="gc_map_fine.html">gc_map_fine</a> applies the fine
+  registration function to the input lookup table to create the
+  refined output lookup table. This is done by addition of the fine
+  registration offsets to the lookup vectors. For geocoding and
+  differential interferometry using a simulated image for
+  correction, as default the simulated SAR image is the reference
+  image in the estimation of offsets. In the case where the user
+  has selected the SAR image as the reference, the reference image
+  option to the gc_map_fine command must set to 0.</p>
+
+  <p>The resulting complex valued geocoding lookup table describes
+  the complete geocoding transformation (including the fine
+  registration). For subsequent geocoding of data from SAR geometry
+  to map geometry or reverse mapping, this has the advantage that
+  the geocoding can be done in a single step. The use of a single
+  resampling operation in the geocoding improves the quality of the
+  geocoded products and increases the geocoding efficiency.</p>
+
+  <p>The initial geocoding lookup table can be derived based on a
+  DEM in map geometry and the SAR imaging geometry using the
+  program <a href="gc_map.html">gc_map</a> or <a href=
+  "gc_map.html">gc_map_grd</a>. The fine registration function
+  (bilinear polynomial for registration offsets) can be found using
+  the DIFF&amp;GEO image registration programs <a href=
+  "init_offsetm.html">init_offsetm</a> and <a href=
+  "offset_pwrm.html">offset_pwrm</a>. For the later use of the fine
+  registration function for the refinement of the lookup table the
+  default situation is that the simulated SAR image is used as the
+  reference geometry, i.e. the offsets of the actual SAR image
+  relative to the simulated SAR geometry are determined.</p>
+
+  <p>The refined geocoding lookup table is used by the programs
+  <a href="geocode.html">geocode</a> and <a href=
+  "geocode_back.html">geocode_back</a> for forward and backward
+  geocoding. Once the refined lookup table is determined the
+  initial lookup table should no longer be used.</p>
+
+  <p>The refined geocoding lookup table may be inverted using the
+  program <a href="gc_map_inversion.html">gc_map_inversion</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="gc_map.html">gc_map</a>, <a href=
+  "gc_map.html">gc_map_grd</a>, <a href="geocode.html">geocode</a>,
+  <a href="geocode_back.html">geocode_back</a>, <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "gc_map_inversion.html">gc_map_inversion</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Apr-2011.</p>
+</body>
+</html>

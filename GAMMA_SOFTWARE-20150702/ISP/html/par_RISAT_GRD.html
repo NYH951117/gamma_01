@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ISP Reference Manual: par_RISAT_GRD</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate MLI parameter and image files for RISAT-1 GRD and
+  MLI data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_RISAT_GRD.c">par_RISAT_GRD.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_RISAT_GRD - reads RISAT-1 data as provided by ISRO and
+  creates the ISP image parameter and GRD or MLI&nbsp; file in the
+  format used by GAMMA software</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_RISAT_MLI &lt;CEOS_leader&gt; &lt;BAND_META&gt;
+  &lt;GRD_par&gt; &lt;CEOS_image&gt; [GRD] [line_dir] [pix_dir]
+  [cal_flg] [KdB]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS SAR leader file (example: lea_01.001)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;BAND_META&gt;</td>
+
+        <td>(input) BAND_META.txt, additional RISAT system
+        parameters for the scene (format keywork=value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;GRD_par&gt;</td>
+
+        <td>(output) ISP GRD parameter file (example:
+        yyyymmdd.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_image&gt;</td>
+
+        <td>((input) CEOS GRD or MLI image file (example:
+        dat_01.001)</td>
+      </tr>
+
+      <tr>
+        <td>[GRD]</td>
+
+        <td>(output) GRD&nbsp; data with file and line headers
+        removed (enter - for none: example: YYYYMMDD.slc)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;line_dir&gt;<br></td>
+
+        <td style="vertical-align: top;">set output image line
+        direction (enter - for default)<br>
+        &nbsp;&nbsp; 0: used value derived from CEOS leader file
+        (default)<br>
+        &nbsp;&nbsp; 1: retain input data line direction<br>
+        &nbsp; -1: reverse input data line direction<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;pix_dir&gt;<br></td>
+
+        <td style="vertical-align: top;">set output pixel direction
+        (enter - for default)<br>
+        &nbsp;&nbsp;&nbsp; 0: used value derived from CEOS leader
+        file (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: retain input data pixel direction<br>
+        &nbsp;&nbsp; -1: reverse input data pixel
+        direction<br></td>
+      </tr>
+
+      <tr>
+        <td>[cal_flg]</td>
+
+        <td>&nbsp;calibration flag (enter - for default):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: do not apply radiometric
+        calibration<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: apply radiometric calibration
+        including KdB and incidence angle correction (default)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[KdB]<br></td>
+
+        <td style="vertical-align: top;">calibration constant (dB)
+        (enter - to use value in the CEOS leader)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES<br></strong><br>
+  <samp>par_RISAT_GRD lea_01.001 BAND_META.txt 20120722_RH.grd.par
+  dat_01.001 20120722_RH.grd</samp></p>
+
+  <p>Reads the&nbsp; CEOS leader file <span style=
+  "font-style: italic;">lea_01.001, BAND_META.txt</span>, and
+  <span style="font-style: italic;">dat_01.001</span> files and
+  generates the <span style=
+  "font-style: italic;">20120722_RH.grd.par</span>&nbsp; and
+  <span style="font-style: italic;">20120722_RH.grd</span> files.
+  Each polarization that is available for a particular scene has a
+  separate CEOS product. The program applies the calibration
+  constant contained in the <span style=
+  "font-style: italic;">BAND_META.txt</span> file to produce
+  radiometrically calibrated output data.<br></p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p>The RISAT-1 radar satellite was launched in April 2012 by ISRO
+  the Indian Space Research Organization&nbsp; <a href=
+  "http://www.isro.org/satellites/RISAT-1.aspx">http://www.isro.org/satellites/RISAT-1.aspx</a>
+  and produces data in the CEOS format similar to that produced by
+  RADARSAT-1, see &nbsp;<a href=
+  "http://wgiss.ceos.org/archive/archive.pdf/sardata.pdf">http://wgiss.ceos.org/archive/archive.pdf/sardata.pdf</a>
+  and&nbsp;<a href=
+  "http://gs.mdacorporation.com/includes/documents/R1_PROD_SPEC.pdf">http://gs.mdacorporation.com/includes/documents/R1_PROD_SPEC.pdf</a>.
+  The CEOS product contains a leader file that contains metadata
+  for the image including time, image dimensions, instrument
+  parameters and state vectors. For the RISAT CEOS products this
+  file has the name lea_01.001&nbsp; The CEOS product also contains
+  the image data file dat_01.001. The image data file contains a
+  single header record that is 16252 bytes long containing
+  information on the data image type and image dimensions. Each
+  line of the image has a 192 byte record header with information
+  on the time and slant range parameters for that line.&nbsp; The
+  data are pairs of short integers (16 bits) that are the real and
+  imaginary parts of a complex number. These data are in
+  little-endian byte order. Each image line has a fixed number of
+  range samples.<br></p>
+
+  <p>The program <span style=
+  "font-style: italic;">par_RISAT_GRD</span> generates the GAMMA
+  format MLI/GRD parameter file and reformats the data to
+  big-endian byte order.&nbsp; The user should not have to change
+  the <span style="font-style: italic;">line_dir</span> and
+  <span style="font-style: italic;">pix_dir</span> command line
+  parameters from their default values.&nbsp; Data are produced in
+  natural radar order such that the line direction and pixel
+  direction are both increasing.</p><strong>SEE ALSO</strong><br>
+
+  <p><a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,</p>
+  <hr>
+  <a href="copyright.html">?</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2013.<br>
+  <a href="charles_werner.html">CW</a>, last change 16-Jul-2013.
+</body>
+</html>

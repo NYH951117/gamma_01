@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw961216 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: average_filter</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>average_filter</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/average_filter.c">average_filter.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  average_filter - Running average filter for files of type
+  float.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>average_filter &lt;input_data&gt; &lt;output_data&gt;
+  &lt;width&gt; &lt;bx&gt; [by] [weights_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;input_data&gt;</td>
+
+      <td>input data (file of type float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;output_data&gt;</td>
+
+      <td>output data (file of type float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>&lt;bx&gt;</td>
+
+      <td>filter size in x direction (number of cols)</td>
+    </tr>
+
+    <tr>
+      <td>[by]</td>
+
+      <td>filter size in y direction (number of
+      rows)(default=bx)</td>
+    </tr>
+
+    <tr>
+      <td>[weights_flag]</td>
+
+      <td>flag for weighting function selection(default=0)<br>
+      0: no weighting function applied<br>
+      1: linearly decrease weighting function<br>
+      2: gaussian weighting function</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>average_filter 1352_1610.pwr1 1352_1610.pwr1_average 2500 4
+  1</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code average_filter.c in ./src. For compilation adjust and
+  use Makefile: Executable version average_filter in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  average_filter filters the input data of type float with a
+  running average filter. The size of the window used for the
+  filtering and the weighting function to apply may be selected.
+  For weights_flag=0 no weighting function is applied, i.e. all
+  filter coefficients are set to 1. For weights_flag=1 a linear
+  weighting function is applied, i.e. the filter coefficients
+  decrease linearly with inclreasing distance to the center of the
+  filter window. For weights_flag=2 a Gaussian weighting function
+  is applied, i.e. the filter coefficients decrease with
+  inclreasing distance to the center of the filter window following
+  a Gauss function.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Userdefined filter window size and weighting function.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "frost.html">frost</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

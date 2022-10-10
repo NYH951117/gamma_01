@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux/x86 (vers 1 September 2005), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: CS_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>CS_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/CS_proc.c">CS_proc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  CS_proc - Generates MSP sensor parameter and processing
+  parameter files for COSMO-SkyMed StripMap HImage single-polarized SAR data. This program
+  also reformats the raw SAR signal data to be compatible with the MSP.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>CS_proc
+  &lt;HDF5&gt; &lt;SAR_par&gt;
+  &lt;PROC_par&gt; &lt;raw_out&gt; [loff][nl] </code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;HDF5&gt;</td>
+
+      <td>(input) SCS data file in HDF5 format</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SAR_par&gt;</td>
+
+      <td>(output) MSP SAR sensor parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par&gt;</td>
+
+      <td>(output) MSP processing parameter file (example p<orbit>.HH.slc.par)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_out&gt;</td>
+
+      <td>(output) I/Q raw data (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>number of lines offset from start of raw data file (enter - for default: 0)</td>
+    </tr>
+    
+    <tr>
+      <td>[nl]</td>
+
+      <td> number of lines to extract (enter - for default: to end of input raw data)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>CS_proc CSKS_RAW_HI_20090523.h5 CS20090523.sar_par p20090523.par 20090523.raw 0 </samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  CS_proc reads the COSMO-SkyMed raw data file(s) in HDF5 format.
+  Besides the raw binary data the HDF5 contains all required auxiliary
+  data, which is extracted to the sensor parameter file and to the processing
+  parameter file.
+  This differs from the approach with ERS and JERS.
+  For ERS and JERS there are a set of existing
+  sensor parameter files in the $MSP_HOME/sensors directory.</p>
+
+  <p>State vectors contained in the HDF5 file are written as earth-fixed coordinates used
+  for geolocation of the final products. Other parameters such as
+  the starting slant range, date, and timing information are also extracted.
+  The program also reformats the COSMO-SkyMed raw data samples
+  to fcomplex binary raw data (this is different from
+  most other supported sensors, where offset binary raw data is output).
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html#file%20a">SAR raw data
+  (&lt;orbit&gt;.raw)</a>.</p>
+  <hr align="left">
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "othmar_frey.html">OF</a>, last change 27-Feb-2012.</p>
+</body>
+</html>

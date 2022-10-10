@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: mk_tab</title>
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+</head>
+
+<body>
+  <h1>Gamma DIFF Reference Manual: mk_kml</h1>
+  <hr>
+
+  <h2>mk_kml</h2>
+
+  <p><i>Perl Script: <a href=
+  "../scripts/mk_kml">mk_kml</a><br></i></p>
+
+  <p><strong>NAME</strong><br>
+  mk_kml -&nbsp; Generate a Google Earth kml file for an JPEG, PNG,
+  or BMP format image in geographic (lat/lon) EQA
+  projection<br></p>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  mk_kml &lt;DEM_par&gt; &lt;image&gt;
+  &lt;kml&gt;</b></code><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>&nbsp;(input) DEM parameter file with image
+        dimensions<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;image&gt;</td>
+
+        <td>(input) image in geometry described by DEM_par (JPEG,
+        PNG, BMP format)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;kml&gt;</td>
+
+        <td>(output) kml format output file<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4><strong>EXAMPLE<br></strong></h4><code><big style=
+  "font-family: monospace;"><font color="#FF00FF">mk_kml
+  hector_eqa_seg.dem_par 19990915_19991020_eqa.adf.diff.jpg
+  hector.kml<br></font></big><big style=
+  "font-family: monospace;"><font color=
+  "#FF00FF"><br></font></big></code> Generates a kml file
+  compatible with Google earth to display the image
+  <code><big style="font-family: monospace;"><font color=
+  "#FF00FF"><span style=
+  "color: blue;">19990915_19991020_eqa.adf.diff.jpg</span>.<br></font></big></code>The
+  image geometry is given by the <span style=
+  "color: blue;">hector_eqa_seg.dem_par <span style=
+  "color: black;">file.</span></span><br>
+
+  <p></p>
+
+  <h4><strong>DESCRIPTION</strong></h4>
+
+  <p>This script extracts the DEM parameters from the DEM parameter
+  file and writes them into an kml file using xml syntax. If other
+  functions are required the script can be modified to
+  support.&nbsp; When specifying the kml file to google earth the
+  complete path must be specified to be correctly read:<br></p>
+
+  <p><code style="color: fuchsia;">googleearth
+  /media/d1/ERS/Hector_Mine_20110523/geo/hector.kml</code><br></p>
+
+  <p>The kml file, image and the DEM parameter file should be
+  colocated in the same directory.<br></p><a href=
+  "mk_diff_2d,html"></a>
+  <hr>
+  Copyright for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011. <a href=
+  "charles_werner.html">CW</a>,<br>
+  last change 7-Jun-2011<br>
+  <br>
+</body>
+</html>

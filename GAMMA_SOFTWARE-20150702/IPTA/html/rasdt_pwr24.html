@@ -1,0 +1,197 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: rasdt_pwr24</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>rasdt_pwr24</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/rasdt_pwr24.c">rasdt_pwr24.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  rasdt_pwr24 - generate 24-bit SUN/BMP raster file of float
+  parameter (e.g. deformation) + intensity image</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>rasdt_pwr24 &lt;data&gt; &lt;pwr&gt; &lt;width&gt;
+  [start_data] [start_pwr] [nlines] [pixavr] [pixavaz] [cycle]
+  [scale] [exp] [LR] [rasf] [cc] [start_cc] [cc_min]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data&gt;</td>
+
+      <td>(input) real valued image (float, e.g. deformation rate,
+      terrain height)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr&gt;</td>
+
+      <td>(input) intensity image (enter - for none, (float))</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row of data and pwr</td>
+    </tr>
+
+    <tr>
+      <td>[start_data]</td>
+
+      <td>starting line of data (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[start_pwr]</td>
+
+      <td>starting line of pwr (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to display (default=0: to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[pixavr]</td>
+
+      <td>number of pixels to average in range (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[pixavaz]</td>
+
+      <td>number of pixels to average in azimuth (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[cycle]</td>
+
+      <td>data value per color cycle (default = 0.002)</td>
+    </tr>
+
+    <tr>
+      <td>[scale]</td>
+
+      <td>pwr display scale factor (default=1.)</td>
+    </tr>
+
+    <tr>
+      <td>[exp]</td>
+
+      <td>pwr display exponent (default=.35)</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping flag, (default=1: normal, -1: mirror
+      image)</td>
+    </tr>
+
+    <tr>
+      <td>[rasf]</td>
+
+      <td>(output) 24-bit rasterfile (enter - for default=*.ras:
+      SUN raster format, *.bmp: BMP format)</td>
+    </tr>
+
+    <tr>
+      <td>[cc]</td>
+
+      <td>display threshold data file (float, e.g.
+      correlation)</td>
+    </tr>
+
+    <tr>
+      <td>[start_cc]</td>
+
+      <td>starting line of cc data file (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[cc_min]</td>
+
+      <td>pixels with cc values below cc_min are displayed using
+      greyscale (default=.2)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>rasdt_pwr24 testsite.def testsite.rmli 1000 1 1 0 1 1 0.01
+  1. .35 -1 08256_08757.def.ras</samp></p>
+
+  <p>Generates an 24-bit SUN rasterfile of the real valued
+  deformation (in m/year) rates using the backscatter intensity
+  image for the image brightness and a colors with a cycle
+  corresponding to 1 cm/year for the deformation.</p>
+
+  <p><samp>rasdt_pwr24 testsite.hgt testsite.rmli 1000 1 1 0 1 1
+  100. 1. .35 -1 08256_08757.def.ras</samp></p>
+
+  <p>Generates an 24-bit SUN rasterfile of the real valued height
+  (in meters) using the backscatter intensity image for the image
+  brightness and a colors with a cycle corresponding to 100 m for
+  the heights.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code rasdt_pwr24.c in ./IPTA/src, executable version
+  rasdt_pwr24 in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  rasdt_pwr24 supports the generation of a 24-bit SUN/BMP raster
+  file image of a real valued image displayed in color and the
+  image brightness corresponding to a backscatter intensity
+  image.</p>
+
+  <p>In the frame of an IPTA investigation the use of a 24-bit
+  SUN/BMP raster file may be an advantage due to the higher
+  visibility of fine details in the color (deformation rate,
+  height, ...) and intensity information.</p>
+
+  <p>For areas of low coherence (below the indicated threshold),
+  the color is suppressed and the corresponding intensity is
+  displayed in grey. This avoids the high "color noise" of low
+  coherence areas.</p>
+
+  <p>If a minus - is specified for the intensity image, then the
+  background image will be 0 where the input data is 0, otherwise a
+  constant intensity image is generated of the parameter.</p>
+
+  <p>Optionally, a sub-section of the entire image, multi-looking
+  in range and azimuth direction, or a left/right flipping can be
+  indicated.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 15-Nov-2006.</p>
+</body>
+</html>

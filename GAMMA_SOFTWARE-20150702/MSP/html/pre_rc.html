@@ -1,0 +1,338 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Reference Manual: pre_rc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>pre_rc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pre_rc.c">pre_rc.c</a></i></p>
+
+  <p><strong>NAME</strong><em>pre_rc</em> - Prefilter, decimation
+  and range compression of complex IQ SAR raw data</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code>pre_rc &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;raw_data&gt;
+  &lt;rc_data&gt; [prefilt_dec] [loff] [nl] [nr_samp [kaiser]
+  [filt_lm] [nr_ext] [fr_ext] [pre_ext] [post_ext] [RFI_filt]
+  [RFI_thres] [fc_offset] [win_bw]<br></code></p>
+
+  <table style="width: 1086px; height: 693px;" border="1"
+  cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) MSP SAR Sensor Parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP Processing Parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;raw_data&gt;</td>
+
+        <td>(input) uncompressed raw SAR signal data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rc_data&gt;</td>
+
+        <td>(output) prefiltered range compressed data file</td>
+      </tr>
+
+      <tr>
+        <td>[prefilt_dec]</td>
+
+        <td>prefilter decimation factor (default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (enter - for default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines filter/range compress (enter - for
+        default from PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[nr_samp]</td>
+
+        <td>number of range samples (enter - for default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[kaiser]</td>
+
+        <td>range chirp Kaiser window parameter beta (enter -&nbsp;
+        for default: 2.120)</td>
+      </tr>
+
+      <tr>
+        <td>[filt_lm]</td>
+
+        <td>filter length multiplier (enter - for default filt_lm:
+        8)</td>
+      </tr>
+
+      <tr>
+        <td>[nr_ext];</td>
+
+        <td>near range swath extension in samples (default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[fr_ext]</td>
+
+        <td>near range swath extension in samples (default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pre_ext]<br></td>
+
+        <td style="vertical-align: top;">pre-azimuth data extension
+        in echoes&nbsp; (enter - for default from
+        PROC_par)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[post_ext]<br></td>
+
+        <td style="vertical-align: top;">post-azimuth data
+        extension in echoes (enter - for default from
+        PROC_par)<br></td>
+      </tr>
+
+      <tr>
+        <td>[RFI_filt]</td>
+
+        <td>RFI suppression filtering (enter - for default):<br>
+        &nbsp; 0: OFF (default)<br>
+        &nbsp; 1: ON</td>
+      </tr>
+
+      <tr>
+        <td>[RFI_thres]</td>
+
+        <td>RFI detection threshold, nominal range 1.1--&gt;1.5
+        (enter -&nbsp; for default: 1.5)</td>
+      </tr>
+
+      <tr>
+        <td>[fc_offset]</td>
+
+        <td>offset of the center of&nbsp; the chirp window as a
+        fraction of the chirp bandwidth, range -0.5 to 0.5 (enter -
+        for default: 0.0)</td>
+      </tr>
+
+      <tr>
+        <td>[win_bw]</td>
+
+        <td>chirp window bandwidth as a fraction of chirp
+        bandwidth, range: 0.0 to 1.0 (enter - for default:
+        1.0)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><samp><br></samp></p>
+
+  <p><samp>pre_rc ERS2_ESA.par p19960421.slc.par 19960421.raw
+  19960421.rc&nbsp;<br></samp></p>
+
+  <p>range compress ERS data using default chirp parameters, presum
+  factor is 1, kaiser window&nbsp; parameter is 2.120.</p>
+
+  <p><code>pre_rc raw/ERS2_ESA.par raw/p19990915.slc.par
+  raw/19990915.fix /tmp/19990915.rc3 - - - - - - - - - - 0 - -0.25
+  .5</code><br>
+  <br>
+  Range compress ERS data setting the chirp center frequency offs
+  .25*chirp_bandwidth relative to the carrier frequency for
+  split-band analysis. The bandwidth of the filter is set to 1/2 of
+  the chirp bandwidth.&nbsp;</p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  This program reads input raw SAR data and applies a matched
+  filter to the data in range (range compression). This step
+  recovers the full range resolution inherent in the range chirp
+  bandwidth by compressing all the energy distributed over the
+  chirp duration into as narrow a time window as possible
+  consistent with window function weighting used in processing. In
+  this implementation the range chirp is weighted by a Kaiser
+  Bessel window to supress range sidelobes.</p>
+
+  <p>This program has the option to perform decimation in azimuth
+  (pre-filtering) by applying a bandpass filter followed by
+  sub-sampling. This is useful for survey mode processing to
+  generate a "quick-look" image and for processing of airborne data
+  where oversampling has occurred. Any integer decimation factor
+  can be specified, but typical values are between 2 and 32. The
+  filter is implemented with as a time-domain FIR filter. The
+  number of taps in the finite impulse response filter determines
+  how closely the azimuth filter approximates an ideal response.
+  Since the Doppler centroid varies in the cross-track direction,
+  somewhat better results may be obtained by range compressing the
+  entire data set followed by applying the azimuth bandpass filter
+  and decimation rather than filtering prior to range compression.
+  The program <a href="prefilt.html">prefilt</a> performs azimuth
+  filtering and decimation on the range compressed data set.</p>
+
+  <p><em>pre_rc</em> has the capability to extend the processed
+  image swath beyond the region of full resolution. The nominal
+  number of samples in the range compressed data is the number of
+  echo samples processed minus the number of samples in the range
+  chirp. Outside of the nominal full resolution swath are two
+  bands, one in the near range and the other in the far range. Both
+  of these bands are as wide as the range chirp width in samples.
+  Across these bands the resolution degrades linearly starting at
+  the full resolution and going to zero. These regions also fade in
+  intensity proportional to the loss in resolution due to the
+  decreasing number of echo samples for these image pixels. The
+  user can specify the swath extension for both the near and far
+  range in the processing parameter file or via the command line
+  parameters <em>nr_ext</em> and <em>fr_ext</em> .</p>
+
+  <p><em>pre_rc</em> has the ability to insert blank data lines at
+  the start and end of the range-compressed file to permit azimuth
+  aperture extension.&nbsp; If azimuth aperture extension is
+  applied, there will be gradual loss of resolution and amplitude
+  in azimuth at the image edges. Typically extension by 1/3 the
+  synthetic aperture (3000 lines for PALSAR, 600 lines for
+  ERS)&nbsp; works works quite well without significant loss of
+  resolution or amplitude. The extension is expressed as a number
+  of echoes for the parameters <span style=
+  "font-style: italic;">pre_ext</span> and <span style=
+  "font-style: italic;">post_ext</span>.</p>
+
+  <p><em>pre_rc</em> has the option for radio-frequency
+  interference filtering. This is generally not required for C-Band
+  sensors, but L-Band sensors (PALSAR) can greatly benefit for some
+  scenes.&nbsp; The theoretical chirp spectrum&nbsp; is calculated
+  and used as a model to detect RFI. Notch filtering is applied to
+  those frequency channels where the ratio of the power spectrum
+  relative to the nominal chirp spectrum exceeds the threshold
+  specified by the <span style=
+  "font-style: italic;">RFI_thres</span> command line parameter. As
+  a greater fraction of the of the spectrum is notched out, the
+  range sidelobes of bright targets increases.</p>
+
+  <p>It is also possible with <span style=
+  "font-style: italic;">pre_rc</span> to generate a range
+  compressed image using only a portion of the range-chirp
+  bandwidth.&nbsp; Two parameters (<span style=
+  "font-style: italic;">fc_offset</span> and <span style=
+  "font-style: italic;">win_bw</span>) have been added to the
+  command line that control the bandwidth and frequency offset of a
+  time-domain window applied to the chirp waveform samples.&nbsp;
+  Given a chirp duration <span style=
+  "font-style: italic;">T</span>, the number of samples in the
+  chirp is given by <span style="font-style: italic;">fs*T</span>
+  where fs is the ADC sampling rate of the system. In the case of
+  ERS, the ADC sampling rate is 18.96247 MHz and the pulse duration
+  is 37.12 microseconds. Consequently the number of samples in the
+  chirp waveform is 704.&nbsp; The nominal chirp bandwidth
+  <span style="font-style: italic;">BW</span> is 15.55 MHz. Because
+  the transmitter waveform is a linear FM chirp, a time domain
+  filter of the chirp acts like a bandpass filter in the frequency
+  domain. The <span style="font-style: italic;">fc_offset</span>
+  parameter specifies the offset of the chirp filter window as a
+  fraction of the chirp bandwidth and can vary in the range from
+  -0.5 to +0.5.&nbsp; This is translated to a number of samples in
+  the chirp using the FM slope of the chirp waveform <span style=
+  "font-style: italic;">beta = BW/T</span>.&nbsp; An <span style=
+  "font-style: italic;">fc_offset</span> of 0.25 is equivalent to
+  approximately <span style="font-style: italic;">.25 *</span>
+  <span style="font-style: italic;"><span style=
+  "font-style: italic;">fs *</span> BW/beta</span> =&nbsp; 176
+  samples.&nbsp; Similarly the width of the window applied to the
+  chirp can be specified by the <span style=
+  "font-style: italic;">win_bw</span> parameter as a fraction of
+  the chirp bandwidth:</p>
+
+  <p>To offset the center frequency of the chirp by 1/4 of the
+  chirp bandwidth&nbsp; set the value of the <span style=
+  "font-style: italic;">fc_offset</span> command line
+  parameter&nbsp; to 0.25. To specify that the subband has a
+  bandwidth equal to 3/8 the chirp bandwidth, set the value of
+  <span style="font-style: italic;">win_bw</span> to
+  0.375:<span style="font-family: monospace;"><br></span></p>
+
+  <p><code>pre_rc raw/ERS2_ESA.par raw/p19990915.slc.par
+  raw/19990915.fix /tmp/19990915_sb1.rc 1 - - - - - - - - - 0
+  -&nbsp; 0.25 .375 &nbsp;&nbsp; #upper range chirp subband<br>
+  pre_rc raw/ERS2_ESA.par raw/p19990915.slc.par raw/19990915.fix
+  /tmp/19990915_sb2.rc 1 - - - - - - - - - 0 - -0.25 .375
+  &nbsp;&nbsp; #lower range chirp subband</code></p>
+
+  <p>when the chirp window parameters are specified, pre_rc
+  displays additional information about the chirp window on the
+  screen:</p>
+
+  <p><code>*** Chirp Window Bandpass Filter ***<br>
+  chirp frequency offset relative to carrier frequency as fraction
+  of the chirp bandwidth: 0.250&nbsp;&nbsp; offset (Hz):
+  3.887500e+06<br>
+  chirp filter window bandwidth as a fraction of the chirp
+  bandwidth: 0.375&nbsp; bandwidth (Hz): 5.831250e+06<br>
+  chirp ADC sampling frequency (Hz): 1.896247e+07<br>
+  chirp bandwidth (Hz): 1.555000e+07<br>
+  chirp window width (samples): 263.958<br>
+  chirp length (samples): 704&nbsp;&nbsp; 703.887<br>
+  chirp window offset (samples): 175.972<br>
+  chirp window start and end indices: 396&nbsp; 660<br></code></p>
+
+  <p>The range spectrum of the range compressed data or SLC can
+  then be displayed using the program <a href=
+  "../../DISP/html/DISP_reference_manual.html">dismph_fft</a> as
+  shown below:</p><img alt="" src="range_subband2.jpg"><br>
+
+  <p>This type of range sub-band processing may be useful in
+  detection of ionospheric phase shifts. See:</p>
+
+  <p><cite>Rosen, P, S. Hensley, and C.Chen, "Measurement and
+  Mitigation of the Ionosphere in L-band Interferometric SAR Data,"
+  presented at IEEE Radar Conference, Pasadena, CA, pp. 1459-1463,
+  2010.</cite></p>
+
+  <p><strong>SEE ALSO</strong> <a href="MSP_users_guide.html">Users
+  Guide</a>, <a href="typedef_MSP.h.html">typedef_MSP.h</a>,
+  <a href="sar_par.html">Sensor parameter file</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "prefilt.html">prefilt</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-May-2014.
+</body>
+</html>

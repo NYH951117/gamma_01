@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: dis_data</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>disp_prt</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/disp_prt.c">disp_prt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  disp_prt - generate point displacement histories in text
+  format</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>disp_prt &lt;plist&gt; &lt;pmask&gt; &lt;plist_txt&gt;
+  &lt;pSLC_par&gt; &lt;itab&gt; &lt;pmap&gt; &lt;phgt&gt;
+  &lt;pdef&gt; &lt;psigma&gt; &lt;pdisp&gt; &lt;items&gt;
+  &lt;output&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values ( set to - to
+        accept all points)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;plist_txt&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) text list of
+        points to print out (enter -: all points)<br>
+        consists of a single column list of point indices to print
+        out values<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 pINT_rec
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmap&gt;</td>
+
+        <td>(input) point positions in map proj. coord. (easting,
+        northing or lat,lon) (enter - for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(input) (input) point data stack of height (m,
+        float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;pdef&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) point data stack
+        of linear deformation rate (m/year, float)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;psigma&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) point data stack
+        of phase standard deviation from fit (float)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;pmap&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) point positions in
+        map proj. coord. (easting, northing or lat,lon) (enter -
+        for none) (float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdisp&gt;</td>
+
+        <td>(input) displacement (m) for each point and each layer
+        in the stack (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;item_list&gt;</td>
+
+        <td>(output) column heading information (text)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;disp_tab&gt;</td>
+
+        <td>(output) displacement time series output
+        (text)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p>disp_prt pt_utm.coord&nbsp; pmsk2 -&nbsp; pSLC_par itab&nbsp;
+  pt_utm &nbsp; phgt3&nbsp; pdef3&nbsp; psigma2&nbsp;
+  pdisp_los3&nbsp; item_list&nbsp; disp_los3.txt<br></p>
+
+  <p>Generates a text file containing the deformation history of
+  all the points that have not been masked out by pmsk2.<br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code disp_prt.c in ./IPTA/src, executable version disp_prt
+  in ./IPTA/bin. The <samp>xmgrace</samp> program, part of the
+  grace software package must be installed.<br></p>
+
+  <p><strong>DESCRIPTION<br></strong>The program disp_prt.c is used
+  to generate&nbsp; text file containing the deformation histories
+  of points generated using the IPTA software. The output
+  file&nbsp; consists of rows containing the displacement&nbsp;
+  time series for a single point. The different columns pertain to
+  the parameters as shown below in Table 1. An example displacement
+  time series file is shown in Table 2. where only the first 12
+  values of the displacement time series are shown for a small
+  subset of the points. Addtional data displayed on the line
+  include the x and y pixel locations of the point as specified in
+  the point list, the point number, the geographic coordinates in
+  easting and northing (lat/lon in the case of no map projection),
+  altitude, linear deformation rate, phase standard deviation in
+  the IPTA phase regression.&nbsp; For each column containing the
+  displacement information, the items_list specifieds the date,
+  Julian day (JD) and the number of days relative to the reference
+  frame.<br></p>
+
+  <table cellpadding="2" cellspacing="2" border="1" style=
+  "width: 50%; text-align: left; margin-left: auto; margin-right: auto;">
+  <tbody>
+      <tr>
+        <td style="vertical-align: top;"><code>&nbsp;&nbsp; 1&nbsp;
+        point number<br>
+        &nbsp;&nbsp; 2&nbsp; x pixel<br>
+        &nbsp;&nbsp; 3&nbsp; y pixel<br>
+        &nbsp;&nbsp; 4&nbsp; east coordinate<br>
+        &nbsp;&nbsp; 5&nbsp; north coordinate<br>
+        &nbsp;&nbsp; 6&nbsp; height (m)<br>
+        &nbsp;&nbsp; 7&nbsp; deformation rate (m/y)<br>
+        &nbsp;&nbsp; 8&nbsp; phase sigma (rad)<br>
+        &nbsp;&nbsp; 9&nbsp; displacement date: 1997&nbsp; 5
+        31&nbsp; JD: 2450600&nbsp; delta: -700<br>
+        &nbsp; 10&nbsp; displacement date: 1997&nbsp; 7&nbsp;
+        5&nbsp; JD: 2450635&nbsp; delta: -665<br>
+        &nbsp; 11&nbsp; displacement date: 1997&nbsp; 8&nbsp;
+        9&nbsp; JD: 2450670&nbsp; delta: -630<br>
+        &nbsp; 12&nbsp; displacement date: 1997&nbsp; 9 13&nbsp;
+        JD: 2450705&nbsp; delta: -595<br>
+        &nbsp; 13&nbsp; displacement date: 1997 10 18&nbsp; JD:
+        2450740&nbsp; delta: -560<br>
+        &nbsp; 14&nbsp; displacement date: 1997 11 22&nbsp; JD:
+        2450775&nbsp; delta: -525<br>
+        &nbsp; 15&nbsp; displacement date: 1997 12 27&nbsp; JD:
+        2450810&nbsp; delta: -490<br>
+        &nbsp; 16&nbsp; displacement date: 1998&nbsp; 1 31&nbsp;
+        JD: 2450845&nbsp; delta: -455<br>
+        &nbsp; 17&nbsp; displacement date: 1998&nbsp; 3&nbsp;
+        7&nbsp; JD: 2450880&nbsp; delta: -420<br>
+        &nbsp; 18&nbsp; displacement date: 1998&nbsp; 4 11&nbsp;
+        JD: 2450915&nbsp; delta: -385<br>
+        &nbsp; 19&nbsp; displacement date: 1998&nbsp; 5 16&nbsp;
+        JD: 2450950&nbsp; delta: -350<br>
+        &nbsp; 20&nbsp; displacement date: 1998&nbsp; 6 20&nbsp;
+        JD: 2450985&nbsp; delta: -315<br>
+        &nbsp; 21&nbsp; displacement date: 1998&nbsp; 7 25&nbsp;
+        JD: 2451020&nbsp; delta: -280<br>
+        &nbsp; 22&nbsp; displacement date: 1998 10&nbsp; 3&nbsp;
+        JD: 2451090&nbsp; delta: -210<br>
+        &nbsp; 23&nbsp; displacement date: 1998 11&nbsp; 7&nbsp;
+        JD: 2451125&nbsp; delta: -175<br>
+        &nbsp; 24&nbsp; displacement date: 1998 12 12&nbsp; JD:
+        2451160&nbsp; delta: -140<br>
+        &nbsp; 25&nbsp; displacement date: 1999&nbsp; 1 16&nbsp;
+        JD: 2451195&nbsp; delta: -105<br>
+        &nbsp; 26&nbsp; displacement date: 1999&nbsp; 5&nbsp;
+        1&nbsp; JD: 2451300&nbsp; delta: 0<br>
+        &nbsp; 27&nbsp; displacement date: 1999&nbsp; 6&nbsp;
+        5&nbsp; JD: 2451335&nbsp; delta: 35<br>
+        &nbsp; 28&nbsp; displacement date: 1999&nbsp; 7 10&nbsp;
+        JD: 2451370&nbsp; delta: 70<br>
+        &nbsp; 29&nbsp; displacement date: 1999&nbsp; 8 14&nbsp;
+        JD: 2451405&nbsp; delta: 105<br>
+        &nbsp; 31&nbsp; displacement date: 1999 11 27&nbsp; JD:
+        2451510&nbsp; delta: 210<br>
+        &nbsp; 32&nbsp; displacement date: 2000&nbsp; 2&nbsp;
+        5&nbsp; JD: 2451580&nbsp; delta: 280<br>
+        &nbsp; 33&nbsp; displacement date: 2000&nbsp; 3 11&nbsp;
+        JD: 2451615&nbsp; delta: 315<br>
+        &nbsp; 34&nbsp; displacement date: 2000&nbsp; 4 15&nbsp;
+        JD: 2451650&nbsp; delta: 350<br>
+        &nbsp; 35&nbsp; displacement date: 2000&nbsp; 9&nbsp;
+        2&nbsp; JD: 2451790&nbsp; delta: 490<br>
+        &nbsp; 36&nbsp; displacement date: 2000 12 16&nbsp; JD:
+        2451895&nbsp; delta: 595<br>
+        <br></code></td>
+      </tr>
+    </tbody>
+  </table><big><br style="font-weight: bold;"></big>
+
+  <div style="text-align: center;">
+    <big><span style="font-weight: bold;">Table 1</span></big><br>
+
+    <div style="text-align: left;">
+      <br>
+    </div>
+  </div><br>
+
+  <table style=
+  "width: 100%; text-align: left; margin-left: 0px; margin-right: 0px;"
+  border="1" cellspacing="2" cellpadding="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;">
+          <pre>
+ <samp><small><small><small> <big style=
+"font-family: monospace;"><big>329204    1224    2366   379995.625  3739557.250     27.765  2.1140e-03  0.2716 -0.0037 -0.0032  0.0011 -0.0009  0.0011 -0.0020 -0.0039 -0.0028 -0.0072 -0.0078 -0.0099</big></big></small></small></small></samp><br style="font-family: monospace;"><samp style="font-family: monospace;"><small><small><small><big><big>  329205    1222    2366   379978.562  3739561.000     27.426  1.7759e-03  0.2633 -0.0031 -0.0026  0.0018 -0.0002  0.0014 -0.0014 -0.0033 -0.0024 -0.0070 -0.0075 -0.0096</big></big></small></small></small></samp><br style="font-family: monospace;"><samp style="font-family: monospace;"><small><small><small><big><big>  329206    1222    2366   379974.062  3739562.000     20.848  1.7780e-03  0.2460 -0.0029 -0.0024  0.0018 -0.0002  0.0011 -0.0013 -0.0031 -0.0024 -0.0070 -0.0078 -0.0096</big></big></small></small></small></samp><br style="font-family: monospace;"><samp style="font-family: monospace;"><small><small><small><big><big>  329207     902    2296   376779.438  3740257.000     42.905  1.5613e-03  0.2833 -0.0023 -0.0020 -0.0010 -0.0010 -0.0030 -0.0020 -0.0023 -0.0030 -0.0024 -0.0038 -0.0031</big></big></small></small></small></samp><br style="font-family: monospace;"><samp style="font-family: monospace;"><small><small><small><big><big>  329208     891    2294   376668.969  3740281.000     45.206  3.1304e-03  0.2871 -0.0050 -0.0054 -0.0031 -0.0034 -0.0051 -0.0042 -0.0054 -0.0047 -0.0040 -0.0054 -0.0047</big></big></small></small></small></samp><br style="font-family: monospace;"><samp style="font-family: monospace;"><small><small><small><big><big>  329209     876    2290   376511.000  3740315.250     44.945  3.8924e-03  0.3086 -0.0070 -0.0063 -0.0046 -0.0062 -0.0059 -0.0039 -0.0052 -0.0052 -0.0042 -0.0054 -0.0060</big></big></small></small></small></samp><br style="font-family: monospace;"><samp style="font-family: monospace;"><small><small><small><big><big>  329210     875    2290   376507.000  3740316.250     37.552  1.9631e-03  0.3049 -0.0033 -0.0027 -0.0013 -0.0031 -0.0028 -0.0011 -0.0025 -0.0027 -0.0020 -0.0033 -0.0042</big></big></small></small></small></samp>
+</pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p style="text-align: center;"><big><span style=
+  "font-weight: bold;">Table 2<br></span></big></p>
+
+  <p><strong><br>
+  OPTIONS</strong><br>
+  The user can specify a text list of point numbers to generate
+  output displacement time series. If&nbsp; a - is entered for the
+  plist_txt file, then all points not masked out by pmask will be
+  processed.<br></p>
+
+  <p><strong>SEE ALSO</strong></p>
+
+  <p><a style="font-weight: normal;" href=
+  "vu_disp.html"></a><a href=
+  "file:///C:/cygwin/home/cw/gamma_031219/IPTA_v1.1/html/dispmap.html">dispmap_pt,</a>
+  <strong><a style="font-weight: normal;" href=
+  "vu_disp.html">vu_disp</a></strong><a href=
+  "dispmap.html"></a><br></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 30-Jan-2004.</p>
+</body>
+</html>

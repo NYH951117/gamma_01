@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: ras_triangle</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>ras_triangle</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ras_triangle.c">ras_triangle.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ras_triangle - draw Delauney triangulation net on a SUN/BMP
+  raster image</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_triangle &lt;plist&gt; &lt;pmask&gt; &lt;ras_in&gt;
+  &lt;ras_out&gt; [rlks] [azlks] [r] [g] [b] [zflg]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(input) point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar, set to -
+      to accept all points)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_in&gt;</td>
+
+      <td>(input) SUN/BMP raster file (8 or 24 bits/sample, enter -
+      for none)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>(output) SUN/BMP raster file with marked point list
+      locations</td>
+    </tr>
+
+    <tr>
+      <td>[rlks]</td>
+
+      <td>range looks of raster image relative to point coordinates
+      (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[azlks]</td>
+
+      <td>azimuth looks of raster image relative to point
+      coordinates (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[r]</td>
+
+      <td>cross color value red (0 --&gt; 255, default: 255)</td>
+    </tr>
+
+    <tr>
+      <td>[g]</td>
+
+      <td>cross color value green (0 --&gt; 255, default: 255)</td>
+    </tr>
+
+    <tr>
+      <td>[b]</td>
+
+      <td>cross color value blue (0 --&gt; 255, default: 0)</td>
+    </tr>
+
+    <tr>
+      <td>[zflg]</td>
+
+      <td>zero out flag (default=0: retain values, 1: set all
+      values to 0 except lines)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ras_triangle testsite.plist - testsite.pwr.ras
+  testsite.pt.ras 1 5</samp></p>
+
+  <p>Generates an 8-bit SUN rasterfile which corresponds to the
+  input 8-bit SUN rasterfile testsite.pwr.ras except for yellow
+  lines added to indicate the Delauney triangulation net for the
+  coordinates of all points of the point list.</p>
+
+  <p><samp>ras_triangle testsite.plist testsite.pmask
+  testsite.rgb.ras testsite.pt.ras 1 5 255 0 0</samp></p>
+
+  <p>Generates an 24-bit SUN rasterfile which corresponds to the
+  input 24-bit SUN rasterfile testsite.rgb.ras except for red lines
+  added to indicate the Delauney triangulation net for the
+  coordinates of all valid points of the point list.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code ras_triangle.c in ./IPTA/src, executable version
+  ras_triangle in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are valid
+  (1) or not valid (0).</p>
+
+  <p>ras_triangle supports the generation of a SUN/BMP raster file
+  image which shows the Delauney triangulation net for the
+  coordinates of all valid points of the point list in the spatial
+  context. As background the input SUN/BMP raster file is used.</p>
+
+  <p>For the input SUN/BMP raster file (in the "normal" 2-D raster
+  image format) can either be in the SLC geometry used for the
+  point list coordinates or in a multi-looked geometry (relative to
+  the same SLC geometry, without offsets in range and azimuth).</p>
+
+  <p>The input SUN/BMP raster file can be 8-bit or 24-bit per
+  sample. The output SUN/BMP raster file will be of the same type
+  as the input SUN/BMP raster file. In the 8-bit case the color of
+  the crosses is added to the color table. In the case of a full
+  color table pixels belonging to color 255 are moved to color 254
+  and color 255 is used for the crosses.</p>
+
+  <p>For the crosses the color (red, green, blue values) and the
+  size (in pixels) can be indicated.</p>
+
+  <p>Instead of using the input SUN/BMP raster file as background
+  only the lines of the Delauney Triangulation net can be written
+  to the output rasterfile if the zero out flag is set to 1.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

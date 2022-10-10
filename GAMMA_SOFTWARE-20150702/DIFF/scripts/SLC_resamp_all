@@ -1,0 +1,442 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+use List::Util qw(first max maxstr min minstr reduce shuffle sum);
+
+$npoly = 6;	#number offset polynomial terms
+$novr = 2;
+$rlks = "-";
+$azlks = "-";
+$rpos = "-";
+$azpos = "-";
+$rflag = 0;
+$cflag = 1;		#copy initial offsets into the offset polynomial when running init_offset
+$thres0 = 7.0;		#threshold for accepting initial offset
+$init_offsets = "- -";
+$rpatch = 128;		#SLC range patch size
+$azpatch = 256;	        #SLC azimuth patch size
+$thres_slc = 7.0;	#SNR threshold to accept and an SLC offset measurement
+
+GetOptions ('i=s' =>\$init_offsets,'n=i' => \$npoly,'t=f' => \$thres_slc);
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v4.4 10-Apr-2015 clw ***
+*** Resample a set of SLCs to a common reference SLC using a polynomial offset model ***
+
+usage: $0 <SLC_tab> <ref_SLC> <ref_par> <rslc_dir> <RSLC_tab> <mode> [rflag] [rlks] [azlks] [rpos] [azpos] [npoly] [n_ovr]
+
+    SLC_tab   (input) two column list of SLC filenames and SLC parameter filenames (including paths) (ascii)
+    ref_SLC   (input) reference SLC (including path)
+    ref_par   (input) ISP image parameter file of the reference SLC (including path)
+    rslc_dir  directory to receive the resampled SLCs and ISP image parameter files   
+    RSLC_tab  (output) RSLC_tab file for the resampled SLC files
+    mode      processing mode:
+                0: create offset parameter files    
+                1: estimate initial range and azimuth offsets using orbit state vectors
+                2: measure initial range and azimuth offsets using SLC images
+                3: estimate range and azimuth offset models using correlation of image intensities
+	        4: resample SLC images using offset models
+    rflag     flag for interactive refinement of the resampled SLC:
+                0: resample and measure residual range and azimuth offsets  (no interation, default)
+		1: interactively improve range and azimuth offset polynomials then measure residual offsets
+    rlks      number of range looks for initial offset estimation  (enter - for default)
+    azlks     number of azimuth looks for initial offset estimation  (enter - for default)
+    rpos      center of patch in range (samples) (enter - for default: image center)
+    azpos     center of patch in azimuth (lines) (enter - for default: image center)
+    npoly     number of terms in the polynomial fit (1,3,4,6 default: $npoly)
+    n_ovr     SLC oversampling factor for offset estimation (integer 2**N (1,2,4) default: $novr)
+
+    -i "roff azoff"  (option) initial values for range and azimuth offsets, example: "-10 30", default: "- -"
+    -t thres         (option) SNR theshold to accept an SLC offset measurement (default: $thres_slc) 
+    -n npoly         (option) number of terms in the range and azimuth offset polynomials (npoly: 1,3,4,6) (default: $npoly)
+   
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of SLC images and parameter files does not exist: $ARGV[0]\n\n";
+print "SLC_tab table of SLC images and parameter files: $ARGV[0]\n"; 
+
+$ref_slc1 = $ARGV[1];
+$ref_par1 = $ARGV[2];
+$rslc_dir = $ARGV[3];
+$rslc_tab = $ARGV[4];
+
+if($#ARGV >= 6){$rflag = $ARGV[6];}
+if($#ARGV >= 7){$rlks = $ARGV[7];}
+if($#ARGV >= 8){$azlks = $ARGV[8];}
+if($#ARGV >= 9){$rpos = $ARGV[9];}
+if($#ARGV >= 10){$azpos = $ARGV[10];}
+if($#ARGV >= 11){$npoly = $ARGV[11];}
+if($#ARGV >= 12){$novr = $ARGV[12];}
+
+$mode = $ARGV[5];
+($mode == 0 || $mode == 1 || $mode == 2 || $mode == 3 || $mode == 4) or die "ERROR $0: invalid mode for script: $mode\n\n";
+($npoly == 1 || $npoly == 3 || $npoly == 4 || $npoly == 6) or die "ERROR $0: invalid value for $npoly: $npoly\n\n";
+($novr == 1 || $novr == 2 || $novr == 4) or die "ERROR $0: invalid value for SLC oversampling factor: $novr\n\n";
+
+-e $ref_slc1 or die "\nERROR $0: reference SLC does not exist: $ref_slc1\n";
+-e $ref_par1 or die "\nERROR $0: ISP image parameter file of the reference SLC does not exist: $ref_par1\n";
+
+unless (-d $rslc_dir){
+  print "creating resampled SLC directory: $rslc_dir\n";
+  (mkdir $rslc_dir) or die "ERROR $0: non-zero exit status, could not create SLC data directory $rslc_dir\n";
+}
+
+$log = "$rslc_dir/SLC_resamp_all"."_$mode".".log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;
+    
+$time = localtime;
+print LOG "$0 @ARGV\n\n";
+print LOG "*** $0 processing start: $time ***\n";
+print "*** $0 processing start: $time ***\n";
+print "log file: $log\n";
+
+my ($s1, $dir1, $ext1) = fileparse($ref_slc1, qr/\.[^.]*/); #extension is the last bit after the last period 
+$ref_id = $s1;
+$ref_slc = "$rslc_dir/$s1.rslc";
+$ref_par = "$rslc_dir/$s1.rslc.par";
+close LOG;
+
+unless (-e $ref_slc){		#copy reference slc and slc parameter file
+  execute("cp $ref_slc1 $ref_slc",$log);
+}
+  
+unless (-e $ref_par){
+  execute("cp $ref_par1 $ref_par",$log);
+}
+
+@width = extract_param($ref_par,"range_samples:");
+@lines = extract_param($ref_par,"azimuth_lines:");
+print "reference SLC width: $width[1]   lines: $lines[1]\n";
+
+#determine the number of range and azimuth patches for measuring offsets, minimum 8x16 grid
+$nrp = min(int($width[1]/($rpatch) + 0.5), 64);
+if ($nrp < 8) {
+  $nrp = 8;
+}
+$nazp = min(int($lines[1]/($azpatch) + 0.5), 128);
+if ($nazp < 16) {
+  $nazp = 16;
+}
+
+if ($rlks eq "-"){$rlks= int $width[1]/2048;}
+if ($rlks <= 0){$rlks = 1;}
+
+if ($azlks eq "-"){$azlks = int $lines[1]/2048;}
+if ($azlks <= 0){$azlks = 1;}
+
+if($rpos eq "-"){$rpos = $width[1]/2;}
+if($azpos eq "-"){$azpos = $lines[1]/2;}
+
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+
+@tokens = split(/\s+/,$init_offsets);	#extract initial offset from command line option
+$r_off0 = $tokens[0];
+$az_off0 = $tokens[1];
+
+if($r_off0 ne "-" || $az_off0 ne "-"){
+  print LOG "initial offset from command line: range: $r_off0  azimuth: $az_off0\n";
+  print "\ninitial offset from command line: range: $r_off0  azimuth: $az_off0\n";
+}
+$time = localtime;
+print LOG "initial offset looks range: $rlks  azimuth: $azlks\n";
+print LOG "resampled rslc data directory:$rslc_dir\n";
+print LOG "reference SLC:                $ref_slc\n";
+print LOG "reference SLC range samples: $width[1]  azimuth lines: $lines[1]\n";
+print LOG "reference SLC parameters:     $ref_par\n";
+print LOG "output RSLC_tab file:         $rslc_tab\n";
+print LOG "offset estimation number of range patches:   $nrp\n";
+print LOG "offset estimation number of azimuth patches: $nazp\n";
+print LOG "SLC oversampling factor for offset estimation: $novr\n";
+print LOG "SNR threshold for SLC offset measurement: $thres_slc\n";
+($rflag == 0) or print "measuring offsets with respect to the resampled SLC\n";
+
+print "initial offset looks range: $rlks  azimuth: $azlks\n";
+print "resampled rslc data directory:$rslc_dir\n";
+print "reference SLC:                $ref_slc\n";
+print "reference SLC range samples: $width[1]  azimuth lines: $lines[1]\n";
+print "reference SLC parameters:     $ref_par\n";
+print "output RSLC_tab file:         $rslc_tab\n";
+print "offset estimation number of range patches:   $nrp\n";
+print "offset estimation number of azimuth patches: $nazp\n";
+print "SLC oversampling factor for offset estimation: $novr\n";
+print "SNR threshold for SLC offset measurement: $thres_slc\n";
+($rflag == 0) or print "\nrflag=1: measuring offsets relative to the resampled SLC to improve the offset model\n";
+
+open(OFFINP, ">create_offset.in") or die "ERROR $0: cannot create file with inputs to create_offset: create_offset.in\n\n";
+print OFFINP "offset parameters\n0 0\n$nrp $nazp\n$rpatch $azpatch\n$thres_slc\n0\n".$width[1]."\n";
+close OFFINP;
+close LOG;
+
+if ($mode == 0 || $mode == 1 || $mode == 2){
+  LINE: while (<SLC_TAB>) {	#read lines of processing list file
+    $time = localtime;
+    chomp $_;			#remove new line from record
+    next LINE if /^$/; 		#skip blank lines in processing list
+    next LINE if /^#/; 		#skip comments in processing list
+    @fields = split;		#extract the scene identifier and other parameters on the line if present
+  
+    $slc2 = $fields[0];
+    $slc2_par = $fields[1];
+    -e $slc2_par or die "ERROR $0: ISP image parameter file does not exist for slc2: $slc2_par\n";
+    -e $slc2 or die "ERROR $0: slc2 image file does not exist: $slc2\n";     
+    @width2 = extract_param($slc2_par,"range_samples:");
+    @lines2 = extract_param($slc2_par,"azimuth_lines:"); 
+    my ($s2, $dir2, $ext2) = fileparse($slc2, qr/\.[^.]*/); #extension is the last bit after the last period 
+
+    $rslc = "$rslc_dir/$s2.rslc";
+    $rslc_par = "$rslc_dir/$s2.rslc.par";
+    $slc2_id = $s2;
+
+    if($ref_id eq $slc2_id){next;}	#in the case of the reference scene, jump to next scene
+    print "\n*** ref. SLC: $ref_slc   SLC-2: $slc2   start time: $time ***\n";  
+    $id = $ref_id."_".$slc2_id;
+    $off = "$rslc_dir/$id.off";
+    $log = "$rslc_dir/".$id."_resamp.log"; 
+   
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+    print LOG "\n*** ref. SLC: $ref_slc   SLC-2: $slc2   start time: $time ***\n";  
+    print LOG "initial offset looks range: $rlks  azimuth: $azlks\n";
+    print LOG "resampled RSLC data directory: $rslc_dir\n";
+    print LOG "reference SLC: $ref_slc\n";
+    print LOG "reference SLC parameters: $ref_par\n";
+    print LOG "output RSLC_tab file: $rslc_tab\n";
+    ($rflag == 0) or print LOG "NOTE: checking measured offsets with respect to the resampled SLC\n";
+    print LOG "ISP SLC-2 parameter file: $slc2_par\n";
+    print LOG "ISP SLC-2: $slc2\n";
+    print LOG "ISP offset parameter file: $off\n";
+    print LOG "SLC-2 range samples: $width2[1]  azimuth lines: $lines2[1]\n";
+    close LOG;
+    print "SLC-2 range samples: $width2[1]  azimuth lines: $lines2[1]\n";
+   
+    print "\n";
+    if ($mode == 0){
+      if (-e $off){
+        print "deleting previous $off\n";
+        unlink $off;
+      }
+      execute("create_offset $ref_par $slc2_par $off < create_offset.in",$log);
+      print "\n";
+    }   
+    
+    if ($mode == 1){
+      printf "orbit-derived initial range and azimuth offsets:\n";
+      execute("init_offset_orbit $ref_par $slc2_par $off",$log);
+      @roff1 = extract_param($off ,"initial_range_offset:");
+      @azoff1 = extract_param($off ,"initial_azimuth_offset:");
+      print "initial range offset:   $roff1[1]\n";
+      print "initial azimuth offset: $azoff1[1]\n";
+    }
+    
+    if ($mode == 2){
+      print "SLC-derived initial range and azimuth offsets:\n";
+      open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+      print LOG "initial offset looks  range: $rlks  azimuth: $azlks\n";
+      print LOG "initial offset position  range: $rpos  azimuth: $azpos\n";
+      print LOG "initial offset SNR threshold; $thres0  copy offset flag: $cflag\n";
+
+      if($r_off0 ne "-" || $az_off0 ne "-"){
+         print LOG "initial offsets from command line: range: $r_off0  azimuth: $az_off0\n";
+         print "initial offsets from command line: range: $r_off0  azimuth: $az_off0\n";
+      }
+      close LOG;
+      execute("init_offset $ref_slc $slc2 $ref_par $slc2_par $off $rlks $azlks $rpos $azpos $r_off0 $az_off0 $thres0 512 512 $cflag",$log);
+
+      if ($cflag == 0){
+        @roff1 = extract_param($off ,"initial_range_offset:");
+        @azoff1 = extract_param($off ,"initial_azimuth_offset:");
+        print "initial range offset:   $roff1[1]\n";
+        print "initial azimuth offset: $azoff1[1]\n";
+      }
+      else{
+        @rpoly1 = extract_param($off ,"range_offset_polynomial:");
+        @azpoly1 = extract_param($off ,"azimuth_offset_polynomial:");
+        print "@rpoly1\n";
+        print "@azpoly1\n";
+      }
+    }
+  }
+  $time = localtime;
+  print "\n*** $0 COMPLETED: $time ***\n";
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  print LOG "\n*** $0 COMPLETED: $time***\n";
+  close LOG;
+  exit 0;
+}
+
+$time = localtime;
+seek SLC_TAB, 0, 0;		#rewind the file to the beginning
+
+LINE: while (<SLC_TAB>) {	#read lines of processing list file
+  $time = localtime;
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  
+  $slc2 = $fields[0];
+  $slc2_par = $fields[1];
+  -e $slc2_par or die "ERROR $0: ISP image parameter file does not exist for SLC-2: $slc2_par\n";
+  -e $slc2 or die "ERROR $0: SLC-2 image file does not exist: $slc2\n";     
+  my ($s2, $dir2, $ext2) = fileparse($slc2, qr/\.[^.]*/); #extension is the last bit after the last period 
+
+  $rslc = "$rslc_dir/$s2.rslc";
+  $rslc_par = "$rslc_dir/$s2.rslc.par";
+  $slc2_id = $s2;
+ 
+  if($ref_id eq $slc2_id){next;}	#in the case of the reference scene, jump to next scene
+  print "\n*** ref. SLC: $ref_slc  SLC-2: $slc2  START: $time ***\n";  
+  $id = $ref_id."_".$slc2_id;
+  $off = "$rslc_dir/$id.off"; 
+  $log = "$rslc_dir/".$id."_resamp.log"; 
+  
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  print LOG "\n*** ref. SLC: $ref_slc   SLC-2: $slc2   START: $time ***\n";  
+  print LOG "initial offset looks range: $rlks  azimuth: $azlks\n";
+  print LOG "resampled rslc data directory: $rslc_dir\n";
+  print LOG "reference SLC:                $ref_slc\n";
+  print LOG "reference SLC parameters:     $ref_par\n";
+  print LOG "output RSLC_tab file:         $rslc_tab\n";
+  
+  ($rflag == 0) or print LOG "measuring offsets with respect to the resampled SLC\n";
+  print LOG "ISP SLC-2 parameter file: $slc2_par\n";
+  print LOG "ISP SLC-2: $slc2\n";
+  print LOG "ISP offset parameter file: $off\n\n";
+  print LOG "ref SLC: $ref_slc  SLC-2: $id  start time: $time\n";  
+  print LOG "ISP SLC-2 parameter file: $slc2_par\n";
+  print LOG "ISP SLC-2: $slc2\n";
+  print LOG "ISP offset parameter file: $off\n\n";
+  close LOG;		
+  $offs = "$rslc_dir/$id.offs";			#binary offsets
+  $coffs = "$rslc_dir/$id.coffs";		#culled offsets
+  $snr = "$rslc_dir/$id.snr";
+
+  if($mode == 3){
+    if($r_off0 ne "-" || $az_off0 ne "-"){
+      print LOG "initial offset from command line,  range: $r_off0  azimuth: $az_off0\n";
+      print "initial offset from command line,  range: $r_off0  azimuth: $az_off0\n";
+      if ($r_off0 ne "-"){
+        execute("set_value $off $off \"initial_range_offset\"  \"$r_off0\"",$log);
+      }
+      if ($az_off0 ne "-"){
+        execute("set_value $off $off \"initial_azimuth_offset\"  \"$az_off0\"",$log);
+      }
+    }  
+    execute("offset_pwr $ref_slc $slc2 $ref_par $slc2_par $off $offs $snr - - - $novr",$log);
+    execute("offset_fit $offs $snr $off $coffs - - $npoly",$log);
+    @rpoly =  extract_param($off,"range_offset_polynomial:"); 
+    @azpoly = extract_param($off,"azimuth_offset_polynomial:");
+    print "\n@rpoly\n";
+    print "@azpoly\n";
+    print LOG "\n@rpoly\n";
+    print LOG "@azpoly\n"
+  }
+  
+  if($mode == 4){
+    execute("SLC_interp $slc2 $ref_par $slc2_par $off $rslc $rslc_par",$log);
+    $off2 = "$rslc_dir/$id"."_2.off";
+    $offs2 = "$rslc_dir/$id"."_2.offs";		#binary offsets
+    $coffs2 = "$rslc_dir/$id"."_2.coffs";	#culled offsets
+    $snr2 = "$rslc_dir/$id"."_2.snr";
+
+    execute("create_offset $ref_par $rslc_par $off2 < create_offset.in",$log); print "\n";
+    execute("offset_pwr $ref_slc $rslc $ref_par $rslc_par $off2 $offs2 $snr2 - - - $novr",$log);
+    execute("offset_fit $offs2 $snr2 $off2 $coffs2 - - $npoly",$log);
+  
+    @rpoly =  extract_param($off,"range_offset_polynomial:"); 
+    @azpoly = extract_param($off,"azimuth_offset_polynomial:");
+  
+    @rpoly2 =  extract_param($off2,"range_offset_polynomial:"); 
+    @azpoly2 = extract_param($off2,"azimuth_offset_polynomial:");  
+    printf "residual offset polynomials 1:\n";
+    print "@rpoly2\n";
+    print "@azpoly2\n";
+
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+    printf LOG "residual offset polynomials 1:\n";
+    print LOG "@rpoly2\n";
+    print LOG "@azpoly2\n";
+    close LOG;
+   
+    if($rflag == 1){
+      for($j = 1; $j <= 4; $j += 1){
+        $rpoly3[$j] = $rpoly[$j] + $rpoly2[$j];
+        $azpoly3[$j] = $azpoly[$j] + $azpoly2[$j];
+      }
+      $sv1 = sprintf "%14.7e %12.5e %12.5e %12.5e",$rpoly3[1], $rpoly3[2], $rpoly3[3], $rpoly3[4]; 
+      $sv2 = sprintf "%14.7e %12.5e %12.5e %12.5e",$azpoly3[1], $azpoly3[2], $azpoly3[3], $azpoly3[4]; 
+  
+      execute("set_value $off $off \"range_offset_polynomial\"  \"$sv1\"",$log);
+      execute("set_value $off $off \"azimuth_offset_polynomial\" \"$sv2\"",$log);
+      execute("SLC_interp $slc2 $ref_par $slc2_par $off $rslc $rslc_par",$log);
+      execute("offset_pwr $ref_slc $rslc $ref_par $rslc_par $off2 $offs2 $snr2 - - - $novr",$log);
+      execute("offset_fit $offs2 $snr2 $off2 $coffs2 - - $npoly",$log);  
+
+      @rpoly2 = extract_param($off2,"range_offset_polynomial:"); 
+      @azpoly2 = extract_param($off2,"azimuth_offset_polynomial:");  
+
+      printf "residual offset polynomials 2:\n";
+      print "@rpoly2\n";
+      print "@azpoly2\n";
+      open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+      printf LOG "residual offset polynomials 2:\n";
+      print LOG "@rpoly2\n";
+      print LOG "@azpoly2\n";      
+      close LOG;
+    }
+  }
+  
+  $time = localtime;
+  open(LOG,">>${log}") or die "\nERROR $0: cannot open existing log file: $log\n";
+  print LOG "*** ref. SLC: $ref_slc   SLC-2: $slc2  END: $time ***\n";
+  close LOG;
+  print "*** ref. SLC: $ref_slc   SLC-2: $slc2  END: $time ***\n"; 
+}
+
+# create output RSLC_tab file
+if ($mode == 4){
+  print "deleting $offs, $offs2, $coffs, $coffs2, $snr, $snr2\n";
+  unlink $offs if -e $offs;
+  unlink $offs2 if -e $offs2;
+  unlink $coffs if -e $coffs;
+  unlink $coffs2 if -e $coffs2;
+  unlink $snr if -e $snr;
+  unlink $snr2 if -e $snr2;
+#  system("rm -f $offs $offs2 $coffs $coffs2 $snr $snr2");  
+  execute("mk_tab $rslc_dir $rslc $rslc.par $rslc_tab", $log);
+}
+
+$time = localtime;
+print "*** $0 MODE: $mode COMPLETED: $time ***\n";
+open(LOG,">>${log}") or die "\nERROR $0: cannot open existing log file: $log\n";
+print LOG "*** $0 MODE: $mode COMPLETED: $time***\n";
+close LOG;
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  $exit = system("$command 1>> $log");
+  close LOG;
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

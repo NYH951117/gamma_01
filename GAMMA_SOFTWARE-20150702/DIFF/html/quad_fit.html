@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF Reference Manual: quad_fit</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>quad_fit</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/quad_fit.c"><i>quad_fit.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">quad_fit</span> - Estimate 2-D
+  quadratic polynomial model phase function from an unwrapped
+  differential interferogram</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>quad_fit &lt;unw&gt; &lt;DIFF_par&gt; [dr] [daz] [mask]
+  [plot_data] [model]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;unw&gt;</td>
+
+        <td>(input) unwrapped differential interferogram
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input/output) differential interferogram
+        parameters</td>
+      </tr>
+
+      <tr>
+        <td>[dr]</td>
+
+        <td>(input) range sampling increment&nbsp; (enter - for
+        default: 4)</td>
+      </tr>
+
+      <tr>
+        <td>[daz]</td>
+
+        <td>(input) azimuth sampling increment (enter - for
+        default: 4)</td>
+      </tr>
+
+      <tr>
+        <td>[mask]</td>
+
+        <td>raster mask file (Sun raster or BMP), 0 valued pixels
+        are excluded for fit (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[plot_data]</td>
+
+        <td>(output) plot data file (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[model]</td>
+
+        <td>polynomial phase model:<br>
+        &nbsp;&nbsp; 0: &nbsp;a0&nbsp; + &nbsp;a2*x &nbsp;
+        &nbsp;&nbsp; +&nbsp; a1*y &nbsp; + &nbsp; a3*x*y &nbsp; +
+        &nbsp; a4*x^2 &nbsp; +&nbsp; &nbsp;a5*y^2 (default)<br>
+        &nbsp; &nbsp;1: &nbsp;a0 &nbsp;+&nbsp; a4*x^2&nbsp; +
+        &nbsp;a5*y^2 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp; &nbsp; &nbsp;<br>
+        &nbsp;&nbsp; 2: &nbsp;a0&nbsp; + &nbsp;a1*y +&nbsp;
+        a2*x&nbsp; + a3*x*y<br>
+        &nbsp; &nbsp;3: &nbsp;a0&nbsp; + &nbsp;a1*y + a2*x<br>
+        &nbsp;&nbsp; 4:&nbsp; a0&nbsp; + a2*x + a4*x^2<br>
+        &nbsp;&nbsp; 5:&nbsp; a0 + a2*x<span style=
+        "font-family: monospace;"><br></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>quad_fit i1.unw i1_i2.diff_par 32 32 i1.unw.ovr.ras
+  i1.quad_fit 0</samp></p>
+
+  <p>estimate the phase model coefficients using all 6 terms in the
+  polynomial</p><strong>DESCRIPTION<br></strong> <span style=
+  "font-style: italic;">quad_fit</span> reads an unwrapped phase
+  image and determines the best 2-D quadratic phase model using
+  the&nbsp; least-squares error criterion. The estimated model
+  parameters are written to the DIFF_par parameter file. The
+  subtraction of the phase mode using the fit parameters is done
+  using <a href="quad_sub.html"><span style=
+  "text-decoration: underline;">quad_sub</span></a>.<br>
+  <br>
+  The user can specify a mask file in SUN raster or BMP format to
+  exclude specific regions during the estimation of the fit
+  parameters. A raster image&nbsp; of the scene can be edited using
+  the any standard image manipulation program such as GIMP
+  (www.gimp.org).&nbsp; Select black (value = 0) as the region fill
+  color for regions that should be excluded from contributing to
+  the model fit.<br>
+  <span style=
+  "font-weight: bold; font-style: italic;">quad_fit</span> is
+  generally used to remove a residual phase ramp from a
+  differential interferogram.&nbsp; If there is a range dependent
+  differential phase ramp, such as occurs in GPRI data, then models
+  4 and 5 are applicable.&nbsp;<br>
+  <br>
+  <code>model 0:&nbsp; a0 &nbsp;+ &nbsp;a1*Y &nbsp; + a2*x &nbsp;
+  +&nbsp; a3*x*y&nbsp; + &nbsp;a4*x^2 &nbsp;+ &nbsp;a5 *y^2<br>
+  model 1: &nbsp;a0 &nbsp;+ &nbsp;a4*x^2 + a5*y^2 &nbsp; &nbsp;
+  &nbsp; &nbsp; &nbsp;a1 = 0.0, a2 = 0.0, a3 = 0.0 &nbsp;<br>
+  model 2: &nbsp;a0 &nbsp;+ &nbsp;a1*y &nbsp; + a2*x + a3*x*y&nbsp;
+  &nbsp;a4 = 0.0, a5 = 0.0 &nbsp; &nbsp;</code><br>
+  <code>model 3: &nbsp;a0 &nbsp;+ &nbsp;a1*y &nbsp; + a2*x &nbsp;
+  &nbsp; &nbsp; &nbsp; &nbsp;&nbsp; a3 = 0.0, a4 = 0.0, a5 =
+  0.0<br>
+  model 4:&nbsp; a0&nbsp; +&nbsp; a2*x&nbsp;&nbsp; +
+  a4*x^2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; a1 =
+  0.0, a3 = 0.0, a5 = 0.0<br>
+  model 5:&nbsp; a0&nbsp; +&nbsp;
+  a2*x</code><code><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  a1 = 0.0, a3 = 0.0, a4 = 0.0, a5 = 0.0</code><br></code><br>
+  The 6 output model parameters are stored in the DIFF_par
+  parameter file.<br>
+  <br>
+  Data written to an plot data file permits plotting the phase fit
+  results at the points. Plotting the data can be performed using
+  Gnuplot or other plotting program<br>
+  The plot data file is a text file with 4 columns.&nbsp; The first
+  column has the measured phases from the differential
+  interferogram, the second column has the phase from evaluating
+  the polynomial model, the third column has the range pixel
+  numbers, and the forth column has the azimuth line number:<br>
+  <br>
+  <code>phase&nbsp; model_phase&nbsp; range_pixel
+  azimuth_line</code><br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="quad_sub.html"><span style=
+  "text-decoration: underline;">quad_sub</span></a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Mar-2015.
+</body>
+</html>

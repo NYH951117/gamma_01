@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw970123 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: DEM_par</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>Baseline Parameter File</h2>
+
+  <p>(ASCII file) such as &lt;orbit1_orbit2&gt;.base</p>
+
+  <p><strong>NAME</strong><br>
+  &lt;orbit1_orbit2&gt;.base - contains an information on the
+  interferometric baseline as used by the Interferometric SAR
+  Processor ISP.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  not executable. May be created using the ISP programs <a href=
+  "../../ISP/html/base_orbit.html">base_orbit</a> or <a href=
+  "../../ISP/html/base_est_fft.html">base_est_fft</a>.</p>
+
+  <p><strong>EXAMPLE</strong><br>
+  12957_13086.base, an existing baseline parameter file for the SAR
+  on ERS-1 is shown as example:</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>initial_baseline(TCN):</td>
+
+      <td>0.00000 -123.03783 47.40700 m m m</td>
+    </tr>
+
+    <tr>
+      <td>initial_baseline_rate:</td>
+
+      <td>0.00000 0.09185 0.23839 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>precision_baseline(TCN):</td>
+
+      <td>0.00000 0.00000 0.00000 m m m</td>
+    </tr>
+
+    <tr>
+      <td>precision_baseline_rate:</td>
+
+      <td>0.00000 0.00000 0.00000 m/s m/s m/s</td>
+    </tr>
+
+    <tr>
+      <td>unwrap_phase_constant:</td>
+
+      <td>0.0000 radians</td>
+    </tr>
+  </table>
+
+  <p>This Example represents the state as it occurs after the
+  co-registration, interferogram generation and removal of the
+  phase trend, but before the derivation of the terrain heights.
+  Therefore some values at the end of the file are not yet
+  determined (set to zero).</p>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong><br>
+  The formats are defined in the ISP type definition file
+  typedef_ISP.h</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>initial_baseline(TCN):</td>
+
+      <td>Initial estimate of interferometric baseline at center of
+      SLC-1 (in TCN coordinates, in m) derived from orbit state
+      vectors or the interferogram fringe rate.</td>
+    </tr>
+
+    <tr>
+      <td>initial_baseline_rate:</td>
+
+      <td>Rate of initial estimate of interferometric baseline at
+      center of SLC-1 (m/s).</td>
+    </tr>
+
+    <tr>
+      <td>precision_baseline(TCN):</td>
+
+      <td>Precision estimate of interferometric baseline at center
+      of SLC-1 (in TCN coordinates, in m) derived using least
+      squares fit to ground control points.</td>
+    </tr>
+
+    <tr>
+      <td>precision_baseline_rate:</td>
+
+      <td>Rate of precision estimate of interferometric baseline at
+      center of SLC-1 (m/s).</td>
+    </tr>
+
+    <tr>
+      <td>unwrap_phase_constant:</td>
+
+      <td>Interferometric phase constant estimated using Least
+      Squares model fitting of the baseline from tie-points
+      (radians)</td>
+    </tr>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;orbit1_orbit2&gt;.base - contains information on the
+  interferometric baseline. An initial estimate of the
+  interferometric baseline is derived either from the orbit state
+  vectors listed in the SLC parameter file using the ISP program
+  base_orbit or from the interferogram fringe rate using
+  base_est_fft. Later on a precision estimate is obtained using the
+  unwrapped interferometric phase and a number of ground control
+  points.</p>
+
+  <p>The interferometric baseline is used for the removal of the
+  flat Earth phase trend and for the derivation of the
+  interferometric height estimate&lt;orbit1_orbit2&gt;.off</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "../../ISP/html/base_orbit.html">base_orbit</a>, <a href=
+  "../../ISP/html/base_est_fft.html">base_est_fft</a>, <a href=
+  "../../ISP/html/base_ls.html">base_ls</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 23-Jan-1997.</p>
+</body>
+</html>

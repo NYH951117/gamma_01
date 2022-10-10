@@ -1,0 +1,482 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use List::Util qw(first max maxstr min minstr reduce shuffle sum);
+use Getopt::Long;
+
+$npoly = 3;	#offset polynomial order
+$rlks = 1;
+$azlks = 1;
+$rpos = "-";
+$azpos = "-";
+$rflag = 0;
+$sc = 0.8;
+$exp = 0.4;
+$blksz = "512";
+$mflg = 1;	#turn on generation MLI-1 in the geometry of MLI-2 by default
+
+$thres_mli = 7.0;	#SNR threshold for accepting MLI offset measurement
+$thres_slc = 7.0;	#SNR threshold for accepting SLC offset measurement
+$rpatch = 128;		#SLC range patch size
+$azpatch = 256;	        #SLC azimuth patch size
+$rwinm = 256;		#MLI range patch size
+$azwinm = 256;		#MLI azimuth patch size
+$patch = 1024;		#init_offsetm patch size
+$snr_min = 7;
+
+GetOptions ('b=i' => \$blksz, 'e=f' => \$exp, 's=f' => \$sc, 'm' => \$mflg,'n=i' => \$npoly,'t=f' => \$thres_slc);
+
+if (($#ARGV + 1) < 9){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v5.9 26-Apr-2015 clw ***
+*** Resample a set of SLCs to a common reference SLC using a lookup table and DEM ***
+
+usage: $0 <SLC_tab> <ref_SLC> <ref_SLC_par> <ref_MLI_par> <DEM_rdc> <MLI_dir> <RSLC_dir> <RSLC_tab> <mode> [rflag] [rlks] [azlks] [rpos] [azpos] [patch] [snr_min]
+
+    SLC_tab      (input) two column list of SLC filenames and SLC parameter filenames (including paths) (ascii)
+    ref_SLC      (input) reference SLC (including path)
+    ref_SLC_par  (input) ISP image parameter file of the reference SLC (including path)
+    ref_MLI_par  (input) ISP image parameter file of the reference MLI (including path)
+    DEM_rdc      (input) DEM in Range-Doppler Coordinates with width and height as described in the MLI_par
+    MLI_dir      (input) directory containing MLI parameter files, same the same width and height as DEM_rdc.
+    RSLC_dir     directory to contain the resampled SLCs, lookup tables, ISP image parameter files, and log files   
+    RSLC_tab     (output) RSLC_tab file for the resampled SLC files  
+    mode         processing modes:
+                   0: generate lookup table and resample MLI-1 image into the geometry of MLI-2
+                   1: refine lookup table based on measured offsets between MLI-1 resampled to the geometry of MLI-2 (optional)
+                   2: resample SLC-2 to the geometry of the reference SLC using lookup table    
+                   3: create offset parameter files for SLC resampling refinement, measure offsets, and calculate the SLC offset fit polynomials
+	           4: resample SLC images using lookup table offsets determined in mode 3 and generate RSLC_tab
+    rflag        flag for interative refinement of the resampled SLC:
+                   0: resample and measure residual range and azimuth offsets  (no interation, default)
+		   1: interatively improve range and azimuth offset polynomials then measure residual offsets
+    rlks         number of range looks for initial MLI offset estimation  (enter - for default: $rlks)
+    azlks        number of azimuth looks for initial MLI offset estimation  (enter - for default: $azlks)
+    rpos         center of patch for initial MLI offset estimation range (samples) (enter - for default: image center)
+    azpos        center of patch for initial MLI offset estimation azimuth (lines) (enter - for default: image center)
+    patch        patch size for initial MLI offset estimate (enter - for default: $patch)
+    snr_min      SNR threshold to accept the initial MLI offset estimate (enter - for default: $snr_min)
+    -m           (option) generate MLI-1 in geometry of MLI-2, required for optional refinement of lookup table using MLI-1 and MLI-2)
+    -b blksz     (option) number of lines/block, only required for spotlight-mode SAR where there are along-track changes in the Doppler centroid, minimum value: 64
+    -n npoly     (option) number of terms in the range and azimuth offset polynomials (npoly: 1,3,4,6) (default: $npoly)
+    -t thres     (option) SNR theshold to accept an SLC offset measurement (default: $thres_slc) 
+    -s scale     (option) set image display scale factor (default: $sc)   
+    -e exp       (option) set image display exponent (default: $exp)
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of SLC images and parameter files does not exist: $ARGV[0]\n\n";
+print "SLC_tab table of SLC images and parameter files: $ARGV[0]\n"; 
+
+$ref_slc1 = $ARGV[1];
+$ref_par1 = $ARGV[2];
+$ref_MLI_par = $ARGV[3];
+$dem_rdc =  $ARGV[4];
+$mli_dir =  $ARGV[5];
+$rslc_dir = $ARGV[6];
+$rslc_tab = $ARGV[7];
+
+$mode = $ARGV[8];
+($mode >= 0 && $mode <= 6) or die "\nERROR $0: invalid mode for script: $mode\n\n";
+print "$0 mode: $mode\n";
+
+if($#ARGV >= 9){$rflag = $ARGV[9];}
+if($#ARGV >= 10){$rlks = $ARGV[10];}
+if($#ARGV >= 11){$azlks = $ARGV[11];}
+if($#ARGV >= 12){$rpos = $ARGV[12];}
+if($#ARGV >= 13){$azpos = $ARGV[13];}
+if($#ARGV >= 14){$patch = $ARGV[14];}
+if($#ARGV >= 15){$snr_min = $ARGV[15];}
+
+printf "reference SLC: $ref_slc1\n";
+printf "reference SLC parameter file: $ref_par1\n";
+printf "reference MLI parameter file: $ref_MLI_par\n";
+printf "resampled SLC directory: $rslc_dir\n";
+printf "DEM in range-Doppler coordinates: $dem_rdc\n";
+printf "MLI data directory: $mli_dir\n";
+printf "output table for resampled SLCs: $rslc_tab\n\n";
+
+-e $ref_slc1 or die "\nERROR $0: reference SLC does not exist: $ref_slc1\n";
+-e $ref_par1 or die "\nERROR $0: ISP image parameter file of the reference SLC does not exist: $ref_par1\n";
+-e $ref_MLI_par or die "\nERROR $0: ISP image parameter file of the reference MLI does not exist: $ref_MLI_par\n";
+-d $mli_dir or die "\nERROR $0: directory containing MLI images and parameter files does not exist: $mli_dir\n";
+-e $dem_rdc or die "\nERROR $0: DEM in range doppler coordinates does not exist: $dem_rdc\n";
+
+unless (-d $rslc_dir){
+  print "creating resampled SLC directory: $rslc_dir\n";
+  (mkdir $rslc_dir) or die "ERROR $0: non-zero exit status, could not create SLC data directory $rslc_dir\n";
+}
+
+$log = "$rslc_dir/SLC_resamp_lt_all"."_$mode".".log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+
+if ($mode == 4){
+  open(RSLC_TAB, ">$rslc_tab") or die "ERROR $0: cannot open RSLC_tab file: $rslc_tab\n\n";
+}
+
+$time = localtime;
+print LOG "*** $0 processing start: $time ***\n";
+print "*** $0 processing start: $time ***\n";
+print "log file: $log\n";
+
+my ($s1, $dir1, $ext1) = fileparse($ref_slc1, qr/\.[^.]*/); #extension is the last bit after the last period 
+$ref_id = $s1;
+$ref_slc = "$rslc_dir/$s1.rslc";
+$ref_par = "$rslc_dir/$s1.rslc.par";
+close LOG;
+
+unless (-e $ref_slc) {		#copy reference slc and slc parameter file if they do not yet exist
+  execute("cp $ref_slc1 $ref_slc",$log);
+}
+  
+unless (-e $ref_par){
+  execute("cp $ref_par1 $ref_par",$log);
+}
+
+@width = extract_param($ref_par,"range_samples:");
+@lines = extract_param($ref_par,"azimuth_lines:");
+
+#determine the number of range and azimuth patches for measuring offsets, minimum 8x16 grid
+$nrp = min(int($width[1]/($rpatch/2) + 0.5), 64);
+if ($nrp < 8) {
+  $nrp = 8;
+}
+$nazp = min(int($lines[1]/($azpatch/2) + 0.5), 64);
+if ($nazp < 16) {
+  $nazp = 16;
+}
+
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;
+
+@mli1_width = extract_param($ref_MLI_par,"range_samples:");
+@mli1_lines = extract_param($ref_MLI_par,"azimuth_lines:"); 
+@mli1_rlks = extract_param($ref_MLI_par,"range_looks:");
+@mli1_azlks = extract_param($ref_MLI_par,"azimuth_looks:");
+
+$nrpm = min(int($mli1_width[1]/($rwinm/2) + 0.5), 64);		#number of range and azimuth patches for MLI matching
+if ($nrpm < 8) {
+  $nrpm = 8;
+}
+$nazpm = min(int($mli1_lines[1]/($azwinm/2) + 0.5), 128);
+if ($nazpm < 8) {
+  $nazpm = 8;
+}
+
+if ($rpos eq "-") {
+  $rpos = int($mli1_width[1]/2);
+}
+if ($azpos eq "-") {
+  $azpos = int($mli1_lines[1]/2);
+}
+
+($s1, $dir1, $ext1) = fileparse($ref_MLI_par, qr/\.[^.]*/);	#extension is the last bit after the last period
+$ref_MLI = $dir1."/".$s1;
+ 
+$time = localtime;
+print LOG "resampled RSLC data directory:$rslc_dir\n";
+print LOG "reference SLC: $ref_slc\n";
+print LOG "reference SLC parameters: $ref_par\n";
+print LOG "reference SLC range samples: $width[1]  azimuth lines: $lines[1]\n";
+print LOG "\nreference MLI: $ref_MLI\n";
+print LOG "reference MLI parameters: $ref_MLI_par\n";
+print LOG "reference MLI range samples: $mli1_width[1]\n";
+print LOG "reference MLI range looks: $mli1_rlks[1]  azimuth looks: $mli1_azlks[1]\n";
+print LOG "output RSLC_tab file: $rslc_tab\n\n";
+print LOG "initial MLI offset patch center range: $rpos   azimuth: $azpos\n";
+print LOG "initial MLI offset patch size: $patch\n";
+print LOG "SLC range patch size: $rpatch  azimuth patch size: $azpatch\n";
+print LOG "number of SLC range patches: $nrp   azimuth patches: $nazp\n";
+print LOG "MLI range patch size: $rwinm  azimuth patch size: $azwinm\n\n";
+print LOG "number of MLI range patches: $nrpm   azimuth patches: $nazpm\n";
+print LOG "SNR threshold to accept MLI offset measurement: $thres_mli\n";
+print LOG "SNR threshold to accept SLC offset measurement: $thres_slc\n";
+($rflag == 0) or print "measuring offsets with respect to the resampled SLC\n";
+
+print "resampled RSLC data directory: $rslc_dir\n";
+print "reference SLC:  $ref_slc\n";
+print "reference SLC parameters:    $ref_par\n";
+print "reference SLC range samples: $width[1]  azimuth lines: $lines[1]\n";
+print "\nreference MLI: $ref_MLI\n";
+print "reference MLI parameters: $ref_MLI_par\n";
+print "reference MLI range samples: $mli1_width[1]\n";
+print "reference MLI range looks: $mli1_rlks[1]  azimuth looks: $mli1_azlks[1]\n";
+print "output RSLC_tab file: $rslc_tab\n\n";
+print "initial MLI offset patch center coordinates range: $rpos   azimuth: $azpos\n";
+print "initial MLI offset patch size: $patch\n";
+print "SLC range patch size: $rpatch  azimuth patch size: $azpatch\n";
+print "number of SLC range patches: $nrp   azimuth patches: $nazp\n";
+print "SNR threshold to accept SLC offset measurement: $thres_slc\n";
+print "MLI range patch size: $rwinm  azimuth patch size: $azwinm\n";
+print "number of MLI range patches: $nrpm   azimuth patches: $nazpm\n";
+print "SNR threshold to accept MLI offset measurement: $thres_mli\n";
+
+($rflag == 0) or print "rflag = 1: measuring offsets relative to the resampled SLC to improve the offset model\n";
+close LOG;
+
+open(OFFINP, ">create_offset.in") or die "ERROR $0: cannot create file with inputs to create_offset: create_offset.in\n";
+print OFFINP "SLC offset parameters\n0 0\n$nrp $nazp\n$rpatch $azpatch\n$thres_slc\n0\n".$width[1]."\n";
+close OFFINP;
+$k = 0;
+
+LINE: while (<SLC_TAB>) {     #read lines of processing list file
+  $time = localtime;
+  chomp $_;		      #remove new line from record
+  next LINE if /^$/;	      #skip blank lines in processing list
+  next LINE if /^#/;	      #skip comments in processing list
+  @fields = split;	      #extract the scene identifier and other parameters on the line if present
+
+  $slc2 = $fields[0];
+  $slc2_par = $fields[1];
+  -e $slc2_par or die "ERROR $0: ISP image parameter file does not exist for slc2: $slc2_par\n";
+  -e $slc2 or die "ERROR $0: slc2 image file does not exist: $slc2\n";     
+  @width2 = extract_param($slc2_par,"range_samples:");
+  @lines2 = extract_param($slc2_par,"azimuth_lines:"); 
+
+  my ($s2, $dir2, $ext2) = fileparse($slc2, qr/\.[^.]*/); #extension is the last bit after the last period 
+  $rslc = "$rslc_dir/$s2.rslc";
+  $rslc_par = "$rslc_dir/$s2.rslc.par";
+  $slc2_id = $s2;
+
+  $mli1_par = $ref_MLI_par;
+  $mli2 = "$mli_dir/$slc2_id.mli";   
+  unless (-e $mli2){
+    $mli2 =  "$mli_dir/$slc2_id.rmli";
+  }
+  $mli2_par = "$mli_dir/$slc2_id.mli.par";
+  unless (-e $mli2_par){
+    $mli2_par = "$mli_dir/$slc2_id.rmli.par";
+  }
+  @mli2_width = extract_param($mli2_par,"range_samples:");
+  @mli2_lines = extract_param($mli2_par,"azimuth_lines:");
+
+  if($ref_id eq $slc2_id){	#in the case of SLC-2 is the reference scene , jump to the next scene
+    printf RSLC_TAB "$ref_slc  $ref_par\n";	#output RSLC_tab reference SLC record
+    next;
+  }
+  $k = $k + 1;  
+  $id = $ref_id."_".$slc2_id;	
+  $off = "$rslc_dir/$id.off";		#offset parameter file for offset parameters between SLC data
+  $lt0 = "$rslc_dir/$id.lt0";		#initial lookup table 
+  $lt1 = "$rslc_dir/$id.lt1";		#refined lookup table  
+  $offs = "$rslc_dir/$id.offs";		#binary offsets
+  $coffs = "$rslc_dir/$id.coffs";	#culled offsets
+  $offs_lt0 = "$rslc_dir/$id"."_lt0.offs";	#binary offsets for MLI offsets
+  $coffs_lt0 = "$rslc_dir/$id"."_lt0.coffs";	#culled offsets for MLI offsets
+  $snr_lt0 = "$rslc_dir/$id"."_lt0.snr";	#SNR for MLI offsets
+  $snr = "$rslc_dir/$id.snr";
+  $mli1_lt0 = $rslc_dir."/".$id."_lt0.mli";	#reference MLI-1 resampled into geometry of MLI-2
+  $diff_par_lt0 = $rslc_dir."/".$id."_lt0.diff_par";
+  $diff_par_lt0_in = $diff_par_lt0.".in";
+  $log = "$rslc_dir/".$id."_resamp_lt.log";   
+  
+  print "\n*** SLC #$k  ref. SLC: $ref_slc   SLC-2: $slc2   start time: $time ***\n";  
+  print "log file: $log\n";
+  print "initial MLI offset looks range: $rlks  azimuth: $azlks\n";
+  print "resampled RSLC data directory: $rslc_dir\n";
+  print "reference SLC: $ref_slc\n";
+  print "reference SLC parameters: $ref_par\n";
+  print "\nSLC-2: $slc2\n";
+  print "SLC-2 parameter file: $slc2_par\n";
+  print "SLC-2 range samples:  $width2[1]  azimuth lines: $lines2[1]\n";
+  print "\nMLI-2: $mli2\n"; 
+  print "MLI-2 parameter file: $mli2_par\n";
+  print "MLI-2 range samples:  $mli2_width[1]\n";
+  print "\nlookup table refinement DIFF_par: $diff_par_lt0\n";
+  print "file with inputs to create_diff_par: $diff_par_lt0_in\n";
+  print "reference MLI image resampled into geometry of MLI-2: $mli1_lt0\n";
+  print "initial lookup table: $lt0\n";
+  print "updated lookup table: $lt1\n";
+  print "SLC offset parameter file: $off\n";
+  
+  open(LOG,">>$log") or die "ERROR $0: cannot open SLC_interp_lt_all log file: $log\n";
+  print LOG "SLC_resamp_lt_all log file: $log   mode: $mode\n";
+  print LOG "initial MLI offset looks range: $rlks   azimuth: $azlks\n";
+  print LOG "resampled RSLC data directory: $rslc_dir\n";
+  print LOG "reference SLC: $ref_slc\n";
+  print LOG "reference SLC parameters: $ref_par\n";
+  print LOG "reference MLI: $ref_MLI\n";
+  print LOG "reference MLI parameters: $ref_MLI_par\n";
+
+  print LOG "SLC-2: $slc2\n";
+  print LOG "SLC-2 parameter file: $slc2_par\n";
+  print LOG "SLC-2 range samples: $width2[1]   azimuth lines: $lines2[1]\n\n";
+  print LOG "MLI-2: $mli2\n"; 
+  print LOG "MLI-2 parameter file: $mli2_par\n\n";
+  print LOG "MLI-2 range samples:  $mli2_width[1]\n";
+  print LOG  "\nlookup table refinement DIFF_par: $diff_par_lt0\n";
+  print LOG  "reference MLI image resampled into geometry of MLI-2: $mli1_lt0\n";
+  print LOG  "initial lookup table: $lt0\n";
+  print LOG  "updated lookup table: $lt1\n";
+  print LOG  "SLC offset parameter file: $off\n";
+  close LOG;
+
+  if($mode == 0){
+    print "\nmode 0: generate lookup table (MLI-2 into geometry of MLI-1) and resample MLI-1 image into the geometry of MLI-2\n";
+    execute("rdc_trans $ref_MLI_par $dem_rdc $mli2_par $lt0", $log);
+
+    if($mflg == 1){	#resample reference MLI image into the geometry of MLI-2
+      execute("geocode $lt0 $ref_MLI $mli1_width[1] $mli1_lt0 $mli2_width[1] $mli2_lines[1] 0 0 - -", $log);
+      execute("raspwr $mli1_lt0 $mli2_width[1] 1 0 1 1 $sc $exp", $log);
+    }
+  }
+
+  if ($mode == 1){
+    print "\nmode 1: refine lookup table based on measured offsets between MLI-1 resampled to the geometry of MLI-2\n"; 
+    -e $mli1_lt0 or  die "\nERROR: missing resampled MLI-1 in MLI-2 geometry, generate these images running mode 0 with -m option\n";
+
+    print "creating DIFF/GEO parameter file: $diff_par_lt0\n";
+    if(-e $diff_par_lt0){
+      print "deleting $diff_par_lt0\n";
+      unlink $diff_par_lt0; #delete existing DIFF/GEO offset parameter file
+    }                      
+    open(DPAR, "> $diff_par_lt0_in") or die "ERROR $0: cannot create file with inputs to create_diff_par: $diff_par_lt0_in\n\n";
+    print DPAR "$id\n0 0\n$nrpm $nazpm\n$rwinm $azwinm\n$thres_mli\n";
+    close DPAR;
+
+    execute("create_diff_par $mli2_par - $diff_par_lt0 1 < $diff_par_lt0_in", $log);
+    print "\n";
+    execute("init_offsetm $mli1_lt0 $mli2 $diff_par_lt0 $rlks $azlks $rpos $azpos - - $snr_min $patch", $log);
+    execute("offset_pwrm $mli1_lt0 $mli2 $diff_par_lt0 $offs_lt0 $snr_lt0 - - - 2 - - - - 1", $log);
+    execute("offset_fitm $offs_lt0 $snr_lt0 $diff_par_lt0 $coffs_lt0 - $thres_mli 3", $log);
+    @rpolym =  extract_param($diff_par_lt0,"range_offset_polynomial:"); 
+    @azpolym = extract_param($diff_par_lt0,"azimuth_offset_polynomial:");
+    print "\nMLI offset polynomials:\n";
+    print "@rpolym\n";
+    print "@azpolym\n\n";
+    execute("gc_map_fine $lt0 $mli1_width[1] $diff_par_lt0 $lt1", $log); 
+  }
+
+  if ($mode == 2){
+    print "\nmode 2: resample SLC-2 to the geometry of the reference SLC using lookup table\n";
+    if (-e $lt1) {
+      execute("SLC_interp_lt $slc2 $ref_par1 $slc2_par $lt1 $ref_MLI_par $mli2_par - $rslc $rslc_par $blksz", $log);
+    }
+    else {
+      print "NOTE: refined lookup table does not exist, using original lookup table: $lt0\n";
+      execute("SLC_interp_lt $slc2 $ref_par1 $slc2_par $lt0 $ref_MLI_par $mli2_par - $rslc $rslc_par $blksz", $log);
+    }
+  }
+
+  if ($mode == 3){
+    print "\nmode 3: create offset parameter files for SLC resampling refinement, measure offsets, and calculate the SLC offset fit polynomials\n";
+    if (-e $off) {
+      print "deleting $off\n";
+      unlink $off;
+    }
+    execute("create_offset $ref_par $rslc_par $off < create_offset.in",$log);
+    print "\n";
+    execute("offset_pwr $ref_slc $rslc $ref_par $rslc_par $off $offs $snr", $log);
+    execute("offset_fit $offs $snr $off $coffs - - $npoly", $log);
+    @rpoly =  extract_param($off,"range_offset_polynomial:"); 
+    @azpoly = extract_param($off,"azimuth_offset_polynomial:");
+    print "\nSLC offset polynomials:\n";
+    print "@rpoly\n";
+    print "@azpoly\n\n";
+  }
+  
+  if($mode == 4){	#now apply refinement from offset parameter file    	
+    print "\nmode 4: resample SLC using offset polynomials from SLC refinement\n";
+    if (-e $lt1) {		
+      execute("SLC_interp_lt $slc2 $ref_par $slc2_par $lt1 $mli1_par $mli2_par $off $rslc $rslc_par $blksz", $log);
+    }
+    else {
+      execute("SLC_interp_lt $slc2 $ref_par $slc2_par $lt0 $mli1_par $mli2_par $off $rslc $rslc_par $blksz", $log);
+    }
+    $off2 = "$rslc_dir/$id"."_2.off";
+    $offs2 = "$rslc_dir/$id"."_2.offs";		#binary offsets
+    $coffs2 = "$rslc_dir/$id"."_2.coffs";	#culled offsets
+    $snr2 = "$rslc_dir/$id"."_2.snr";
+    print RSLC_TAB "$rslc  $rslc_par\n";	#output RSLC_tab record
+
+    execute("create_offset $ref_par $rslc_par $off2 < create_offset.in",$log);
+    printf("\n");
+    execute("offset_pwr $ref_slc $rslc $ref_par $rslc_par $off2 $offs2 $snr2", $log);
+    execute("offset_fit $offs2 $snr2 $off2 $coffs2 - - $npoly", $log);
+    @rpoly =  extract_param($off,"range_offset_polynomial:"); 
+    @azpoly = extract_param($off,"azimuth_offset_polynomial:");
+
+    @rpoly2 =  extract_param($off2,"range_offset_polynomial:"); 
+    @azpoly2 = extract_param($off2,"azimuth_offset_polynomial:");  
+
+    printf "\nRSLC residual offset polynomials:\n";
+    print "@rpoly2\n";
+    print "@azpoly2\n\n";
+    
+    open(LOG,">>$log") or die "ERROR $0: cannot open SLC_interp_lt_all log file: $log\n";
+    LOG->autoflush;      printf LOG "residual offset polynomials 1:\n";
+    print LOG "\n@rpoly2\n";
+    print LOG "@azpoly2\n\n";
+    close LOG;
+
+    if($rflag == 1){
+      for($j = 1; $j <= 6; $j += 1){
+        $rpoly3[$j] = $rpoly[$j] + $rpoly2[$j];
+        $azpoly3[$j] = $azpoly[$j] + $azpoly2[$j];
+      }
+      $sv1 = sprintf "%.5f %12.5e %12.5e %12.5e %12.5e %12.5e",$rpoly3[1], $rpoly3[2], $rpoly3[3], $rpoly3[4]. $rpoly3[5],  $rpoly3[6],; 
+      $sv2 = sprintf "%.5f %12.5e %12.5e %12.5e %12.5e %12.5e",$azpoly3[1], $azpoly3[2], $azpoly3[3], $azpoly3[4], $azpoly3[5], $azpoly3[6]; 
+
+      execute("set_value $off $off \"range_offset_polynomial\"  \"$sv1\"", $log); 
+      execute("set_value $off $off \"azimuth_offset_polynomial\" \"$sv2\"", $log);
+
+#resample again after offset polynomial refinement and measure residual offsets
+      execute("SLC_interp_lt $slc2 $ref_par1 $slc2_par $lt1 $mli1_par $mli2_par $off $rslc $rslc_par $blksz", $log);
+      execute("offset_pwr $ref_slc $rslc $ref_par $rslc_par $off2 $offs2 $snr2", $log);
+      execute("offset_fit $offs2 $snr2 $off2 $coffs2 - - $npoly", $log);  
+
+      @rpoly2 = extract_param($off2,"range_offset_polynomial:"); 
+      @azpoly2 = extract_param($off2,"azimuth_offset_polynomial:");  
+      printf "\nResidual offset polynomials 2:\n";
+      print "\n@rpoly2\n";
+      print "@azpoly2\n\n";
+      
+      open(LOG,">>$log") or die "ERROR $0: cannot open SLC_interp_lt_all log file: $log\n";
+      LOG->autoflush;
+      printf LOG "residual offset polynomials 2:\n";
+      print LOG "\n@rpoly2\n";
+      print LOG "@azpoly2\n\n";
+      close LOG;
+      print "\n";
+    }
+  }
+  
+  $time = localtime;
+  open(LOG,">>${log}") or die "\nERROR $0: cannot open log file: $log\n";
+  print LOG "*** ref. SLC: $ref_slc   SLC-2: $slc2  END: $time ***\n";
+  close LOG;
+  print "*** ref. SLC: $ref_slc	SLC-2: $slc2  END: $time ***\n";       
+}  
+
+$time = localtime;
+$log = "$rslc_dir/SLC_resamp_lt_all"."_$mode".".log"; 
+open(LOG,">>${log}") or die "\nERROR $0: cannot open log file: $log\n";
+print "\n*** $0 mode: $mode COMPLETED: $time ***\n";
+print LOG "\n*** $0 mode: $mode COMPLETED: $time ***\n\n";
+close LOG;
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

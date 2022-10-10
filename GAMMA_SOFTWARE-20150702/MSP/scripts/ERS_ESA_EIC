@@ -1,0 +1,23 @@
+#! /bin/csh -f
+if ($#argv < 2)then
+  echo "READ ERS raw data in ESA internal EIC format"
+  echo "usage: ERS_ESA_EIC <orbit> <device>"
+  echo "       orbit   orbit number"
+  echo "       device  EXABYTE tape device name; example: /dev/rmt/0mn" 
+  exit
+endif
+
+set EXABYTE = $2
+setenv TAPE $EXABYTE
+
+echo "Reading ERS raw data in EIC format..."
+
+echo "Reading Main Product Header: $1.mph"
+dd bs=16384 if=$EXABYTE of=$1.mph
+
+echo "Reading ESA raw data file: $1.raw"
+dd bs=11644 if=$EXABYTE conv=sync of=$1.raw
+
+mt offl
+
+echo "ERS_ESA_EIC completed"

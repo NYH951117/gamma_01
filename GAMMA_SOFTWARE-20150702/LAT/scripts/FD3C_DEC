@@ -1,0 +1,289 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     FD3C_DEC: script to run LAT program sequence to obtain          ###
+###               the components of the Freeman-Durden 3-components     ###
+###		  decomposition (surface, double-bounce, volume)                ###                                
+###########################################################################
+### version 1.3 - ms  20130705                                          ###
+###                                                                     ###
+###########################################################################
+
+
+echo " "
+echo "FD3C_DEC: Target decomposition based on Freeman-Durden 3-component algorithm"
+
+if ($#argv < 8)then
+  echo " "
+  echo "usage: FD3C_DEC <SLC_HH> <SLC_HV> <SLC_VV> <T13> <nlines> <fdd>"
+  echo "  "
+  echo "       SLC_HH   (input) SLC HH-polarization (FCOMPLEX)"
+  echo "       SLC_HV   (input) SLC HV-polarization (FCOMPLEX)"
+  echo "       SLC_VV   (input) SLC VV-polarization (FCOMPLEX)"
+  echo "       T13      (input) Coherency matrix T13 component (FCOMPLEX)"
+  echo "       nlines   (input) width of input dataset"
+  echo "       fdd      (output) target vector file name for Freeman-Durden decomposition, e.g. date or orbit number"
+  echo "       rlks     Number of looks in range"
+  echo "       azlks    Number of looks in azimuth"
+  echo " "
+  exit
+endif
+
+
+set slc_hh0 = $1
+set slc_hv0 = $2
+set slc_vv0 = $3
+set t13 = $4
+set nlines = $5
+set fdd = $6
+set rlks = $7
+set azlks = $8
+
+echo " "
+echo " "
+
+# Multi-look
+set slc_hh = slc_hh_tmp
+set slc_hv = slc_hv_tmp
+set slc_vv = slc_vv_tmp
+
+
+echo "cpxlks $slc_hh0 $slc_hh $nlines $rlks $azlks"
+nice cpxlks $slc_hh0 $slc_hh $nlines $rlks $azlks
+echo "cpxlks $slc_hv0 $slc_hv $nlines $rlks $azlks"
+nice cpxlks $slc_hv0 $slc_hv $nlines $rlks $azlks
+echo "cpxlks $slc_vv0 $slc_vv $nlines $rlks $azlks"
+nice cpxlks $slc_vv0 $slc_vv $nlines $rlks $azlks
+
+
+# This script develops the model presented in the paper by Freeman and Durden
+# A Three-component scattering model for polarimetric SAR data, IEEE TGRS, vol 36 (3), 1998
+
+
+# The parameters fs fD alpha and beta need to be computed
+# Their derivation depends on the sign of the real part of T13
+
+# In this script for each of the four parameters two versions are derived
+# which are then merged together using T13 as mask
+
+
+# fs for Re(T13) > 0 and fd for Re(T13) < 0
+
+# The expression of fs and fd as function of the scattering matrix can be derived analitically by the user
+
+echo  " "
+echo "Generating the solutions for fs and fd"
+echo " "
+
+# Numerator (3 terms)
+echo "product_cpx $slc_hh $slc_vv tmp_hhvv $nlines - - 1"
+nice product_cpx $slc_hh $slc_vv tmp_hhvv $nlines - - 1
+
+echo "cpx_to_real tmp_hhvv tmp1 $nlines 2"
+nice cpx_to_real tmp_hhvv tmp1 $nlines 2
+
+echo "cpx_to_real $slc_vv tmp2a $nlines 2"
+nice cpx_to_real $slc_vv tmp2a $nlines 2
+echo "product tmp2a tmp2a tmp2 $nlines 1 1 0"
+nice product tmp2a tmp2a tmp2 $nlines 1 1 0
+	
+echo "cpx_to_real tmp_hhvv tmp3a $nlines 0"
+nice cpx_to_real tmp_hhvv tmp3a $nlines 0
+echo "product tmp2a tmp3a tmp3 $nlines 1 1 0"
+nice product tmp2a tmp3a tmp3 $nlines 1 1 0
+
+# case for Re(T13) > 0 
+echo "lin_comb 3 tmp1 tmp2 tmp3 0 1 1 2 tmpn1 $nlines - - 1 1 1 "
+nice lin_comb 3 tmp1 tmp2 tmp3 0 1 1 2 tmpn1 $nlines - - 1 1 1 
+# case for Re(T13) < 0 
+echo "lin_comb 3 tmp1 tmp2 tmp3 0 1 1 -2 tmpn2 $nlines - - 1 1 1 "
+nice lin_comb 3 tmp1 tmp2 tmp3 0 1 1 -2 tmpn2 $nlines - - 1 1 1 
+
+# Denominator
+echo "cpx_to_real $slc_hh tmp1 $nlines 2"
+nice cpx_to_real $slc_hh tmp1 $nlines 2
+
+echo "cpx_to_real $slc_vv tmp2 $nlines 2"
+nice cpx_to_real $slc_vv tmp2 $nlines 2
+
+echo "cpx_to_real tmp_hhvv tmp3 $nlines 0"
+nice cpx_to_real tmp_hhvv tmp3 $nlines 0
+
+# case for Re(T13) > 0 
+echo "lin_comb 3 tmp1 tmp2 tmp3 0 1 1 1 tmpd1 $nlines - - 1 1 1 "
+nice lin_comb 3 tmp1 tmp2 tmp3 0 1 1 1 tmpd1 $nlines - - 1 1 1 
+# case for Re(T13) < 0 
+echo "lin_comb 3 tmp1 tmp2 tmp3 0 1 1 -1 tmpd2 $nlines - - 1 1 1 "
+nice lin_comb 3 tmp1 tmp2 tmp3 0 1 1 -1 tmpd2 $nlines - - 1 1 1 
+
+# case for Re(T13) > 0 : Num/den=fs
+echo "ratio tmpn1 tmpd1 $fdd.fdd_fs1 $nlines 1 1 0"
+nice ratio tmpn1 tmpd1 $fdd.fdd_fs1 $nlines 1 1 0
+# case for Re(T13) < 0 : Num/den=fd
+echo "ratio tmpn2 tmpd2 $fdd.fdd_fd2 $nlines 1 1 0"
+nice ratio tmpn2 tmpd2 $fdd.fdd_fd2 $nlines 1 1 0
+
+
+# fd for Re(T13) > 0 and fs for Re(T13) < 0 
+echo "cpx_to_real $slc_vv tmp1 $nlines 2"
+nice cpx_to_real $slc_vv tmp1 $nlines 2
+# fd
+echo "lin_comb 2 tmp1 $fdd.fdd_fs1 0 1 -1 $fdd.fdd_fd1 $nlines - - 1 1 1"
+nice lin_comb 2 tmp1 $fdd.fdd_fs1 0 1 -1 $fdd.fdd_fd1 $nlines - - 1 1 1
+# fs
+echo "lin_comb 2 tmp1 $fdd.fdd_fd2 0 1 -1 $fdd.fdd_fs2 $nlines - - 1 1 1"
+nice lin_comb 2 tmp1 $fdd.fdd_fd2 0 1 -1 $fdd.fdd_fs2 $nlines - - 1 1 1
+
+
+
+echo  " "
+echo "Generating the solutions for alpha and beta"
+echo " "
+
+
+# Real part of beta and alpha
+echo  "cpx_to_real tmp_hhvv tmp1 $nlines 0"
+nice cpx_to_real tmp_hhvv tmp1 $nlines 0
+# beta
+echo "lin_comb 2 tmp1 $fdd.fdd_fd1 0 1 1 tmp2 $nlines - - 1 1 1"
+nice lin_comb 2 tmp1 $fdd.fdd_fd1 0 1 1 tmp2 $nlines - - 1 1 1
+echo "ratio tmp2 $fdd.fdd_fs1 $fdd.fdd_beta_re $nlines 1 1 0"
+nice ratio tmp2 $fdd.fdd_fs1 $fdd.fdd_beta_re $nlines 1 1 0
+# alpha
+echo "lin_comb 2 tmp1 $fdd.fdd_fs2 0 1 -1 tmp2 $nlines - - 1 1 1"
+nice lin_comb 2 tmp1 $fdd.fdd_fs2 0 1 -1 tmp2 $nlines - - 1 1 1
+echo "ratio tmp2 $fdd.fdd_fd2 $fdd.fdd_alpha_re $nlines 1 1 0"
+nice ratio tmp2 $fdd.fdd_fd2 $fdd.fdd_alpha_re $nlines 1 1 0
+
+# Imaginary part of beta and alpha
+echo "cpx_to_real tmp_hhvv tmp1 $nlines 1"
+nice cpx_to_real tmp_hhvv tmp1 $nlines 1
+#beta
+echo "ratio tmp1 $fdd.fdd_fs1 $fdd.fdd_beta_im $nlines 1 1 0"
+nice ratio tmp1 $fdd.fdd_fs1 $fdd.fdd_beta_im $nlines 1 1 0
+# alpha
+echo "ratio tmp1 $fdd.fdd_fd2 $fdd.fdd_alpha_im $nlines 1 1 0"
+nice ratio tmp1 $fdd.fdd_fd2 $fdd.fdd_alpha_im $nlines 1 1 0
+
+# generating complex alpha and beta and corresponding intensities
+echo "real_to_cpx $fdd.fdd_beta_re $fdd.fdd_beta_im $fdd.fdd_beta_cpx $nlines 0"
+nice real_to_cpx $fdd.fdd_beta_re $fdd.fdd_beta_im $fdd.fdd_beta_cpx $nlines 0
+echo "real_to_cpx $fdd.fdd_alpha_re $fdd.fdd_alpha_im $fdd.fdd_alpha_cpx $nlines 0"
+nice real_to_cpx $fdd.fdd_alpha_re $fdd.fdd_alpha_im $fdd.fdd_alpha_cpx $nlines 0
+
+echo "cpx_to_real $fdd.fdd_beta_cpx $fdd.fdd_beta_int0 $nlines 2"
+nice cpx_to_real $fdd.fdd_beta_cpx $fdd.fdd_beta_int0 $nlines 2
+echo "cpx_to_real $fdd.fdd_alpha_cpx $fdd.fdd_alpha_int0 $nlines 2"
+nice cpx_to_real $fdd.fdd_alpha_cpx $fdd.fdd_alpha_int0 $nlines 2
+
+
+# Mask based on Re(ShhSvv*)
+# All negative values are replaced by -1, all positive values by +1
+echo "cpx_to_real tmp_hhvv tmp1 $nlines 0"
+nice cpx_to_real tmp_hhvv tmp1 $nlines 0
+echo "replace_values tmp1 0 -1 tmp2 $nlines 2 2"
+nice replace_values tmp1 0 -1 tmp2 $nlines 2 2
+echo "replace_values tmp2 0 1 fdd_mask $nlines 1 2"
+nice replace_values tmp2 0 1 fdd_mask $nlines 1 2
+
+
+
+echo  " "
+echo "Merging the solutions for fs"
+echo " "
+
+# Summing masked images of fs (first I create a dummy image with negative values where 
+# values need to be substituted and  then I replace negative values with the pixel
+# values from the other image)
+echo "product $fdd.fdd_fs1 fdd_mask tmp1 $nlines 1 1 0"
+nice product $fdd.fdd_fs1 fdd_mask tmp1 $nlines 1 1 0
+echo "replace_values tmp1 0 $fdd.fdd_fs2 $fdd.fdd_fs $nlines 2 2"
+nice replace_values tmp1 0 $fdd.fdd_fs2 $fdd.fdd_fs $nlines 2 2
+
+
+
+echo  " "
+echo "Merging the solutions for fd"
+echo " "
+
+# Summing masked images of fd (first I create a dummy image with negative values where 
+# values need to be substituted and  then I replace negative values with the pixel
+# values from the other image)
+echo "product $fdd.fdd_fd1 fdd_mask tmp1 $nlines 1 1 0"
+nice product $fdd.fdd_fd1 fdd_mask tmp1 $nlines 1 1 0
+echo "replace_values tmp1 0 $fdd.fdd_fd2 $fdd.fdd_fd $nlines 2 2"
+nice replace_values tmp1 0 $fdd.fdd_fd2 $fdd.fdd_fd $nlines 2 2
+
+
+
+echo  " "
+echo "Final solutions for beta"
+echo " "
+
+# beta: for mask=-1 replace with 1
+echo "product $fdd.fdd_beta_int0 fdd_mask tmp1 $nlines 1 1 0"
+nice product $fdd.fdd_beta_int0 fdd_mask tmp1 $nlines 1 1 0
+echo "replace_values tmp1 0 1 $fdd.fdd_beta_int $nlines 2 2"
+nice replace_values tmp1 0 1 $fdd.fdd_beta_int $nlines 2 2
+
+
+echo  " "
+echo "Final solutions for alpha"
+echo " "
+
+# alpha: For mask=1 replace with -1
+# first of all inverting sign of mask
+echo "lin_comb 1 fdd_mask 0 -1 fdd_mask_inv $nlines - - 1 1 1"
+nice lin_comb 1 fdd_mask 0 -1 fdd_mask_inv $nlines - - 1 1 1
+echo "product $fdd.fdd_alpha_int0 fdd_mask_inv tmp1 $nlines 1 1 0"
+nice product $fdd.fdd_alpha_int0 fdd_mask_inv tmp1 $nlines 1 1 0
+echo "replace_values tmp1 0 -1 $fdd.fdd_alpha_int $nlines 2 2"
+nice replace_values tmp1 0 -1 $fdd.fdd_alpha_int $nlines 2 2
+
+
+echo  " "
+echo "Computation of Ps"
+echo " "
+
+# Computing Ps
+echo "product $fdd.fdd_fs $fdd.fdd_beta_int tmp1 $nlines 1 1 0"
+nice product $fdd.fdd_fs $fdd.fdd_beta_int tmp1 $nlines 1 1 0
+echo "lin_comb 2 $fdd.fdd_fs tmp1 0 1 1 $fdd.fdd_ps $nlines - - 1 1 1"
+nice lin_comb 2 $fdd.fdd_fs tmp1 0 1 1 $fdd.fdd_ps $nlines - - 1 1 1
+
+
+echo  " "
+echo "Computation of Pd"
+echo " "
+
+# Computing Pd
+echo "product $fdd.fdd_fd $fdd.fdd_alpha_int tmp1 $nlines 1 1 0"
+nice product $fdd.fdd_fd $fdd.fdd_alpha_int tmp1 $nlines 1 1 0
+echo "lin_comb 2 $fdd.fdd_fd tmp1 0 1 1 $fdd.fdd_pd $nlines - - 1 1 1"
+nice lin_comb 2 $fdd.fdd_fd tmp1 0 1 1 $fdd.fdd_pd $nlines - - 1 1 1
+
+
+echo  " "
+echo "Computation of Pv"
+echo " "
+
+# Pv is 8 time int(Shv) ( equations 12 and 10)
+echo "cpx_to_real $slc_hv tmp1 $nlines 2"
+nice cpx_to_real $slc_hv tmp1 $nlines 2
+echo "lin_comb 1 tmp1 0 8 $fdd.fdd_pv $nlines - - 1 1 1 "
+nice lin_comb 1 tmp1 0 8 $fdd.fdd_pv $nlines - - 1 1 1 
+
+echo " "
+echo "The files $fdd.fdd_ps, $fdd.fdd_pd and $fdd.fdd_pv have been generated - FLOAT format"
+echo " "
+
+
+/bin/rm	*tmp* fdd_mask* $fdd.fdd_alpha* $fdd.fdd_beta* $fdd.fdd_fs* $fdd.fdd_fd*
+
+
+echo End of FD3C_DEC
+
+
+
+
+
+

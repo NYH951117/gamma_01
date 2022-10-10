@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: ptarg</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ptarg</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ptarg.c">ptarg.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>ptarg</em> - Point target
+  response analysis program<br></p>
+
+  <p><strong>SYNOPSIS<br></strong><code>ptarg &lt;SLC&gt;
+  &lt;width&gt; &lt;r_samp&gt; &lt;az_samp&gt; &lt;ptr_image&gt;
+  &lt;r_plot&gt; &lt;az_plot&gt; &lt;data_format&gt;
+  [win]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input)single look complex image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>(input) SLC complex samples per line</td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_samp&gt;</td>
+
+        <td>(input) point target range sample number</td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_samp&gt;</td>
+
+        <td>(input) point target azimuth line number</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ptr_image&gt;</td>
+
+        <td>(output) oversampled point target image (FCOMPLEX,
+        512x512 samples)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_plot&gt;</td>
+
+        <td>(output) range point target response plot data (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;az_plot&gt;</td>
+
+        <td>(output) azimuth point target response plot data (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>[data_format]</td>
+
+        <td>input data format flag (default = 0)<br>
+        &nbsp; 0: FCOMPLEX (pairs of 4-byte-float)<br>
+        &nbsp; 1: SCOMPLEX (pairs of 2-byte-short-integer)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[win]<br></td>
+
+        <td style="vertical-align: top;">(input) maximum search
+        window offset (samples) (integer, default: 1)<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>ptarg 01508.slc 4912 1979 472 ptr_image r_plot az_plot 0
+  2<br></samp></p>
+
+  <p>Determines the exact point target location, oversamples the
+  SLC about the point target, and extracts the point target range
+  and azimuth response functions, and measures the target PSLR,
+  ISLR, and peak widths at -10 and -3 dB. The maximum of the point
+  target is determined within a rectangular search area +/- 2
+  samples of the window center.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">ptarg</span> is a point target
+  analysis tool for complex valued SAR data. The input SLC (in
+  FCOMPLEX format) is read and the response of the point target at
+  or near the indicated location is analysed. To estimate the
+  approximate point target location the SLC can be displayed using
+  the DISP&nbsp; program <a href=
+  "../../DISP/html/DISP_reference_manual.html">dismph</a>.</p>
+
+  <p>For the point target response analysis the SLC is oversampled
+  with an oversampling factor 16. The location of the intensity
+  maximum is searched for and used as the peak location. Centered
+  at the intensity maximum the range and azimuth response functions
+  are determined and written as text files for plotting using
+  programs such as <span style="font-style: italic;">grace</span>.
+  The measured parameters include the relative peak location,
+  expressed in input SLC sample, the signal intensity in dB, the
+  signal intensity in linear scale, and the signal phase. The
+  oversampled SLC around the point target is written out as a
+  1024x1024 image in FCOMPLEX format.&nbsp; <span style=
+  "font-style: italic;">ptarg</span> also calculates the the 3 dB
+  peak width, the 10 dB peak width, Peak to Side Lobe Ratio (PSLR),
+  and the integrated side lobe ratio (ISLR) as defined in the CEOS
+  standard.<br></p>
+
+  <p>To evaluate the peak position and phase, a 64x64 section of
+  the original data are copied and interpolated by 16 in both
+  vertical and horizontal dimensions. The peak position and value
+  are then determined using a quadratic spline function.&nbsp; The
+  search region for the peak is located in the center of the data
+  segment extracted from the entire image as specified by the
+  <span style="font-weight: bold;">r_samp</span> and <span style=
+  "font-weight: bold;">az_samp</span> parameters command line
+  parameters. The size of the search region defaults to +/- 1 pixel
+  of the center coordinates but can be increase to +/- 4 samples by
+  entering a value for the <span style=
+  "font-weight: bold;">win</span> commandline parameter.<br></p>
+
+  <p>The interpolated image has dimensions determined by the
+  over-sampling factor. The line length is&nbsp; is 1024x1024 for
+  osf=16. Two images are written to the output <span style=
+  "font-style: italic;">ptr_image.</span> The first image has any
+  linear phase trend removed, and the second image is an
+  interpolated version of the original SLC segment. The second
+  image starts at line offset 1024 of the ouput ptr image.<br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a><a href=
+  "MSP_display.html"></a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-May-2012.
+</body>
+</html>

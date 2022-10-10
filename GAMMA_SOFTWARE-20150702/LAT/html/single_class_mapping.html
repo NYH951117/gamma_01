@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: single_class_mapping</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>single_class_mapping</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/single_class_mapping.c"><i>single_class_mapping.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  single_class_mapping - Generate a map of a single class based on
+  co-registered multiple input files.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>single_class_mapping &lt;nfiles&gt; &lt;f1&gt;
+  &lt;lt1&gt; &lt;ut1&gt; &lt;f2&gt; &lt;lt2&gt; &lt;ut2&gt; ...
+  &lt;ras_out&gt; &lt;width&gt; [start] [nlines] [pixav_x]
+  [pixav_y] [LR]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;nfiles&gt;</td>
+
+      <td>number of input data files</td>
+    </tr>
+
+    <tr>
+      <td>&lt;f1&gt;</td>
+
+      <td>1. input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lt1&gt;</td>
+
+      <td>lower threshold for file 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ut1&gt;</td>
+
+      <td>upper threshold for file 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;f2&gt;</td>
+
+      <td>2. input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lt2&gt;</td>
+
+      <td>lower threshold for file 2</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ut2&gt;</td>
+
+      <td>upper threshold for file 2</td>
+    </tr>
+
+    <tr>
+      <td>...</td>
+
+      <td>further input files and thresholds</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>output 8-bit SUN raster BMP format image file (SUN raster
+      file: *.ras, BMP file: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[start]</td>
+
+      <td>starting line (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to display (default: 0=to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[pixav_x]</td>
+
+      <td>number of pixels to average in range (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[pixav_y]</td>
+
+      <td>number of pixels to average in azimuth (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping flag (default: 1=normal, -1=mirror
+      image)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>single_class_mapping 2 1825_1868.cc 0.1 0.4 1825_1868.pwr1
+  0.05 0.12 1825_1868.forest.ras 2500 1 0 1 1 -1</samp></p>
+
+  <p>Classifies the class (forest) with coherence values between
+  0.1 and 0.4 and backscatter intensities betwenn 0.05 and 0.12.
+  The result is written to a SUN raster image.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code <em>single_class_mapping.c</em> in $LAT_HOME/src. For
+  compilation adjust and use Makefile: Executable image of
+  <em>single_class_mapping</em> is locateed in $LAT_HOME/bin.</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster image definitions
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  single_class_mapping provides a simple classification algorithm.
+  Multiple input data sets are read and one class, specified by
+  decision intervals for each input data set, is classified. The
+  decision intervals are specified on the command line.The result
+  of the classification is written to an 8-bit SUN raster or BMP
+  format file with white color (value 1, color table values R=255,
+  G=255, B=255) for the pixels belonging to the class versus black
+  color (value 0, color table values R=0, G=0, B=0).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The output image may be left/right flipped to generate a geometry
+  corresponding better to the natural geometry. The program
+  <em>multi_class_mapping</em> uses an input file specifying
+  multiple thresholds for mapping more than 1 class at a time.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="multi_class_mapping.html">multi_class_mapping</a>,
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  No filtering, averaging or multi-looking is performed by
+  <em>single_class_mapping.</em> These processing steps are often
+  esssential for the performence of a classification algorithm.
+  Such processing steps have to be performed prior to the use of
+  the classification with <em>single_class_mapping</em>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

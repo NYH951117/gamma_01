@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: svg_arrow</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>svg_arrow</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/svg_arrow.c">svg_arrow.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>svg_arrow</i> - Draws arrows from length and direction
+  information and stores the result in scalable vector graphics
+  format with a linke to a background image.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>svg_arrow &lt;dv_norm&gt; &lt;dv_phi&gt; &lt;width&gt;
+  &lt;svg&gt; [image] [norm] [gridx] [gridy] [color] [thick]
+  [head]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tr>
+      <td>&lt;dv_norm&gt;</td>
+
+      <td>(input) arrow length file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dv_phi&gt;</td>
+
+      <td>(input) arrow direction file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>&lt;svg&gt;</td>
+
+      <td>(output) svg output file</td>
+    </tr>
+
+    <tr>
+      <td>[image]</td>
+
+      <td>URL of background image in png or jpg format (- for no
+      background image)</td>
+    </tr>
+
+    <tr>
+      <td>[norm]</td>
+
+      <td>arrow length normalisation factor (default = 1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[gridx]</td>
+
+      <td>step size for arrow grid in x direction (default =
+      10)</td>
+    </tr>
+
+    <tr>
+      <td>[gridy]</td>
+
+      <td>step size for arrow grid in y direction (default =
+      gridx)</td>
+    </tr>
+
+    <tr>
+      <td>[color]</td>
+
+      <td>black, white, blue etc (default = black)</td>
+    </tr>
+
+    <tr>
+      <td>[thick]</td>
+
+      <td>line thickness in pixels (default = 1)</td>
+    </tr>
+
+    <tr>
+      <td>[head]</td>
+
+      <td>arrow head size (default = 3)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>svg_arrow velocity.disp velocity.phi 5300 glacier.svg
+  map.bmp</tt></p>
+
+  <p>Draws arrows computed from velocity.disp (length) and
+  velocity.phi (direction) over the map map.bmp using default
+  values for gridding, color etc and stores the result in
+  glacier.svg a scalable vector graphics file. It can be viewed by
+  any SVG capable graphics program such as inkscape, sodipodi or a
+  standard web browser.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>svg_arrow</i> computes arrows and draws the information on an
+  image and stores in SVG XML format that can be displayed in a
+  wide range of graphics software and image browsers. Its advantage
+  is its portability and the vector format that allows to scale
+  text and lines without quality loss. SVG is an open standard
+  published by the World Wide Web Consortium. The resulting SVG
+  file can be edited in any text editor.<br></p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="http://www.w3.org/Graphics/SVG/">W3C page: Scalable
+  Vector Graphics (SVG)</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  awi, last change 21-May-2007.
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: ASAR_AP_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ASAR_AP_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ASAR_AP_proc.c">ASAR_AP_proc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ASAR_AP_proc - Generates MSP sensor parameter and processing
+  parameter files from Level 0&nbsp; ASAR Alternating Polarization
+  (AP) Mode data. This program also reformats the raw SAR signal
+  data for the two channels to be compatible with the MSP.&nbsp;
+  The entire level 0 AP data set is converted to&nbsp; 8-bit I/Q
+  unsigned binary complex samples in two files corresponding to the
+  two polarization channels.<br></p>
+
+  <p><strong>SYNOPSIS<br></strong><code>ASAR_AP_proc&nbsp;
+  &lt;L0&gt; &lt;INS&gt; &lt;SAR_par1&gt;</code>
+  <code>&lt;SAR_par2&gt;</code> <code>&lt;PROC_par1&gt;</code>
+  <code>&lt;PROC_par2&gt;</code> <code>&lt;raw1&gt;</code>
+  <code>&lt;raw2&gt;</code> <code>&lt;ant_gain1&gt;</code>
+  <code>&lt;ant_gain2&gt;</code> <code>[loff] [nl] [roff]
+  [nr]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;L0&gt;</td>
+
+        <td>(input) Level 0 Image Mode ASAR data file
+        (ASA_IM_0P)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;INS&gt;</td>
+
+        <td>(input) ASAR instrument characterization file
+        (ASA_INS_AX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SAR_par1&gt;</td>
+
+        <td>(output) MSP SAR sensor parameter file 1<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SAR_par2&gt;</td>
+
+        <td>(output) MSP SAR sensor parameter file 2</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;PROC_par1&gt;<br></td>
+
+        <td style="vertical-align: top;">(output) MSP processing
+        parameter file 1 (example
+        p&lt;20071121&gt;.slc.par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par2&gt;</td>
+
+        <td>(output) MSP processing parameter file 1 (example
+        p&lt;20071121&gt;.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;raw1&gt;</td>
+
+        <td>(output) byte aligned 8-bit I/Q raw data 1<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;raw2&gt;</td>
+
+        <td>(output) byte aligned 8-bit I/Q raw data 1</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;ant_gain1&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) antenna pattern
+        file 1 (derived using program ASAR_XCA)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;ant_gain2&gt;</td>
+
+        <td>(input) antenna pattern file 2 (derived using program
+        ASAR_XCA)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[loff]<br></td>
+
+        <td style="vertical-align: top;">offset to first line to
+        process (default = 0, enter - for default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nl]</td>
+
+        <td style="vertical-align: top;">number of lines to
+        process(default = to end of input, enter - for
+        default)<br></td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>offset to first range sample to process (default = 0,
+        enter - for default)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nr]</td>
+
+        <td style="vertical-align: top;">number of range samples to
+        process (default = to end of line, enter - for
+        default)<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong><br clear="all">
+  <samp><span style="font-weight: bold;">ASAR_AP_proc</span>
+  ASA_APH_0CNPDE20050131_211902_000000362034_00200_15284_1759.N1
+  ASA_INS_AXVIEC20041215_180208_20030211_000000_20051231_000000
+  ASAR_20050131_HH.par</samp> <span style=
+  "font-family: monospace;">ASAR_20050131_HV.par</span><samp>p20050131_HH.slc.par</samp>
+  <span style=
+  "font-family: monospace;">p20050131_HV.slc.par</span><samp>20050131_HH.raw
+  20050131_HV.raw ASAR_IS4_HH_antenna.gain
+  ASAR_IS4_HV_antenna.gain<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <span style="font-weight: bold;">ASAR_AP_proc</span> reads the AP
+  mode ASAR Level 0 data files and generates the MSP processing
+  parameter (p*.slc.par) and sensor parameter files along with
+  reformatting the raw data. Level 0 AP files have names that begin
+  with <span style="font-weight: bold;">(ASA_APC_0...,
+  ASA_APH_0..., ASA_APV_0...)</span>. These files contain both raw
+  data and meta data describing when the data were acquired and the
+  imaging mode&nbsp; (IS1 - IS7). Alternating Polarization data is
+  a dual polarization acquisition mode where alternate echo bursts
+  comprising of approximately 200 echoes are recorded. After
+  recording in one polarization mode for approximately 200 echoes
+  (e.g.HH), the polarization mode is changed to HV for the next
+  burst..&nbsp; Detailed information on the&nbsp; AP Level 0 format
+  is contaned in the ASAR Product Handbook available on-line at
+  <a href="http://envisat.esa.int">http://envisat.esa.int.</a> in
+  Section 2.5.&nbsp;<br></p>
+
+  <p>The ASAR AP mode data are stored as records in the raw data
+  files with each record corresponding to an echo. Each echo
+  consists of a header consisting of timing and error information
+  and radar parameters followed by a set of 64-byte&nbsp; packets
+  containing the echo samples. These echo samples are stored using
+  block floating point quantization (FBAQ)&nbsp; that effectively
+  increases the dynamic range of the data to 8 bits from the 4 bits
+  used to encode the data in the Level 0 data.&nbsp; Each packet
+  consists of 63 complex samples (4-bit I/4-bit Q) and a single
+  byte that is an index into a set of lookup tables. These lookup
+  tables map the 4-bit values to the corresponding 8-bit
+  values.<br></p>
+
+  <p>The output of <span style=
+  "font-weight: bold;">ASAR_AP_proc</span> is two sets of raw data,
+  one for each of the two polarization modes. Blank lines are
+  inserted in one raw data file, when the other polarization mode
+  is active. This way the timing is preserved. The data set
+  comprised of SAR_par1, PROC_par1, raw1 and ant_gain1 correspond
+  to the first of the two polarizations in the polarization mode
+  specification ( i.e. HH in APH&nbsp; H/HVmode, VV in APV V/VH
+  mode, and HH for APC&nbsp; HH/VV mode). Processing proceeds for
+  the two raw data sets as for a normal SAR images with the
+  exception that autofocus may not work with this type of data and
+  may not be required..</p>
+
+  <p>The set of 256 look up tables needed to generate decompressed
+  samples and other ASAR calibration and system parameters are
+  stored in the Instrument Characterization File (<span style=
+  "font-weight: bold;">ASA_INS_AXVIEC...</span>).&nbsp; These files
+  must be downloaded from ESA and the correct file selected for the
+  date that the data were aquired.&nbsp; The ESA website to
+  download both the INS files and the external characterization
+  file (<span style="font-weight: bold;">ASA_XCA...)</span> is
+  <a href=
+  "http://envisat.esa.int/services/auxiliary_data/asar">http://envisat.esa.int/services/auxiliary_data/asar</a>
+  .<br></p>
+
+  <p>The external characterization file is required to extract the
+  antenna pattern as measured on the ground and is used to
+  compensate for the antenna gain across the swath in the SAR
+  processing. The program in the ISP called <span style=
+  "font-weight: bold;">ASAR_XCA</span> and is used to extract the
+  appropriate antenna pattern (the <span style=
+  "font-weight: bold;">ant_gain</span>1 and <span style=
+  "font-weight: bold;">ant_gain2</span>&nbsp; files on the command
+  line).<br></p>
+
+  <p>The ASAR instrument shifts the echo digitization window
+  approximately every 15 seconds along-track. <span style=
+  "font-weight: bold;">ASAR_AP_proc</span> initially scans the
+  entire data set to determine the maximum shift from start to
+  finish. and shifts the data in the output such that the starting
+  time for all echoes is the same for the entire raw data set.. No
+  samples are lost in this process because the data are extended to
+  accomodate the range of the shift. Every echo is decompressed and
+  written to the appropriate&nbsp; raw file specified .<br></p>
+
+  <p>The remain optional parameters on the command line specify
+  what portion of the raw data file that will be processed by the
+  MSP. If these are omitted, then the entire raw data set is
+  processed.&nbsp; Default values for the number of lines
+  <span style="font-weight: bold;">nl</span> corresponds to all
+  remaining echoes in the file beginning at <span style=
+  "font-weight: bold;">loff</span> lines. Similarly, the default
+  number of samples <span style="font-weight: bold;">nr</span>, is
+  all samples to the end of the line beginning at <span style=
+  "font-weight: bold;">roff</span> samples.<br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html#file%20a">SAR raw data
+  (&lt;YYYYMMDD&gt;.raw)</a>.</p>
+  <hr align="left">
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-Dec-2007.</p>
+</body>
+</html>

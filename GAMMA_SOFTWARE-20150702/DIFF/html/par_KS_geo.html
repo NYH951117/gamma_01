@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: par_CS_geo</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate DEM and ISP SLC/MLI parameter files, and image file
+  for Kompsat GEC data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_CS_geo.c">par_KS_geo.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_KS_geo - reads Kompsat GEC (Level 1C) data as provided by
+  KARI and creates the DEM parameter file, the ISP SLC/MLI
+  parameter file and the image file in the format used by GAMMA
+  software.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_KS_geo &lt;HDF5&gt; &lt;MLI_par&gt; &lt;DEM_par&gt;
+  &lt;GEO&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;HDF5&gt;</td>
+
+        <td>(input) Kompsat GEC product in HDF5 format as provided
+        by KARI</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(output) ISP SLC/MLI parameter file (example:
+        yyyymmdd.mli.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(output) DIFF/GEO DEM parameter file (example:
+        yyyymmdd.dem_par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(output) Geocoded image data file (example:
+        yyyymmdd.geo)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_KS_geo
+  KSKS1_GEC_B_HI_16_HH_LD_SN_20080108105558_20080108105604.h5
+  20080108.mli.par 20080108.dem_par 20080108.geo</samp></p>
+
+  <p>Reads the Kompsat SCS file par_KS_SLC
+  KSKS1_GEC_B_HI_16_HH_LD_SN_20080108105558_20080108105604.h5 and
+  generates:<br>
+  20080108.mli.par - ISP SLC/MLI parameter file<br>
+  20080108.dem_par - DIFF/GEO DEM parameter file<br>
+  20080108.geo - GEC geocoded image</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">par_KS_geo</span> is the
+  interface between Kompsat GEC data in the format provided by KARI
+  and the format used by GAMMA software. GEC means geocoded
+  ellipsoid corrected. Kompsat GEC data are provided in an single
+  file consisting of the image data and a set of annotations. The
+  file is in HDF5 format. This program reformats the input file to
+  obtain the geocoded image data and to extract the key parameters
+  required by the DEM parameter file and the GAMMA ISP/SLC
+  parameter file. The DEM parameter file contains the image
+  dimensions, sample spacing and map projection parameters. The ISP
+  image parameter file contains the data, polarization, date, and
+  state vector information.</p>
+
+  <p>Currently supported map projection for these products is
+  Universal Transverse Mercator (UTM).</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2014.<br>
+  awi, last change 5-May-2014.
+</body>
+</html>

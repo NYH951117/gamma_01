@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>LAT Reference Manual: lin_comb_cpx</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>lin_comb_cpx</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/lin_comb_cpx.c">lin_comb_cpx.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  lin_comb_cpx - Calculation of complex linear function of input
+  data values (float complex).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>lin_comb_cpx &lt;nfiles&gt; &lt;f1&gt; &lt;f2&gt; ...
+  &lt;constant_r&gt; &lt;constant_i&gt; &lt;factor1_r&gt;
+  &lt;factor1_i&gt; &lt;factor2_r&gt; &lt;factor2_i&gt; ...
+  &lt;f_out&gt; &lt;width&gt; [start] [nlines] [pixav_x] [pixav_y]
+  [zero_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;nfiles&gt;</td>
+
+        <td>number of input data files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;f1&gt;</td>
+
+        <td>1. input data file (float complex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;f2&gt;</td>
+
+        <td>2. input data file (float complex)</td>
+      </tr>
+
+      <tr>
+        <td>...</td>
+
+        <td>further input files (float complex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;constant_r&gt;</td>
+
+        <td>constant value (real part) to add to output</td>
+      </tr>
+
+      <tr>
+        <td>&lt;constant_i&gt;</td>
+
+        <td>constant value (imaginary part) to add to output</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor1_r&gt;</td>
+
+        <td>factor1 (real part) to multiply with f1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor1_i&gt;</td>
+
+        <td>factor1 (imaginary part) to multiply with f1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor2_r&gt;</td>
+
+        <td>factor2 (real part) to multiply with f2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor2_i&gt;</td>
+
+        <td>factor2 (imaginary part) to multiply with f2</td>
+      </tr>
+
+      <tr>
+        <td>...</td>
+
+        <td>factors for further input files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;f_out&gt;</td>
+
+        <td>output file (float complex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[start]</td>
+
+        <td>starting line (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to display (default: 0=to end of
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[pixav_x]</td>
+
+        <td>number of pixels to average in range (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[pixav_y]</td>
+
+        <td>number of pixels to average in azimuth (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[zero_flag]</td>
+
+        <td>NULL value interpretation flag<br>
+        (default: 0 =&gt; 0.0 interpreted as missing value<br>
+        1 =&gt; 0.0 interpreted as valid image value)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>lin_comb_cpx 3 1825_1868.cc 1868_1911.cc 1911_1954.cc 0.0
+  0.0 2.0 0.0 0.0 1.0 2.0 2.0 cc_out.ras 2500 1 0 3 3
+  0</samp></p>Generates a file of float based on the 3 input data
+  files using the linear function:<br>
+  output = 0.0 + 2.0 * (re(first file)) + 1.0i * (second file) +
+  2.0 * (third file).<br>
+  Multi-looking in range and azimuth (3 looks in each direction) is
+  performed.<br>
+  0.0 in the input data files is interpreted as missing value; for
+  pixels with missing values 0.0 is written to the output file.
+
+  <p><strong>DESCRIPTION</strong><br>
+  lin_comb allows to generate an image defined by a linear function
+  of a number of input files of type float complex.</p>
+
+  <p>Values 0.0 of the input data files may either be interpreted
+  as NULL values (zero_flag=0) or as valid data. In the case of an
+  interpretation as NULL values 0.0 is written to the output file
+  as soon as at least one of the input data files has NULL value
+  for a pixel.</p>
+
+  <p>The calulation of a complex linear function may be of interest
+  to compute decompositions from polarimetric data. Multi-looking
+  in range and/or azimuth may be applied. An image sub-section may
+  also be selected.</p>
+
+  <p>To calculate non-linear functions of a number of input data
+  files the program lin_comb may be copied, modified to calculate
+  the specific function, compiled, and used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> <a href=
+  "lin_comb.html">lin_comb</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  awi, <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-Aug-2013.
+</body>
+</html>

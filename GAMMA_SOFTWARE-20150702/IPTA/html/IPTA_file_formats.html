@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>Interferometric Point Target Analysis Software
+  Documentation: File Formats</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>IPTA File Formats</h2>
+  <hr>
+
+  <h2><a name="SLC_data" id="SLC_data">Single look complex SAR data
+  (&lt;orbit&gt;.slc)</a></h2>
+
+  <p>Two formats for SLC data are supported.</p>
+
+  <p>In the first format the SLC data are in complex floating point
+  representation, each complex sample consists of two 4 byte
+  floating point numbers, real and imaginary part. There is no file
+  header, or zero padding of the data. Each record corresponds to a
+  single range line. The number of samples/line and the number of
+  lines is specified in the SLC parameter file <a href=
+  "SLC_par.html">SLC_par</a>.</p>
+
+  <p>In the second format the SLC data are in short integer
+  representation, each complex sample consists of two 2 byte short
+  integer numbers, real and imaginary part. The second format is
+  also the format provided by ESA Processing Facilities (PAFs).
+  Real and imaginary part of the SLC data are in 2 byte integer
+  format. File header, or zero padding of the data as described in
+  the CEOS leader file. Each record corresponds to a single range
+  line. The number of samples/line and the number of lines is
+  specified in the SLC parameter file <a href=
+  "SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <h2><a name="MLI_data" id="MLI_data">Real valued multi-look
+  intensity SAR data (&lt;orbit&gt;.mli)</a></h2>
+
+  <p>The MLI data are in floating point representation, each 4 byte
+  floating point number, corresponds to a SAR multi-look intensity
+  value (in slant range geometry). There is no file header, or zero
+  padding of the data. Each record corresponds to a single range
+  line. The number of samples/line and the number of lines is
+  specified in the MLI parameter file which has the same format as
+  the SLC parameter file <a href="SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <h2><a name="GRD_data" id="GRD_data">Real valued multi-look
+  intensity SAR data in ground-range geometry
+  (&lt;orbit&gt;.grd)</a></h2>
+
+  <p>The GRD data are in floating point representation, each 4 byte
+  floating point number, corresponds to a SAR multi-look intensity
+  value (in ground-range geometry). There is no file header, or
+  zero padding of the data. Each record corresponds to a single
+  range line. The number of samples/line and the number of lines is
+  specified in the GRD parameter file which has the same format as
+  the SLC parameter file <a href="SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <h2><a name="PRI_data" id="PRI_data">Real valued "Precision
+  Image" PRI data product provided by ESA
+  (&lt;orbit&gt;.pri)</a></h2>
+
+  <p>The PRI data are in short integer representation, each 2 byte
+  short integer, corresponds to a SAR multi-look magnitude value
+  (in ground-range geometry). There is typically a 12 byte line
+  header. Each record corresponds to a single range line. The
+  number of samples/line and the number of lines is specified in
+  the PRI parameter file which is generated from the CEOS
+  leaderfile and which has the same format as the SLC parameter
+  file <a href="SLC_par.html">SLC_par</a>, except that the
+  indicated range values correspond to ground-ranges and not to
+  slant-ranges.</p>
+  <hr>
+
+  <h2><a name="lookup table" id="lookup table">Complex valued
+  geocoding lookup table used by GAMMA Software
+  (&lt;*&gt;.utm_to_rdc, &lt;*&gt;.eqa_to_grd, etc.)</a></h2>
+
+  <p>The geocoding lookup table used by GAMMA Software is a binary
+  file in fcomplex representation, each complex sample consists of
+  two 4 byte floating point numbers, real and imaginary part. Each
+  complex sample indicates the corresponding transformed coordinate
+  with the real part indicating the x / col pixel number and the
+  imaginary part indicating the y / row pixel number. Geocoding
+  lookup tables are generated using the programs gc_map,
+  gc_map_grd, gec_map, gec_map_grd, and gc_insar and are used for
+  the geocoding resampling transformation done with the programs
+  geocode_back and geocode. The number of samples/line and the
+  number of lines is specified in the DEM/MAP parameter file
+  (<a href="DEM_par.html">DEM_par</a> of the corresponding DEM/MAP
+  segment.</p>
+  <hr>
+
+  <h2><a name="complex_data" id="complex_data">Complex data (*.int,
+  *.flt, *.sm, *.slope)</a></h2>
+
+  <p>Complex valued data (for example the interferogram) saved as
+  pairs of 4-byte floating point numbers (real part followed by
+  imaginary part). Image width and height correspond to the number
+  of range and azimuth pixels, respectively. No header or
+  zero-padding is used. Image width and height are given in the ISP
+  processing/offset parameter file.</p>
+  <hr>
+
+  <h2><a name="real_data" id="real_data">Real data (*.pwr1, *.pwr2,
+  *.cc, *.unw, *.hgt, *.rpwr1, *.rhgt, ...)</a></h2>
+
+  <p>Real valued data saved as 4-byte floating point numbers. Image
+  width and height correspond to the number of range and azimuth
+  pixels, respectively. No header or zero-padding is used. Image
+  width and height are given in the ISP processing/offset parameter
+  file.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

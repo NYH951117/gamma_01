@@ -1,0 +1,330 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: dis_ipta</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>dis_ipta</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/dis_ipta.c">dis_ipta.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  dis_ipta - display regression of phase with respect to time
+  interval and baseline for selected points</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dis_ipta &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;ppos&gt; &lt;itab&gt; &lt;pbase&gt; &lt;bflag&gt;
+  &lt;pdiff&gt; &lt;pdiff_type&gt; &lt;ras&gt; [dh_max] [def_min]
+  [def_max] [model] [bmax] [dtmax] [mag] [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2&nbsp;itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of baseline parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bflag&gt;</td>
+
+        <td>baseline flag (0:initial baseline 1:precision
+        baseline)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff&gt;</td>
+
+        <td>(input) point data stack of differential interferograms
+        (fcomplex or float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff_type&gt;</td>
+
+        <td>type of pdiff (0: float(unwrapped) default=1:
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras&gt;</td>
+
+        <td>(input) raster reference image with PT locations marked
+        (SUN *.ras, or BMP *.bmp)</td>
+      </tr>
+
+      <tr>
+        <td>[dh_max]</td>
+
+        <td>maximum height correction for initial fit (m, enter -
+        for default: 60.)</td>
+      </tr>
+
+      <tr>
+        <td>[def_min]</td>
+
+        <td>minimum deformation rate difference for initial fit
+        (m/year, enter - for default: 0.005)</td>
+      </tr>
+
+      <tr>
+        <td>[def_max]</td>
+
+        <td>maximum deformation rate difference for initial fit
+        (m/year, enter - for default: 0.005)</td>
+      </tr>
+
+      <tr>
+        <td>[model]</td>
+
+        <td>phase regression model:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: a0 + a1*bperp[i]&nbsp;&nbsp;&nbsp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: a0 + a1*bperp[i] + a2*delta_t[i]) (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3: a1*bperp[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4: a1*bperp[i] + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5: a0 + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6: a2*delta_t[i]</td>
+      </tr>
+
+      <tr>
+        <td>[bmax]</td>
+
+        <td>maximum perp. baseline (m) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+
+      <tr>
+        <td>[dtmax]</td>
+
+        <td>maximum time interval (days) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+
+      <tr>
+        <td>[mag]</td>
+
+        <td>zoom magnification factor (default=3)</td>
+      </tr>
+
+      <tr>
+        <td>[win_sz]</td>
+
+        <td>zoom window size before magnification
+        (default=128)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>dis_ipta testsite.plist testsite.pmask testsite.ppar -
+  testsite.itab testsite.pbase 0 testsite.pdiff 1 testsite.pt.ras
+  20. -.01 0.005 2</samp></p>
+
+  <p>Displays the SUN/BMP rasterfile testsite.pt.ras which shows
+  the point locations, and conducts for the interactively selected
+  pairs of points (one is the reference point) an investigation of
+  the baseline and time dependence of the differential
+  interferometric phase (relative to the phase of the reference
+  point), estimates height corrections, linear deformation rates,
+  and a quality measure for the regression, and displays the phase
+  values together with the regression function.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  dis_ipta is a tool for a point-wise investigation of the baseline
+  and time dependence of the differential interferometric phase
+  (relative to the phase of the reference point).</p>
+
+  <p>Interactively, pairs of points are selected in the displayed
+  SUN/BMP rasterfile testsite.pt.ras which shows the point
+  locations. For the selected pairs of points (one is the reference
+  point) an 2-D linear regression function (linear dependences on
+  the perpendicular baseline and time differences) is determined
+  for the differential interferometric phase (relative to the phase
+  of the reference point). Height corrections, linear deformation
+  rates, and the standard deviation of the phase from the fit as a
+  quality measure for the regression, are calculated. Plots showing
+  the phase values together with the regression function are
+  displayed.</p>
+
+  <p>In the regression analysis either a one dimensional (linear
+  dependence on perpendicular baseline component) or two
+  dimensional (linear dependences on perpendicular baseline
+  component and linear deformation rate) linear regression function
+  is used. In this regression analysis it is accounted for that
+  wrapped phases are provided in the case of a complex valued
+  interferogram.</p>
+
+  <p>The slopes of the regression functions determined are directly
+  related to the relative height correction, also called delta
+  height value, and the linear deformation rate.<br>
+  The standard deviation from the regression function serves as a
+  quality measure for the regression function and the derived
+  parameters. The standard deviation of the phase from the
+  regression funnction is expressed in radian. As input to dis_ipta
+  interferometric data in point data format is
+  required.&nbsp;<br></p>
+
+  <p>The point coordinates are defined in a point list. Optionally,
+  a point data stack of interpolated point target positions can be
+  provided. If not provided, the point coordinates of the point
+  list are used. Furthermore, a mask can be provided to indicate
+  for each point if it shall be considered (mask value 1) or not
+  (mask value 0). The interferometric pairs are defined in the
+  itab, a table associating interferogram stack records with pairs
+  of SLC stack records (ascii). Acquisition times and other SLC
+  parameters are provided in the stack of SLC/MLI parameters
+  (binary) and baseline parameters in the stack of baseline
+  parameters (binary). The differential interferogram is provided
+  in a point data stack. Complex valued or unwrapped differential
+  interferograms can be provided (but the same type for all
+  records). Typically, simulated interferometric phase images were
+  subtracted in the calculation of the stack of differential
+  interferograms. Early on in an IPTA investigation initial
+  simulated phases may contain only the topographic and orbital
+  phase terms calculated from an initial DEM and initial baseline
+  estimates from orbit data. Later on improved height values,
+  precision baselines, atmospheric corrections, linear deformation
+  trends etc. may be considered.</p>
+
+  <p>On the command line a number of parameters can be indicated to
+  configure and optimize the regression analysis. These parameters
+  are discussed in the following.</p>
+
+  <p>For the interferometric baselines it can be indicated if the
+  initial estimate or the precision estimate shall be used.</p>
+
+  <p>In the case of the wrapped phase values the regression
+  analysis is done in two steps. The best regression function among
+  a predefined set of functions is determined. In a second step the
+  least squares analysis is conducted. The predefined regression
+  functions for the first step are derived based on the indicated
+  maximum height correction and maximum deformation rate difference
+  values indicated. Indicating larger values means that more
+  predefined regression functions are tested which will make the
+  process slower. Indicating a too small value may result in
+  failure to resolve the regression for a point with a high height
+  correction or deformation rate value. It has to be kept in mind
+  that the height correction and deformation rates are relative to
+  the reference point. Consequently, the regression analysis is
+  generally more robust for points near the reference point.</p>
+
+  <p>The records considered in the regression analysis can be
+  constrained to short perpendicular baselines and short time
+  intervals.</p>
+
+  <p>Either one- or two-dimensional linear regression models can be
+  used. A reason for using the one-dimensional regression model
+  might be to make the regression more robust in the case of only
+  few data records or early on in the analysis when the large
+  height corrections are expected.</p>
+
+  <p>The slope of the phase to baseline dependence is used to
+  calculate a height correction value. This height correction value
+  is the height correction of the current point under the
+  assumption that the height of the reference point is correct. The
+  height corrections are indicated in meter (m) and are written to
+  the screen. It is important to note that this improvement is done
+  relative to the selected reference point. The accuracy of the
+  height of a specific point depends on the accuracy of the height
+  of the reference point plus the error in the height correction
+  (and not only the second term).</p>
+
+  <p>The slope of the phase to time dependence is used to calculate
+  a linear deformation rate. This linear deformation rate is the
+  deformation rate of the current point relative to the reference
+  point. The deformation rates are indicated in meter per year
+  (m/year) and are written to the screen. It is important to note
+  that the linear deformation rate is relative to the reference
+  point and in addition to any deformation model which may already
+  be considered in the calculation of the differential
+  interferogram.</p>
+
+  <p>The residual phase, i.e. the difference between the phase
+  values and the regression model includes terms related to
+  atmospheric delay, non-linear deformation, baseline errors, and
+  signal noise.<br>
+  For each point the standard deviation of the (unwrapped) phases
+  from the regressin function is calculated and used as measure for
+  the quality of the regression.</p>
+
+  <p>To select point pairs in the display visible after starting
+  dis_ipta, the cursor is moved near the desired points which can
+  then be selected using the right mouse bottons. Doubble clicking
+  is used to select a (new) reference point, single clicking to
+  select a (new) point. Upon the selection the regression analysis
+  is done for the selected pair and the result is displayed.</p>
+
+  <p>To automatically conduct the same type of regression analysis
+  for all points of an image is supported by the programs
+  def_mod_pt and multi_def_pt.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="def_mod_pt.html">def_mod_pt</a>, <a href=
+  "multi_def_pt.html">multi_def_pt</a>, <a href=
+  "dis_ipta.html">dis_ipta</a>, <a href="prox_pt.html">prox_pt</a>,
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 21-Nov-2006</p>
+</body>
+</html>

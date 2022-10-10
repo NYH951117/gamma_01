@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ISP Reference Manual: par_S1_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate SLC parameter and image files for Sentinel-1 SLC
+  data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_S1_SLC.c">par_S1_SLC.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_S1_SLC - Generate SLC parameter and image files for
+  Sentinel-1 SLC data, including strip-map and TOPS mode.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_S1_SLC &lt;GeoTIFF&gt; &lt;annotation_XML&gt;
+  &lt;calibration_XML&gt; &lt;noise_XML&gt; &lt;SLC_par&gt;
+  &lt;SLC&gt; [TOPS_par]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;GeoTIFF&gt;</td>
+
+        <td>(input)Sentinel-1 image data file in GeoTIFF format
+        (imagery.tif)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;annotation_XML&gt;</td>
+
+        <td>(input)Sentinel-1 product annotation XML file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;calibration_XML&gt;</td>
+
+        <td>(input) Sentinel-1 product annotation XML file (- no
+        radiometric calibration)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;noise_XML&gt;</td>
+
+        <td>(input) Sentinel-1 product annotation XML file (- no
+        noise correction)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file (example:
+        20140821_iw1_vv.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(output) SLC data file (example:
+        20140821_iw1_vv.slc.par)</td>
+      </tr>
+
+      <tr>
+        <td>[TOPS_par]</td>
+
+        <td>(output) SLC burst data TOPS_par for TOPS mode
+        data</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <code>par_S1_SLC&nbsp;
+  measurement/s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.tiff&nbsp;
+  annotation/s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.xml
+  annotation/calibration/calibration-s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.xml
+  - 20140809_iw1_vv.slc.par&nbsp; 20140809_iw1_vv.slc&nbsp;
+  20140809_iw1_vv.tops_par</code></p>
+
+  <p>Reads the the Sentinel-1 GeoTIFF format image and calibration
+  annotation files. and produces the TOPS burst SLC data file for
+  swath 1 of the interferometric mode acquisition.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">par_S1_SLC</span> reads a
+  Sentinel-1 SLC image and produces an SLC data file, SLC parameter
+  file, and in the case of TOPS mode ScanSAR data, a TOPS_par
+  containing information on the individual bursts.&nbsp; This
+  program works with both stripmap and TOPS mode ScanSAR SLC image
+  data. The format of the TOPS_par containing information on the
+  individual TOPS mode bursts is explained in <a href=
+  "TOPS_par.html">TOPS_par</a>.&nbsp; The output data are scaled
+  using the calibration factors in the calibration XML format file
+  if this is provided. Currently, data in the noise file are not
+  used in the calibration of the data.</p>
+
+  <p>The output data are float complex format, a 4 byte floating
+  point number is used to represent the real and the imaginary
+  components of each complex image sample. In the case of TOPS mode
+  data, there are typically 10 bursts in each SLC.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "file:///Users/cw/SVN_repos/GAMMA_SOFTWARE/current_version/ISP/html/TOPS_par.html">
+  TOPS_par</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 10-Dec-2014.
+</body>
+</html>

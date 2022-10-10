@@ -1,0 +1,244 @@
+#! /bin/csh -fe
+
+##################################################################
+#
+# uw 30-Jun-2003
+# Script to run regression analysis with global reference for data with large-scale effects
+#
+##################################################################
+
+if ($#argv < 17)then
+  echo " " 
+  echo "usage: DEF_MOD_PT <plist> <pmask_in> <pSLC_par> <ppos> <itab> <pbase> <bflag> <pdiff> <pdiff_type>\
+  <np_ref> <pres> <pdh> <pdef> <punw> <psigma> <pmask_out>\
+  [dh_max] [def_max] [sigma_max] [model]\
+  [r_max] [np_max] [rpatch] [sigma_max1] [sigma_max2]" 
+  echo " " 
+  echo "       plist       (input) point list (int)"  
+  echo "       pmask_in    (input) point data stack of mask values (uchar, set to - to accept all points)"  
+  echo "       pSLC_par    (input) stack of SLC/MLI parameters (binary)"  
+  echo "       ppos        (input) point data stack of interpolated point target positions (fcomplex, enter - to use plist coordinates)"  
+  echo "       itab        (input) table associating interferogram stack records with pairs of SLC stack records (ascii)"  
+  echo "                   (line entries are: pSLC_rec1 pSLC_rec2 pINT_rec switch_flag)"  
+  echo "       pbase       (input) stack of baseline parameters (binary)"  
+  echo "       bflag       baseline flag (0:initial baseline  1:precision baseline)"  
+  echo "       pdiff       (input) point data stack of differential interferograms (fcomplex or float)"  
+  echo "       pdiff_type  type of pdiff (0: float(unwrapped)  default=1: fcomplex)"  
+  echo "       np_ref      phase reference point number (beginning from 0)"  
+  echo "       pres        (output) point data stack of residual unmodeled phase (float, atmospheric phase, non-linear deformation, baseline error)"  
+  echo "       pdh         (output) point data stack of height correction value (m, float)"  
+  echo "       pdef        (output) point data stack of linear deformation rate (m/year, float)"  
+  echo "       punw        (output) point data stack of unwrapped phase of pdiff (float)"  
+  echo "       psigma      (output) point data stack of phase standard deviation from fit (float)"  
+  echo "       pmask_out   (output) point data stack of mask values indicating accepted points (uchar)"  
+  echo "       dh_max      maximum height correction for initial fit (m, enter - for default: 60.000)"  
+  echo "       def_max     maximum deformation rate difference for initial fit (m/year, enter - for default:  2.0e-02)"  
+  echo "       sigma_max   threshold for phase standard deviation to set mask to valid: (enter - for default:    1.1)"  
+  echo "       model       phase model (1: a0 + a1*bperp[i]  default=2: a0 + a1*bperp[i] + a2*delta_t[i]) 3: a1*bperp[i] 4: a1*bperp[i] + a2*delta_t[i]"  
+  echo "       r_max       maximum radius of spatial filter used in initial patch-wise regression analysis (range samples, default: 64)"  
+  echo "       np_max      maximum number of neighbor points in the spatial filter (default 32, -: all points within search radius)"  
+  echo "       rpatch      patch size in range pixels (enter - for default: 100)"  
+  echo "       sigma_max1  threshold for phase std. deviation to set mask to valid:   (enter - for default:    1.100)"  
+  echo "       sigma_max2  threshold for phase std. deviation for patch to patch fit: (enter - for default:    0.700)"  
+  echo " " 
+  exit
+endif
+
+set plist    = $1
+set pmask_in = $2
+set pSLC_par = $3
+set ppos     = $4
+set itab     = $5 
+set pbase    = $6 
+set bflag    = $7 
+set pdiff    = $8 
+set pdiff_type = $9 
+set np_ref   = $10 
+set pres     = $11 
+set pdh      = $12 
+set pddef    = $13 
+set punw     = $14 
+set psigma   = $15 
+set pmask_out = $16
+
+set dh_max = "60"
+if ($#argv >= 17)then
+  set dh_max = $17
+endif
+set def_max = "0.02"
+if ($#argv >= 18)then
+  set def_max = $18
+endif
+set sigma_max = "1.2"
+if ($#argv >= 19)then
+  set sigma_max = $19
+endif
+set model = "2"
+if ($#argv >= 20)then
+  set model = $20
+endif
+set r_max = "64"
+if ($#argv >= 21)then
+  set r_max = $21
+endif
+set np_max = "32"
+if ($#argv >= 22)then
+  set np_max = $22
+endif
+set rpatch = "100"
+if ($#argv >= 23)then
+  set rpatch = $23
+endif
+set sigma_max1 = "1.1"
+if ($#argv >= 24)then
+  set sigma_max1 = $24
+endif
+set sigma_max2 = "0.7"
+if ($#argv >= 25)then
+  set sigma_max2 = $25
+endif
+
+echo $#argv
+echo "sigma_max2: $sigma_max2"
+
+# determine reference record number from itab
+set ref_rec_num = `more $itab | awk '$1 == $2 {printf("%d",$3)}'`
+echo "reference record number in itab is record: $ref_rec_num"
+
+# generate SLC parameter file (first record, not reference record is used)
+set SLC_par = tmp.SLC_par
+if (-e $SLC_par)then
+  /bin/rm $SLC_par
+endif
+SLC_par_pt $SLC_par $pSLC_par $ref_rec_num 0
+
+# spatially filtered input differential interferogram: $pdiff_spf
+set pdiff_spf = "tmp1.DEF_MOD_PT"
+if (-e $pdiff_spf)then
+  /bin/rm $pdiff_spf
+endif
+
+# data type for spatial filtering
+if ("$pdiff_type" == "0")then
+  set spf_type = "2"
+else
+  if ("$pdiff_type" == "1")then
+    set spf_type = "0"
+  else
+    echo "ERROR: invalid type of differential interferogram ($pdiff_type); valid types are 0 (float) and 1 (fcomplex)"
+  endif
+endif
+
+# intermediate data files:
+set pres1 = "tmp.pres1.DEF_MOD_PT"
+if (-e $pres1)then
+  /bin/rm $pres1
+endif
+set pres1a = "tmp.pres1a.DEF_MOD_PT"
+if (-e $pres1a)then
+  /bin/rm $pres1a
+endif
+set pres1b = "tmp.pres1b.DEF_MOD_PT"
+if (-e $pres1b)then
+  /bin/rm $pres1b
+endif
+set pres1c = "tmp.pres1c.DEF_MOD_PT"
+if (-e $pres1c)then
+  /bin/rm $pres1c
+endif
+set pres1d = "tmp.pres1d.DEF_MOD_PT"
+if (-e $pres1d)then
+  /bin/rm $pres1d
+endif
+set pres2 = "tmp.pres2.DEF_MOD_PT"
+if (-e $pres2)then
+  /bin/rm $pres2
+endif
+set pres3 = "tmp.pres3.DEF_MOD_PT"
+if (-e $pres3)then
+  /bin/rm $pres3
+endif
+set pdh1 = "tmp.pdh1.DEF_MOD_PT"
+if (-e $pdh1)then
+  /bin/rm $pdh1
+endif
+set pddef1 = "tmp.pddef1.DEF_MOD_PT"
+if (-e $pddef1)then
+  /bin/rm $pddef1
+endif
+set punw1 = "tmp.punw1.DEF_MOD_PT"
+if (-e $punw1)then
+  /bin/rm $punw1
+endif
+set punw2 = "tmp.punw2.DEF_MOD_PT"
+if (-e $punw2)then
+  /bin/rm $punw2
+endif
+set psigma1 = "tmp.psigma1.DEF_MOD_PT"
+if (-e $psigma1)then
+  /bin/rm $psigma1
+endif
+set pmask1 = "tmp.pmask1.DEF_MOD_PT"
+if (-e $pmask1)then
+  /bin/rm $pmask1
+endif
+set pdiff1 = "tmp.pdiff1.DEF_MOD_PT"
+if (-e $pdiff1)then
+  /bin/rm $pdiff1
+endif
+
+if(0) then
+
+endif
+
+printf "\n%s\n\n" "step 1: spatial filtering of differential interferogram"
+spf_pt $plist $pmask_in $SLC_par $pdiff $pdiff_spf - $spf_type $r_max 0 $np_max   
+
+printf "\n%s\n\n" "\nstep 2: regression analysis for filtered data using multi-patch approach\n"
+multi_def_pt $plist $pmask_in $pSLC_par $ppos $itab $pbase $bflag $pdiff_spf $pdiff_type\
+             $np_ref $pres1 $pdh1 $pddef1 $punw1 $psigma1 $pmask1 $dh_max $def_max $rpatch\
+	     $sigma_max1 $sigma_max2 $model 1
+
+printf "\n%s\n\n" "\nstep 3: spatial filtering of residual phase and removal of bias\n"
+spf_pt $plist $pmask1 $SLC_par $pres1  $pres1a - 2  50 1  500
+spf_pt $plist $pmask1 $SLC_par $pres1a $pres1b - 2 250 1 2500 $np_ref 1
+
+printf "\n%s\n\n" "\nstep 4: interpolation/extrapolation to full point list\n"
+expand_data_pt $plist $pmask1 $SLC_par $pres1b $plist - $pres1c - 2 128 1 25  
+
+printf "\n%s\n\n" "\nstep 5: subtract residual phases (atm+) from differential interferograms\n"
+# subtract residual phase of reference record from other records
+lin_comb_pt $plist - $pres1c - $pres1c $ref_rec_num $pres1d - 0.0 1.  -1. 2 0
+sub_phase_pt $plist $pmask_in $pdiff - $pres1d $pdiff1 $pdiff_type 0
+
+printf "\n%s\n\n" "\nstep 6: regression analysis for unfiltered data using single-patch approach\n"
+echo "def_mod_pt $plist $pmask_in $pSLC_par $ppos $itab $pbase $bflag $pdiff1 $pdiff_type\
+             $np_ref $pres2 $pdh $pddef $punw2 $psigma $pmask_out $dh_max $def_max\
+             $sigma_max $model"
+def_mod_pt $plist $pmask_in $pSLC_par $ppos $itab $pbase $bflag $pdiff1 $pdiff_type\
+             $np_ref $pres2 $pdh $pddef $punw2 $psigma $pmask_out $dh_max $def_max\
+             $sigma_max $model
+
+printf "\n%s\n\n" "\nstep 7: add residual phases to total residual phase and removal of bias\n"
+lin_comb_pt $plist $pmask_out $pres1c - $pres2 - $pres3 - 0.0 1.  1. 2 0
+lin_comb_pt $plist $pmask_out $pres1d - $punw2 - $punw - 0.0 1.  1. 2 0
+spf_pt $plist $pmask_out $SLC_par $pres3 $pres - 2 250 1 2500 $np_ref 1
+
+printf "\n%s\n\n" "\nstep 8: remove temporary files\n"
+if(1)then
+  /bin/rm $pres1
+  /bin/rm $pres1a
+  /bin/rm $pres1b
+  /bin/rm $pres1c
+  /bin/rm $pres1d
+  /bin/rm $pres2
+  /bin/rm $pdh1
+  /bin/rm $pddef1
+  /bin/rm $punw1
+  /bin/rm $punw2
+  /bin/rm $psigma1
+  /bin/rm $pmask1
+  /bin/rm $pdiff1
+endif
+
+echo "end of DEF_MOD_PT reached"

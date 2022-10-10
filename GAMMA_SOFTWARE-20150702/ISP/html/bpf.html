@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: bpf</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>bpf</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/bpf.c"><i>bpf.c</i></a></p>
+
+  <p><strong>NAME</strong><br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>bpf &lt;data_in&gt; &lt;data_out&gt; &lt;width&gt;
+  &lt;fc_x&gt; &lt;bw_x&gt; &lt;fc_y&gt; &lt;bw_y&gt; [roff]
+  [azoff] [nr] [naz] [data_type] [f_mode] [beta]
+  [fir_len]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data_in&gt;</td>
+
+      <td>input data file (fcomplex, scomplex, float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;data_out&gt;</td>
+
+      <td>output data file (fcomplex, scomplex, float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/line</td>
+    </tr>
+
+    <tr>
+      <td>&lt;fc_x&gt;</td>
+
+      <td>normalized x-coord. (across) filter center frequency
+      (range: -0.5 --&gt; 0.5)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;bw_x&gt;</td>
+
+      <td>normalized x-coord. bandwidth (range: 0 --&gt; 1.0)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;fc_y&gt;</td>
+
+      <td>normalized y-coord. (down) filter center frequency
+      (range: -0.5 --&gt; 0.5)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;bw_y&gt;</td>
+
+      <td>normalized y-coord. bandwidth (range: 0 --&gt; 1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[roff]</td>
+
+      <td>offset to starting range to filter (default: 0)</td>
+    </tr>
+
+    <tr>
+      <td>[azoff]</td>
+
+      <td>offset to starting azimuth to filter (default: 0))</td>
+    </tr>
+
+    <tr>
+      <td>[nr]</td>
+
+      <td>number of range pixels to filter (default - : width -
+      roff)</td>
+    </tr>
+
+    <tr>
+      <td>[naz]</td>
+
+      <td>number of azimuth lines to filter (default - : nlines -
+      azoff)</td>
+    </tr>
+
+    <tr>
+      <td>[data_type]</td>
+
+      <td>data type (default 0:fcomplex, 1:scomplex, 2:float)</td>
+    </tr>
+
+    <tr>
+      <td>[f_mode]</td>
+
+      <td>fill mode (default 0:force filtered value to 0.0 for
+      input value 0.0, 1:no forcing)</td>
+    </tr>
+
+    <tr>
+      <td>[beta]</td>
+
+      <td>Kaiser window beta parameter (default - : 3.384)</td>
+    </tr>
+
+    <tr>
+      <td>[fir_len]</td>
+
+      <td>finite impulse reponse filter length (default - :
+      64)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>bpf 04657_05158.flt 04657_05158.flt.lp 1000 0.0 0.2 0.0
+  0.5</samp></p>
+
+  <p>bandpass filter 04657_05158.flt, output is in
+  04657_05158.flt.lp. There are 1000 samples/line. The filter
+  center frequency in range and azimuth is 0.0 with bandwidths of
+  .2 and .5 respectively. The filter is acting as low-pass filter
+  because the center frequencies have been chosen to be 0.0.</p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p><em>bpf</em> is a program that implements a 2-D bandpass
+  filter on an image. The filter is specified in terms of the
+  normalized center frequencies and bandwidths in x (across the
+  image) and y (down). A normalized frequency value of 1.0 is
+  equivalent to the sampling frequency of the data. The filter
+  passband is specified as a fraction of the sampling frequency in
+  the range (0 --&gt; 1.0). Hence a bandwidth of 0.5 reduces the
+  output bandwidth to half of the sampling bandwidth.</p>
+
+  <p>Input data can be complex valued (fcomplex, scomplex) or real
+  valued (float). The format of the output data is the same as for
+  the input data. The user can optionally specify if the filtered
+  output shall be forced to 0.0 at location with an input value of
+  0.0 (= NULL value).</p>
+
+  <p>Options for specifying the filter characteristics are the
+  Kaiser window parameter <em>beta</em> and the number of samples
+  in the filter response. The characteristics of bandpass filters
+  designed using the window method are described in most digital
+  signal processing texts, see for example: <em>Digital Signal
+  Processing</em> by A. V. Oppenheim and R. W. Shafer,
+  Prentice-Hall, 1989.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  User-defined filter parameters, region of the image to apply the
+  filter, data type of input and output.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>,</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-May-2002.</p>
+</body>
+</html>

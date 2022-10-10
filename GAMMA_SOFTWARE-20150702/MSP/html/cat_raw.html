@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: cat_raw</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>cat_raw</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/cat_raw.c">cat_raw.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cat_raw - concatenate SAR raw data files and generate the related
+  MSP SAR sensor and MSP processing parameter files for the
+  concatenated data set</p>
+
+  <p><strong>SYNOPSIS</strong> <code>cat_raw &lt;RAW_list&gt;
+  &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;RAW_out&gt; [fill] [loff]
+  [nl]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;RAW_list&gt;</td>
+
+        <td>(input) 3 column list of input raw data and MSP
+        parameter files (text):<br>
+        &nbsp; 1. SAR raw data file<br>
+        &nbsp; 2. MSP SAR sensor parameter file<br>
+        &nbsp; 3. MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(output) MSP sensor parameter file for concatenated raw
+        data set</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(output) MSP processing parameter file for concatenated
+        raw data set</td>
+      </tr>
+
+      <tr>
+        <td>&lt;RAW_out&gt;</td>
+
+        <td>(output) output concatenated raw data file</td>
+      </tr>
+
+      <tr>
+        <td>[fill]</td>
+
+        <td>fill gaps between raw data files (default=0: no
+        1:yes)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset from start of input file to
+        begin data extraction&nbsp; (enter - for default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines to extract&nbsp; (enter - for default:
+        to end of data)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <code><samp>cat_raw raw_list</samp> 20040629<samp>.ASAR.par
+  p</samp>20040629<samp>.slc.par</samp>20040629<samp>.raw</samp></code></p><big><samp>where
+  the raw_list input file is as follows for an example with 3
+  scenes:</samp></big>
+
+  <p><samp>20040629_192048.raw&nbsp; 20040629_192048.ASAR.par&nbsp;
+  p20040629_192048.slc.par<br>
+  20040629_192103.raw&nbsp; 20040629_192103.ASAR.par&nbsp;
+  p20040629_192103.slc.par<br>
+  20040629_192118.raw&nbsp; 20040629_192118.ASAR.par&nbsp;
+  p20040629_192118.slc.par</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <span style="font-style: italic;">cat_raw</span> is used to
+  concatenate a set of overlapping raw data files acquired on a
+  single satellite track. Each of the input raw data files must
+  have an associated MSP sensor parameter file and processing
+  parameter file. The program uses the range and azimuth timing
+  information in the parameter files to determine the overlap.
+  Using this information the <span style=
+  "font-style: italic;">cat_raw</span> compares the sample values
+  to confirm that the files actually match.In the case where there
+  are different time-delays to the first data sample for the raw
+  data files (normally the case), the program extends the range
+  swath width and updates the parameter file values. In the
+  following table are listed the different programs for generating
+  MSP compatible raw data sets and parameter files for different
+  sensors:</p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td style=
+        "text-align: left; vertical-align: middle; white-space: nowrap;">
+        <code><span style=
+        "font-weight: bold;">Sensor</span></code></td>
+
+        <td style=
+        "text-align: left; vertical-align: middle; white-space: nowrap; font-weight: bold;">
+        <div style="text-align: center;">
+            <code>Programs</code>
+          </div>
+        </td>
+      </tr>
+
+      <tr>
+        <td><code>ERS-1,ERS-2</code></td>
+
+        <td><code><span style=
+        "font-style: italic;">ERS_proc_*</span>&nbsp; generate MSP
+        processing parameter file, (PAF dependent)<br>
+        <span style=
+        "font-style: italic;">ERS_fix&nbsp;</span>&nbsp;correct
+        missing lines, and concatenates raw data files</code></td>
+      </tr>
+
+      <tr>
+        <td><code>Radarsat-1</code></td>
+
+        <td><code><span style=
+        "font-style: italic;">RSAT_raw&nbsp;</span>&nbsp;generate
+        MSP processing parameter file and sensor parameter file
+        concatenates raw data files</code></td>
+      </tr>
+
+      <tr>
+        <td><code>JERS-1</code></td>
+
+        <td><code><span style=
+        "font-style: italic;">JERS_proc</span>&nbsp;generate MSP
+        processing parameter file<br>
+        <span style=
+        "font-style: italic;">JERS_fix</span>&nbsp;correct missing
+        lines and concatenates raw data files</code></td>
+      </tr>
+
+      <tr>
+        <td><code>ASAR</code></td>
+
+        <td><code><span style=
+        "font-style: italic;">ASAR_IM_proc</span>&nbsp; generate
+        MSP sensor parameter and processing parameter files<br>
+        <span style=
+        "font-style: italic;">cat_raw</span>&nbsp;concatenates MSP
+        format raw data files and adjusts MSP sensor parameter and
+        processing parameter files</code></td>
+      </tr>
+
+      <tr>
+        <td>PALSAR</td>
+
+        <td>PALSAR_proc generate MSP sensor parameter and procesing
+        parameter files<br>
+        <code><span style=
+        "font-style: italic;">cat_raw</span>&nbsp;concatenates MSP
+        format raw data files and adjusts MSP sensor parameter and
+        processing parameter files</code></td>
+      </tr>
+    </tbody>
+  </table><br>
+  ERS, Radarsat-1, and JERS-1 use the CEOS format for the frame
+  data and metadata, while ASAR uses a format specific to all
+  ENVISAT data.<br>
+  The input to <span style="font-style: italic;">cat_raw</span> is
+  the RAW_list text file containing the filenames of the data and
+  parameter files of the input data frames.<br>
+  The frames must be listed in increasing time order with the raw
+  data listed in column 1, the MSP sensor parameter file in column
+  2, and the MSP processing parameter file in column 3.<br>
+  <br>
+  The user can also specify if any gaps between raw data sets will
+  be filled with blank lines. By default, gaps between
+  non-overlapping raw data files are flagged as an error and the
+  program will exit with an error message. Processing an image with
+  a significant gap relative to the length of the synthetic
+  aperture results in a loss of resolution and the appearance of a
+  dark band in the image. None the less, if the gap is correctly
+  filled the full data set can be used.
+
+  <p><strong>SEE ALSO</strong> <a href="MSP_users_guide.html">Users
+  Guide</a>, <a href="typedef_MSP.h.html">typedef_MSP.h</a>,
+  <a href="sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Feb-2007.
+</body>
+</html>

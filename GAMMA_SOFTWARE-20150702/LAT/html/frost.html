@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw961216 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: frost</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>frost</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/frost.c">frost.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  frost - Minimum mean square error filter (Frost et al.,
+  1982).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>frost &lt;pwr1&gt; &lt;pwr1_frost&gt; &lt;width&gt; [fx]
+  [sx] [power]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;pwr1&gt;</td>
+
+      <td>input intensity image (float values)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr1_frost&gt;</td>
+
+      <td>output intensity image (float values)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[fx]</td>
+
+      <td>filter window size (3,5,7,...)</td>
+    </tr>
+
+    <tr>
+      <td>[sx]</td>
+
+      <td>window size used for statistics (3,5,7,...)</td>
+    </tr>
+
+    <tr>
+      <td>[power]</td>
+
+      <td>power applied to weighting coefficients alpha,
+      (default:1.0 corresponds to original filter), power &gt; 1.0
+      leads to an improved edge preservation.</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>frost 1352_1610.pwr1 1352_1610.pwr1_frost 2500 3 7
+  1.0</samp></p>Applies the original MMSE filtering (as described
+  by Frost et al., 1982) using a window of 7x7 pixels to calculate
+  the local statistics and a window of 3x3 pixels used for the
+  filtering.
+
+  <p><samp>frost 1352_1610.pwr1 1352_1610.pwr1_frost 2500 3 7
+  2.0</samp></p>The power 2.0 applied to the weighting coefficients
+  alpha results in a sharper filter, i.e. edges are even better
+  maintained.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code frost.c in ./src. For compilation adjust and use
+  Makefile: Executable version frost in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The Minimum Meas Square Error Filter (MMSE) as described by Frost
+  et al., (A Model for Radar Images and its Applications to digital
+  filtering of multiplicative noise, IEEE Trans. Pattern Analysis
+  and Machine Intelligence Vol. PAMI-4, No. 2, pp. 157-165, 1982)
+  is an adaptive filter for SAR data. The locally used estimator is
+  deteremined based on the statistics of a window of userdefined
+  size fx. The size of the window used for the filtering, sx, may
+  deviate from the window used to determine the local statistics.
+  For more homogeneous areas stronger filtering is applied, for
+  more heterogeneous areas reduced filtering is applied. As a
+  result the filter preserves strong single scatterers and
+  edges.<br>
+  The display and generation of hard copies of the resulting
+  averaged image and the image intensities is supported by special
+  programs allowing the generation of SUN rasterfiles, a format
+  accepted by most image processing softwares.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Filter window size and size of window used to calculated local
+  statistics may be selected indivicually.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "average_filter.html">average_filter</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  Due to the calculation of the local statistics prior to the
+  filtering the program may run rather rather slow.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

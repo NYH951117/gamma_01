@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing -->
+<!-- awi190404 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: lee</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>lee</h2>
+
+  <p><i>ANSI-C program: <a href="../src/lee.c">lee.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  lee - Lee filter for power files of type float (Lee 1980).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gamma_map &lt;input_data&gt; &lt;output_data&gt;
+  &lt;width&gt; &lt;nlooks&gt; &lt;bx&gt; [by]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;input_data&gt;</td>
+
+      <td>input data (file of type float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;output_data&gt;</td>
+
+      <td>output data (file of type float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>&lt;nlooks&gt;</td>
+
+      <td>number of looks</td>
+    </tr>
+
+    <tr>
+      <td>&lt;bx&gt;</td>
+
+      <td>filter size in x direction (number of cols)</td>
+    </tr>
+
+    <tr>
+      <td>[by]</td>
+
+      <td>filter size in y direction (number of
+      rows)(default=bx)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>lee 1352_1610.pwr1 1352_1610.pwr1_gamma_map 2500 4 11
+  11</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code lee.c in ./src. For compilation adjust and use
+  Makefile: Executable version <samp>lee</samp> in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  Lee filtering is primarily used to remove speckle while
+  preserving edges. Input parameters are the filter box size and
+  number of looks. Different filter sizes will greatly affect the
+  quality of the processed image. If the box size is to small, the
+  noise filtering is not effective. If the filter is too large,
+  fine structures will be lost. The nlooks parameter refers to the
+  number of looks of the radar image. It is used to compute the
+  noise variance.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Number of looks of input image and userdefined filter window size
+  (odd numbers).</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "average_filter.html">average_filter</a> <a href=
+  "enh_lee.html">enh_lee</a> <a href="frost.html">frost</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  awi, <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Apr-2004.</p>
+</body>
+</html>

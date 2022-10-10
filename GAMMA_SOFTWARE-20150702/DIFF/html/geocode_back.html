@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: geocode_back</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw020924 -->
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>geocode_back</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/geocode_back.c"><i>geocode_back.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  geocode_back -&nbsp; resampling and interpolation using a
+  geocoding look-up table. For each image point defined in
+  coordinate system A the lookup table contains the corresponding
+  coordinates in the coordinate system B. <a href=
+  "geocode_back.html">geocode_back</a> is used to resample data
+  from the coordinate system B into coordinate system A. As an
+  example, let coordinate system A be map projection coordinates
+  (e.g. UTM) and coordinate system B be the SAR range/Doppler
+  coordinates (RDC). geocode_back can be used to resample data such
+  as image intensity or interferometric phase from RDC (coordinate
+  system B) into the map coordinate system (coordinate system A).
+  Programs to generate the lookup tables include <a href=
+  "gc_map.html">gc_map</a>, <a href="gc_map.html">gc_map_grd</a>,
+  <a href="gec_map.html">gec_map</a>, <a href=
+  "gec_map.html">gec_map_grd</a>, or <a href=
+  "gc_insar.html">gc_insar</a>.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>geocode_back &lt;data_in&gt; &lt;width_in&gt;
+  &lt;lookup_table&gt; &lt;data_out&gt; &lt;width_out&gt;
+  [nlines_out] [iterp_mode] [dtype] [lr_in] [lr_out]</b></code></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) data file (coordinate system B)(for SUN raster:
+        *.ras, BMP format: *.bmp)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width_in&gt;</td>
+
+        <td>(input) width of input data file and the
+        lookup_table</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lookup_table&gt;</td>
+
+        <td>(input) geocoding lookup table (A--&gt;B) (dimension of
+        output data, real valued input coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>output data file (coordinate system B) (for SUN raster:
+        *.ras, BMP format: *.bmp)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width_out&gt;</td>
+
+        <td>width of output data file (width of lookup table)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines_out]</td>
+
+        <td>number of lines in the output image, (enter - for
+        default)</td>
+      </tr>
+
+      <tr>
+        <td>[interp_mode]</td>
+
+        <td>interpolation mode:<br>
+        &nbsp;&nbsp;&nbsp; 0: nearest-neighbor<br>
+        &nbsp;&nbsp;&nbsp; 1: bicubic spline (default)<br>
+        &nbsp;&nbsp;&nbsp; 2: bicubic-spline, interpolate
+        log(data)<br>
+        &nbsp;&nbsp;&nbsp; 3: bicubic-spline, interpolate
+        sqrt(data)</td>
+      </tr>
+
+      <tr>
+        <td>[dtype]</td>
+
+        <td>input and output data format<br>
+        &nbsp;&nbsp;&nbsp; 0: FLOAT (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: FCOMPLEX<br>
+        &nbsp;&nbsp;&nbsp; 2: SUN raster/BMP format<br>
+        &nbsp;&nbsp;&nbsp; 3: UNSIGNED CHAR<br>
+        &nbsp;&nbsp;&nbsp; 4: SHORT</td>
+      </tr>
+
+      <tr>
+        <td>[lr_in]</td>
+
+        <td>input SUN raster/BMP format file left/write flipped
+        (default=1: not flipped, -1: flipped)</td>
+      </tr>
+
+      <tr>
+        <td>[lr_out]</td>
+
+        <td>output SUN raster/BMP format file left/write flipped
+        (default=1: not flipped, -1: flipped)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong>S<br>
+  <samp>geocode_back 19991020.mli 2456 19991020.UTM_to_SAR
+  19991020_map.mli 2000 - 0<br></samp></p>
+
+  <p>Transformation (from SAR to UTM coordinates using lookup table
+  19991020.UTM_to_SAR) of SAR intensity image.&nbsp; Nearest
+  neighbor resampling algorithm is applied.</p>
+
+  <p><code>geocode_back 19991020.mli 2456 19991020.UTM_to_SAR
+  19991020_map.mli 2000 - 2<br></code></p>
+
+  <p>Transformation (from SAR to UTM coordinates using lookup table
+  8560_8059.UTM_to_SAR) of complex interferogram. Spline
+  interpolation of&nbsp; log(data) is applied.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">geocode_back</span>&nbsp;
+  preforms a mapping of the input data using the coordinates stored
+  in the lookup-table. In the case of normal geocoding, the
+  lookup-table has the dimensions of the DEM segment calculated by
+  gc_map. The interpolated image produced by geocode_back is in the
+  geometry of the resampled DEM in map coordinates. Hence the image
+  in radar coordinates is resampled into map coordinates as
+  specified in the DEM parameter file associated with the
+  lookup-table.<br></p>
+
+  <p>The real part of the lookup-table is the range-sample and
+  imaginary part of the lookup table is the azimuth line number in
+  the radar image geometry. The radar image geometry is called
+  range-doppler coordinates (RDC).<br></p>
+
+  <p>Valid input/output data formats are float, fcomplex, unsigned
+  char, and raster file (SUN or BMP) format. Either a spline
+  interpolation algorithm or a nearest neighbor resampling
+  algorithms can be selected. In&nbsp; geocoding the data used in
+  the interpolation is regularly spaced. In the case of unsigned
+  char and SUN raster or BMP image format only the nearest-neighbor
+  resampling algorithm is available.<br>
+  Raster images may flipped left/right.&nbsp; The required
+  geocoding lookup table is created using either the program
+  <a href="gc_map.html">gc_map</a> (based on a DEM in map geometry)
+  or <a href="gc_insar.html">gc_insar</a> (using a height map in
+  SAR geometry, as obtained with SAR interferometry).</p>
+
+  <p>The bicubic log interpolation approach converts the input
+  values to logarithmic scale, performs the interpolation, and
+  converts the data back to linear scale. This approach has the
+  advantage that no negative values are generated in the
+  interpolation, even for very noisy data. In order to avoid
+  problems with negative values (log not defined) the absolute
+  value of the input values is considered.</p>
+
+  <p>Interpolation using the bicubic spline of the sqrt(data)&nbsp;
+  evaluates the square root of the absolute data values, performs
+  the interpolation, and converts the data back to linear scale by
+  squaring the interpolated value. This approach also has the
+  advantage that no negative values are generated in the
+  interpolation. This approach may be more accurate because the
+  square root operation effectively reduces the bandwidth of the
+  data samples.&nbsp;&nbsp;</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="gc_map.html">gc_map</a>, <a href=
+  "gc_map.html">gc_map_grd</a>, <a href="gec_map.html">gec_map</a>,
+  <a href="gec_map.html">gec_map_grd</a>, <a href=
+  "gc_insar.html">gc_insar</a>, <a href="geocode.html">geocode</a>,
+  <a href="gc_map_inversion.html">gc_map_inversion</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Jun-2015.
+</body>
+</html>

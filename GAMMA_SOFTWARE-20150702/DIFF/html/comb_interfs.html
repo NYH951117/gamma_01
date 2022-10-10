@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: comb_interfs</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>comb_interfs</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/comb_interfs.c">comb_interfs.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  comb_interfs - Combine complex interferograms by integer scaling
+  of the phase.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>comb_interfs &lt;int-1&gt; &lt;int-2&gt; &lt;base-1&gt;
+  &lt;base-2&gt; &lt;factor-1&gt; &lt;factor-2&gt; &lt;width&gt;
+  &lt;combi_int&gt; &lt;combi_base&gt; [sm]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;int-1&gt;</td>
+
+      <td>(input) complex interferogram 1 (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;int-2&gt;</td>
+
+      <td>(input) complex interferogram 2 (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;base-1&gt;</td>
+
+      <td>(input) baseline file 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;base-2&gt;</td>
+
+      <td>(input) baseline file 2</td>
+    </tr>
+
+    <tr>
+      <td>&lt;factor-1&gt;</td>
+
+      <td>(input) phase scaling factor 1 (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;factor-2&gt;</td>
+
+      <td>(input) phase scaling factor 2 (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>(input) width of interferograms</td>
+    </tr>
+
+    <tr>
+      <td>&lt;combi_int&gt;</td>
+
+      <td>(output) combined interferogram (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;combi_base&gt;</td>
+
+      <td>(output) baseline file</td>
+    </tr>
+
+    <tr>
+      <td>[sm]</td>
+
+      <td>magnitude scale factor (default=1.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>comb_interfs 8560_8059.int 8560_9562.int 8560_8059.base
+  8560_9562.base 1 -3 3392 a-3b.int a-3b.base
+  1.0/SAMP&gt;</samp></p>
+
+  <p>Creates a complex valued "combined interferogram based on the
+  two input interferograms by scaling the wrapped phases by factors
+  of 1 and -3 for the first and second input interferogram,
+  respectively.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code comb_interfs.c in ./src. For compilation adjust and
+  use Makefile: Executable version comb_interfs in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP and DIFF type definition files <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>comb_interfs</em> combines two registered complex valued
+  interferograms into a new complex valued interferogram. The phase
+  of the new combined interferogram is equal to:<br>
+  (wrapped_ phase_1 * factor_1 + wrapped_phase_2 * factor_2) modulo
+  2&pi;<br>
+  . The coherence of the combined interferogram is estimated based
+  on the assumption that the signal noise is scaled up with the
+  scaling factors, summed, and divided by the square root of 2 to
+  account for statistical independence of the two interferograms.
+  The signal is assumed to be the original signal multiplied by the
+  user specified signal multiplication factor sm. As default value
+  sm=1.0 is used standing for unchanged signal as compared to one
+  of the original interferograms.</p>
+
+  <p>As shown by the following considerations only integer valued
+  phase scaling factors seem to be reasonable. The "wrapped"
+  interferometric phase, i.e. the phase information available from
+  an interferogram without phase unwrapping, is defined as the
+  "unwrapped" interferometric phase modulo 2&pi;</p>
+
+  <p><img src="eq_01.gif" alt="equation 01" align="middle" border=
+  "1"></p>
+
+  <p>When scaling the interferometric phase, which is of interest
+  for example to simulate the interferogram obtained with another
+  baseline, we have to be aware of the fact that in principle the
+  "unwrapped" interferometric phase needs to be scaled. When
+  scaling with a positive or negative integer number the scaling of
+  the "wrapped" phase may be directly scaled as the unknown number
+  i of 2&pi; remains an integer even after the scaling, i.e.</p>
+
+  <p><img src="eq_02.gif" alt="equation 01" align="middle" border=
+  "1"></p>
+
+  <p>The combination of complex interferograms after scaling of the
+  "wrapped" interferometric phase with integer numbers may be of
+  interest for several reasons:<br>
+  - To do a kind of differential interferometry without phase
+  unwrapping and geocoding requirement.<br>
+  - To improve the sensitivity to topography.</p>
+
+  <p>In the first case the sensitivity to the topography is reduced
+  as much as possible, in order to have a phase of the combined
+  complex interferogram which is mainly determined by differential
+  effects. The reduction of the sensitivity to topography is
+  achieved by reducing the "simulated" baseline of the combined
+  interferogram to a small value. A perpendicular baseline
+  component of the combined interferogram of only 10m, for example,
+  can be achieved by combination of two interferograms with
+  perpendicular baseline components of 50m and 160m through scaling
+  of the wrapped phases with factors of 3 and -1, respectively. In
+  this example the unwrapped phase of the combined interferogram
+  corresponds to the topographic phase of an interferogram with a
+  10 m baseline (i.e. a very small sensitivity to topography), plus
+  3 times the differential phase effects present in the first
+  interferogram minus 1 time the differential phase of effects
+  present in the second interferogram.</p>
+
+  <p>In the second case the phase noise and the sensitivity to
+  differential effects is reduced and the sensitivity to topography
+  is increased. The reduction of the sensitivity to differential
+  effects is achieved simply by addition of independent
+  interferograms. Assuming that the unwanted differential effects
+  (I am thinking mainly of atmospheric distortions) of the two
+  interferograms are independent allows to decrease their
+  influence. At the same time the baseline of the combined
+  interferogram may be increased as compared to the initial
+  interferograms. Because the phase noise of the individual
+  interferograms is multiplied with the scaling factors small
+  scaling factors are preferred. The combination of two independent
+  interferograms with comparable perpendicular baseline components
+  (using scaling factors of 1), for example, allows increases the
+  simulated baseline of the combined interferogram to twice that of
+  the individual interferograms with a phase noise of the combined
+  interferogram of only about 1.4 times that of the individual
+  interferograms.</p>
+
+  <p>About the same technique but for another purpose was presented
+  by Massonnet D., H. Vadon, and M. Rossi, Reduction of the need
+  for phase unwrapping in radar interferometry, IEEE TGRS, 34-2
+  pp.489-497, 1996. Their idea was to generate combined
+  interferograms with relatively small baselines in order to reduce
+  the need of phase unwrapping.</p>
+
+  <p>As an example of an interferogram with a "combined"
+  perpendicular baseline component of 21m obtained by combining
+  registered complex interferograms of 58m and 95m perpendicular
+  baseline components using phase scale factors of 2 and -1,
+  respectively, for Solothurn, Switzerland.</p>
+
+  <p><img src="becocpx.jpg" alt=
+  "Combination of complex interferograms for Solothurn" align=
+  "middle" border="1"></p>
+
+  <p><strong>OPTIONS</strong><br>
+  Selection of phase scaling factors of 1 and -1 allows to generate
+  a complex valued interferogram with the phase corresponding to
+  the difference between the phase of the first and second complex
+  valued interferograms.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-May-2003.</p>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: phase_sim_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>phase_sim_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/phase_sim_pt.c">phase_sim_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  phase_sim_pt - simulate unwrapped interferometric phase (single
+  record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>phase_sim_pt &lt;plist&gt; &lt;pmask&gt;
+  &lt;pSLC_par&gt; &lt;ppos&gt; &lt;itab&gt; &lt;rec_num&gt;
+  &lt;pbase&gt; &lt;phgt&gt; &lt;psim_unw&gt; [pdef] [ph_flag]
+  [bflag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number to process (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of baseline parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(input) point data stack of terrain height (meters,
+        float, single record, enter - for none)<br>
+        NOTE: if - is entered for both phgt and pdef, then the
+        output simulated phase will all be 0.0 since there are no
+        valid points. A value of 0.0 in the phgt file represents
+        "no data"</td>
+      </tr>
+
+      <tr>
+        <td>&lt;psim_unw&gt;</td>
+
+        <td>(output) point data stack of simulated unwrapped
+        interferometric phase (float)</td>
+      </tr>
+
+      <tr>
+        <td>[pdef]</td>
+
+        <td>(input) point data stack of LOS deformation rate
+        (m/day, float, single record, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>&nbsp;phase model flag<br>
+        &nbsp;&nbsp;&nbsp;0: unflattened (default)<br>
+        &nbsp;&nbsp;&nbsp;1: flattened<br>
+        &nbsp;&nbsp;&nbsp;2: height + deformation phase, relative
+        to ref. layer</td>
+      </tr>
+
+      <tr>
+        <td>[bflag]</td>
+
+        <td>baseline flag<br>
+        &nbsp;&nbsp;&nbsp; 0: use initial baseline (default)<br>
+        &nbsp;&nbsp;&nbsp;1: precision baseline</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>phase_sim_pt pt pmask pSLC_par - itab - pbase phgt psim_unw
+  - 0 0</samp></p>
+
+  <p>Simulates the unwrapped interferometric phase (unflattened)
+  based on the provided terrain heights and (initial) baseline
+  information for all interferogram layers listed in the itab. No
+  deformation is included in the simulation.</p>
+
+  <p><samp>phase_sim_pt pt pmask pSLC_par -itab 3 pbase phgt
+  psim_unw pdef 0 0</samp></p>
+
+  <p>Simulates the unwrapped interferometric phase (unflattened)
+  based on the provided terrain heights, (precision) baseline
+  information, and the indicated deformation rate for all records
+  of the itab. A linear deformation with time (i.e. constant
+  deformation rate) is assumed in the model.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  phase_sim_pt simulates unwrapped interferometric phases
+  considering terrain heights and a temporally constant deformation
+  rates. This can be done for a single record of the itab or all
+  records. The coordinates of the points considered are defined in
+  the point list. The optional point mask file (in point data
+  format) indicates for each point if it is valid (1, i.e.
+  considered) or not valid (0, excluded).</p>
+
+  <p>Information required for the reference SLCs of the indicated
+  interferometric pair(s) is provided in the stack of SLC parameter
+  files. Optionally, interpolated point position coordinates can be
+  used instead of the integer coordinates from the point list.
+  Interferometric pairs are defined in the itab, a text file with a
+  table associating interferogram stack records with pairs of SLC
+  stack records. For each pair (line of the itab) the baseline
+  parameter stack pbase contains a record with the related baseline
+  parameters including the initial baseline, precision baseline,
+  and phase constant.</p>
+
+  <p>The input terrain heights in meter (m) are also provided as a
+  point data stack. This stack has a single record only (height is
+  the same for all interferometric pairs). In an early stage of an
+  IPTA investigation the heights are typically retrieved from an
+  existing DEM. The heights in point data format can be obtained
+  from 2-D height data using the program data2pt. Later on the
+  heights may be improved based on the interferometric data, for
+  example by adding the height corrections obtained with the
+  def_mod_pt or multi_def_pt to the original heights. If the phase
+  of deformation alone is to be simulated, the height file can be
+  ommitted and the effective height set to 0 by entering a - in the
+  argument list.</p>
+
+  <p>Optionally, temporally constant deformation rates can be
+  considered in the simulation. The inputdeformation rates in meter
+  per year (m/year) are also provided as a point data stack. This
+  stack has a single record only (deformation rate is the same for
+  all interferometric pairs, i.e. constant over time). In an early
+  stage of an IPTA investigation the deformation rate is typically
+  not modeled. Later on linear deformation rates as obtained with
+  def_mod_pt or multi_def_pt can be considered.</p>
+
+  <p>Simulated unwrapped interferometric phases are calculated for
+  each valid point of the point list. Valid points are points with
+  a non-zero height value and a non-zero point mask value (if
+  provided). Note that if both the height file and deformation rate
+  file are both entered as - then the output will be all 0.0.</p>
+
+  <p>A ph_flag permits selecting if the unwrapped phase of the 0:
+  unflattened, &nbsp;1: flattened , or 2:&nbsp;phase due to the
+  terrain height and deformaton, shall be generated. &nbsp;The
+  phase flattening uses a simpler phase model for the ellipsoidal
+  phase than option 2. Option 2 should be used if &nbsp;you want to
+  subtract the phase term to terrain height that has been
+  determined by performing a regression. Another bflag permits to
+  selecting between using the initial or the precision baseline
+  model in the pbase stack.</p>
+
+  <p>To display the simulated interferometric phase images
+  contained in the point data stack the the program ras_data_pt can
+  be used to rapidly display the phase as points using a raster
+  image (Sun Raster or bmp format) as background. Alternately
+  programs pt2data or pt2d can be used to convert the point data to
+  2d filled raster format data that can then be displayed using
+  conventional display programs such as disrmg.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  To add or subtract atmospheric phase delay terms available in a
+  point data stack to the simulated unwrapped phases the programs
+  lin_comb_pt (single records) and sub_phase_pt (single or all
+  records) can be used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="data2pt.html">data2pt</a>, <a href=
+  "def_mod_pt.html">def_mod_pt</a>,<a href=
+  "def_mod_pt.html">multi_def_pt</a>, <a href=
+  "lin_comb_pt.html">lin_comb_pt</a>,<a href=
+  "pt2data.html">pt2data</a>, <a href="pt2d.html">pt2d</a>,
+  <a href="sub_phase_pt.html">sub_phase_pt</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 28-Aug-2007.
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: msk_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>msk_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/msk_pt.c">msk_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  msk_pt - generate a point list and mask vector using a raster
+  image mask<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>msk_pt &lt;plist1&gt; &lt;pmask1&gt; &lt;mask&gt;
+  &lt;plist2&gt; &lt;pmask2&gt; &lt;rlks2&gt; &lt;azlks&gt;<br>
+  <br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist1&gt;</td>
+
+        <td>(input) point list 1 (int) (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask1&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar
+        pmask[i]=0 excludes point i) (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mask&gt;</td>
+
+        <td>(input) raster image file (8-bit/pixel Sun raster or
+        BMP format)<br>
+        points located in regions set to 0 are masked out</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist2&gt;</td>
+
+        <td>(output) point list 2 (int)</td>
+      </tr>
+
+      <tr>
+        <td align="undefined" valign="undefined">
+        &lt;pmask2&gt;<br></td>
+
+        <td align="undefined" valign="undefined">(output) output
+        mask, matches length of plist1 if plist2 is not
+        specified<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>mask file range looks relative to the point SLC
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>mask file azimuth looks relative to the point SLC
+        coordinates</td>
+      </tr>
+    </tbody>
+  </table><strong>EXAMPLE</strong><br>
+  <samp>msk_pt pt_1 pmsk1 mask.ras pt_2 - 1 5<br>
+  <br></samp> pt_2 contains the point coordinates of all points in
+  pt_1 that lie within the non-zero regions of mask.ras. The mask
+  file was generated using 5 azimuth looks and 1 range look.<br>
+  <br>
+  msk_pt pt_1 pmsk1 mask.ras&nbsp; - pmsk2 1 5<br>
+  <br>
+  In this example, pmsk2&nbsp; has the same number of entries as
+  pmsk1. Points that lie within regions of mask.ras that are 0 have
+  the mask value set to 0 in pmsk2.&nbsp; Points that are masked
+  out in pmsk1 are also masked out in pmsk2.<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code msk_pt.c in ./IPTA/src, executable version msk_pt in
+  ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">msk_pt</span> is a program that
+  is used to select subsets of points from a point list based upon
+  a raster mask file. It can also be used to modify or generate a
+  mask based on a raster image mask file.&nbsp; The mask image is
+  an 8-bit/pixel Sun raster or BMP format file.&nbsp; Often the
+  mask image is derived from a multi-look image. Since the point
+  coordinates are in SLC coordinates (range looks = 1, azimuth
+  looks = 1) the number of range and azimuth looks of the image
+  used to derive the mask are required as input on the command
+  line.<br></p>&lt;&gt;&lt;/&gt;
+  &lt;&gt;<strong>OPTIONS</strong><br>
+  If no input point list is entered on the command line, then the
+  coordinates of all the points within the mask region are stored
+  in pt_2.<br>
+  &lt;/&gt;<br>
+  If an output point list pt_2 is specified, all points that lie
+  within the non-zero regions of the mask are written to the output
+  point list pt_2. If pt_2 is <span style=
+  "font-style: italic;">not</span> specified, the values of pmsk2
+  are set to 1 where ever the mask image is non-zero and pmsk1 is
+  non zero. In this later case, the number of entries in pmsk2 is
+  the same as the number of points in pt_1.\<br>
+  <br>
+  &lt;&gt;<strong>SEE ALSO</strong><br>
+  <a href="thres_im_pt.html">thres_im_pt</a>,&nbsp;<a href=
+  "thres_msk_pt.html">thres_msk_pt</a>,&nbsp; <a href=
+  "cat_pt.html">cat_pt</a>, <a href=
+  "ipta.h.html">ipta.h</a>.&lt;/&gt;
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 4-Jan-2005.</p>
+</body>
+</html>

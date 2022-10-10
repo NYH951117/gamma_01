@@ -1,0 +1,161 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: offset_tracking</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_tracking</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/offset_tracking.c"><i>offset_tracking.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>offset_tracking</em> converts range and azimuth offsets files
+  to displacement map</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_tracking &lt;offs&gt; &lt;snr&gt; &lt;SLC_par&gt;
+  &lt;OFF_par&gt; &lt;disp_map&gt; [disp_val] [mode] [thres]
+  [poly_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;offs&gt;</td>
+
+      <td>(input) range and azimuth offset estimates
+      (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;snr&gt;</td>
+
+      <td>(input) SNR values of offset estimates (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) SLC parameter file of reference SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par&gt;</td>
+
+      <td>(input) offset parameter file used in the offset
+      tracking</td>
+    </tr>
+
+    <tr>
+      <td>&lt;disp_map&gt;</td>
+
+      <td>(output) range and azimuth displacement estimates
+      (fcomplex))</td>
+    </tr>
+
+    <tr>
+      <td>[disp_val]</td>
+
+      <td>(output) range and azimuth displacement estimates and SNR
+      values (enter - for none) (text)</td>
+    </tr>
+
+    <tr>
+      <td>[mode]</td>
+
+      <td>flag indicating displacement mode:<br>
+      0: displacement in range and azimuth pixels<br>
+      1: displacement in meters in slant range and azimuth
+      direction<br>
+      2: displacement in meters in ground range and azimuth
+      direction (default)</td>
+    </tr>
+
+    <tr>
+      <td>[thres]</td>
+
+      <td>SNR threshold to accept offset value (default from
+      OFF_par)</td>
+    </tr>
+
+    <tr>
+      <td>[poly_flag]</td>
+
+      <td>flag indicating if trend calculated using offset
+      polynomials from OFF_par is subtracted:<br>
+      0: do not subtract polynomial trend from offset data<br>
+      1: subtract polynomial trend from offset data
+      (default)<br></td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_tracking 1352_1610.offs 1352_1610.snr 1352.slc.par
+  1352_1610.off 1352_1610.disp_map 1352_1610.disp_val 2 6.5
+  1</samp></p>
+
+  <p>Converts the input offset fields (*.offs) to an offset map
+  (*.disp_map) which has the same dimension as the original
+  reference SLC image.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>offset_tracking</em> converts the input offset fields
+  (*.offs) to an offset map (*.disp_map) which has the same
+  dimensions as the original SLC reference image.</p>
+
+  <p>The binary offsets file (*.offs) contains offsets in SAR image
+  pixels (of the reference image) in fcomplex format. The real
+  parts correspond to range offsets and the imaginary parts to
+  azimuth offsets. The positions of the offset estimates are
+  defined by the starting range and azimuth positions and the range
+  and azimuth steps, as documented in the offset parameter file.
+  Only offsets with a quality value (SNR) above an indicated
+  threshold are used. For offsets with an SNR below the threshold
+  and for missing estimates (previously discarded) the offset map
+  values are set to (0.0,0.0).</p>
+
+  <p>The threshold 2D range and azimuth offsets map (*.disp_map) is
+  in fcomplex format. The real parts correspond to range
+  displacements and the imaginary parts to azimuth displacements.
+  The file size and positions corespond to those of the reference
+  SAR image.</p>
+
+  <p>Different modes are supported. The offsets can be expressed as
+  displacement in range and azimuth pixels (0), or as displacement
+  in meters in slant range and azimuth direction (1), or as
+  displacement in meters in ground range and azimuth direction (2,
+  default mode).</p>
+
+  <p>The offset polynomials defined in the offset parameter file
+  can either be subtracted from the offset values (poly_flag=1) or
+  not subtracted (poly_flag = 0). The idea of subtracting the
+  offset polynomials is that the polynomials shall reprosent
+  overall registration offsets, while the offset map shall only
+  contain offsets related to surface displacements.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>, <a href=
+  "offset_fit.html">offset_fit</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>, <a href=
+  "offset_pwr_tracking.html">offset_pwr_tracking</a>, <a href=
+  "offset_SLC_tracking.html">offset_SLC_tracking</a>, <a href=
+  "create_offset.html">create_offset</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 18-Jan-2007.
+</body>
+</html>

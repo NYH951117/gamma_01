@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: hist_IQ</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>hist_IQ</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/hist_IQ.c">hist_IQ.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>hist_IQ</em> - Calculates
+  histogram for I and Q channel of uncompressed SAR raw data (IQ
+  data).</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>hist_IQ &lt;SAR_par&gt;
+  &lt;PROC_par&gt; &lt;signal_data&gt; &lt;histogram&gt; [loff]
+  [nl]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>Uncompressed SAR raw data (IQ data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;histogram&gt;</td>
+
+        <td>histogram output file</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (default=parameter file
+        value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;nl&gt;</td>
+
+        <td>number of lines to estimate histogram
+        (default=1024)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong><samp>hist_IQ ERS1_ESA.par
+  p19990421.slc.par 19990421.raw 19990421.hist 6000 1024</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  hist_IQ The histogram of the I and Q channel of raw SAR is
+  calculated. The two histograms are computed separately for a
+  user-defined window size. The result is written into an ASCII
+  file, with the integer number in the first column and the
+  normalized I and Q histograms in columns 2 and 3. These data may
+  be plotted using plotting program gnuplot.</p>
+
+  <p>To plot the histogram with gnuplot on the
+  screen:<code><samp><br></samp></code></p>
+
+  <p><code>echo "set xrange [0:31]; set grid; set xlabel 'Value';
+  set ylabel 'Data Fraction'; set title 'Histogram'; plot
+  'raw/19990915.hist'</code> <code>u 1:2 with boxes lw .5
+  "|gnuplot</code></p>
+
+  <p>or plot to a png image file with gnuplot:<code><br></code></p>
+
+  <p><code>echo "</code><code>set term png; set output
+  '19990915.hist.png';</code> <code>set xrange [0:31]; set grid;
+  set xlabel 'Value'; set ylabel 'Data Fraction'; set title
+  'Histogram \n19990919.fix'; plot 'raw/19990915.hist'</code>
+  <code>u 1:2 with boxes lw .5 "|gnuplot</code></p>
+
+  <p>The data segment used for the estimation can be specified by
+  the user by setting the offset in lines relative to the beginning
+  of the file and the number of lines to use.<br>
+  <img style="width: 640px; height: 480px;" alt=
+  "Histogram 19990915" title="Histogram" src=
+  "19990915.hist.png"><br></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Jun-2012.
+</body>
+</html>

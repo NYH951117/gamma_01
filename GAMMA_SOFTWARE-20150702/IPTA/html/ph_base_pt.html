@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: ph_base_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>ph_base_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ph_base_pt.c">ph_base_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ph_base_pt - subtract/add interferogram flat-Earth phase trend
+  (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ph_base_pt &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;ppos&gt; &lt;itab&gt; &lt;rec_num&gt; &lt;pbase&gt;
+  &lt;pint&gt; &lt;pflt&gt; [int_type] [inverse]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        position (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number to process (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of baseline parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pint&gt;</td>
+
+        <td>(input) point data stack of interferograms (fcomplex or
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pflt&gt;</td>
+
+        <td>(output) point data stack of interferograms with range
+        phase trend subtracted/added (same type as pint)</td>
+      </tr>
+
+      <tr>
+        <td>[int_type]</td>
+
+        <td>type of pint and pflt (0: float(i.e. unwrapped phase),
+        default=1: fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>[inverse]</td>
+
+        <td>subtract/add flag (default=0: subtract phase ramp, 1:
+        add phase ramp)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ph_base_pt testsite.plist testsite.pmask testsite.ppar
+  testsite.ppos testsite.itab 3 testsite.pbase testsite.pint
+  testsite.pflt 1 0</samp></p>
+
+  <p>Subtracts flat Earth phase trend from the interferogram in
+  record 3 of the point data stack of interferograms and writes it
+  out the stack of "flattened" interferograms. For the calculation
+  of the flat Earth phases the interpolated (real valued) point
+  coordinates are used.</p>
+
+  <p>Subtracts flat Earth phase trend for all records in the point
+  data stack of interferograms and writes out the "flattened"
+  interferograms to the output point data stack. For the
+  calculation of the flat Earth phases the integer coordinates as
+  provided in the point list are used.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code ph_base_pt.c in ./IPTA/src, executable version
+  ph_base_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  ph_base_pt subtracts or adds the flat Earth phase trend for
+  interferograms in point data format. This can be done for complex
+  valued interferograms or unwrapped (real valued) interferograms
+  and for a sinlge record of the stack of interferograms or all
+  records.</p>
+
+  <p>The coordinates of the points considered are defined in the
+  point list. The optional mask file indicates for each point if it
+  is valid (1, i.e. considered) or not volid (0, excluded).</p>
+
+  <p>The itab is a text file which associates the interferogram
+  stack records with pairs of SLC stack records. For each
+  interferogram stack record the itab contains a line with the SLC
+  stack record number of the master SLC, the SLC stack record
+  number of the slave SLC, the interferogram stack record number of
+  the interferogram, and a flag (1 or 0) to switch a record on or
+  off (i.e. to consider or exclude a record when processing all
+  records).</p>
+
+  <p>The SLC parameter files of the master SLC which are used to
+  calculate the flat Earth phases are provided in the stack of
+  SLC/MLI parameters. Optionally, integrated point target positions
+  may be provided in a point data stack of interpolated point
+  target positions. If not provided, the integer valued coordinates
+  of the point list are used.</p>
+
+  <p>The baseline parameters (initial baseline is used) which are
+  required to calculate the flat Earth phases are provided in the
+  stack of baseline parameters.</p>
+
+  <p>The input interferograms are provided as a point data stack.
+  This stack is of fcomplex type for complex valued interferograms
+  and of float type for unwrapped interferometric phase images. The
+  type of the output stack of "flattened" interferograms is of the
+  same type as the input stack.</p>
+
+  <p>The "flattened" interferogram (or more generally speaking the
+  output interferogram) is calculated for each valid point of the
+  point list. Valid points are points with a non-zero input
+  interferogram value and a non-zero mask value (if provided). For
+  each valid point the flat Earth phase is calculated. This phase
+  is either subtracted from the input interferograms ("flattening")
+  or added to the input interferogram ("reramping").</p>
+
+  <p>If a new output stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.</p>
+
+  <p>To display the complex or real valued input or output
+  interferograms contained in the point data stack the programs
+  pt2data or pt2d can be used to convert the point data to raster
+  data format which can then be displayed using conventional
+  display programs.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="pt2data.html">pt2data</a>, <a href="pt2d.html">pt2d</a>,
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

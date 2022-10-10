@@ -1,0 +1,8 @@
+#! /bin/csh -fe
+echo " "
+echo "+++ NOTICE: Program par_RSI_RSAT has been replaced by par_RSAT_SLC +++"
+echo "+++ NOTICE: Please replace all calls to par_RSAT_SLC ++++++++++++++++"
+echo " "
+par_RSAT_SLC $1 $2 
+echo ""
+

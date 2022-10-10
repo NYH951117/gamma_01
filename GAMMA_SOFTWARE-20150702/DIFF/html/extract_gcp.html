@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF Reference Manual: extract_gcp</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>extract_gcp</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/extract_gcp.c"><i>extract_gcp.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  extract_gcp - extract GCPs from a DEM in range-Doppler
+  coordinates</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>extract_gcp &lt;DEM_rdc&gt; &lt;OFF_par&gt; &lt;GCP&gt;
+  [nr] [naz] [mask]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;DEM_rdc&gt;</td>
+
+      <td>(input) DEM in range-Doppler coordinates</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par&gt;</td>
+
+      <td>(input) ISP offset/interferogram parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;GCP&gt;</td>
+
+      <td>(output) ground control point file (text format)</td>
+    </tr>
+
+    <tr>
+      <td>[nr]</td>
+
+      <td>(input) number of GCP points in range (default=24)</td>
+    </tr>
+
+    <tr>
+      <td>[naz]</td>
+
+      <td>(input) number of GCP points in azimuth (default=24)</td>
+    </tr>
+
+    <tr>
+      <td>[mask]</td>
+
+      <td>SUN raster/BMP format mask file, regions flagged with 0
+      are excluded</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>extract_gcp 8560_8059.dem 8560_8059.off 8560_8059.gcp 32 32
+  8560_8059.mask.ras</samp></p>
+
+  <p>Selects 32 x 32 ground control points from DEM which was
+  resampled to SAR coordinates. The file 8560_8059.mask.ras is a
+  SUN raster file format file used to determine from which areas to
+  select GCP data.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code extract_gcp.c in ./src. For compilation adjust and
+  use Makefile. Executable version <a href=
+  "extract_gcp.html">extract_gcp</a> in ./DIFF/bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  extract_gcp uses a digital elevation model (DEM) which was
+  resampled to slant range geometry (registered to interferometric
+  image files) to automatically extract a large number of ground
+  control points (GCPs).</p>
+
+  <p>Automated extraction of ground control points based on a DEM
+  resampled into range/Doppler coordinates improves the processing
+  efficiency substantially. The user can specify a SUN raster or
+  BMP format mask file to prevent GCPs being selected from specific
+  regions with deformation. An image of the scene (i.e. the
+  unwrapped phase) in slant range coordinates can be edited using
+  programs such as GIMP, xv, or Photoshop to create the mask file.
+  Select black (value = 0) as the region fill color in regions that
+  to be excluded. The edited image must be saved and entered as
+  command line argument to <a href=
+  "extract_gcp.html">extract_gcp</a>.</p>
+
+  <p>A pre-requisite for the use of extract_gcp is the availability
+  of an appropriate DEM in SAR slant range/Doppler coordinates. The
+  steps required to obtain a precise mapping of the DEM data
+  requires matching the actual image with a simulated SAR image
+  derived from the DEM. This simulated image is created using a 2
+  step process. First a lookup table is calculated containing the
+  SAR range/Doppler coordinates for every point in a DEM covering
+  the region as well as a simulated SAR image in DEM coordinates
+  with program <a href="gc_map.html">gc_map</a>. This simulated SAR
+  image is resampled into SAR range-Doppler coordinates with
+  program <a href="geocode.html">geocode</a>. The offsets between
+  the simulated and actual images are estimated using the programs
+  <a href="init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, and <a href=
+  "offset_fitm.html">offset_fitm</a>. The geocoding lookup table is
+  than corrected using program <a href=
+  "gc_map_fine.html">gc_map_fine</a>).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  extract_gcp may also be used to automatically extract values for
+  the validation of an interferometricly generated height map.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 11-May-2004</p>
+</body>
+</html>

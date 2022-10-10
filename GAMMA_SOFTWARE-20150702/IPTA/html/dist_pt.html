@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: dist_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>dist_pt</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/disp_prt.c">dist_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  dist_pt - generate point displacement histories in text
+  format</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dist_pt &lt;plist&gt; &lt;pmask&gt; &lt;pdata&gt;
+  &lt;pSLC_par&gt; &lt;np_ref&gt; &lt;dx&gt; &lt;dy&gt;
+  [output]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values ( set to - to
+        accept all points)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;data&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) point data stack
+        (float data)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;np_ref&gt;</td>
+
+        <td>reference point number, (beginning with 0)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;dx&gt;</td>
+
+        <td>across pixel spacing (m)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;dy&gt;</td>
+
+        <td>down pixel spacing (m)<br></td>
+      </tr>
+
+      <tr>
+        <td>[output]</td>
+
+        <td>&nbsp;(output) text file, enter - for output to
+        stdout<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><code>dist_pt pt_utm.coord&nbsp; pmsk2&nbsp; pdh_err 141567
+  20. 20. dh_err.dat</code><br></p>
+
+  <p>Generates a text format plot file containing the distance from
+  the reference point for each point in the list and the associated
+  value in the input data file pdh_err<br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code dist_pt.c in ./IPTA/src, executable version dist_pt
+  in
+  ./IPTA/bin.<br></p><strong>DESCRIPTION<br></strong><span style="font-family: monospace;">The
+  program dist_pt is used to generate a text format file to plot
+  the data values as a fucniton of distance from the reference
+  point using the xmgrace plotting program. The output file has a
+  format as shown in Table 1. with column 1 the distance from the
+  reference point in meters, column 2 is the value from the data
+  file, column 3 is the point number index, column4 the layer
+  number, column 5 the x coordinate of the point and column 6 is
+  the y coordinate of the point from the point list.<br>
+  <br></span>
+
+  <table style=
+  "width: 50%; text-align: left; margin-left: auto; margin-right: auto;"
+  border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;"><code>&nbsp;&nbsp;&nbsp;
+        3197.939&nbsp;
+        1.33269e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        103&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 3297.326&nbsp;
+        1.52089e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        197&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 5099.730&nbsp;
+        1.52121e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        622&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7623.347&nbsp;
+        2.29113e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1018&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7690.975&nbsp;
+        2.70910e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1028&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7765.508&nbsp;
+        2.60056e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        7&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1039&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7772.292&nbsp;
+        2.59039e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        8&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1040&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7901.396&nbsp;
+        2.45344e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        9&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1059&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7915.010&nbsp;
+        2.57840e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        10&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1061&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 7976.331&nbsp;
+        2.73892e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        11&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1070&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 8208.786&nbsp;
+        2.68126e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        12&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1104&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 8222.497&nbsp;
+        2.62159e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        13&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1106&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; 8566.560&nbsp;
+        2.91402e+00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        15&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1156&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0<br>
+        &nbsp;&nbsp;&nbsp; ...<br></code></td>
+      </tr>
+    </tbody>
+  </table><big><br style="font-weight: bold;"></big>
+
+  <div style="text-align: center;">
+    <big><span style="font-weight: bold;">Table 1</span></big><br>
+
+    <div style="text-align: left;"></div>
+  </div>
+
+  <p>The command to plot using xmgrace is as follows:</p>
+
+  <p><code>xmgrace dh_err.dat</code><br></p>
+
+  <p>Each point in the data set will be plotted as a point in the
+  xmgrace plot window.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  The user can specify a text list of point numbers to generate
+  output displacement time series. If&nbsp; a - is entered for the
+  plist1_txt file, then all points not masked out by pmask will be
+  processed.<br></p><strong>SEE ALSO</strong><br>
+  xmgrace documentation<br>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 6-Oct-2004.
+</body>
+</html>

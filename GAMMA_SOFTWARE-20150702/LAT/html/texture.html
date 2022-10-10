@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1999 Gamma Remote Sensing --><!-- uw990819 -->
+
+  <title>LAT Reference Manual: texture</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>texture</h2>
+
+  <p>program: <a href="../src/texture.c">texture.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  texture - Estimation of image texture defined as stdev/mean or
+  log</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>texture &lt;data_in&gt; &lt;format_flag&gt;
+  &lt;texture&gt; &lt;width&gt; [type] [bx] [by] [weights_flag]
+  [r_looks] [az_looks] [weights_flag] [data_in_mean]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;format_flag&gt;</td>
+
+        <td>format of data_in: 0: float, 1: fcomplex, 2:
+        scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;texture&gt;</td>
+
+        <td>(output) image texture (float) defined as normalized
+        second moment</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>texture measure flag (default=0)<br>
+        0: texture defined as stdev/mean<br>
+        1: log (average(i)) - average (log(i))</td>
+      </tr>
+
+      <tr>
+        <td>[bx]</td>
+
+        <td>estimation window size in input image range pixels
+        (default=15)</td>
+      </tr>
+
+      <tr>
+        <td>[by]</td>
+
+        <td>estimation window size in input image azimuth pixels
+        (default=bx)</td>
+      </tr>
+
+      <tr>
+        <td>[r_looks]</td>
+
+        <td>range multilooking (in range pixels, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[az_looks]</td>
+
+        <td>azimuth multilooking (in azimuth pixels,
+        default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[weights_flag]</td>
+
+        <td>flag for weighting function selection<br>
+        (default=0: constant, 1: linearly decreasing, 2:
+        gaussian)</td>
+      </tr>
+
+      <tr>
+        <td>[data_in_mean]</td>
+
+        <td>(input) first moment of input data file (float)<br>
+        (used for an alternative texture estimation method)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>texture 8059.slc_esa 2 texture2 0 750 5 25 2 10
+  0</samp></p>
+
+  <p>Calculates the image texture (normalized second moment) of a
+  complex valued input SAR image (in scomplex format = pairs of
+  short integer). The estimation window size is 3 range x 15
+  azimuth looks. The texture image is written out using a 2 range x
+  10 azimuth looks multilooking.</p>
+
+  <p><samp>texture 8059.slc_esa 2 texture2 1 750 5 25 2 10
+  0</samp></p>
+
+  <p>Calculates the image texture (defined as log) of a complex
+  valued input SAR image (in scomplex format = pairs of short
+  integer). The estimation window size is 3 range x 15 azimuth
+  looks. The texture image is written out using a 2 range x 10
+  azimuth looks multilooking</p>
+
+  <p><samp>texture 8059.mli 0 texture0 750 0 5 5 1 1 0</samp></p>
+
+  <p>Calculates the image texture (normalized second moment) based
+  on the input real valued multilook SAR image. The estimation
+  window size is 5 range x 5 azimuth samples of the multilook input
+  image. The texture image is written out at the same sample
+  spacing of the input image.</p>
+
+  <p><samp>texture 8059.mli 0 texture0 750 0 5 5 1 1 0
+  8059.mli_frost</samp></p>
+
+  <p>Calculates the image texture (normalized second moment) based
+  on the input real valued multilook SAR image. The estimation
+  window size is 5 range x 5 azimuth samples of the multilook input
+  image. The texture image is written out at the same sample
+  spacing of the input image.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  texture estimates the texture of the input image. The image
+  texture defined as the normalized second moment. Two texture
+  definitions are included with the program. The first image
+  texture type is calculated as the ratio between the standard
+  deviation and the mean value of the values of the estimation
+  window:</p>
+
+  <p><code>type=0: texture = stdev / mean</code></p>
+
+  <p><code>type=1: texture = log(average(I)) -
+  average(log(i))</code></p>
+
+  <p>The same user defined estimation window sizes and weighting
+  functions are used for the estimation of the mean value and the
+  standard deviation.</p>
+
+  <p>If local mean values are provided in a seperate input file
+  then the first moment is not calculated but read from this input
+  file. This allows to previously determine the mean value using
+  more advanced techniques, for example the MMSE technique with an
+  adaptive estimator window size, or multi-temporal filtering. In
+  the second approach the local mean value does not need to be
+  constant over the estimator window used in the texture
+  estimation. This has important advantages for the texture
+  estimation. The estimator locally normalizes the input data
+  values x_in using the local mean x_mean values:</p>
+
+  <p><code>x_norm = (x_in/x_mean) - 1</code></p>
+
+  <p>followed by the calculation of the second moment for the
+  x_norm values.</p>
+
+  <p>Different weighting functions can be selected. For
+  weights_flag=0 a constant weighting function is applied, i.e. all
+  filter coefficients are set to 1. For weights_flag=1 a linear
+  weighting function is applied, i.e. the filter coefficients
+  decrease linearly with increasing distance to the center of the
+  filter window. For weights_flag=2 a Gaussian weighting function
+  is applied, i.e. the filter coefficients decrease with
+  inclreasing distance to the center of the filter window following
+  a Gauss function.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Userdefined filter window size and weighting function.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "average_filter.html">average_filter</a>, <a href=
+  "frost.html">frost</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jun-2006</p>
+</body>
+</html>

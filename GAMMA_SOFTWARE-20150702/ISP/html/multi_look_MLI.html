@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: multi_look_MLI</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_look_MLI</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/multi_look_MLI.c"><i>multi_look_MLI.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  multi_look_MLI - Multi-looking of real valued multi-look
+  intensity image (MLI)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>multi_look_MLI &lt;MLI_in&gt; &lt;MLI_in_par&gt;
+  &lt;MLI_out&gt; &lt;MLI_out_par&gt; &lt;rlks&gt; &lt;azlks&gt;
+  [loff] [nlines] [scale]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;MLI_in&gt;</td>
+
+      <td>(input) multi_look intensity image (MLI) file
+      (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_in_par&gt;</td>
+
+      <td>(input) MLI parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_out&gt;</td>
+
+      <td>(output) multi-looked MLI image (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_out_par&gt;</td>
+
+      <td>(output) MLI parameter file for output MLI</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rlks&gt;</td>
+
+      <td>range looks for multi-looking</td>
+    </tr>
+
+    <tr>
+      <td>&lt;azlks&gt;</td>
+
+      <td>azimuth looks for multi-looking</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>offset to starting line in the input data
+      (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of input MLI lines to process (default=to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[scale]</td>
+
+      <td>scale factor for output MLI (default=1.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>multi_look_MLI 8560.mli 8560.mli.par 8560.mli3
+  8560.mli3.par 3 3</samp></p>
+
+  <p>3x3 multi-looking of input MLI image.</p>
+
+  <p><samp>multi_look_MLI 8059.grd 8059.grd.par 8059.grd5
+  8059.grd5.par 5 5 200 1000</samp></p>
+
+  <p>5x5 multi-looking and section extraction for input
+  ground-range (GRD) image.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>multi_look_MLI</em> reads the real valued input MLI image,
+  applies multi-looking to it, and writes out a new MLI image. A
+  new parameter file to characterize the file dimension and
+  geometry of the output MLI image is also created. The number of
+  range and azimuth looks used in the multi-looking are specified
+  on the command line and the offset to the starting line and
+  number of input lines can be specified.</p>
+
+  <p><em>multi_look_MLI</em> can also be used for the multi-looking
+  of real valued images in ground-range geometry (GRD). The GRD
+  parameter file has the same format as the SLC/MLI parameter files
+  with the only difference that the range values corespond to
+  ground-ranges and not to slant ranges.</p>
+
+  <p><em>multi_look_MLI</em> takes into account line headers (as
+  indicated in the MLI parameter file). The output multi-look
+  intensity image has no file or line headers. The output MLI may
+  be scaled using a command line parameter. A scale factor 1.e-06
+  is used to generate multi-look images for MSP processed
+  radiometrically calibrated SLC images in short integer
+  format.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  href="typedef_ISP.h.html"&gt;typedef_ISP.h,</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2001.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 18-Apr-2001.</p>
+</body>
+</html>

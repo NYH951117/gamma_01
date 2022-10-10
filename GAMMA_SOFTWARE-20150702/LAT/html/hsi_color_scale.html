@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: hsi_color_scale</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>hsi_color_scale</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/hsi_color_scale.c"><i>hsi_color_scale.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>hsi_color_scale</em> - Generation of color scale image
+  generated with program ras_to_hsi.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>hsi_color_scale &lt;file_out&gt; [nval] [chip_width]
+  [gap] [height]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;file_out&gt;</td>
+
+        <td>output (24-bit) SUN raster or BMP image file</td>
+      </tr>
+
+      <tr>
+        <td>[nval]</td>
+
+        <td>number of discrete color values to display<br>
+        &nbsp;&nbsp;0: continuous color wheel (default)</td>
+      </tr>
+
+      <tr>
+        <td>[chip_width]</td>
+
+        <td>width of color chips (default=8)</td>
+      </tr>
+
+      <tr>
+        <td>[gap]</td>
+
+        <td>number of pixels between color chips (default=2)</td>
+      </tr>
+
+      <tr>
+        <td>[height]</td>
+
+        <td>height of color scale (default=chip_width)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><code>hsi_color_scale hsi.color_scale.ras 0 0 0 16</code></p>
+
+  <p><code>generates a continuous color scale</code> (24-bit SUN
+  raster) <code>with height=16.</code></p>
+
+  <p><code><samp>hsi_color_scale hsi.color_scale.bmp 4 8 2
+  8</samp></code></p>
+
+  <p>Generates a color scale (24-bit BMP format image) with 4
+  different colors, height=8.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code <em>hsi_color_scale.c</em> in $LAT_HOME/src. For
+  compilation adjust and use Makefile: Executable version
+  hsi_color_scale in $LAT_HOME/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  hsi_color_scale supports the generation of a color scale for a
+  hue/saturation/intensity (HSI) image generated using the program
+  <a href="ras_to_hsi.html"><em>ras_to_hsi</em></a><em>.</em> The
+  output is a 24-bit image with either a continuous color wheel or
+  a discrete number of color chips separated by black spaces.The
+  dimensions of the color chips and gaps may be selected to
+  facilitate the preparation of a color scale useful image
+  annotation in reports and presentations.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ras_to_hsi.html">ras_to_hsi</a>, <a href=
+  "display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Oct-2005.
+</body>
+</html>

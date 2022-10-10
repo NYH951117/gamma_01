@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: TOPS_par format;</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Sentinel-1 TOPS_par format</h2>
+
+  <p>Sentinel-1 TOPS mode SLC data consist of a set of bursts
+  (nominally 10) in a single SLC.&nbsp; Since there are 3 Swaths in
+  Interferometric Wide mode (IW), there are 3 SLC images saved as
+  TIFF format images in each image data set. These have names like
+  <code>s1a-iw1-slc-vv-20140809t165546-20140809t165611-001866-001c20-004.tiff.</code>
+  The data are short complex (16 bit real, 16 imaginary), but are
+  converted to float complex (32-bit real, 32-bit imaginary) after
+  scaling by the program par_S1_TOPS.c The output of par_S1_SLC are
+  a binary float complex image, the SLC parameter file and a Burst
+  parameter file called the TOPS_par.</p>
+
+  <p>The top level of the TOPS par as the following data
+  elements</p>
+
+  <p><code>typedef struct
+  {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* Sentinel-1 TOPS SLC image parameters */<br>
+  &nbsp; int
+  nburst;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* number of SLC bursts in parameter file */<br>
+  &nbsp; int
+  lpb;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* lines per SLC burst */<br>
+  &nbsp; double az_steering_rate;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+  azimuth steering rate of the antenna in Sentinel-1 IW and EW TOPS
+  modes (deg/s) */<br>
+  &nbsp; BURST
+  burst[MAX_BURST];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* TOPS SLC
+  burst metadata */<br>
+  } TOPS_PAR;</code></p>
+
+  <p>This is stored in a keyword: value format .&nbsp; For each
+  burst in the SLC there is a BURST data structure, containing the
+  following data elements:</p>
+
+  <p><code>typedef
+  struct{&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* Sentinel-1 TOPS SLC burst metadata structure */<br>
+  &nbsp; char
+  burst_date[32];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* burst start, date format: YYYY MM DD hh mm ss.ttt UTC */<br>
+  &nbsp; double
+  burst_t0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* zero-doppler time of SLC burst start (seconds of day) */<br>
+  &nbsp; char
+  sensing_date[32];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+  burst sensing date in form: YYYY MM DD hh mm ss.ttt UTC */<br>
+  &nbsp; double
+  sensing_t0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* time of burst sensing start (seconds of day)*/<br>
+  &nbsp; long long burst_boffset;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+  start of burst offset (bytes) relative to start of the burst SLC
+  file */<br>
+  &nbsp; char
+  doppler_date[32];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+  Doppler polynomial datetime in form: YYYY MM DD hh mm ss.ttt UTC
+  */<br>
+  &nbsp; double
+  doppler_t0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* azimuth time of Doppler polynomial (seconds of day) */<br>
+  &nbsp; double
+  doppler_srdelay;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Doppler
+  polynomial reference time (slant range delay seconds) */<br>
+  &nbsp; double
+  doppler_poly[5];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* Doppler
+  centroid estimated from data, expressed as the following
+  polynomial (assuming 5 coefficients):<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Doppler Centroid = d0 + d1(tSR-t0) + d2(tSR-t0)^2 + d3(tSR-t0)^3
+  + d4(tSR-t0)^4, where tSR = 2 way slant range time. */<br>
+  &nbsp; char
+  afmrate_date[32];&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /*
+  azimuth FM rate datetime in form: YYYY MM DD hh mm ss.ttt UTC
+  */<br>
+  &nbsp; double
+  afmrate_t0;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* time of azimuth FM rate (seconds of day) */<br>
+  &nbsp; double
+  afmrate_srdelay;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* azimuth
+  FM polynomial reference time (slant range delay seconds) */<br>
+  &nbsp; double afmrate_poly[3];<br>
+  &nbsp; int
+  fvsamp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* offset to first valid range sample */<br>
+  &nbsp; int
+  lvsamp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* offset to last valid range sample */<br>
+  &nbsp; int
+  fvline;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* offset to first valid line */<br>
+  &nbsp; int
+  lvline;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* offset last valid line
+  */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  &nbsp; BURST_WIN
+  burst_win;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* burst window parameters
+  */&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  } BURST;</code></p>
+
+  <p>Hence if there are 10 bursts in the SLC, the TOPS_par will
+  contain 10 BURST annotation blocks. Each BURST Annotation Block
+  contains a BURST_WIN data structure that gives the boundaries of
+  the burst are used for multilooking the data. The burst window is
+  calculated from the number of range and azimuth looks as well as
+  the annotation where there is valid data in the SLC burst and to
+  avoid gaps:</p>
+
+  <p><code>typedef struct {<br>
+  &nbsp; double win_r0, win_r2;/* starting and ending slant slant
+  range of the window in the mosaic */<br>
+  &nbsp; double win_t0, win_t2;/* starting and ending azimuth time
+  of the burst in the mosaic */<br>
+  &nbsp; int ir0,
+  nrs;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /* pixel
+  offset in range, and number of slant range pixels that can be
+  used in the mosaic */<br>
+  &nbsp; int iaz0, naz;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  /* line offset for the burst, number of azimuth lines that can be
+  used in the mosaic */<br>
+  } BURST_WIN;</code></p>
+
+  <p>Below is an example of the TOPS_par data format including 2 of
+  the 9 Burst Annotation blocks in the TOPS_par for interferometric
+  swath 1 (iw1).</p>
+
+  <p>Note that the burst keywords are numbered to differentiate
+  them with the TOPS_par.&nbsp; Date and time data are given in
+  ISO8601 format.<br></p>
+
+  <p><code>Gamma Interferometric SAR Processor (ISP) - TOPS IW and
+  EW Mode SLC Parameter File<br>
+  number_of_bursts:&nbsp;&nbsp;&nbsp;&nbsp; 9<br>
+  lines_per_burst:&nbsp;&nbsp; 1629<br>
+  az_steering_rate: -1.590368784&nbsp; (deg/s)</code></p>
+
+  <p>
+  <code>burst_date_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:46.535387<br>
+  burst_start_time_1:&nbsp;&nbsp;&nbsp; 60946.535387&nbsp;&nbsp;
+  s<br>
+  sensing_date_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:47.857373<br>
+  sensing_start_time_1:&nbsp; 60947.857373&nbsp;&nbsp; s<br>
+  burst_boffset_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0<br>
+  doppler_date_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:47.908126<br>
+  doppler_time_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  60947.908126&nbsp;&nbsp; s<br>
+  doppler_srdelay_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.34095e-03&nbsp;&nbsp; s<br>
+  doppler_polynomial_1:&nbsp; -126.43460&nbsp;&nbsp;
+  48915.47000&nbsp; -4.27236e+07&nbsp;&nbsp;
+  0.00000e+00&nbsp;&nbsp; 0.00000e+00<br>
+  az_fmrate_date_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:46.945386<br>
+  az_fmrate_time_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  60946.945386&nbsp;&nbsp; s<br>
+  az_fmrate_srdelay_1:&nbsp;&nbsp;&nbsp; 5.33983e-03&nbsp;&nbsp;
+  s<br>
+  az_fmrate_polynomial_1: -2326.36500&nbsp; 449570.53443&nbsp;
+  -7.88281e+07<br>
+  first_valid_sample_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  71&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; samples<br>
+  last_valid_sample_1:&nbsp;&nbsp;&nbsp;
+  20553&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; samples<br>
+  first_valid_line_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  86&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lines<br>
+  last_valid_line_1:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1545&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lines<br>
+  burst_win_1:&nbsp; 800420.5701&nbsp;&nbsp;
+  849921.4330&nbsp;&nbsp;&nbsp; 60946.53539&nbsp;&nbsp;&nbsp;
+  60949.57761&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;
+  21250&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;&nbsp;
+  1481<br>
+  <br>
+  burst_date_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:49.308333<br>
+  burst_start_time_2:&nbsp;&nbsp;&nbsp; 60949.308333&nbsp;&nbsp;
+  s<br>
+  sensing_date_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:50.615650<br>
+  sensing_start_time_2:&nbsp; 60950.615650&nbsp;&nbsp; s<br>
+  burst_boffset_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  276969096<br>
+  doppler_date_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:50.666403<br>
+  doppler_time_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  60950.666403&nbsp;&nbsp; s<br>
+  doppler_srdelay_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.34220e-03&nbsp;&nbsp; s<br>
+  doppler_polynomial_2:&nbsp;&nbsp; -70.28511&nbsp;
+  -126308.70000&nbsp;&nbsp; 7.91593e+07&nbsp;&nbsp;
+  0.00000e+00&nbsp;&nbsp; 0.00000e+00<br>
+  az_fmrate_date_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2014-08-09T16:55:49.703663<br>
+  az_fmrate_time_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  60949.703663&nbsp;&nbsp; s<br>
+  az_fmrate_srdelay_2:&nbsp;&nbsp;&nbsp; 5.33983e-03&nbsp;&nbsp;
+  s<br>
+  az_fmrate_polynomial_2: -2326.29790&nbsp; 449591.61577&nbsp;
+  -7.88387e+07<br>
+  first_valid_sample_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  71&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; samples<br>
+  last_valid_sample_2:&nbsp;&nbsp;&nbsp;
+  20553&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; samples<br>
+  first_valid_line_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  90&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lines<br>
+  last_valid_line_2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1542&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; lines<br>
+  burst_win_2:&nbsp; 800420.5701&nbsp;&nbsp;
+  849921.4330&nbsp;&nbsp;&nbsp; 60949.57967&nbsp;&nbsp;&nbsp;
+  60952.35056&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0&nbsp;&nbsp;
+  21250&nbsp;&nbsp;&nbsp;&nbsp; 132&nbsp;&nbsp;&nbsp; 1349<br>
+  <br></code></p>
+
+  <p><strong>SEE ALSO:</strong><br>
+  <a href="par_S1_SLC.html">par_S1_SLC</a><a href=
+  "par_all_palsar.html"></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,&nbsp; ms last change 9-Dec-2014.
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: base_init</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>base_init</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/base_init.c"><i>base_init.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  base_init - initial estimation of interferometric baseline</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_init &lt;SLC1_par&gt; &lt;SLC2_par&gt;
+  &lt;OFF_par&gt; &lt;int&gt; &lt;base&gt; [mflag] [nrfft] [nazfft]
+  [r_samp] [az_line]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC1_par&gt;</td>
+
+      <td>(input) SLC-1 Parameter File (of reference pass)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC2_par&gt;</td>
+
+      <td>(input) SLC-2 Parameter File (of slave pass)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par&gt;</td>
+
+      <td>(input) ISP Processing/Offset Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;int&gt;</td>
+
+      <td>(input) multi-look interferogram with range phase</td>
+    </tr>
+
+    <tr>
+      <td>&lt;base&gt;</td>
+
+      <td>(output) baseline parameter file</td>
+    </tr>
+
+    <tr>
+      <td>[mflag]</td>
+
+      <td>flag to select baseline estimation method
+      (default=2)</td>
+    </tr>
+
+    <tr>
+      <td>[nrfft]</td>
+
+      <td>size of range FFT (512,1024,...)</td>
+    </tr>
+
+    <tr>
+      <td>[nazfft]</td>
+
+      <td>size of azimuth FFT (512,1024,...)</td>
+    </tr>
+
+    <tr>
+      <td>[r_samp]</td>
+
+      <td>range pixel offset to center of the FFT window
+      (default=center)</td>
+    </tr>
+
+    <tr>
+      <td>[az_line]</td>
+
+      <td>line offset from start of the interf. for the FFT window
+      (default=center)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_init 1352.slc.par 1610.slc.par 1352_1610.off
+  1352_1610.int 1352_1610.base 2</samp></p>
+
+  <p>The baseline component parallel to the look vector is
+  estimated based on the orbit parameters in 1352.slc.par and
+  1610.slc.par, the baseline component perpendicular to the look
+  vector is estimated based on the interferogram fringe frequency
+  (using fft techniques).</p>
+
+  <p><samp>base_init 1352.slc.par 1610.slc.par - - 1352_1610.base
+  0</samp></p>
+
+  <p>The baseline is estimated based on the orbit parameters in
+  1352.slc.par and 1610.slc.par.</p>
+
+  <p><samp>base_init 1352.slc.par 1610.slc.par 1352_1610.off -
+  1352_1610.base 1</samp></p>
+
+  <p>The baseline is estimated based on the orbit parameters on the
+  SLC registration offsets, respectively based on the range and
+  azimuth pixel spacing scale factors in the case of slc which were
+  registered to a common geometry.</p>
+
+  <p><samp>base_init 1352.slc.par - - 1352_1610.int 1352_1610.base
+  4</samp></p>
+
+  <p>The baseline component parallel to the look vector is not
+  estimated (set to 0.0), the baseline component perpendicular to
+  the look vector is estimated based on the interferogram fringe
+  frequency (using fft techniques).</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_init estimates the interferometric baseline.</p>
+
+  <p>The estimated baseline and (along track) baseline rate, in TCN
+  coordinates, is written to the first two lines of the <a href=
+  "baseline_file.html">baseline file</a>. The baseline components
+  parallel and perpendicular to the look vector are written to
+  stdout.</p>
+
+  <p>In order to achieve on one hand a high applicability and on
+  the other hand high quality estimates several baseline estimation
+  algortihms are included. The included algorithms allow to
+  estimate the interferometric baseline and the (along track) rate
+  of change of the interferometric baseline from:<br>
+  - the orbit state vectors<br>
+  - the SLC registration offsets<br>
+  - the interferogram fringe rate<br></p>
+
+  <p>In practice it turns out that it is usually best to combine
+  two of these methods. The first two methods give the better
+  estimates for the parallel baseline component. The third method
+  gives very often the better estimate for the perpendicular
+  baseline component. Therefore, it is recommended to combine
+  either one of the first two methods with the third method.</p>
+
+  <p>In order to allow this the user can select between the
+  individual methods and combined methods as listed in the table
+  below.</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><strong><u>Method flag</u></strong></td>
+
+      <td><strong><u>Bpara estimation</u></strong></td>
+
+      <td><strong><u>Bperp estimation</u></strong></td>
+
+      <td><strong><u>required input</u></strong></td>
+    </tr>
+
+    <tr>
+      <td>0</td>
+
+      <td>from orbits</td>
+
+      <td>from orbits</td>
+
+      <td>SLC-1_par,SLC-2_par</td>
+    </tr>
+
+    <tr>
+      <td>1</td>
+
+      <td>from registration offsets</td>
+
+      <td>from registration offsets</td>
+
+      <td>SLC-1_par,SLC-2_par,OFF_par</td>
+    </tr>
+
+    <tr>
+      <td>2</td>
+
+      <td>from orbits</td>
+
+      <td>fringe rate</td>
+
+      <td>SLC-1_par,SLC-2_par,OFF_par,interferogram</td>
+    </tr>
+
+    <tr>
+      <td>3</td>
+
+      <td>from registration offsets</td>
+
+      <td>fringe rate</td>
+
+      <td>SLC-1_par,SLC-2_par,OFF_par,interferogram</td>
+    </tr>
+
+    <tr>
+      <td>4</td>
+
+      <td>fringe rate</td>
+
+      <td>fringe rate</td>
+
+      <td>SLC-1_par,OFF_par,interferogram</td>
+    </tr>
+  </table>
+
+  <p>Names for input files which are not required for a selected
+  method can be replaced by a - sign. The program checks if the
+  selected method is possible with the provided data. If that's not
+  the case it automatically selects an alternative method which for
+  which the required input data is provided.</p>
+
+  <p>As an option the user can select the range and azimuth fft
+  sizes used for the determination of the fringe frequency. Notice,
+  that the fringe frequency estimation is done iteratively to
+  ensure maximum reliability of the perpendicular baseline
+  component which is so important in SAR interferometry.</p>
+
+  <p>A large range fft size will reduce the accuracy of the first
+  Bperp estimation because of its slant range dependence. In the
+  iteration the interferogram is flattened with the prior baseline
+  estimate which will remove this problem, in particular if a
+  relatively accurate Bperp estimate is used. As a consequence the
+  combined methods with such relatively accurate Bperp estimates
+  (originating from an other method) lead to the best results.</p>
+
+  <p>In the fringe rate method the assumption that the surface on
+  the average flat for the fft window is used. If that's not the
+  case the Bperp estimation will be slightly wrong and there will
+  be a residual phase trend in a flattened interferogram. If the
+  user knows that the surface is flat for a certain part of the
+  scene he may select this location for the fft baseline
+  estimation. The baseline parameter file will be used for the
+  removal of the average phase trend of the interferogram and for
+  the computation of height and slope. The initial baseline
+  estimation can be improved based on ground control points using
+  the program <a href="base_ls.html">base_ls</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none</p>
+
+  <p><strong>NOTES</strong><br>
+  The program base_init replaces the programs <em>base_orbit</em>
+  and <em>base_est_fft</em> of earlier ISP versions. The capability
+  of these older baseline estimation programs has been fully
+  integrated into <em>base_init</em>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="baseline_file.html">baseline_file</a>, <a href=
+  "base_ls.html">base_ls</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

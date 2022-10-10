@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1999 Gamma Remote Sensing -->
+<!-- uw990608 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: cc_ad</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>cc_ad</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/cc_ad.c">cc_ad.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cc_ad - Adaptive coherence estimation with consideration of phase
+  slope and texture.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>cc_ad &lt;interf&gt; &lt;pwr1&gt; &lt;pwr2&gt;
+  &lt;slope&gt; &lt;texture&gt; &lt;cc_ad&gt; &lt;width&gt;
+  [box_min] [box_max] [wgt_flag] [loff] [nl]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;interf&gt;</td>
+
+      <td>(input) complex interferogram (complex coherence)
+      filename</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr1&gt;</td>
+
+      <td>(input) intensity image of first scene</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr2&gt;</td>
+
+      <td>(input) intensity image of second scene</td>
+    </tr>
+
+    <tr>
+      <td>&lt;slope&gt;</td>
+
+      <td>(input) phase slope data (or -)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;texture&gt;</td>
+
+      <td>(input) backscatter texture data (or - )</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cc_ad&gt;</td>
+
+      <td>(output) adaptive coherence estimate file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[box_min]</td>
+
+      <td>smallest correlation average box size (default=3.0)</td>
+    </tr>
+
+    <tr>
+      <td>[box_max]</td>
+
+      <td>largest correlation average box size (default=9.0)</td>
+    </tr>
+
+    <tr>
+      <td>[wgt_flag]</td>
+
+      <td>flag for weighting function selection (default=0)<br>
+      0: constant weights<br>
+      1: gausian weighting function</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>offset in lines to starting line (default=0)</td>
+    </tr>
+
+    <tr>
+      <td>[nl]</td>
+
+      <td>number of lines to process (default=0, to end of
+      file)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>cc_ad 1352_1610.flt 1352_1610.pwr1 1352_1610.pwr2 - -
+  1352_1610.cc_ad 2500 3.0 9.0 0</samp></p>
+
+  <p>Adaptive coherence estimation without consideration of local
+  interferogram phase slope and local backscatter image texture.
+  The adaptive estimation window size is between 3.0 and 9.0, with
+  constant weights.</p>
+
+  <p><samp>cc_ad 1352_1610.flt 1352_1610.pwr1 1352_1610.pwr2
+  1352_1610.slope 1352_1610.texture 1352_1610.cc_ad 2500 2.0 9.0
+  1</samp></p>
+
+  <p>Adaptive coherence estimation with consideration of local
+  interferogram phase slope and local backscatter image texture.
+  The adaptive estimation window size is between 2.0 and 9.0, using
+  a gaussian weighting function.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code cc_ad.c in ./src. For compilation adjust and use
+  Makefile: Executable version cc_ad in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  cc_ad reads the complex normalized interferogram and the two
+  corresponding backscatter intensity images and estimates for each
+  pixel the degree of coherence.</p>
+
+  <p>The estimator is adaptive in the sesnse that the estimator
+  window size is adjusted adaptively to the local degree of
+  coherence as estimated in an initial non-adaptive coherence
+  estimation with a fixed estimator window size.</p>
+
+  <p>To use an adaptive coherence estimator is motivated by the
+  trade-off between spatial resolution of the coherence estimation
+  and estimation bias. Large estimator windows result in lower bias
+  but reduce the spatial resolution of the coherence estimate.
+  Small estimator windows maintain a high spatial resolution, but
+  lead to a high estimation bias at low coherence levels. The
+  adaptive estimator is large when estimating low coherence values
+  (to keep the estimation bias small) and small when estimating
+  high coherence values.</p>
+
+  <p>The local phase plane is considered in the coherence
+  estimation if the input phase slope file is provided. The phase
+  slope file can be generated suing the program <a href=
+  "phase_slope.html">phase_slope</a>. If no such file is provided
+  (i.e. if - is indicated on the command line instead of a valid
+  file name) then it is assumed that the phase is constant within
+  the estimation window. This assumption is not correct in sloped
+  terrain resulting in an underestimation of the degree of
+  coherence in sloped terrain.</p>
+
+  <p>When providing a backscatter texture image (i.e. a valid file
+  name is indicated on the command line and not - ) then the
+  estimator window size is adaptive not only with respect to the
+  initial coherence estimate but also to the backscatter texture.
+  For high texture areas the coherence estimator window size is
+  reduced. This adaptivity is motivated by the assumption of
+  homogeneous targets within the estimation window.</p>
+
+  <p>For areas of high coherence small estimation windows (near to
+  the lower size bx_min) are used. For the estimation of low
+  coherence values of areas with low texture large estimation
+  windows (close to the upper window size bx_max) are used. For the
+  estimation of low coherence values of areas with high texture
+  intermediate to small estimation windows are used. In this case a
+  somewhat higher estimation bias cannot be avoided.</p>
+
+  <p>Constant weights or a gaussian weighting function may be
+  selected and applied. Notice that the estimation is adaptive even
+  with constant weights.</p>
+
+  <p>Tests showed that the coherence estimates optained using the
+  adaptive coherence estimation cc_ad makes an exellent compromise
+  between maintaining a good spatial resolution and minimizing the
+  estimation bias optained for small estimation windows. This
+  allows a much improved interpretation of coherence values below
+  about 0.4.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The lower and upper limits used for the estimation window sizes
+  may be specified.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  Noisy phase slope estimates may have a negative effect on the
+  coherence estimation. Such problems may be detected by comparison
+  with coherence estimates without consideration of the local phase
+  slope.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "phase_slope.html">phase_slope</a>, <a href=
+  "texture.html">texture</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

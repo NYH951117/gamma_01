@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DISP Reference Manual: fill</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>fill</h2>
+
+  <p><i>ANSI-C program: <a href="../src/fill.c">fill.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  fill -&nbsp; Fill gaps in data file 1 with values from data file
+  2 (float format)</p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>fill &lt;d1&gt; &lt;d2&gt;
+  &lt;dout&gt; &lt;width&gt;<br></code></p>
+
+  <table border="1" cellpadding="7" cellspacing="2">
+    <tbody>
+      <tr>
+        <td>&lt;d1&gt;</td>
+
+        <td>(input) data file 1 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;d2&gt;</td>
+
+        <td>(input) data file 2 used to fill gaps in d1
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dout&gt;</td>
+
+        <td>(output) d1 with gaps filled with data from d2
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong> <samp>fill
+  mumbai_20110417_TDX.dem mumbai_seg.dem
+  mumbai_20110417_TDX_fill.dem 6876<br></samp></p>
+
+  <p>fills the gaps in the file <code>20110417_TDX.dem</code> with
+  data from <code>mumbai_seg.dem</code> and writes the output to
+  <code>mumbai_20110417_TDX_fill.dem.</code></p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>fill</em> reads the input
+  data file and scans for values that are set to 0.0.&nbsp; In the
+  Gamma software, values of 0.0 indicate missing data when the data
+  are float format. In this case <span style=
+  "font-style: italic;">fill</span> checks if there is data
+  available for this location in file <span style=
+  "font-style: italic;">d2</span> and fills the missing values in
+  <span style="font-style: italic;">d1</span>. This is useful for
+  filling DEM files produced from an interferometric pair with data
+  from a lower resolution DEM as produced by SRTM.<br></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-Mar-2013.
+</body>
+</html>

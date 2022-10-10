@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: multi_SLC_WSS</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_SLC_WSS.c</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/multi_SLC_WSS"><i>multi_SLC_WSS.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  multi_SLC_WSS - &nbsp;calculate multi-look intensity image (MLI)
+  from a ASAR Wide-Swath SLC</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>usage: multi_SLC_WSS &lt;SLC&gt; &lt;SLC_par&gt;
+  &lt;MLI&gt; &lt;MLI_par&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI&gt;</td>
+
+        <td>(output) multi-look intensity image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(output) MLI image parameter file</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>multi_SLC_WSS 20030921.VV.IS1.SLC
+  20030921.VV.IS1.SLC.par&nbsp;20030921.VV.IS1.mli
+  20030921.VV.IS1.mli.par</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>multi_SLC_WSS&nbsp;</em> reads the complex-valued input ASAR
+  WSS SLC image and generates a real-valued multi-look intensity
+  image (MLI). A new ISP parameter file &nbsp;is generated that
+  contains information on the image dimension. dimension. ASAR
+  Wide-Swath SLC data consist of a series of burst images. Each of
+  these bursts consists of 48 lines, spaced 80 meters in azimuth
+  (along-track).&nbsp; On average every point on the ground is
+  imaged by 3 bursts. <em>multi_SLC_WSS</em> &nbsp;detects each of
+  these bursts and sums the intensity values from multiple bursts
+  using the times given the SLC line headers. The program detects
+  low-intensity lines at the edges of the SLC bursts and does not
+  include these lines when summing the looks from each of the
+  bursts.&nbsp;</p>
+
+  <p>In the process of generating an interferogram from WSS data,
+  MLI images must be produced from each of the SLCs. These MLI
+  images are used for estimation of the offsets between the SLC
+  images and for calculation of the interferometric coherence.
+  &nbsp;<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_intf.html">WSS_intf</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-Nov-2005.
+</body>
+</html>

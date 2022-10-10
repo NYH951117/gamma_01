@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: polyras</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>polyras</h2>
+
+  <p><i>ANSI-C program: DISP/src/polyras.c</i><br>
+  as part of DISP package.</p>
+
+  <p><strong>NAME</strong><br>
+  polyras - Test-area selection (polygons) using a SUN or BMP
+  raster file for display</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>polyras &lt;image&gt; [mag] [win_sz] &gt;
+  [polygons]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;image&gt;</td>
+
+        <td>SUN raster (*.ras) or BMP (*.bmp) file</td>
+      </tr>
+
+      <tr>
+        <td>[mag]</td>
+
+        <td>magnification factor (default=2)</td>
+      </tr>
+
+      <tr>
+        <td>[win_sz]</td>
+
+        <td>size of input data region to be magnified
+        (default=160)</td>
+      </tr>
+
+      <tr>
+        <td>&gt;</td>
+
+        <td>shell command to redirect standard output</td>
+      </tr>
+
+      <tr>
+        <td>[polygons]</td>
+
+        <td>output (text) file for polygons (default: stdout)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>polyras 1352_1610.cc.ras 2 200 &gt;
+  1352_1610.poly</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code polyras.c provided as part of the DISP package.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>polyras</em> displays a raster image and allows selection and
+  storage of the vertices of polygons. Pressing the left mouse
+  button displays the area around the cursor in the zoom window. To
+  select a test-area (corresponding for example to a field, forest
+  stand, etc.) a polygon marking the test-area is generated. Move
+  the cursor to the first polygon corner and zoom using the left
+  mouse button. Enter this point into the list of polygon vertices
+  by pressing the right mouse button. Then move the cursor to
+  adjacent vertices and entering them by right-clicking the mouse.
+  To close the polygon, double right click without moving on the
+  last vertex. Successive polygons can be selected by repeating the
+  above procedure. Exit the progam by clicking on the
+  <samp>close</samp> button. The center mouse button can be used to
+  display different color tables.</p>
+
+  <p>The lists containing the corner number and the corner
+  coordinates for each polygon are are written to standard output
+  and possibly redirected to the indicated text file on the command
+  line. Polygons are seperated by a blank line in the output with
+  each line containing a polygon corner. Each vertex is specfied by
+  the integer positions in <em>x</em> and <em>y</em> followed by
+  the vertex counter value. Programs <a href=
+  "polyx.html">polyx.c</a> and <a href=
+  "polyx.html">polyx_phase.c</a> may then be used to extract values
+  from the selected regions. Program <a href=
+  "histogram.html">histogram.c</a> can calculate the histogram of
+  the values. Finally, arithmetic operations can be performed on
+  the data values within a region using program <a href=
+  "poly_math.html">poly_math.c</a>.</p>
+
+  <p>It is important that the selected rasterfile is <strong>not
+  left/right flipped</strong>. Otherwise the polygons corner values
+  will be in flipped geometry and will not match the selected areas
+  in the (unflipped) original geometry of the binary files.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The magnification factor and zoom window size can be specified on
+  the command line. This program replaces the previous LAT programs
+  poly_cc and poly_mph.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="polyx.html">polyx.c</a>, <a href=
+  "histogram.html">histogram.c</a>, <a href=
+  "poly_math.html">poly_math.c</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jun-2006.</p>
+</body>
+</html>

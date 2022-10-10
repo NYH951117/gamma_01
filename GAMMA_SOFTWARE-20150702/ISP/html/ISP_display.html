@@ -1,0 +1,762 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: ISP display programs</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>ISP_display</h2>
+
+  <p><i>(ANSI C programs)</i></p>
+
+  <p><strong>INTRODUCTION</strong><br>
+  There are two main approaches to display the various image
+  data:<br>
+  1. To use one of the display programs (names start with
+  <em>dis</em>) to directly display the data on the screen<br>
+  2. To first use one of the programs to generate a SUN raster or
+  BMP format image (names start with <em>ras</em>), and then to
+  display the image using an external viewer such as <em>xv</em> or
+  <em>disras.</em></p>In addition there is a program to interactely
+  edit the phase unwrapping flag file to assist correcting phase
+  unwrapping errors <a href=
+  "ISP_display.html#tree_edit">tree_edit</a> and programs to
+  simultaniously display the map projection coordinates of DEM or
+  raster image data <a href=
+  "ISP_display.html#disdem_par">disdem_par</a>, and <a href=
+  "ISP_display.html#disras_dem_par">disras_dem_par</a> when there
+  is an associated map projection parameter file.
+
+  <h3><a name="ISP_display">DISP display tools</a></h3>
+
+  <table border="0">
+    <tr>
+      <td><a href="ISP_display.html#dis2SLC">dis2SLC</a></td>
+
+      <td>Display magnitude of two complex data sets and rapidly
+      switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis2cc">dis2cc</a></td>
+
+      <td>Display two float correlation data sets and rapidly
+      switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis2hgt">dis2hgt</a></td>
+
+      <td>Display two float height data sets (height only) and
+      rapidly switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis2mph">dis2mph</a></td>
+
+      <td>Display two complex data sets (magnitude/phase) and
+      rapidly switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis2pwr">dis2pwr</a></td>
+
+      <td>Display magnitude of 2 real data sets and rapidly switch
+      display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis2ras">dis2ras</a></td>
+
+      <td>Display two SUN raster or BMP format images 8 or 24
+      bits/pixel switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis2rmg">dis2rmg</a></td>
+
+      <td>Display two real unwrapped phase data sets rapidly (phase
+      only) switch display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis_dB">dis_dB</a></td>
+
+      <td>Display magnitude of real data (float) using dB
+      scale</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dis_linear">dis_linear</a></td>
+
+      <td>Display magnitude of real data (float) using linear
+      scale</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disSLC">disSLC</a></td>
+
+      <td>Display magnitude of complex data (floating point or
+      short integer)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disbyte">disbyte</a></td>
+
+      <td>Display byte data</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#discc">discc</a></td>
+
+      <td>Display interferometric correlation and scatter
+      intensity</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disflag">disflag</a></td>
+
+      <td>Display phase unwrapping flagfile</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disdem_par">disdem_par</a></td>
+
+      <td>dsiplay DEM as shaded relief with map projection
+      coordinates</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dishgt">dishgt</a></td>
+
+      <td>Display height map (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dismph">dismph</a></td>
+
+      <td>Display magnitude and phase of complex data (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dismph_fft">dismph_fft</a></td>
+
+      <td>Display magnitude of complex data (float) and fft for
+      cursor location</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dismph_pwr">dismph_pwr</a></td>
+
+      <td>Display phase of complex data and scatter intensity
+      (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dismph_ub">dismph_ub</a></td>
+
+      <td>Display magnitude and phase of complex data (IQ unsigned
+      byte)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#dispwr">dispwr</a></td>
+
+      <td>Display magnitude of real data (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disras">disras</a></td>
+
+      <td>Display image data in SUN raster or BMP format images (8
+      or 24-bits/pixel)</td>
+    </tr>
+
+    <tr>
+      <td><a href=
+      "ISP_display.html#disras_dem_par">disras_dem_par</a></td>
+
+      <td>Display SUN raster or BMP format images and map
+      projection coordinates (8 or 24-bits/pixel)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disrmg">disrmg</a></td>
+
+      <td>Display unwrapped phase (float)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#disshd">disshd</a></td>
+
+      <td>Display digital terrain data in shaded relief</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#distree">distree</a></td>
+
+      <td>flag file+unwrapped phase+interferometric phase
+      display</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#tree_edit">tree_edit</a></td>
+
+      <td>Display and interactively edit phase unwrapping flag
+      files</td>
+    </tr>
+  </table>
+
+  <h3><a name="ISP_sunraster">DISP tools to generate SUN raster or
+  BMP format images</a></h3>
+
+  <p>There are additional notes on the programs</p>
+
+  <table border="0">
+    <tr>
+      <td><a href="ISP_display.html#rasSLC">rasSLC</a></td>
+
+      <td>Magnitude of complex SAR data (float or short
+      integer)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ras_dB.html">ras_dB</a></td>
+
+      <td>Input image (float) using dB scale</td>
+    </tr>
+
+    <tr>
+      <td><a href="ras_linear.html">ras_linear</a></td>
+
+      <td>Input image (float) using linear scale</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rastree">rastree</a></td>
+
+      <td>Display phase unwrapping data, residues, branch cuts,
+      neutrons, unwrapped and wrapped phase</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rasbyte">rasbyte</a></td>
+
+      <td>Signed byte data</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rascc">rascc</a></td>
+
+      <td>Interferometric correlation/backscatter intensity</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rashgt">rashgt</a></td>
+
+      <td>Interferometric height/backscatter intensity</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rashgt_shd">rashgt_shd</a></td>
+
+      <td>Interferometric height/shaded relief</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rasmph">rasmph</a></td>
+
+      <td>Interferometric phase/interferometric correlation</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rasmph_pwr">rasmph_pwr</a></td>
+
+      <td>Interferometric phase/backscatter intensity</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#raspwr">raspwr</a></td>
+
+      <td>Backscatter intensity for float or short integer data
+      (power law scaling)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rasrmg">rasrmg</a></td>
+
+      <td>Unwrapped phase/backscatter intensity</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rasshd">rasshd</a></td>
+
+      <td>Shaded relief (as grey-scale image)</td>
+    </tr>
+
+    <tr>
+      <td><a href="ISP_display.html#rastree">rastree</a></td>
+
+      <td>Flag file branch cuts/residues/neutrons + unwrapped phase
+      + interferometric phase</td>
+    </tr>
+  </table>
+
+  <h3>Display Programs</h3>
+
+  <p>Most real valued input data are stored in single-precision
+  4-byte (32 bits) floating point (float) representation. Examples
+  for real valued data are intensity, correlation, height, and
+  phase files. Complex values are stored as pairs of float
+  (fcomplex) or pairs of short integer (scomplex).</p>
+
+  <table border="0">
+    <tr>
+      <th>Program</th>
+
+      <th>Input Parameter(s)</th>
+
+      <th>Color</th>
+
+      <th>Brightness</th>
+    </tr>
+
+    <tr>
+      <td><a name="dis2SLC">dis2SLC</a></td>
+
+      <td>2 Single Look Complex images (float or short integer
+      complex)</td>
+
+      <td>none</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis2cc">dis2cc</a></td>
+
+      <td>2 float correlation images</td>
+
+      <td>correlation</td>
+
+      <td>constant</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis2hgt">dis2hgt</a></td>
+
+      <td>2 height images (float)</td>
+
+      <td>height</td>
+
+      <td>constant</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis2mph">dis2mph</a></td>
+
+      <td>2 complex images (float complex)</td>
+
+      <td>phase</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis2pwr">dis2pwr</a></td>
+
+      <td>2 intensity images (float or short integers)</td>
+
+      <td>none</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis2ras">dis2ras</a></td>
+
+      <td>2 SUN raster or BMP format images</td>
+
+      <td>raster image</td>
+
+      <td>raster image</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis2rmg">dis2rmg</a></td>
+
+      <td>2 umwrapped phase images</td>
+
+      <td>phase</td>
+
+      <td>constant</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis_dB">dis_dB</a></td>
+
+      <td>intensity</td>
+
+      <td>none</td>
+
+      <td>intensity using dB scale</td>
+    </tr>
+
+    <tr>
+      <td><a name="dis_linear">dis_linear</a></td>
+
+      <td>intensity</td>
+
+      <td>none</td>
+
+      <td>intensity using linear scale</td>
+    </tr>
+
+    <tr>
+      <td><a name="disSLC">disSLC</a></td>
+
+      <td>Single Look Complex image (float or short integer)</td>
+
+      <td>none</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="disbyte">disbyte</a></td>
+
+      <td>signed byte data</td>
+
+      <td>none</td>
+
+      <td>value</td>
+    </tr>
+
+    <tr>
+      <td><a name="discc">discc</a></td>
+
+      <td>correlation, intensity</td>
+
+      <td>correlation</td>
+
+      <td>intensity of the second file</td>
+    </tr>
+
+    <tr>
+      <td><a name="disdem_par">disdem_par</a></td>
+
+      <td>DEM heights + DEM parameter file</td>
+
+      <td>none</td>
+
+      <td>shaded relief</td>
+    </tr>
+
+    <tr>
+      <td><a name="disflag">disflag</a></td>
+
+      <td>byte phase unwrapping flag file</td>
+
+      <td>phase unwrapping flags</td>
+
+      <td>phase unwrapping flags</td>
+    </tr>
+
+    <tr>
+      <td><a name="dishgt">dishgt</a></td>
+
+      <td>height, intensity</td>
+
+      <td>wrapped altitude</td>
+
+      <td>intensity of the second file</td>
+    </tr>
+
+    <tr>
+      <td><a name="dismph">dismph</a></td>
+
+      <td>complex data (interferograms)</td>
+
+      <td>phase</td>
+
+      <td>magnitude</td>
+    </tr>
+
+    <tr>
+      <td><a name="dismph_fft">dismph_fft</a></td>
+
+      <td>complex data</td>
+
+      <td>phase + 2D fft</td>
+
+      <td>magnitude + 2D fft</td>
+    </tr>
+
+    <tr>
+      <td><a name="dismph_pwr">dismph_pwr</a></td>
+
+      <td>intensity, complex data (interferogram)</td>
+
+      <td>phase</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="dismph_ub">dismph_ub</a></td>
+
+      <td>complex as pairs unsigned byte data (IQ raw data)</td>
+
+      <td>phase</td>
+
+      <td>magnitude</td>
+    </tr>
+
+    <tr>
+      <td><a name="dispwr">dispwr</a></td>
+
+      <td>intensity (float or short integers)</td>
+
+      <td>none</td>
+
+      <td>intensity (power-law scale)</td>
+    </tr>
+
+    <tr>
+      <td><a name="disras">disras</a></td>
+
+      <td>SUN raster and BMP format images</td>
+
+      <td>raster image</td>
+
+      <td>raster image</td>
+    </tr>
+
+    <tr>
+      <td><a name="disras_dem_par">disras_dem_par</a></td>
+
+      <td>SUN raster and BMP format images and DEM parameter
+      file</td>
+
+      <td>raster image</td>
+
+      <td>raster image</td>
+    </tr>
+
+    <tr>
+      <td><a name="disrmg">disrmg</a></td>
+
+      <td>unwrapped phase, intensity</td>
+
+      <td>unwrapped phase</td>
+
+      <td>intensity (power-law scale)</td>
+    </tr>
+
+    <tr>
+      <td><a name="disshd">disshd</a></td>
+
+      <td>height</td>
+
+      <td>none</td>
+
+      <td>shaded relief</td>
+    </tr>
+
+    <tr>
+      <td><a name="distree">distree</a></td>
+
+      <td>unwrapping flags + unwrapped phase + interferometric
+      phase</td>
+
+      <td>flag file colors + phase</td>
+
+      <td>constant, areas not unwrapped are dimmed</td>
+    </tr>
+
+    <tr>
+      <td><a name="tree_edit">tree_edit</a></td>
+
+      <td>unwrapping flags + SUN or BMP format raster overlay</td>
+
+      <td>unwrapping flag file colors + raster image</td>
+
+      <td>unwrapping flag file colors + raster image</td>
+    </tr>
+  </table>
+
+  <h3>Programs to generate SUN raster and BMP format images</h3>
+
+  <table border="0">
+    <tr>
+      <th>Program</th>
+
+      <th>Input Parameter(s)</th>
+
+      <th>Color</th>
+
+      <th>Brightness</th>
+    </tr>
+
+    <tr>
+      <td><a name="rasSLC">rasSLC</a></td>
+
+      <td>complex Single Look Complex (float complex or short
+      integer complex)</td>
+
+      <td>none.</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="ras_dB">ras_dB</a></td>
+
+      <td>intensity</td>
+
+      <td>none.</td>
+
+      <td>value (dB scale)</td>
+    </tr>
+
+    <tr>
+      <td><a name="ras_linear">ras_linear</a></td>
+
+      <td>intensity</td>
+
+      <td>none.</td>
+
+      <td>value (linear scale)</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasbyte">rasbyte</a></td>
+
+      <td>byte data</td>
+
+      <td>none.</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="rascc">rascc</a></td>
+
+      <td>correlation, intensity</td>
+
+      <td>correlation</td>
+
+      <td>intensity of the second file</td>
+    </tr>
+
+    <tr>
+      <td><a name="rashgt">rashgt</a></td>
+
+      <td>heights, intensity</td>
+
+      <td>height</td>
+
+      <td>intensity of the second file</td>
+    </tr>
+
+    <tr>
+      <td><a name="rashgt_shd">rashgt_shd</a></td>
+
+      <td>heights</td>
+
+      <td>height</td>
+
+      <td>shaded relief from heights</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasmph">rasmph</a></td>
+
+      <td>complex (interferogram)</td>
+
+      <td>phase</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasmph_pwr">rasmph_pwr</a></td>
+
+      <td>complex (interferogram), intensity image</td>
+
+      <td>phase</td>
+
+      <td>intensity of the second file</td>
+    </tr>
+
+    <tr>
+      <td><a name="raspwr">raspwr</a></td>
+
+      <td>intensity (float or short integer)</td>
+
+      <td>none</td>
+
+      <td>value (power-law scale)</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasrmg">rasrmg</a></td>
+
+      <td>unwrapped phase, intensity</td>
+
+      <td>unwrapped phase</td>
+
+      <td>intensity</td>
+    </tr>
+
+    <tr>
+      <td><a name="rasshd">rasshd</a></td>
+
+      <td>heights</td>
+
+      <td>none.</td>
+
+      <td>shaded relief</td>
+    </tr>
+
+    <tr>
+      <td><a name="rastree">rastree</a></td>
+
+      <td>flag file data, unwrapped phase, interferometric
+      phase</td>
+
+      <td>phase + flag data: branch cuts, residues, neutrons</td>
+
+      <td>constant, areas not unwrapped are dimmed</td>
+    </tr>
+  </table>
+
+  <p><strong>USE</strong><br>
+  Information on the input required parameters is obtained by
+  running the programs without arguments.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  The display programs were moved to the DISP packeage. Source code
+  for these programs is in the DISP source code directory. For more
+  information see the DISP documentation.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Oct-2000.</p>
+</body>
+</html>

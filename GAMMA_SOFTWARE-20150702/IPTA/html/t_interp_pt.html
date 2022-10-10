@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: t_interp_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>t_interp_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/t_interp_pt.c">t_interp_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  t_interp_pt&nbsp; - Estimate temporal deformation history at
+  specific times given a non-uniformly sampled deformaton
+  history(float data)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>t_interp_pt &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;itab&gt; &lt;tlist&gt; &lt;pdata_in&gt; &lt;pdata_out&gt;
+  [dtmax] [np_max]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 pINT_rec
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td align="undefined" valign="undefined">
+        &lt;tlist&gt;<br></td>
+
+        <td align="undefined" valign="undefined">(input) text
+        format single column list of dates to estimate in the
+        format YYYYMMDD<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_out&gt;</td>
+
+        <td>(output) temporally filterd point data stack
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>[dtmax]</td>
+
+        <td>&nbsp;maximum time interval considered (t-dtmax,
+        t+dtmax) (days) (-1: all records,
+        default=&nbsp;&nbsp;&nbsp; 140.000)</td>
+      </tr>
+
+      <tr>
+        <td>[np_max]</td>
+
+        <td>maximum number of temporal neighbor records considered
+        within the temporal window (-1 all records, default:
+        -1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>t_interp_pt plist pmsk3 pSLC_par itab tlist pdispl
+  pdispl_tlist 180 5<br></samp></p>
+
+  <p>Interpolates displacement values in the pdispl file to
+  evaluate the displacement at specific times listed tlist.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code t_interp_pt.c in ./IPTA/src, executable version
+  t_interp_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p>Conducts a temporal interpolation of the point data stack
+  pdispl. Each layer of pdispl is associated with an entry in the
+  itab file cooresponding to a specific time.&nbsp; The output
+  stack pdispl_tlist is generated using times listed in the tlist
+  file. The pdispl values are used to estimate the displacement at
+  the specific times listed in the tlist. These interpolated values
+  are written to the pdispl_tlist file, one layer for each entry in
+  the tlist. The user can specify the maximum temporal window used
+  for interpolation using the dtmax command line parameter. The
+  maximum number of neighboring layers can also be specified using
+  the np_max parameter. The interpolation algorithm is derived from
+  the filtering in the program. <a href="tpf_pt.html">tpf_pt.c</a>.
+  The tlist&nbsp; consists of a single column list of dates in the
+  format YYYYMMDD&nbsp; (20041005). Lines of the tlist&nbsp; with a
+  #&nbsp; in the first column are ignored. The output stack
+  pdispl_tlist has&nbsp; the same number of layers as there are
+  tlist&nbsp; entries.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>,&nbsp; <a href=
+  "tpf_pt.html">tpf_pt.c</a></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 26-Jan-2005.</p>
+</body>
+</html>

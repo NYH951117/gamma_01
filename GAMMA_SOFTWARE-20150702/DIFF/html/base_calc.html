@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>Differential Interferometry and Geocoding Reference
+  Manual: base_calc</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2012 Gamma Remote Sensing -->
+</head>
+
+<body>
+  <h1>GAMMA Differential Interferometry and Geocoding Software:
+  Reference Manual</h1>
+  <hr>
+
+  <h2>base_calc</h2>
+
+  <p><i>Perl script: <a href=
+  "../scripts/base_calc">base_calc</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  base_calc - Generate baseline plot and output file with
+  perpendicular baselines and delta_T values<br>
+  Generate interferogram table (itab) file specifying SLCs for each
+  interferogram &nbsp;<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_calc &lt;SLC_tab&gt; &lt;rslc_par&gt;
+  &lt;bperp_file&gt;</b></code> <code><b>[itab]</b></code>
+  <code><b>[itab_type] [pltflg] [bperp_max] [delta_T_min]
+  [delta_T_max] [delta_n_max]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) two column list of resampled SLCs and SLC
+        parameter files (including paths) (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) reference SLC image parameter filename (include
+        path)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;bperp_file&gt;</td>
+
+        <td>(output) file containing list of bperp and delta T for
+        each pass relative to the ref_orbit<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[itab]<br></td>
+
+        <td style="vertical-align: top;">(output) interferogram
+        table relating SLCs to interferograms<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[itab_type]</td>
+
+        <td style="vertical-align: top;">itab type (enter - for
+        default):<br>
+        &nbsp; 0:single reference (default)<br>
+        &nbsp; 1:all pairs)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pltflg]</td>
+
+        <td style="vertical-align: top;">bperp plotting flag (enter
+        - for default):<br>
+        &nbsp; 0:none (default)<br>
+        &nbsp; 1: ouput plot in PNG format<br>
+        &nbsp; 2: screen output</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[bperp_min]<br></td>
+
+        <td style="vertical-align: top;">minimum magnitude of bperp
+        (m) (default = all, enter - for default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[bperp_max]<br></td>
+
+        <td style="vertical-align: top;">maximum magnitude of bperp
+        (m) (default = all, enter - for default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[delta_T_min]<br></td>
+
+        <td style="vertical-align: top;">minimum number of days
+        between passes (default = 0, enter - for default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[delta_T_max]<br></td>
+
+        <td style="vertical-align: top;">maximum number of days
+        between passes<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[delta_n_max<br></td>
+
+        <td style="vertical-align: top;">maximum scene number
+        difference between passes<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><samp><code>base_calc SLC_tab rslc/19960421.rslc.par
+  landers.bperp itab 1</code></samp></p>
+
+  <p>Reads the SLC parameter filenames SLC_tab file,&nbsp; and
+  calculates the baselines using orbit 19969421 as the reference.
+  The values of the perpendicular baseline and the time interval
+  are written to the file landers.bperp. A plot is generated
+  written to the file <span style=
+  "font-style: italic;">landers.bperp.png</span>.</p>
+
+  <p><code>base_calc SLC_tab rslc/19960421.rslc.par landers.bperp
+  itab_mr 1 2 1 500.0 - 140</code><br></p>
+
+  <p>In this case the <span style="font-style: italic;">itab</span>
+  file is also created using orbit 19960421 as the reference scene.
+  The itab_mode has been set to 1 (all pairs) meaning that&nbsp;
+  all non-redundent pairs that meet the selection criteria (bperp
+  &lt;= 500m, delta-T &lt; 140 days) are included in the
+  <span style="font-style: italic;">itab_mr</span> file.&nbsp; A
+  plot of the interferogram network is displayed on the
+  screen.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">base_calc</span> is program
+  that calls <a href="../../ISP/html/base_orbit.html"><span style=
+  "font-style: italic;">base_orbit.c</span></a> to determine the
+  baselines for interferogram pairs for the set of SLCs listed in
+  the <a href="SLC_tab.html">SLC_tab</a>&nbsp; file. This file
+  contains a two column list of SLC and SLC image parameter
+  files.&nbsp;</p>
+
+  <p>The <span style="font-style: italic;">itab</span> file is a
+  table in text format that relates the SLCs to the interferograms
+  in the interferogram stack. Each row of the <span style=
+  "font-style: italic;">itab</span> has 4 entries, SLC-1, SLC-2,
+  INTF, and the switch_flag, where SLC-1, SLC-2, and INTF are
+  record numbers in the SLC and interferogram point data
+  stacks.&nbsp; The switch_flag entry on each line of the itab file
+  is used to specify if a particular interferogram is to be
+  considered in the further analysis. If zero is present, this
+  particular interferogram is not considered in further
+  analysis.</p>
+
+  <p><span style="font-style: italic;">base_calc</span> generates
+  the <span style="font-style: italic;">itab</span> file using the
+  value of <span style="font-style: italic;">itab_mode</span> and
+  the constraints <span style=
+  "font-style: italic;">bperp_max</span> and <span style=
+  "font-style: italic;">delta_T_max</span>.&nbsp; The itab mode
+  specifies if only a single reference is used or if list entries
+  for all possible non-redundent pairs are to be generated . In the
+  case were single reference mode (<span style=
+  "font-style: italic;">itab_mode</span> = 0) then only
+  interferograms that include the reference are written to the
+  itab. In the case of itab_mode =1 all possible non-redundent
+  pairs are listed that meet the <span style=
+  "font-style: italic;">bperp_max</span> and <span style=
+  "font-style: italic;">delta_T_max</span> criteria.&nbsp; If
+  <span style="font-style: italic;">bperp_max</span> or
+  <span style="font-style: italic;">delta_T_max</span> are given as
+  a - or is not entered,&nbsp; then this&nbsp; parameter is not
+  considered.</p>
+
+  <p>Plotting of the interferogram network&nbsp; is supported using
+  gnuplot. Set the pltflg command line parameter to 1 to get the
+  plot in PNG format or to 2 to get the plot directly on the
+  screen.&nbsp;&nbsp; See also the associated program script
+  <a href="base_plot.html">base_plot</a>.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_tab.html">SLC_tab</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "../../ISP/html/base_orbit.html">base_orbit</a>, <a href=
+  "base_plot.html">base_plot</a>, <span style=
+  "text-decoration: underline;"><a href=
+  "itab.html">itab</a></span></p>
+  <hr>
+  Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  last change 5-July-2012.
+</body>
+</html>

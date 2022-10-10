@@ -1,0 +1,167 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     HUYNEN_DEC: script to run LAT program sequence to create        ###
+###                 coherency matrix elements for equivalent single     ###
+###		    target using the Huynen decomposition               ###                                
+###########################################################################
+### version 1.1 - ms  2010114                                           ###
+###                                                                     ###
+###########################################################################
+
+
+echo " "
+echo "HUYNEN_DEC: Huynen decomposition to generate equivalent single target coherency matrix values"
+
+if ($#argv < 9)then
+  echo " "
+  echo "usage: HUYNEN_DEC <SLC_HH> <SLC_HV> <SLC_VV> <T12> <T13> <T11_0> <nlines> <HUY> <elem>"
+  echo "  "
+  echo "       SLC_HH   (input) SLC HH-polarization (-: if not required) (FCOMPLEX)"
+  echo "       SLC_HV   (input) SLC HV-polarization (-: if not required) (FCOMPLEX)"
+  echo "       SLC_VV   (input) SLC VV-polarization (-: if not required) (FCOMPLEX)"
+  echo "       T11      (input) Coherence matrix T11 component (-: if not required) (FLOAT)"
+  echo "       T12      (input) Coherence matrix T12 component (-: if not required) (FCOMPLEX)"
+  echo "       T13      (input) Coherence matrix T13 component (-: if not required) (FCOMPLEX)"
+  echo "       nlines   (input) width of input dataset"
+  echo "       HUY      (output) Kennaugh matrix file name, e.g. date or orbit number"
+  echo "       elem     (input) element of coherency matrix after Huynen decomposition"
+  echo "				1 : B_0T+B_T = T22_0"
+  echo "				2 : B_0T-B_T = T33_0"
+  echo "				3 : E_T + i F_T = T23_0"
+  echo "                        the elements T11_0, T12_0 and T13_0 coincide with the original values" 
+  echo " "
+  exit
+endif
+
+
+set slc_hh = $1
+set slc_hv = $2
+set slc_vv = $3
+set t11 = $4
+set t12 = $5
+set t13 = $6
+set nlines = $7
+set huy = $8
+set elem = $9
+
+echo " "
+echo " "
+
+# Only the elements (B0T+BT) (B0T-BT), ET and FT are computed
+
+switch ($elem)
+	case 1:
+		# T22_0 = B0T + BT
+
+		if (("$t12" == "-") || ("$t11" == "-")) then
+			echo "The dataset for the computation of T22_0 has not been defined correctly"
+			echo "The T11 and T12 elements must be specified"
+			echo " "
+			exit
+		else
+			echo "cpx_to_real $t12 tmp1 $nlines 2"
+			nice cpx_to_real $t12 tmp1 $nlines 2
+			echo "ratio tmp1 $t11 $huy.t22_0 $nlines 1 1 0"
+			nice ratio tmp1 $t11 $huy.t22_0 $nlines 1 1 0
+			
+			echo " "
+			echo "The file $huy.t22_0 has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+
+		breaksw
+	case 2:
+		# T33_0 = B0T - BT
+		if (("$t13" == "-") || ("$t11" == "-")) then
+			echo "The dataset for the computation of T33_0 has not been defined correctly"
+			echo "The T11 and T13 elements must be specified"
+			echo " "
+			exit
+		else
+			echo "cpx_to_real $t13 tmp1 $nlines 2"
+			nice cpx_to_real $t13 tmp1 $nlines 2
+			echo "ratio tmp1 $t11 $huy.t33_0 $nlines 1 1 0"
+			nice ratio tmp1 $t11 $huy.t33_0 $nlines 1 1 0
+			
+			echo " "
+			echo "The file $huy.t33_0 has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*	
+		endif
+
+		breaksw
+	case 3:
+		# E_T + i F_T = T23_0"
+		if (("$t12" == "-")  || ("$t13" == "-") || ("$t11" == "-")) then
+			echo "The dataset for the computation of E_T has not been defined correctly"
+			echo "The T11, T12 and T13 elements must be specified"
+			echo " "
+			exit
+		else
+			# Computing E_T
+				
+			echo "cpx_to_real $t12 tmp1 $nlines 0"
+			nice cpx_to_real $t12 tmp1 $nlines 0
+			echo "cpx_to_real $t13 tmp2 $nlines 0"
+			nice cpx_to_real $t13 tmp2 $nlines 0
+			echo "product tmp1 tmp2 tmp3 $nlines 1 1 0"
+			nice product tmp1 tmp2 tmp3 $nlines 1 1 0
+			
+			echo "cpx_to_real $t12 tmp1 $nlines 1"
+			nice cpx_to_real $t12 tmp1 $nlines 1
+			echo "cpx_to_real $t13 tmp2 $nlines 1"
+			nice cpx_to_real $t13 tmp2 $nlines 1
+			echo "product tmp1 tmp2 tmp4 $nlines 1 1 0"
+			nice product tmp1 tmp2 tmp4 $nlines 1 1 0
+
+			echo "lin_comb 2 tmp3 tmp4 0 1 1 tmp1 $nlines - - 1 1 1"
+			nice lin_comb 2 tmp3 tmp4 0 1 1 tmp1 $nlines - - 1 1 1
+			echo "ratio tmp1 $t11 $huy.t23_0.re $nlines 1 1 0"
+			nice ratio tmp1 $t11 $huy.t23_0.re $nlines 1 1 0
+			echo " "
+			echo "The file $huy.t23_0.re has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*
+
+			# Computing F_T
+				
+			echo "cpx_to_real $t12 tmp1 $nlines 0"
+			nice cpx_to_real $t12 tmp1 $nlines 0
+			echo "cpx_to_real $t13 tmp2 $nlines 1"
+			nice cpx_to_real $t13 tmp2 $nlines 1
+			echo "product tmp1 tmp2 tmp3 $nlines 1 1 0"
+			nice product tmp1 tmp2 tmp3 $nlines 1 1 0
+
+			echo "cpx_to_real $t12 tmp1 $nlines 1"
+			nice cpx_to_real $t12 tmp1 $nlines 1
+			echo "cpx_to_real $t13 tmp2 $nlines 0"
+			nice cpx_to_real $t13 tmp2 $nlines 0
+			echo "product tmp1 tmp2 tmp4 $nlines 1 1 0"
+			nice product tmp1 tmp2 tmp4 $nlines 1 1 0
+
+			echo "lin_comb 2 tmp3 tmp4 0 1 -1 tmp1 $nlines - - 1 1 1"
+			nice lin_comb 2 tmp3 tmp4 0 1 -1 tmp1 $nlines - - 1 1 1
+			echo "ratio tmp1 $t11 $huy.t23_0.im $nlines 1 1 0"
+			nice ratio tmp1 $t11 $huy.t23_0.im $nlines 1 1 0
+	
+			echo " "
+			echo "The file $huy.t23_0.im has been generated - FLOAT format"
+			echo " "
+
+			/bin/rm	tmp*
+		endif
+
+		breaksw
+endsw
+
+echo End of HUYNEN_DEC
+
+
+
+
+
+

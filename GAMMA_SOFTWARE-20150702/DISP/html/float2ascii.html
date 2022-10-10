@@ -1,0 +1,103 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: float2ascii</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2000 Gamma Remote Sensing --><!-- cw/uw000426 -->
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>float2ascii</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/float2ascii.c">float2ascii.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">float2ascii</span> -&nbsp;
+  Convert float format data to ascii text format<span style=
+  "font-weight: bold;"><br></span></p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>float2ascii &lt;din&gt; &lt;width&gt; &lt;data_out&gt;
+  [loff] [nl]<br></code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>data_in</td>
+
+        <td>(input) input data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>width<br></td>
+
+        <td>&nbsp;number of data values per line<br></td>
+      </tr>
+
+      <tr>
+        <td>data_out</td>
+
+        <td>(output) text format data file with spaces between
+        columns</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">loff<br></td>
+
+        <td style="vertical-align: top;">offset lines to start of
+        data (enter - for default: 0)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">nl<br></td>
+
+        <td style="vertical-align: top;">number of lines (enter -
+        for default: all)<br></td>
+      </tr>
+    </tbody>
+  </table><strong><br>
+  EXAMPLE</strong>
+
+  <p><code><samp>float2ascii q 16 q.txt<br></samp></code></p>
+
+  <p>Converts the float fomat binary data file q&nbsp; with 16
+  values per line to a text format file with 16 columns of
+  values.</p><code>float2ascii q 16 q.txt 2 14</code><br>
+  <br>
+  Converts the float fomat binary data file q&nbsp; with 16 values
+  per line to a text format file with 16 columns of values. The
+  first two lines of data file q are skipped and 14 lines are
+  processed.<br>
+  <br>
+  <strong>DESCRIPTION</strong><span style=
+  "font-style: italic;"><br>
+  <br>
+  float2ascii</span> is used to convert float format data such as a
+  DEM into text format representation. The text format is the
+  general exponential format in the printf specification "%13.5e".
+  Each line of the output file is terminated with a newline. White
+  space is used to delimit the columns of the output test
+  file.&nbsp; The binary data are 4-byte floating point
+  numbers.&nbsp;<br>
+
+  <p><b>SEE ALSO</b><br>
+  <span style="text-decoration: underline;"><a href=
+  "ascii2float.html">ascii2float</a><br></span></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Jun-2012.
+</body>
+</html>

@@ -1,0 +1,460 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw021108 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: dem_trans,
+  map_trans</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>dem_trans, map_trans</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dem_trans.c">dem_trans.c</a></i>, <a href=
+  "../src/map_trans.c">map_trans.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">dem_trans</span> - DEM
+  resampling from one map projection to another<br>
+  <span style="font-weight: bold;">map_trans</span> - Data
+  resampling from one map projection to another map projection</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dem_trans &lt;DEM1_par&gt; &lt;DEM1&gt; &lt;DEM2_par&gt;
+  &lt;DEM2&gt; [lat_ovr] [lon_ovr] [datum_shift] [bflg]
+  [lookup_table]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par1&gt;</td>
+
+        <td>(input) DEM parameter file of the input DEM data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM1&gt;</td>
+
+        <td>(input) input DEM data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par2&gt;</td>
+
+        <td>(input/output) DEM parameter file of the resampled
+        input DEM<br>
+        &nbsp;&nbsp;&nbsp; NOTE: if DEM2_par does not exist, it is
+        created using the projection parameters from
+        DEM1_par<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM2&gt;</td>
+
+        <td>(output)&nbsp; DEM in transformed coordinates specified
+        by DEM2_par<br></td>
+      </tr>
+
+      <tr>
+        <td>[lat_ovr]</td>
+
+        <td>lat/northing DEM oversampling factor (enter - for
+        default: 2.0)<br></td>
+      </tr>
+
+      <tr>
+        <td>[lon_ovr]</td>
+
+        <td>lon/easting DEM oversampling factor (enter - for
+        default: 2.0)<br></td>
+      </tr>
+
+      <tr>
+        <td>[datum_shift]</td>
+
+        <td>vertical datum shift flag, enter - for default:<br>
+        &nbsp;&nbsp;&nbsp; 0: output DEM heights not corrected for
+        datum shift between projections (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: output DEM heights corrected for
+        datum shift between projections<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[bflg]<br></td>
+
+        <td style="vertical-align: top;">output DEM bounds flag
+        (enter - for default):<br>
+        &nbsp;&nbsp;&nbsp; 0: use DEM bounds specified by DEM2_par
+        (default)<br>
+        &nbsp; &nbsp; 1: determine bounds from DEM1_par in the
+        projection specified by DEM2_par<br></td>
+      </tr>
+
+      <tr>
+        <td>[lookup_table]</td>
+
+        <td>(output) complex valued lookup table (DEM2 -&gt;
+        DEM1)</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <br>
+  <code><b>map_trans &lt;DEM1_par&gt; &lt;data1&gt;
+  &lt;DEM2_par&gt; &lt;data2&gt; [lat_ovr] [lon_ovr] [interp_mode]
+  [format] [bflg] [lookup_table]<br>
+  <br></b></code>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par1&gt;</td>
+
+        <td>(input)DEM parameter file of input data file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;data1&gt;</td>
+
+        <td>(input) input data in the geometry of DEM_par1<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par2&gt;</td>
+
+        <td>(input/output) DEM parameter file of output DEM<br>
+        NOTE: if DEM2_par does not exist, the DEM parameters are
+        copied from DEM1_par<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;data2&gt;</td>
+
+        <td>(output) output data file resampled into geometry of
+        DEM_par2<br></td>
+      </tr>
+
+      <tr>
+        <td>[lat_ovr]</td>
+
+        <td>lat/northing DEM oversampling factor (enter - for
+        default: 2.0)<br></td>
+      </tr>
+
+      <tr>
+        <td>[lon_ovr]</td>
+
+        <td>lon/easting DEM oversampling factor (enter - for
+        default: 2.0)<br></td>
+      </tr>
+
+      <tr>
+        <td>[interp_mode]</td>
+
+        <td>interpolation mode (enter - for default):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: nearest neighbor<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: bicubic (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2: bicubic-log<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><br>
+        <br>
+        [format]<br></td>
+
+        <td style="vertical-align: top;">data format (enter - for
+        default):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: float (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: fcomplex or geocoding lookup
+        table<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2: SUN/BMP raster file<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 3: unsigned char<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 4: short integer<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[bflg]<br></td>
+
+        <td style="vertical-align: top;">output DEM bounds flag
+        (enter - for default):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: use DEM bounds specified by
+        DEM2_par (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: determine bounds from DEM1_par
+        in the projection specified by DEM2_par<br></td>
+      </tr>
+
+      <tr>
+        <td>[lookup_table]</td>
+
+        <td>(output) complex valued lookup table (DEM2 -&gt;
+        DEM1)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong> <samp>dem_trans dv_eqa.dem_par
+  dv_eqa.dem dv_utm.dem_par dv_utm.dem - - 1</samp></p>
+
+  <p>Transforms DEM from Equiangular Projection to UTM. The input
+  projection/ellipsoid/datum are specified in the input DEM
+  parameter file: dv_eqa.dem_par. The output projection / ellipsoid
+  / datum are specified in the output DEM parameter file:
+  dv_utm.dem_par.&nbsp; A vertical datum-shift is applied between
+  the projections.</p>
+
+  <p>The <span style=
+  "font-style: italic;">datum_shift</span>_parameter is set to 1 to
+  correct the transformed heights for the height difference caused
+  by the Datum Shift. The oversamppling rates (lat_ovr=1 and
+  lon_ovr=1) are not considered because an existing DEM/MAP
+  parameter file is provided for the output geometry.</p>
+
+  <p><samp>dem_trans dv_eqa.dem_par dv_eqa.dem dv_eqa5x.dem_par
+  dv_eqa5x.dem 5 5</samp></p>
+
+  <p>Oversampling of DEM (in Equiangular Projection) by a factor of
+  5 in both dimensions. A new DEM parameter file is created for the
+  output geometry , dv_eqa5x.dem_par does not<br>
+  exist yet.</p>
+
+  <p><samp>map_trans dv_eqa.dem_par dv_eqa.dem.ras dv_utm.dem_par
+  dv_utm.dem.ras - - 0 2 1 dv.utm_to_eqa</samp></p>
+
+  <p>Transforms the SUN raster image dv_eqa.dem.ras from
+  Equiangular Projection to UTM. The input
+  projection/ellipsoid/datum are specified in the input DEM
+  parameter file&nbsp; dv_eqa.dem_par. The output
+  projection/ellipsoid/datum are specified in the output DEM
+  parameter file dv_utm.dem_par. The oversampling command line
+  parameters <span style="font-style: italic;">lat_ovr</span> and
+  <span style="font-style: italic;">lon_ovr</span> are not
+  considered because an existing DEM parameter file is provided for
+  the output geometry. The selected interpolation mode (0) is
+  nearest neighbor and the image format specified (2) is SUN or BMP
+  raster image. In addition the lookup table is written to the file
+  <span style="font-style: italic;">dv.utm_to_eqa</span> that can
+  be used to transform additional data or raster images between the
+  input and output geometries using the program <a href=
+  "geocode_back.html">geocode_back</a>.</p>
+
+  <p><strong>DESCRIPTION</strong> <span style=
+  "font-style: italic;"><br></span></p>
+
+  <p><span style="font-style: italic;">dem_trans</span>
+  supports&nbsp; the transformation of a DEM or other image data
+  between an input DEM&nbsp; geometry and an output DEM geometry.
+  The input and output geometries (projection/ellipsoid/datum) are
+  specified in DEM parameter files. In addition to the transformed
+  data set a lookup table can be saved that may be used to
+  transform additional images between the input and output
+  geometries using the program <a href=
+  "geocode_back.html">geocode_back</a>.</p>
+
+  <p><span style="font-style: italic;">dem_trans</span> is
+  particularly adapted for the transformation of DEMs between input
+  and output datums and projections. Input and output DEMs in float
+  (REAL*4) and short integer (INTEGER*2) format are both
+  supported.&nbsp; Bicubic polynomial interpolation ensures that
+  the first derivative of the interpolated values is
+  continuous.&nbsp; <span style=
+  "font-style: italic;">dem_trans</span> has the functionality to
+  apply a vertical <span style="font-style: italic;">datum
+  shift</span> to the DEM values. DEM height values are specified
+  relative to a vertical datum. Vertical datums are often selected
+  to minimize the offset to the local geoid. The geoid is defined
+  as the surface of constant gravitational potential and is&nbsp;
+  close to local sea-level.&nbsp; The WGS84 datum minimizes the
+  geodal offset on a global basis and can differs from the geoid by
+  up to +85 and -107 meters. Each country specifies a vertical
+  datums (ellipsoids and offsets) that minimize the offset to the
+  local geoid.&nbsp; The datum parameters are stored in the DEM_par
+  and used to transform the DEM height values depending on the
+  value selected for the <span style=
+  "font-style: italic;">datum_shift</span> command line
+  parameter.</p>
+
+  <p><span style="font-style: italic;">dem_trans</span> should be
+  used to resample an existing DEM to a different spatial
+  resolution (without changing the projection, reference ellipsoid,
+  and reference datum) or it can be used to transform a DEM to an
+  entirely different projection. The input and output map
+  geometries (projection/ellipsoid/datum) are specified in the
+  corresponding DEM parameter files. When specifying a DEM in a new
+  geometry the required DEM parameter file can be created with the
+  program <a href="create_dem_par.html">create_dem_par</a>. The
+  bounds of the new DEM can also be calculated using <a href=
+  "coord_trans.html">coord_trans</a> and entered when specifying
+  the DEM2_par with <a href=
+  "create_dem_par.html">create_dem_par</a>.&nbsp; Alternately,
+  there is new functionality in <span style=
+  "font-style: italic;">dem_trans</span> and <span style=
+  "font-style: italic;">map_trans</span> that calculates the the
+  bounds for the output data (specified via the <span style=
+  "font-weight: bold;">bflag</span> value) from the input DEM
+  parameters rather than using the original bounds specified in the
+  DEM2_par.&nbsp;</p>
+
+  <p>When transforming from one DEM projection to another,
+  <span style="font-style: italic;">dem_trans</span> has
+  functionality (specified via the bflag value) to calculate the
+  DEM map bounds of the new projection from the input DEM
+  parameters rather than using the bounds specified in the
+  DEM2_par.&nbsp; Optionally, a lookup table for the transformation
+  between the output DEM geometry and the input DEM can be printed
+  out. The lookup table contains for each pixel of the output DEM a
+  pair of float (fcomplex) corresponding to the corresponding
+  coordinates in the input DEM with the real part corresponding to
+  the real valued column (corresponding to easting or longitude)
+  and the imaginary part corresponding to the real valued row
+  number (corresponding to northing or latitude). This lookup table
+  can be used to transform further data between the input and
+  output geometry using the program <a href=
+  "geocode_back.html">geocode_back</a> or between the output and
+  input DEM geometry using <a href="geocode.html">geocode</a>. This
+  lookup table is not used if only the DEM is transformed.</p>
+
+  <p>To use a coarse resolution global DEM in EQA coordinates to
+  improve SAR geocoding to UTM coordinates, for example, dem_trans
+  may be used to transform the global DEM to local UTM coordinates.
+  To define the output DEM parameter file the program <a href=
+  "create_dem_par.html">create_dem_par</a> is used. The UTM zone
+  and the coordinates of the DEM corners are determined with the
+  program <a href="coord_trans.html">coord_trans</a> which allows
+  to transform the SAR image corner coordinates from lat/lon (EQA)
+  to UTM. In order to minimize errors caused by the necessary
+  resampling it is recommended to select a higher resolution for
+  the output DEM.</p>
+
+  <p><span style="font-style: italic;">map_trans</span> is similar
+  to <span style="font-style: italic;">dem_trans</span>, but does
+  not have the requirement to perform vertical datum shifts as this
+  only applies to DEM data. <span style=
+  "font-style: italic;">map_trans</span> supports the
+  transformation of data with various data types (float, short
+  integer, fcomplex, unsigned byte, SUN or BMP raster format) from
+  one map projection to another.&nbsp; Data type is specified using
+  the <span style="font-weight: bold;">format</span> command line
+  parameter. Interpolation for float, fcomplex and short integer
+  data is performed using either are nearest-neighbor or bicubic
+  polynomial algorithms based on the value of the <span style=
+  "font-weight: bold;">interp_mode</span> command line
+  parameter.<br></p>
+
+  <p>In addition, for both float and short integer data can be
+  interpolated using bicubic-log interpolation. This mode is
+  usually performed for data that is intensity or radar
+  cross-section that is by definition non-negative. The logarithm
+  of the data is interpolated rather than the data itself insuring
+  that the output values are non-negative. For the unsigned byte
+  and raster images nearest neighbor interpolation is
+  performed.</p>
+
+  <p>If a lookup table is transformed from one projection to
+  another, this can be accomplished using <span style=
+  "font-style: italic;">map_trans</span> combined with
+  interpretation of the lookup table as fcomplex format.</p>
+
+  <p>The supported map projections are listed in a table below.</p>
+
+  <table style="width: 1067px; height: 450px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Projection</strong></td>
+      </tr>
+
+      <tr>
+        <td>EQA</td>
+
+        <td>Equiangular</td>
+      </tr>
+
+      <tr>
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>OMCH</td>
+
+        <td>Oblique Mercator (Switzerland)</td>
+      </tr>
+
+      <tr>
+        <td>LCC</td>
+
+        <td>Lambert Conformal Conic (France)</td>
+      </tr>
+
+      <tr>
+        <td>TM</td>
+
+        <td>Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>PS</td>
+
+        <td>Polar Stereographic</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">LCC2<br></td>
+
+        <td style="vertical-align: top;">Lambert Conformal Conic of
+        Belgium, Madagaskar<br></td>
+      </tr>
+
+      <tr>
+        <td>PC</td>
+
+        <td>Polyconic Projection</td>
+      </tr>
+
+      <tr>
+        <td>AEAC</td>
+
+        <td>Albers Equal Area Conic</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">SCH<br></td>
+
+        <td style="vertical-align: top;">Spherical geometry map
+        projection<br>
+        (see "Zebker et. al, "Geodetically Accurate INSAR Data
+        Processor", <span style="font-style: italic;">Trans.
+        Geoscience and Remote Sensing,</span> pp.4309-4321, vol.
+        49, no. 12, Dec., 2010)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="coord_trans.html">coord_trans</a>, <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "geocode.html">geocode</a>, <a href=
+  "geocode_back.html">geocode_back</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 20131.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Mar-2013.
+</body>
+</html>

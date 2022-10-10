@@ -1,0 +1,454 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+  <head>
+    <title>MSP Reference Manual: Table of Contents</title>
+  </head>
+  <body>
+    <h1>GAMMA Modular SAR Processor (MSP):</h1>
+    <h2>MSP Reference Manual:</h2>
+    <hr align="left">
+    <h2>Table of Contents</h2>
+    <h3>Parameter File Generation, Pre-Processing, Manipulation of
+      State Vectors, and Quality Control</h3>
+    <table border="1" cellpadding="7" cellspacing="1">
+      <tbody>
+        <tr>
+          <td><a href="ASAR_AP_proc.html">ASAR_AP_proc</a></td>
+          <td>MSP preprocessing for ASAR Level 0 Alternating Polarization
+            Mode (<span style="font-weight: bold;">ASA_APH_0</span>, <span
+              style="font-weight: bold;">ASA_APV_0</span>, <span style="font-weight: bold;">ASA_APC_0</span>) data</td>
+        </tr>
+        <tr>
+          <td><a href="ASAR_IM_proc.html">ASAR_IM_proc</a></td>
+          <td>MSP pre-processing for ASAR Level 0 Image Mode data (<span
+              style="font-weight: bold;">ASA_IM_0)</span><br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="ASAR_XCA.html">ASAR_XCA</a></td>
+          <td>Extract antenna pattern data from ASAR external calibration
+            file<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="CS_proc.html">CS_proc</a></td>
+          <td>Read COSMO-SkyMed raw data files, extract parameters for MSP processing, reformat raw data<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="DELFT_proc2.html">DELFT_proc2</a></td>
+          <td>Determine MSP state vectors for ERS-1 and ERS-2 from DELFT
+            state vectors</td>
+        </tr>
+        <tr>
+          <td><a href="DORIS_proc.html">DORIS_proc</a></td>
+          <td>Extract ENVISAT DORIS state vectors and write to an MSP
+            processing parameter file</td>
+        </tr>
+        <tr>
+          <td><a href="JERS_fix.html">JERS_fix</a></td>
+          <td>Concatenate and condition JERS-1 raw data file(s)</td>
+        </tr>
+        <tr>
+          <td><a href="JERS_proc_all.html">JERS_proc</a></td>
+          <td>Create MSP processing parameter file from a CEOS Leader for
+            JERS data</td>
+        </tr>
+        <tr>
+          <td><a href="ERS_ENVISAT_proc.html">ERS_ENVISAT_proc</a></td>
+          <td>Import ERS raw data provided in Envisat format</td>
+        </tr>
+        <tr>
+          <td><a href="ERS_fix.html">ERS_fix</a></td>
+          <td>Concatenate and condition ERS raw data file(s)</td>
+        </tr>
+        <tr>
+          <td><a href="ORB_prop.html">ORB_prop</a></td>
+          <td>Calculate additional state vectors using orbit propagation and
+            interpolation</td>
+        </tr>
+        <tr>
+          <td><a href="ORRM_proc.html">ORRM_proc</a></td>
+          <td>Extract state vectors from an ORRM state vector file for an MSP
+            processing parameter file</td>
+        </tr>
+        <tr>
+          <td><a href="PALSAR_antpat.html">PALSAR_antpat</a></td>
+          <td>&nbsp;Extract specified antenna pattern from a PALSAR JAXA
+            antenna pattern file and generate an MSP format antenna
+            pattern</td>
+        </tr>
+        <tr>
+          <td><a href="PALSAR_proc.html">PALSAR_proc</a></td>
+          <td>&nbsp;PALSAR raw data pre-processing and generation of the MSP
+            processing parameter file</td>
+        </tr>
+        <tr>
+          <td><a href="PRC_proc.html">PRC_proc</a></td>
+          <td>Extract state vectors from PRC precision orbit file for an MSP
+            processing parameter file</td>
+        </tr>
+        <tr>
+          <td><a href="RSAT_raw.html">RSAT_raw</a></td>
+          <td>Read RADARSAT raw data files, extract parameters for MSP
+            processing, reformat raw data</td>
+        </tr>
+        <tr>
+          <td><a href="SIRC_proc.html">SIRC_proc</a></td>
+          <td>Generate MSP sensor parameter and processing parameter files
+            for SIR-C data from the CEOS leader</td>
+        </tr>
+        <tr>
+          <td><a href="azsp_IQ.html">azsp_IQ</a></td>
+          <td>Azimuth spectrum calculation and Doppler centroid estimation
+            from SAR raw data</td>
+        </tr>
+        <tr>
+          <td><a href="azsp_SLC.html">azsp_SLC</a></td>
+          <td>Azimuth spectrum calculation and Doppler centroid estimation
+            from SARSLC data</td>
+        </tr>
+        <tr>
+          <td><a href="cat_raw.html">cat_raw</a><br>
+          </td>
+          <td>Concatenate raw data files and generate associate associated
+            MSP sensor parameter and processing parameter files<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="create_proc_par.html">create_proc_par</a></td>
+          <td>Creation and editing of MSP processing parameter file</td>
+        </tr>
+        <tr>
+          <td><a href="create_sar_par.html">create_sar_par</a></td>
+          <td>Creation and editing of SAR sensor parameter file</td>
+        </tr>
+        <tr>
+          <td><a href="doppler.html">doppler</a></td>
+          <td>Calculate Doppler centroid as function of slant range from SAR
+            raw data (IQ format data)</td>
+        </tr>
+        <tr>
+          <td><a href="doppler_2d.html">doppler_2d</a></td>
+          <td>Calculate Doppler centroid as function of slant range and
+            azimuth along-track positionfrom SAR raw data (IQ format data)</td>
+        </tr>
+        <tr>
+          <td><a href="doppler.html">doppler_real</a></td>
+          <td>Calculate Doppler centroid as function of slant range from SAR
+            raw data in real (offset_video) format &nbsp;(e.g. SIR-C,
+            TOPSAR))</td>
+        </tr>
+        <tr>
+          <td><a href="dop_ambig.html">dop_ambig</a></td>
+          <td>Doppler ambiguity calculation (IQ) using MLCC or MLBF
+            algorithm</td>
+        </tr>
+        <tr>
+          <td><a href="dop_interf.html">dop_interf</a></td>
+          <td>Generate MSP processing parameters optimized for repeat-pass
+            interferometry</td>
+        </tr>
+        <tr>
+          <td><a href="dop_mlcc.html">dop_mlcc</a></td>
+          <td>Doppler ambiguity calculation (IQ) using MLCC algorithm, can be
+            applied to the entire raw data file for a more robust estimate of
+            the ambiguity.</td>
+        </tr>
+        <tr>
+          <td><a href="extract_psd.html">extract_psd</a></td>
+          <td>Extract spectra from *.psd files for plotting with gnuplot</td>
+        </tr>
+        <tr>
+          <td><a href="hist_IQ.html">hist_IQ</a></td>
+          <td>Calculate histogram for I and Q channel of uncompressed SAR raw
+            data</td>
+        </tr>
+        <tr>
+          <td><a href="prefilt.html">prefilt</a></td>
+          <td>Prefilter and decimate range compressed complex SAR data</td>
+        </tr>
+        <tr>
+          <td><a href="ptarg.html">ptarg</a></td>
+          <td>Point target analysis for SLC images<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="rspec_IQ.html">rspec_IQ</a></td>
+          <td>Range power spectrum calculation for I/Q (complex) SAR raw
+            data</td>
+        </tr>
+        <tr>
+          <td><a href="rspec_IQ.html">rspec_real</a></td>
+          <td>Range power spectrum calculation for offset-video (real) SAR
+            raw data</td>
+        </tr>
+        <tr>
+          <td><a href="rspec_JERS.html">rspec_JERS</a></td>
+          <td>Range power spectra calculation for JERS-1 and PALSAR&nbsp; raw
+            SAR data.<br>
+            This is used for Radio Frequency Interference (RFI) suppression
+            and is required for range compression.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3>Programs for SAR Processing</h3>
+    <table border="1" cellpadding="7" cellspacing="1">
+      <tbody>
+        <tr>
+          <td><a href="af.html">af</a></td>
+          <td>Autofocus estimation of effective velocity for SAR processing for multiple locations in a SLC image</td>
+        </tr>
+        <tr>
+          <td><a href="autof.html">autof</a></td>
+          <td>Precision estimation of along-track velocity required for focus&nbsp; (deprecated, replaced by <a
+              href="af.html">af</a>)<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="az_proc.html">az_proc</a></td>
+          <td>Azimuth compression using the Range/Doppler algorithm with
+            along-track Doppler centroid update</td>
+        </tr>
+        <tr>
+          <td><a href="multi_GRD_SLC.html">multi_GRD_SLC</a></td>
+          <td>Generate multi-look ground range intensity image from complex
+            SAR SLC image</td>
+        </tr>
+        <tr>
+          <td><a href="multi_SLC.html">multi_SLC</a></td>
+          <td>Generate multi-look intensity image from complex SAR SLC
+            image</td>
+        </tr>
+        <tr>
+          <td><a href="pre_rc.html">pre_rc</a></td>
+          <td>Prefilter and range compression of SAR raw data, including
+            optional RFI suppression (IQ)</td>
+        </tr>
+        <tr>
+          <td><a href="pre_rc_JERS.html">pre_rc_JERS</a></td>
+          <td>Prefilter and range compression of SAR raw data (IQ) for JERS-1
+            and PALSAR (includes radio interference (RFI)&nbsp; filtering)</td>
+        </tr>
+        <tr>
+          <td><a href="pre_rc_RSAT.html">pre_rc_RSAT</a></td>
+          <td>Prefilter and range compression of SAR raw data (IQ) for
+            Radarsat StripMap mode data</td>
+        </tr>
+        <tr>
+          <td><a href="rc_real.html">rc_real</a></td>
+          <td>Range compression of for real format (offset-video) raw data
+            (e.g. SIR-C, TOPSAR)</td>
+        </tr>
+        <tr>
+          <td><a href="RSAT_lks.html">RSAT_lks</a></td>
+          <td>Generate multi-look intensity image from complex SAR SLC image
+            for Radarsat StripMap mode standard beams</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3>MSP Processing Scripts</h3>
+    <table border="1" cellpadding="7" cellspacing="1">
+      <tbody>
+        <tr>
+          <td><a href="MSP_scripts.html">ERS_ASF_RAW</a></td>
+          <td>Read CEOS format&nbsp; Exabyte raw data tapes from ASF</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">ERS_CCRS_RAW</a></td>
+          <td>Read CEOS format Exabyte raw data tapes from Canadian Centre of
+            Remote Sensing</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">ERS_ESA_EIC</a></td>
+          <td>Read&nbsp; Exabyte raw data taps&nbsp; in ESRIN CEOS&nbsp; EIC
+            format<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">ERS_ESA_RAW</a></td>
+          <td>Read CEOS format Exabyte raw data tapes from German-PAF or
+            ESRIN</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">ERS_PROC</a></td>
+          <td>Full resolution MSP processing for ERS raw data in ESA CEOS
+            format</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="ERS_processing.html">ERS_pre_proc</a><br>
+          </td>
+          <td style="vertical-align: top;">Preprocessing of a stack ERS CEOS format raw data<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="ERS_processing.html">ERS_proc_all</a><br>
+          </td>
+          <td style="vertical-align: top;">Processing a stack of ERS CEOS format raw data to SLC and MLI products<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="../scripts/PALSAR_pre_proc">PALSAR_pre_proc</a><br>
+          </td>
+          <td style="vertical-align: top;">Preprocessing of a stack of stripmap PALSAR CEOS format raw data<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="../scripts/PALSAR_proc_all">PALSAR_proc_all</a><br>
+          </td>
+          <td style="vertical-align: top;">Processing of a stack of stripmap PALSAR CEOS format raw data to SLC and MLI products<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="../../DIFF/html/Gamma_PALSAR_WB_processing.pdf">PALSAR_pre_proc_WB<br>
+            </a></td>
+          <td style="vertical-align: top;">Preprocessing of a stack of SCANSAR PALSAR CEOS format raw data<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="../../DIFF/html/Gamma_PALSAR_WB_processing.pdf">PALSAR_proc_all_WB</a><br>
+          </td>
+          <td style="vertical-align: top;">Processing of a stack of SCANSAR PALSAR CEOS format raw data to SLC and MLI products<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="../scripts/RSAT_pre_proc">RSAT_pre_proc</a><br>
+          </td>
+          <td style="vertical-align: top;">Preprocessing of a stack of RADARSAT-1 stripmap raw data <br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;"><a href="../scripts/RSAT_proc_all">RSAT_proc_all</a><br>
+          </td>
+          <td style="vertical-align: top;">Processing of a stack of RADARSAT-1 stripmap raw data to SLC and MLI products<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">ERS_SURVEY</a></td>
+          <td>Survey resolution MSP processing for ERS raw data in ESA CEOS
+            format</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">JERS_RAW</a></td>
+          <td>Read CEOS format Exabyte raw data tapes JERS-1 raw data from
+            NASDA<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">JERS_PROC</a></td>
+          <td>Full resolution MSP processing for JERS-1 raw data in NASDA
+            CEOS&nbsp; format</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">JERS_SURVEY</a></td>
+          <td>Survey&nbsp; resolution MSP&nbsp; processing for JERS-1 raw
+            data in NASDA CEOS format</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">RAW_TO_SLC_CS</a></td>
+          <td>Processing of COSMO-SkyMed raw data (HDF5) to SLC and MLI products (using autof)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">RAW_TO_SLC_CS_AF</a></td>
+          <td>Processing of COSMO-SkyMed raw data (HDF5) to SLC and MLI products (using af)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">SIRC_PROC</a></td>
+          <td>Full resolution MSP processing of SIR-C raw data in CEOS
+            format<br>
+          </td>
+        </tr>
+        <tr>
+          <td><a href="MSP_scripts.html">SIRC_SURVEY</a></td>
+          <td>MSP survey processing for SIR-C raw data&nbsp; in CEOS
+            format<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3>File Formats and Auxiliary Files</h3>
+    <table style="width: 1120px; height: 457px;" border="1" cellpadding="7"
+      cellspacing="1">
+      <tbody>
+        <tr>
+          <td><a href="makefile.html">Makefile, makefile_*</a></td>
+          <td>Makefiles to compile MSP programs</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_display.html">bmp_image.h</a></td>
+          <td>File containing definitions of stuctures defining the BMP image
+            format</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_display.html">rasterfile.h</a></td>
+          <td>File containing definitions of the stucture defining the SUN
+            raster image format</td>
+        </tr>
+        <tr>
+          <td><a href="typedef_MSP.h.html">typedef_MSP.h</a></td>
+          <td>File containing structure definitions used in MSP programs</td>
+        </tr>
+        <tr>
+          <td><a href="proc_par.html">MSP processing parameter file</a></td>
+          <td>MSP processing parameters keywords and definitions</td>
+        </tr>
+        <tr>
+          <td><a href="sar_par.html">MSP sensor parameter file</a></td>
+          <td>MSP SAR sensor parameter file keywords and definitions</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_file_formats.html">SAR raw data</a></td>
+          <td>Format description for SAR raw data file
+            (&lt;YYYYMMDD&gt;.raw)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_file_formats.html">Range compressed data</a></td>
+          <td>Format description for range compressed data file (e.g.
+            &lt;orbit&gt;.rc)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_file_formats.html">SLC data</a></td>
+          <td>Format description for SAR SLC data file (e.g.
+            &lt;YYYYMMDD&gt;.slc)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_file_formats.html">MLI data</a></td>
+          <td>Format description for SAR multi-look intensity data file (e.g.
+            &lt;YYYYMMDD&gt;.mli)</td>
+        </tr>
+        <tr>
+          <td><a href="proc_par.html">MSP Processing Parameter File</a></td>
+          <td>Format description and definitions for MSP processing parameter
+            file (e.g. p&lt;YYYYMMDD&gt;.par)</td>
+        </tr>
+        <tr>
+          <td><a href="sar_par.html">MSP Sensor Parmaeter File</a></td>
+          <td>Format description and definitions for SAR sensor parameter
+            file (e.g. ERS1_ESA.par)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_file_formats.html">Azimuth spectrum</a></td>
+          <td>Format description for azimuth spectrum used in Doppler
+            centroid estimation (e.g. &lt;orbit&gt;.azsp)</td>
+        </tr>
+        <tr>
+          <td><a href="MSP_file_formats.html">Doppler function</a></td>
+          <td>Format description for Doppler centroid data as a function of
+            range (e.g. &lt;YYYYMMDD&gt;.dop)<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <hr align="left">
+    <a href="copyright.html">?</a> Copyrights for <a href="MSP_documentation.html">Documentation</a>, <a
+      href="MSP_users_guide.html">Users Guide</a> and <a href="MSP_reference_manual.html">Reference Manual</a> by <a
+      href="gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+    <a href="urs_wegmuller.html">UW</a>, <a href="charles_werner.html">CW</a>, <a
+      href="othmar_frey.html">OF</a>, last change 16-Jun-2012
+  </body>
+</html>

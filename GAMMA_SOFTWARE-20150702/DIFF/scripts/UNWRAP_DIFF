@@ -1,0 +1,74 @@
+#! /bin/csh -fe
+if ($#argv < 1) then
+  echo "UNWRAP_DIFF: unwrap phase using information from DIFF parameter file, no adaptive filtering"
+  echo "usage: UNWRAP_DIFF <diff> <data> [flatten_flag] [corr_thr]"
+  echo "       diff             name of differential interferometry parameter file)"
+  echo "       data             root name of data files (without extensions)"
+  echo "       flatten_flag     1 = use flattened interferogram with phase slope removed (*.flt)"
+  echo "                        0 = use original interferogram (*.int) (default=0)"
+  echo "       corr_thr         threshold for correlation in the unwrapping mask (default=.3)"
+  exit
+endif
+
+echo ""
+rm -f $2.flag $2.unw
+echo "differential interferometry parameter file: $1"
+
+echo `awk '$1 == "title:"' $1`
+set w1 =   `awk '$1 == "map_width:" {print $2}' $1`
+set nls =  `awk '$1 == "map_azimuth_lines:" {print $2}' $1`
+set nrb =  `awk '$1 == "first_nonzero_range_pixel:" {print $2}' $1`
+set nrps = `awk '$1 == "number_of_nonzero_range_pixels:" {print $2}' $1`
+ 
+echo interferogram width, '#'lines: $w1 $nls
+echo offset to first map pixel, '#'map pixels: $nrb $nrps
+
+set r1 = $nrb
+set r2 = `echo $nrb $nrps 1|awk '{print $1+$2-$3}'`
+set l1 =
+set l2 =
+set FLT = 0
+
+set CORR_THR = .3
+set MAX_BRANCH = 64
+
+if ($#argv >= 3) then
+ set FLT = $3
+endif
+
+if ($#argv >= 4) then
+ set CORR_THR = $4
+endif
+
+echo low correlation threshold:          $CORR_THR
+echo maximum tree branch length:         $MAX_BRANCH
+
+echo ""
+echo corr_flag $2.res.cc $2.flag $w1 $CORR_THR
+corr_flag $2.res.cc $2.flag $w1 $CORR_THR 
+
+echo ""
+if ($FLT == 1) then
+  echo residue $2.res.flt $2.flag $w1 $r1 $r2 $l1 $l2
+  residue $2.res.flt $2.flag $w1 $r1 $r2 $l1 $l2
+else
+  echo residue $2.res.int $2.flag $w1 $r1 $r2 $l1 $l2
+  residue $2.res.int $2.flag $w1 $r1 $r2 $l1 $l2
+endif
+
+echo ""
+echo tree_cc $2.flag $w1 $MAX_BRANCH $r1 $r2 $l1 $l2 
+tree_cc $2.flag $w1 $MAX_BRANCH $r1 $r2 $l1 $l2 
+
+echo ""
+if ($FLT == 1) then
+  echo grasses $2.res.flt $2.flag $2.res.unw $w1 $r1 $r2 $l1 $l2
+  grasses $2.res.flt $2.flag $2.res.unw $w1 $r1 $r2 $l1 $l2 
+else
+  echo grasses $2.res.int $2.flag $2.res.unw $w1 $r1 $r2 $l1 $l2
+  grasses $2.res.int $2.flag $2.res.unw $w1 $r1 $r2 $l1 $l2 
+endif
+
+echo ""
+echo rasrmg $2.res.unw $2.res.pwr1 $w1
+rasrmg $2.res.unw $2.res.pwr1 $w1

@@ -1,0 +1,303 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: vu_disp</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing --><!-- uw 20-Feb-2003 -->
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>vu_disp</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/vu_disp.c">vu_disp.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  vu_disp - Display point deformation time-series using a raster
+  image for point selection</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>vu_disp &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;itab&gt; &lt;pdisp&gt; &lt;pdef&gt; &lt;pdhgt&gt;
+  &lt;psigma&gt; &lt;pmap&gt; &lt;ras&gt; [ymin] [ymax] [mag]
+  [win_sz]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 pINT_rec
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdisp&gt;</td>
+
+        <td>(input) displacement (m) for each point and each layer
+        in the stack (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdef&gt;</td>
+
+        <td>(input) point data stack of linear deformation rate
+        (m/year, float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;pdh&gt;</td>
+
+        <td style="vertical-align: top;">(input) point data stack
+        of height correction value (m, float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;psigma&gt;</td>
+
+        <td style="vertical-align: top;">(input) point data stack
+        of phase standard deviation from fit (float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;pmap&gt;</td>
+
+        <td style="vertical-align: top;">(input) point positions in
+        map proj. coord. (easting, northing or lat,lon) (enter -
+        for none) (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras&gt;</td>
+
+        <td>(input) raster reference image with PT locations marked
+        (SUN *.ras, or BMP *.bmp)</td>
+      </tr>
+
+      <tr>
+        <td>[ymin]</td>
+
+        <td>(input) plot display minimum (enter - for default =
+        -0.03)</td>
+      </tr>
+
+      <tr>
+        <td>[ymax]</td>
+
+        <td>(input) lot display maximum (enter - for default =
+        +0.03)</td>
+      </tr>
+
+      <tr>
+        <td>[mag]</td>
+
+        <td>zoom magnification factor (default=3)</td>
+      </tr>
+
+      <tr>
+        <td>[win_sz]</td>
+
+        <td>zoom window size before magnification
+        (default=128)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><code>vu_disp pt_1.6&nbsp; pmsk2 pSLC_par itab
+  pdisp_los3&nbsp; pdef2&nbsp; phgt3 psigma2 -&nbsp;
+  pdef3.ras&nbsp; -.06 .06</code></p>
+
+  <p>Displays the deformation of data in the slant range SAR
+  geometry.&nbsp; The user selects points displayed in the image
+  pdef3.ras and the deformation history is shown in a plot window.
+  If the user depressess the write point button the the plot and
+  deformation data are saved to files p*.txt and p*.jpg where * is
+  the point number.</p>
+
+  <p><samp>vu_disp pt_1.6_utm.coord pmsk2 pSLC_par itab pdisp_los3
+  pdef2 phgt3 psigma2 pt_1.6_utm&nbsp; pdef3_utm.ras&nbsp; -.06
+  .06<br></samp></p>
+
+  <p>Displays the deformation histories of individual points in the
+  map UTM geometry using xmgrace. The user selects points displayed
+  in the image pdef3_utm.ras and the deformation history is shown
+  in a plot window. If the user depressess the write point button
+  the the plot and deformation data are saved to files p*.txt and
+  p*.jpg where * is the point number. The easting and northing of
+  the points stored in the file p_1.6_utm is added to the
+  annotation both in the plot and in the txt file.</p>
+
+  <p><strong>INSTALLATION</strong></p>
+
+  <p>The Gnuplot program must be installed (version &gt; 4.4, 4.6
+  preferred) to support plot generation.</p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p>Plots the deformation time series of points selected using a
+  reference image. The reference image is in Sun raster or BMP
+  format with the points marking the pixels contained in the point
+  list. The user can select a points for analysis by clicking
+  them&nbsp; with&nbsp; mouse button 1. The point closest to the
+  clicked location is selected if it is closer than 5 pixels.</p>
+
+  <p>The coordinates of the point, both in the reference image on
+  the screen, and in the point list are then displayed in the
+  application window.&nbsp; Deformation values are plotted versus
+  delta-time in the <span style=
+  "font-style: italic;">Gnuplot</span> plot window, where the
+  delta-time values have been calculated from the SLC parameter
+  data and interferogram table (<span style=
+  "font-style: italic;">itab</span>) files. The values of the
+  linear deformation rate, height , and northing and easting of the
+  point, and the deformation history are displayed in the terminal
+  window.</p>
+
+  <p>By depressing the <span style="font-style: italic;">write
+  point</span> button in the display window the user can store the
+  point deformation history, annotation, and a PNG format image of
+  the plot. Below is an example of the text file output for a
+  single point. At the beginning are the important parameters for
+  the point location and altitude given in keyword:value format.
+  The deformation history is written out in 4 columns:</p>
+
+  <ol>
+    <li>epoch index</li>
+
+    <li>epoch of the measurement in ISO 8601 format
+    YYYY-MM-DDTHH:MM:SS.SSS</li>
+
+    <li>time in days since 1-Jan-1970</li>
+
+    <li>phase or deformation history</li>
+  </ol><br>
+
+  <table style=
+  "width: 50%; text-align: left; margin-left: auto; margin-right: auto;"
+  border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td style="vertical-align: top;">
+        <code>file:&nbsp;&nbsp;&nbsp; p9699.txt<br>
+        point:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9699<br>
+        x_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 310<br>
+        y_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 253<br>
+        east:&nbsp;&nbsp;&nbsp; 252944.453<br>
+        north:&nbsp; 3946231.000<br>
+        height:&nbsp;&nbsp; 114.2966 m<br>
+        deformation_rate: -9.37873e-02&nbsp; m/year<br>
+        phase_sigma:&nbsp;&nbsp;&nbsp;&nbsp; 1.4568&nbsp; rad<br>
+        &nbsp;&nbsp; 0&nbsp; 2002-02-20T13:59:26.981&nbsp;&nbsp;
+        11738.58295&nbsp;&nbsp; 0.00000e+00<br>
+        &nbsp;&nbsp; 1&nbsp; 2002-03-16T13:59:21.980&nbsp;&nbsp;
+        11762.58289&nbsp;&nbsp; 3.91618e-02<br>
+        &nbsp;&nbsp; 2&nbsp; 2002-04-09T13:59:22.914&nbsp;&nbsp;
+        11786.58290&nbsp;&nbsp; 1.48124e-02<br>
+        &nbsp;&nbsp; 3&nbsp; 2002-05-03T13:59:23.412&nbsp;&nbsp;
+        11810.58291&nbsp; -1.68577e-02<br>
+        &nbsp;&nbsp; 4&nbsp; 2002-05-27T13:59:20.941&nbsp;&nbsp;
+        11834.58288&nbsp; -1.47504e-02<br>
+        &nbsp;&nbsp; 5&nbsp; 2002-07-14T13:59:19.202&nbsp;&nbsp;
+        11882.58286&nbsp; -7.45409e-03<br>
+        &nbsp;&nbsp; 6&nbsp; 2002-08-07T13:59:15.395&nbsp;&nbsp;
+        11906.58282&nbsp; -8.16142e-03<br>
+        &nbsp;&nbsp; 7&nbsp; 2002-08-31T13:59:14.403&nbsp;&nbsp;
+        11930.58281&nbsp; -3.87606e-02<br>
+        &nbsp;&nbsp; 8&nbsp; 2002-09-24T13:59:12.963&nbsp;&nbsp;
+        11954.58279&nbsp; -3.74278e-02<br>
+        &nbsp;&nbsp; 9&nbsp; 2002-10-18T13:59:11.954&nbsp;&nbsp;
+        11978.58278&nbsp; -3.40827e-02<br>
+        &nbsp; 10&nbsp; 2002-11-11T13:59: 9.895&nbsp;&nbsp;
+        12002.58275&nbsp; -4.95644e-02<br>
+        &nbsp; 11&nbsp; 2002-12-29T13:58:59.573&nbsp;&nbsp;
+        12050.58263&nbsp; -6.05509e-02<br>
+        &nbsp; 12&nbsp; 2003-01-22T13:58:56.732&nbsp;&nbsp;
+        12074.58260&nbsp; -9.03066e-02<br>
+        &nbsp; 13&nbsp; 2003-03-11T13:58:56.559&nbsp;&nbsp;
+        12122.58260&nbsp; -1.09059e-01<br>
+        &nbsp; 14&nbsp; 2003-04-04T13:58:52.594&nbsp;&nbsp;
+        12146.58255&nbsp; -1.16364e-01<br>
+        &nbsp; 15&nbsp; 2003-04-28T13:58:49.259&nbsp;&nbsp;
+        12170.58251&nbsp; -1.12930e-01<br>
+        &nbsp; 16&nbsp; 2003-05-22T13:58:50.797&nbsp;&nbsp;
+        12194.58253&nbsp; -1.09981e-01<br>
+        &nbsp; 17&nbsp; 2003-06-15T13:58:48.641&nbsp;&nbsp;
+        12218.58251&nbsp; -1.41443e-01<br>
+        &nbsp; 18&nbsp; 2003-07-09T13:58:42.132&nbsp;&nbsp;
+        12242.58243&nbsp; -1.34967e-01<br>
+        &nbsp; 19&nbsp; 2003-08-02T13:58:42.670&nbsp;&nbsp;
+        12266.58244&nbsp; -1.46865e-01<br>
+        &nbsp; 20&nbsp; 2003-08-26T13:58:41.440&nbsp;&nbsp;
+        12290.58242&nbsp; -1.87127e-01<br>
+        &nbsp; 21&nbsp; 2003-09-19T13:58:39.028&nbsp;&nbsp;
+        12314.58240&nbsp; -1.81534e-01<br>
+        &nbsp; 22&nbsp; 2003-10-13T13:58:36.515&nbsp;&nbsp;
+        12338.58237&nbsp; -1.84052e-01<br>
+        &nbsp; 23&nbsp; 2003-11-06T13:58:34.050&nbsp;&nbsp;
+        12362.58234&nbsp; -1.58334e-01<br>
+        &nbsp; 24&nbsp; 2003-11-30T13:58:33.235&nbsp;&nbsp;
+        12386.58233&nbsp; -1.92379e-01<br>
+        &nbsp; 25&nbsp; 2003-12-24T13:58:30.592&nbsp;&nbsp;
+        12410.58230&nbsp; -1.69473e-01<br>
+        &nbsp; 26&nbsp; 2004-01-17T13:58:24.932&nbsp;&nbsp;
+        12434.58223&nbsp; -1.70627e-01<br>
+        &nbsp; 27&nbsp; 2004-02-10T13:58:22.597&nbsp;&nbsp;
+        12458.58221&nbsp; -1.92817e-01<br>
+        <br></code></td>
+      </tr>
+    </tbody>
+  </table><br>
+  An example of the output plot for this deformation history is
+  shown here:<br>
+
+  <div style="text-align: center;">
+    <img title="Deformation history for point 9699" alt=
+    "Deformation history for point 9699" src="p9699.png"><br>
+  </div>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "dispmap.html">dispmap_pt</a>, <a href=
+  "vu_disp2d.html">vu_disp2d<br></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 22-Mar-2013.
+</body>
+</html>

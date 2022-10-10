@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: drawthat</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>drawthat</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/drawthat.c">drawthat.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  drawthat - draw an arc, polygon, cross, or point on a Sun raster
+  file at specified positions.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>drawthat &lt;ras_in&gt; &lt;points&gt; &lt;ras_out&gt;
+  [mode] [value] [nn_flag] [print_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;ras_in&gt;</td>
+
+      <td>(input) input SUN raster file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pos&gt;</td>
+
+      <td>(input) list of points specified by x and y coordinates
+      (text format)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>(output) output SUN raster file with drawn figures</td>
+    </tr>
+
+    <tr>
+      <td>[mode]</td>
+
+      <td>drawing mode (default = 0)<br>
+      0 : draw an arc connecting points<br>
+      1 : draw a filled polygon specified by the points<br>
+      2 : draw crosses at the points<br>
+      3 : draw points</td>
+    </tr>
+
+    <tr>
+      <td>[value]</td>
+
+      <td>RGB value for drawing: default value = 0 0 0</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br></p>
+
+  <p><samp>drawthat input.ras points.txt out.ras 2 0 255
+  255</samp></p>draws crosses in the output image out.ras at points
+  specified in the points.txt file. The crosses are drawn using RGB
+  = 255,255,0 (yellow).
+
+  <p><samp>drawthat input.ras points.txt out.ras 1 0 255
+  255</samp></p>draws a filled polygon specifed by the point pixel
+  coordinates specified in points.txt in the output image out.ras
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code drawthat.c in ./src. For compilation adjust and use
+  Makefile. Executable version drawthat in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.<br>
+  Uses DISP type definition file <a href=
+  "display.h.html">display.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  drawthat is a program for drawing annotation on a Sun raster
+  format image. Supported modes are arcs, filled polygons, crosses,
+  or points. The points used to specify the image objects are
+  contained in a text format file with pairs of x, y coordinates.
+  Multiple polygons or arcs are specified by a single line gap in
+  the pos file. The user can specify the color of the drawn color
+  in the image.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="takethat.html">takethat</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 7-Jul-2004.</p>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: histogram</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>histogram</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/histogram.c">histogram.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  histogram - Calculates histogram of test-area values (polygon
+  regions).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>histogram &lt;data_in&gt; &lt;width&gt; &lt;polygon&gt;
+  &lt;histograms&gt; &lt;mean/stdev&gt; &lt;start&gt; &lt;stop&gt;
+  [lin/log_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;data_in&gt;</td>
+
+      <td>input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>&lt;polygon&gt;</td>
+
+      <td>polygon data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;histograms&gt;</td>
+
+      <td>calculated histograms (output)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mean/stdev&gt;</td>
+
+      <td>calculated mean/stdev (output)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;start&gt;</td>
+
+      <td>start value for first histogram class</td>
+    </tr>
+
+    <tr>
+      <td>&lt;stop&gt;</td>
+
+      <td>stop value for last histogram class</td>
+    </tr>
+
+    <tr>
+      <td>[lin/log_flag]</td>
+
+      <td>flag to select lin or log scale for output<br>
+      (default=0: linear scale; 1: values in dB)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>histogram 1352_1610.cc_ad 2500 1352_1610.poly
+  1352_1610.cc_ad.hist 1352_1610.cc_ad.dat 0.0 1.0
+  0</samp></p>Extracts coherence values and writes histograms, mean
+  and stdev (absolute values) of each polygon region to output
+  file.<samp>histogram 1352_1610.pow1 2500 1352_1610.poly
+  1352_1610.pow1.hist 1352_1610.cc_ad.dat -25.0 -5.0
+  1</samp>Extracts backscatter values, converts it to dB scale and
+  writes histograms, mean and stdev (absolute values) of each
+  polygon region to output file. 50 histogram classes between -25
+  and -5 dB are used.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code histogram.c in ./src. For compilation adjust and use
+  Makefile: Executable version histogram in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  histogram extracts signatures for test areas defined by polygons.
+  For each polygon region the histogram, mean, and standard
+  deviation is calculated and written to the corresponding output
+  files.</p>
+
+  <p>The range between the selected minimum and maximum values is
+  divided into 50 intervals of equal length.</p>
+
+  <p>The program determines how many times values in a certain
+  ointerval are found for a certain polygon region. The result is
+  normalized with the total number of pixels, i.e. the sum of all
+  the histogram values for a certain polygon is 1.0</p>
+
+  <p>If a logarithmic (i.e. dB) scale is selected, the image values
+  are first converted to dB. The interval limits are also indicated
+  in dB. The use of the logarithmic scale is mainly used for
+  backscatter intensities and parameters derived from backscatter
+  intensities.</p>
+
+  <p>The selection of the polygon regions is supported with the
+  program <a href="polyras.html">polyras</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The output histogram, mean and standard deviations are written to
+  textfiles and may therefore easily be imported, displayed and
+  printed by most commercial plotting software.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "polyras.html">polyras</a>, <a href=
+  "histogram_ras.html">histogram_ras</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  none.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

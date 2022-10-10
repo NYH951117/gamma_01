@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: disp2ras</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>disp2ras</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../scripts/disp2ras">disp2ras</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  disp2ras - Generate SUN or BMP format raster images of a stack of
+  unwrapped phase or displacement with rasdt_pwr24<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>disp2ras &lt;list&gt; &lt;width&gt; &lt;MLI_image&gt;
+  &lt;cycle&gt; [scale] [exp]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DISP_tab&gt;</td>
+
+        <td>(input) list of unwrapped phase&nbsp; or displacement
+        files (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>image width of input data files<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_image&gt;</td>
+
+        <td>(input) intensity image for the background, same
+        dimensions as input images in DISP_tab (enter - for none)
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;cycle&gt;</td>
+
+        <td>units per color cycle<br></td>
+      </tr>
+
+      <tr>
+        <td>[scale]</td>
+
+        <td>image display scale factor (enter - for default,
+        default: 1.0)<br></td>
+      </tr>
+
+      <tr>
+        <td>[exp]</td>
+
+        <td>&nbsp;image display exponent (default: 0.35)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <samp>disp2ras DISP_tab 600 rmli_1_5/rmli_1_5.ave
+  12.56 1.0 .35<br></samp></p>
+
+  <p>Generates a set of 26 displacement phase images in SUN raster
+  format of the files listed in the <span style=
+  "font-style: italic;">disp_tab</span> file. There are 26 files
+  listed in the <span style="font-style: italic;">disp_tab</span>
+  The intensity image is <span style=
+  "font-style: italic;">rmli_1_5/rmli_1_5.ave</span>.&nbsp;&nbsp;The
+  color table is scaled such that each color cycle represents 4PI
+  radians (12.56). The relative intensity scale is 1.0 and the
+  exponent is 0.35.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p><span style="font-style: italic;">disp2ras</span> is a script
+  that takes each of the entries in the <span style=
+  "font-style: italic;">DISP_tab</span> file and calls the program
+  <a href="../../DISP/html/rasdt_pwr24.html">rasdt_pwr24</a> to
+  generate a SUN raster or BMP format output image for each entry.
+  The content of the <span style=
+  "font-style: italic;">DISP_tab</span> file is a list of images
+  that are to be displayed:<br></p>
+
+  <p><samp>$ more Lost_Hills_2d/DISP_tab<br>
+  diff1_ts/diff1_ts_000<br>
+  diff1_ts/diff1_ts_001<br>
+  diff1_ts/diff1_ts_002<br>
+  diff1_ts/diff1_ts_003<br>
+  diff1_ts/diff1_ts_004<br>
+  diff1_ts/diff1_ts_005<br>
+  diff1_ts/diff1_ts_006<br>
+  diff1_ts/diff1_ts_007<br>
+  diff1_ts/diff1_ts_008<br>
+  diff1_ts/diff1_ts_009<br>
+  diff1_ts/diff1_ts_010<br>
+  diff1_ts/diff1_ts_011<br>
+  diff1_ts/diff1_ts_012<br>
+  diff1_ts/diff1_ts_013<br>
+  diff1_ts/diff1_ts_014<br>
+  diff1_ts/diff1_ts_015<br>
+  diff1_ts/diff1_ts_016<br>
+  diff1_ts/diff1_ts_017<br>
+  diff1_ts/diff1_ts_018<br>
+  diff1_ts/diff1_ts_019<br>
+  diff1_ts/diff1_ts_020<br>
+  diff1_ts/diff1_ts_021<br>
+  diff1_ts/diff1_ts_022<br>
+  diff1_ts/diff1_ts_023<br>
+  diff1_ts/diff1_ts_024<br>
+  diff1_ts/diff1_ts_025<br>
+  diff1_ts/diff1_ts_026</samp><br>
+  <br>
+  This list of files can be created using&nbsp; the <a href=
+  "../../DIFF/html/mk_tab.html">mk_tab</a> script.<br></p>
+
+  <p>One application of <span style=
+  "font-style: italic;">disp2ras</span> is to generate a set of
+  raster images corresponding to&nbsp; a stack of unwrapped
+  differential interferograms or time-series dof deformation
+  generated using <a href="mb.html">mb</a>.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href=
+  "../../DISP/html/rasdt_pwr24.html">rasdt_pwr24</a>,<a href=
+  "../../DIFF/html/mk_tab.html">mk_tab</a>, <a href=
+  "mb.html">mb</a>&nbsp;</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 8-Jun-2012.
+</body>
+</html>

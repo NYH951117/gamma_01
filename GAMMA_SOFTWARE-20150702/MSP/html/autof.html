@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: autof</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>autof</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/autof.c">autof.c</a></i></p>
+
+  <p><strong>NAME</strong><em>autof</em> - Estimation of along
+  track velocity based on range compressed SAR data by SAR azimuth
+  auto-focusing.</p>
+
+  <p><strong>SYNOPSIS</strong><code>autof &lt;SAR_par&gt;
+  &lt;PROC_par&gt; &lt;rc_data&gt; [autofocus] [SNR_min]
+  [prefilter] [auto_az] [az_offset] [auto_bins]
+  [dop_ambig_corr]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td width="151">&lt;SAR_par&gt;</td>
+
+        <td width="529">(input) MSP SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td width="151">&lt;PROC_par&gt;</td>
+
+        <td width="529">(input) MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td width="151">&lt;rc_data&gt;</td>
+
+        <td width="529">(input) range compressed data file (minimum
+        of 4K lines)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[autofocus]</td>
+
+        <td width="529">(output) autofocus correlation function
+        file</td>
+      </tr>
+
+      <tr>
+        <td width="151">[SNR_min]</td>
+
+        <td width="529">minimum autofocus SNR to accept new
+        estimate (default: 5.0)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[prefilter]</td>
+
+        <td width="529">prefilter decimation factor (default from
+        PROC_param)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[auto_az]</td>
+
+        <td width="529">autofocus azimuth correlation image patch
+        size patch size (2**N, default:&nbsp; 2048)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[az_offset]</td>
+
+        <td width="529">offset in prefiltered lines from start of
+        file (default: 0)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[auto_bins]</td>
+
+        <td width="529">number of range pixels to use for
+        autofocus(2**N, default=1024)</td>
+      </tr>
+
+      <tr>
+        <td width="151">[dop_ambig_corr]</td>
+
+        <td width="529">Doppler ambiguity error correction flag
+        (default=1)<br clear="all">
+        &nbsp; 0: doppler centroid remains unchanged<br clear=
+        "all">
+        &nbsp; 1: correction of detected doppler ambiguity
+        error</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong></p>
+
+  <p><samp>autof ERS1_ESA.par p8560.slc.par 8560.rc
+  8560.autof</samp></p>
+
+  <p><strong>DESCRIPTION</strong><em>autof</em> reads SAR sensor
+  parameter, SAR processing parameter and SAR range compressed data
+  and calculates an estimate of the along-track velocity of the
+  radar platform using cross correlation of images derived from
+  different segments of the azimuth Doppler spectrum. A shift in
+  azimuth between these looks is proportional to a velocity error
+  for the platform and is corrected by the program.</p>
+
+  <p>Each of the sub-aperture images is formed from 1/4 of the
+  Doppler spectrum, space 1/2 PRF apart. Two looks are taken in
+  azimuth so that the image is still oversampled by 2:1. The
+  detected images are cross correlated to measure the range and
+  azimuth offsets. A 1-D cut of the 2-D correlation function (at
+  range offset 0.0) is written to a text file specified on the
+  command line. Plotting of this function can be performed using
+  gnuplot.<br></p>
+
+  <p>echo "plot '8560.autof' u 1:2 lc 3 lw .5" | gnuplot</p>
+
+  <p>The shift of the peak from 0 in azimuth is proportional to the
+  focus error. There are two columns in the file, the first is the
+  azimuth sample number and the second column is the correlation
+  function. Perfect focus is indicated when the peak of the
+  correlation function is at 0 azimuth offset. The text file
+  containing the correlation function has the following format:</p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>column 1</td>
+
+        <td>azimuth correlation offset (in pixels)</td>
+      </tr>
+
+      <tr>
+        <td>column 2</td>
+
+        <td>autofocus correlation function</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p>Low correlation values can occur if the scene is devoid of
+  contrast, such as over the open ocean or on an ice sheet. A
+  threshold for the SNR of the correlation peak can be specified on
+  the command line as the parameter <u>SNR_min</u>. <em>autof</em>
+  may be run several times to iteratively improve the estimate of
+  the along-track velocity.</p>
+
+  <p>The number of azimuth image samples used by <i>autof</i> to
+  determine the offset can be specified by the command line
+  parameter <u>auto_az.</u> The number of range bins is given by
+  the parameter <u>auto_bins</u>. Large values for <u>auto_bins</u>
+  will reduce the correlation SNR because the azimuth offset due to
+  a focus error is not constant value as a function of slant range.
+  Conversely, using a wide swath (e.g. auto_bins = 4096) will lead
+  to a more robust estimation procedure when operationally
+  processing a large numbers of scenes with variable image
+  contrast.</p>
+
+  <p>A range offset between the looks is caused by uncompensated
+  range migration, with the most likely cause being an error in the
+  Doppler centroid by 1 or more multiples of the PRF. This is one
+  of the best methods for Doppler ambiguity resolution and is
+  implemented by <i>autof</i>. If the range displacement is greater
+  than half the range migration over the synthetic aperture then
+  processing with the wrong Doppler ambiguity is the most likely
+  cause. The program then updates the Doppler centroid by the
+  correct number of ambiguities The user can control the use of
+  this method through the <u>dop_ambig_corr</u> flag.&nbsp; The
+  autofocus offset function can be plotted versus azimuth sample
+  number using gnuplot.<br></p>
+
+  <p><code>echo "plot 'slc/19960615.autof' u 1:2 with lines lc 3 lw
+  .5 "|gnuplot</code><br>
+  <br>
+  <code><br></code></p>
+
+  <p><strong>OPTIONS</strong><br>
+  If the velocity does not converge, then a possible cause is that
+  the image is featureless, such as open water or an ice, or that
+  there is an error in the processing parameters. Possible culprits
+  are the Doppler centroid, range to the first sample, or initial
+  value for the along-track velocity caused by incorrect state
+  vectors. Radio interference (RFI) visible in JERS data can also
+  corrupt the autofocus by obliterating the scene. Examination of
+  the image patches (autof1.mli, autof2.mli, see options) can be
+  helpful to diagnose the cause of autofocus failure. The solution
+  is to look at another region of the image where there is
+  sufficient contrast to give meaningful answers.</p>
+
+  <p>The single-look image patches generated by <i>autof</i> may be
+  stored in the files autof1.mli and autof2.mli. The 2-D
+  correlation function is also written out as the file auto.cc.
+  These intensity images have a width equal to (auto_az/2) and can
+  be viewed using a display programs such as <i>dis2pwr</i>. In
+  order for <i>autof</i> to write out these images it must be
+  compiled with the -DAUTO_IMAGES option.</p>
+
+  <p><strong>SEE ALSO</strong><a href="MSP_users_guide.html">Users
+  Guide</a>, <a href="typedef_MSP.h.html">typedef_MSP.h</a>,
+  <a href="proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 18-Jun-2012.
+</body>
+</html>

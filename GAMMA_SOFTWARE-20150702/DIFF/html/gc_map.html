@@ -1,0 +1,413 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw020924 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: gc_map, gc_map_grd</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>gc_map</h2>
+
+  <p><i>ANSI-C programs: <a href="../src/gc_map.c">gc_map.c</a>,
+  <a href="../src/gc_map_grd.c">gc_map_grd.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">gc_map -</span> Geocoding lookup
+  table derivation based on DEM in MAP coordinates and SAR imaging
+  geometry.</p>
+
+  <p><span style="font-weight: bold;">gc_map_grd</span> - Geocoding
+  lookup table derivation based on DEM in MAP coordinates and SAR
+  imaging geometry for SAR image in ground-range / azimuth
+  coordinates.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>gc_map &lt;MLI_par&gt; &lt;ISP_par&gt; &lt;DEM_par&gt;
+  &lt;DEM&gt; &lt;DEM_gc_par&gt; &lt;DEM_gc&gt; &lt;gc_map&gt;
+  [lat_ovr] [lon_ovr] [sim_sar] [u] [v] [inc] [psi] [pix] [ls_map]
+  [frame] [ls_mode] [r_ovr]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(input) ISP MLI or SLC image parameter file (slant
+        range geometry)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file (enter
+        - if geocoding SLC or MLI data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM&gt;</td>
+
+        <td>(input) DEM data file (or constant height value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_seg_par&gt;</td>
+
+        <td>DEM segment parameters used for geocoding If this file
+        exists, then the bounds of the DEM segment used for
+        geocoding are read from the parameter file, otherwise the
+        bounds are estimated using the SLC parameters and state
+        vectors, and written to the new parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_seg&gt;</td>
+
+        <td>(output) segment of DEM used for geocoding interpolated
+        if lat_ovr &gt; 1 or lon_ovr &gt; 1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lookup_table&gt;</td>
+
+        <td>(output) geocoding lookup table (containing range
+        Doppler coordinates of DEM segment for geocoding</td>
+      </tr>
+
+      <tr>
+        <td>[lat_ovr]</td>
+
+        <td>latitude DEM oversampling factor (default = 2.0)</td>
+      </tr>
+
+      <tr>
+        <td>[lon_ovr]</td>
+
+        <td>longitude DEM oversampling factor (default = 2.0)</td>
+      </tr>
+
+      <tr>
+        <td>[sim_sar]</td>
+
+        <td>(output) simulated SAR backscatter image (in DEM
+        geometry)</td>
+      </tr>
+
+      <tr>
+        <td>[u]</td>
+
+        <td>(output) zenith angle of surface normal vector n (angle
+        between z and n)</td>
+      </tr>
+
+      <tr>
+        <td>[v]</td>
+
+        <td>(output) orientation angle of n (between x and
+        projection of n in xy plane)</td>
+      </tr>
+
+      <tr>
+        <td>[inc]</td>
+
+        <td>(output) local incidence angle (between surface normal
+        and look vector)</td>
+      </tr>
+
+      <tr>
+        <td>[psi]</td>
+
+        <td>(output) projection angle (between surface normal and
+        image plane normal)</td>
+      </tr>
+
+      <tr>
+        <td>[pix]</td>
+
+        <td>(output) pixel area normalization factor</td>
+      </tr>
+
+      <tr>
+        <td>[ls_map]</td>
+
+        <td>(output) layover and shadow map (in map
+        projection)</td>
+      </tr>
+
+      <tr>
+        <td>[frame]</td>
+
+        <td>number of DEM pixels to add around area covered by SAR
+        image (default: 8)</td>
+      </tr>
+
+      <tr>
+        <td>[ls_mode]</td>
+
+        <td>output lookup table values in regions of layover,
+        shadow, or DEM gaps (enter - for default)<br>
+        &nbsp;&nbsp;&nbsp; 0: set to (0.,0.)<br>
+        &nbsp;&nbsp;&nbsp; 1: linear interpolation across these
+        regions (default)<br>
+        &nbsp;&nbsp;&nbsp; 2: actual value<br>
+        &nbsp;&nbsp;&nbsp; 3: nn-thinned<br></td>
+      </tr>
+
+      <tr>
+        <td>[r_ovr]</td>
+
+        <td>range oversampling factor for nn-thinned layover/shadow
+        mode (ls_mode=3) (default=2.0)</td>
+      </tr>
+    </tbody>
+  </table><b>Remark: enter - as filename to avoid creation of the
+  corresponding output file</b>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>gc_map 8560.par 8560_8059.off dv_utm.par dv_utm.dem
+  8560_8059.utm.par 8560_8059.utm.dem 8560_8059.utm_to_rdc 2 2
+  8560_8059.utm.sim_sar u v linc psi pix ls_map</samp></p>
+
+  <p>Creates geocoding lookup table based on DEM in MAP coordinates
+  and SAR imaging geometry (oversampling factors in latitude and
+  longitude 2.0, all DEM derived products are calculated and
+  written out to files).</p>
+
+  <p><samp>gc_map 8560.par 8560_8059.off dv_utm.par dv_utm.dem
+  8560_8059.utm.par 8560_8059.utm.dem 8560_8059.utm_to_rdc 2. 2.
+  8560_8059.utm.sim_sar - - - - pix</samp></p>
+
+  <p>Creates geocoding lookup table based on DEM in MAP coordinates
+  and SAR imaging geometry (oversampling factors in latitude and
+  longitude 2., of the DEM derived products only the simulated SAR
+  intensity image and the pixel normalization factors are written
+  out to a file).</p>
+
+  <p><samp>gc_map 8560.par 8560_8059.off dv_utm.par 100.0
+  8560_8059.utm.par 8560_8059.utm.dem 8560_8059.utm_to_rdc 1. 1.
+  8560_8059.utm.sim_sar u v linc psi pix ls_map</samp></p>
+
+  <p>Creates geocoding lookup table for ellipsoid corrected
+  geocoding (i.e. instead of a DEM a constant height value of
+  100.0m is used. (all DEM derived products are calculated and
+  written out to files).</p>
+
+  <p><samp>gc_map 8560.grd.par dv_utm.par dv_utm.dem 8560.utm.par
+  8560.utm.dem 8560.utm_to_grd 2 2 8560_8059.utm.sim_sar u v linc
+  psi pix ls_map</samp></p>
+
+  <p>Creates geocoding lookup table and all DEM derived products
+  for a PRI SAR image in ground-range azimuth coordinates.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>gc_map</em> calculates complex valued geocoding lookup table
+  based on DEM in MAP coordinates and SAR imaging geometry. The
+  geocoding lookup table has the dimension of the DEM segment in
+  MAP projection and contains corresponding SAR coordinates as
+  floating point complex valued numbers with the real part
+  corresponding to the real-valued column and the imaginary part
+  corresponding to the real-valued row number.</p>
+
+  <p>If the interferogram/offset parameter file is not available
+  because geocoding is desired of an image not related to an
+  interferogram, such as an MLI image from a SAR processor, a - may
+  be entered instead of the parameter file name. In this case the
+  required parameters are extracted from the SLC/MLI parameter
+  file. The program <a href=
+  "create_diff_par.html">create_diff_par</a> can then be used to
+  create the DIFF/GEO parameter file used to measure offsets
+  between a simulated SAR image and the actual image in order to
+  correct the geocoding map produced by gc_map.</p>
+
+  <p>The provided DEM can be in 4-byte floating or 2-byte (short)
+  integer format and is characterized in the corresponding DEM
+  parameter file.An image segment covering the area of the SAR
+  image is extracted from the DEM and oversampled in range and
+  azimuth using the user provided oversampling factors. This allows
+  to generate geocoded products at user defined spatial resolution
+  different from the available DEM.</p>
+
+  <p>In addition to the geocoding lookup table additional
+  information is calculated from the DEM and SAR geometry. The
+  quantities calculated are: local incidence angle, projection
+  angle (for pixel size normalization), pixel size normalization
+  factor, zenith and orientation angle for local surface normal,
+  layover/shadow map. Output file names may be replaced by "-" to
+  suppress creation of the corresponding output file</p>
+
+  <p>The layover and shadow mode <samp>flag ls_mode</samp>
+  determines what values are written into the output lookup table
+  for regions of layover or shadow. Mode 0 writes the values 0.,0.
+  to the lookup table and corresponding areas geocoded using
+  <a href="geocode_back.html">geocode_back</a> will be set to the
+  null value. Mode 1 functions like mode 0 with the exception that
+  the gaps in the lookup table (corresponding to layover, shadow,
+  or gaps in the DEM) are filled using linear interpolation from
+  the lookup table values at the edges of the gap for each
+  line.</p>
+
+  <p>Mode 2 writes the true values of the lookup table without
+  consideration of layover or shadowing. This may lead to
+  non-monotonic range coordinate sequences. Mode 3 is similar to
+  mode 2 with the additional feature that samples of the lookup
+  table that are in layover and are not very close to a sample in
+  the SAR image are set to 0.0 (thinned out). In layover regions
+  many points in the lookup table have very similar range pixel
+  coordinates. The degree of thinning is controlled by the range
+  oversampling factor [r_ovr] entered on the command line. This
+  factor determines the minimum range spacing for adjacent samples
+  in the lookup table. Large values of range oversampling lead to
+  minimal thinning because the spacing between range samples is
+  small. Use of mode 3 introduces small gaps in the terrain
+  corrected output products for layover regions in the SAR image.
+  In modes 0, 2,and 3 gaps in the DEM are set to (0.0,0.0) in the
+  lookup table.</p>
+
+  <p>Notice that the geocoding lookup table calculated is based on
+  the available DEM and SAR geometry information. In particular the
+  orbit data is usually not perfectly accurate, so that we
+  recommend including a fine registration step as described in the
+  DIFF Users Guide. The geocoding lookup table is used by the
+  programs <a href="geocode.html">geocode</a> and <a href=
+  "geocode_back.html">geocode_back</a> for forward and backward
+  geocoding. The geocoding lookup table may be inverted using the
+  program <a href="geocode_back.html">geocode_back</a>.</p>
+
+  <p>The simulated SAR intensity image can be used for the fine
+  registration step. For this purpose it is first converted to SAR
+  range/Doppler coordinates (using the program <a href=
+  "geocode.html">geocode</a>). Then, in a cross-correlation
+  analysis with a real SAR image, determine the fine registration
+  offsets and use these to refine the geocoding lookup table. An
+  alternate method for converting the simulated SAR image into SAR
+  coordinates is to first invert the geocoding lookup table using
+  <a href="gc_map_inversion.html">gc_map_inversion</a> and using
+  <a href="geocode_back.html">geocode_back</a> to resample the
+  simulated image into SAR range/Doppler coordinates.</p>
+
+  <p>gc_map_grd has the same functionality as gc_map, but for SAR
+  images in ground-range / azimuth coordinates (instead of
+  slant-range / azimuth). No ISP/offset parameter file is asked for
+  on the command line.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The following DEM projections are supported:</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Projection</strong></td>
+      </tr>
+
+      <tr>
+        <td>EQA</td>
+
+        <td>Equiangular</td>
+      </tr>
+
+      <tr>
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>TM</td>
+
+        <td>Transverse Mercator (Germany, Finland, Italy, and
+        others)</td>
+      </tr>
+
+      <tr>
+        <td>OMCH</td>
+
+        <td>Oblique Mercator (Switzerland)</td>
+      </tr>
+
+      <tr>
+        <td>LCC</td>
+
+        <td>Lambert Conformal Conic (France)</td>
+      </tr>
+
+      <tr>
+        <td>PS</td>
+
+        <td>Polar Stereographic</td>
+      </tr>
+
+      <tr>
+        <td>SCH</td>
+
+        <td>Spherical geometry map projection<br>
+        (see "Zebker et. al, "Geodetically Accurate INSAR Data
+        Processor",<br>
+        <span style="font-style: italic;">Trans. Geoscience and
+        Remote Sensing,</span> pp.4309-4321, vol. 49, no. 12, Dec.,
+        2010)</td>
+      </tr>
+
+      <tr>
+        <td>PC</td>
+
+        <td>Polyconic Projection</td>
+      </tr>
+
+      <tr>
+        <td>AEAC</td>
+
+        <td>Albers Equal Area Conic</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>For the generation of Geocoded Ellipsoid Corrected (GEC)
+  products a constant height value can be specified instead of the
+  input DEM file. GEC geocoding does not require a DEM. In spite of
+  the non-existence of an input DEM and the constant height value
+  used a DEM parameter file has to be created in order to specify
+  the desired projection, ellipsoid and pixel spacing. A more
+  efficient implementation for this case is provided by the program
+  <a href="gec_map.html">gec_map</a>.</p>
+
+  <p>For Terrain Corrected Geocoding based on height information
+  given in SAR range-Doppler coordinates (typically estimated using
+  SAR interferometry) the program <a href=
+  "gc_insar.html">gc_insar</a> can be used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="gec_map.html">gec_map</a>, <a href=
+  "gec_map.html">gec_map_grd</a>, <a href=
+  "gc_insar.html">gc_insar</a>, <a href="geocode.html">geocode</a>,
+  <a href="geocode_back.html">geocode_back</a>, <a href=
+  "gc_map_fine.html">gc_map_fine</a>, <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, <a href=
+  "gc_map_inversion.html">gc_map_inversion</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 29-Aug-2011</p>
+</body>
+</html>

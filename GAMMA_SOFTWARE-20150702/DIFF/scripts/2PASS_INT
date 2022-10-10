@@ -1,0 +1,95 @@
+#! /bin/tcsh -fe
+###########################################################################
+###   2PASS_INT: script for 2-pass differential interferometry sequence ###
+###           using:                                                    ###
+###           - complex interferogram (not flattened)                   ###                                
+###           - DEM in map coordinates (to calculate topographic phase  ###                                
+###########################################################################
+### v1.0 Urs Wegmuller 97.12.11 
+### v1.1 Charles Werner 16-Jul-2007
+###
+###########################################################################
+echo " "
+echo "*** 2PASS_INT 2-pass differential interferometry v1.2 9-Apr-2015"
+echo " "
+echo "    Required data:"
+echo "       - complex interferogram (not flattened)"
+echo "       - DEM in map projection coordinates (to calculate topographic phase)"
+
+if ($#argv < 13)then
+  echo " "
+  echo "usage: 2PASS_INT <MLI_par> <OFF_PAR> <base> <DEM_par> <DEM> <lat_ovr> <lon_ovr> <DEM_seg_par> <DEM_seg> <mli> <MAP_to_RDC>"
+  echo "                 <int> <diff_int>"
+  echo "       MLI_par      (input) reference detected image (MLI) parameter file"
+  echo "       OFF_par      (input) ISP offset/interferogram parameter file, enter - if geocoding SLC or MLI data"
+  echo "       base         (input) ISP baseline file"
+  echo "       DEM_par      (input) DEM parameter file"
+  echo "       DEM          (input) DEM data file"
+  echo "       lat_ovr      latitude DEM oversampling factor"
+  echo "       lon_ovr      longitude DEM oversampling factor"
+  echo "       DEM_seg_par  DEM segment parameter file used for geocoding"
+  echo "       DEM_seg      (output) segment of DEM used for geocoding"
+  echo "                      interpolated if lat_ovr > 1  or lon_ovr > 1"
+  echo "       mli          (input) SAR intensity image (for geocoding fine registration)"
+  echo "       MAP_to_RDC   (output) refined geocoding lookup table"
+  echo "       int          (input) complex interferogram (diff + topo phase, not flattened)"
+  echo "       diff_int     (output) complex differential interferogram"
+  echo " "
+  exit
+endif
+
+set mli_par = $1
+set off = $2
+set base = $3
+set DEM_par = $4
+set DEM = $5
+set lat_ovr = $6
+set lon_ovr = $7
+set DEM_seg_par = $8
+set DEM_seg = $9
+set mli = $10
+set MAP_to_RDC = $11
+set int = $12
+set diff_int = $13
+
+set HGT_SIM = "HGT_SIM" 			# DEM transferred into SAR geometry with MAP_to_RDC
+set TOPO_UNW = "TOPO_UNW"			# Simulated unwrapped topographic phase
+set diff_par = "diff_par" 			# Create (DIFF&GEO-)DIFF&GEO parameter file
+
+###  Terrain Geocoding using DEM, including fine registration:
+if(1) then
+  echo ""
+  echo "Geocoding using DEM, including fine registration"
+  echo "GC_MAP $mli_par $off $DEM_par $DEM $lat_ovr $lon_ovr $DEM_seg_par $DEM_seg $mli $MAP_to_RDC - - - -"
+  GC_MAP $mli_par $off $DEM_par $DEM $lat_ovr $lon_ovr $DEM_seg_par $DEM_seg $mli $MAP_to_RDC - - - -
+endif
+
+###   Transformation of DEM to SAR coordinates:  $HGT_SIM:
+
+if(1) then
+  echo ""
+  set map_width = `awk '$1 == "width:" {print $2}' $8`
+  set width = `awk '$1 == "interferogram_width:" {print $2}' $2`
+  echo "map segment width: $map_width       SAR/INSAR data width: $width"
+  echo ""
+  echo "Transformation of DEM into SAR coordinates:  $HGT_SIM"
+  echo "geocode $MAP_to_RDC $DEM_gc $map_width $HGT_SIM $width 0 0 0"
+  geocode $MAP_to_RDC $DEM_gc $map_width $HGT_SIM $width 0 0 0
+endif
+
+### Simulation of unwrapped topographic phase:  $TOPO_UNW:
+
+if(1) then
+  echo ""
+  echo "Simulation of unwrapped topographic phase:  $TOPO_UNW"
+  echo "phase_sim $mli_par $off $base $HGT_SIM $TOPO_UNW 0 0"
+  phase_sim $mli_par $off $base $HGT_SIM $TOPO_UNW 0 0
+endif
+
+###  Subtract unwrapped simulated phase from complex interferogram (not flattened)
+if(1) then
+  echo ""
+  echo "subtract unwrapped simulated phase from complex interferogram (not flattened)"
+  echo "sub_phase $int $TOPO_UNW $diff_par $diff_int 1"
+  sub_phase $int $TOPO_UNW $diff_par $diff_int 1
+endif

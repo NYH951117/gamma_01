@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: SLC_copy</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>MLI_copy</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/MLI_copy.c"><i>MLI_copy.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  MLI_copy - Copy user defined image segment from input MLI image
+  to output MLI (float).<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>MLI_copy &lt;MLI_in&gt; &lt;MLI_in_par&gt;
+  &lt;MLI_out&gt; &lt;MLI_out_par&gt; [roff] [nr] [loff]
+  [nl]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI_in&gt;</td>
+
+        <td>(input) multi-look intensity image (float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_in_par&gt;</td>
+
+        <td>(input) ISP image parameter file for input MLI<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_out&gt;</td>
+
+        <td>(output) selected MLI section (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_out_par&gt;</td>
+
+        <td>(output) ISP image parameter file for output MLI</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>&nbsp;offset to starting range sample (enter - for
+        default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range samples (enter - for default: to end of
+        line</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>&nbsp;offset to starting line (enter - for default:
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines to copy (enter - for default: to end of
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  To extract 1000 lines of 1024 range pixels skipping 216 range
+  samples and 311 lines:</p>
+
+  <p><samp>MLI_copy 1352.mli 1352.mli.par 1352s.mli 1352s.mli.par
+  216 1024 311 1000</samp><br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>MLI_copy</em> extracts the user defined section from the
+  input multi-look intensity (MLI) image&nbsp; and writes it out as
+  a new MLI file.<br></p>
+
+  <p>Data processed are in float format (4 bytes/sample). A new ISP
+  image parameter file is created for the MLI to describe the
+  geometry of the output image file. Starting, center, and ending
+  times, and the near, center and far slant ranges are calculated
+  for the selected SLC segment. The Doppler polynomial is also
+  adjusted for th relative image offsets.The output SLC together
+  with its parameter file contains the full information needed for
+  further processing including&nbsp; geocoding.<br></p>
+
+  <p>For the first range pixel and first azimuth line of the input
+  MLI to coincide with the output image select <samp>roff=0</samp>
+  and <samp>loff=0</samp>, respectively,.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  The selected image section may extend outside of the range of
+  valid data of the input SLC. The NULL value assigned to these
+  values is 0.0.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a>, DISP program copy.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Mar-2006.</p>
+</body>
+</html>

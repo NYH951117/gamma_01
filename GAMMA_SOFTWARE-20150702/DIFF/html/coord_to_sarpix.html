@@ -1,0 +1,249 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw020924 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: coord_to_sarpix</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>coord_to_sarpix</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/coord_to_sarpix.c">coord_to_sarpix.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  coord_to_sarpix - Calculate SAR pixel coordinates (iazpix,jrpix)
+  of geographic coordinate.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>coord_to_sarpix &lt;SLC_par&gt; &lt;interf_par&gt;
+  &lt;DEM_par&gt; &lt;north/lat&gt; &lt;east/lon&gt; &lt;hgt&gt;
+  [DIFF_par]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ISP SLC/MLI parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file, enter
+        - for SLC or MLI data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM parameter file, enter - for WGS84
+        lat/lon</td>
+      </tr>
+
+      <tr>
+        <td>&lt;north/lat&gt;</td>
+
+        <td>northing (m) or latitude (deg.)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;east/lon&gt;</td>
+
+        <td>easting (m)&nbsp; or longitude in (deg.)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;hgt&gt;</td>
+
+        <td>(input) reference height (m) in map datum</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[DIFF_par]<br></td>
+
+        <td style="vertical-align: top;">[input] DIFF/GEO parameter
+        file containing refinement polynomial coefficients<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <samp>coord_to_sarpix 19990915.slc.par -
+  utm.dem_par 6245990 160350 600.0</samp><br></p>
+
+  <p>Calculates the corresponding SAR MLI image pixel number and
+  writes it to standard output (azimuth/row, slant range/col).<br>
+  The dimensions and resolution of the image in SAR range-doppler
+  coordiantes (RDC) are obtained from the<br>
+  ISP image parameter file (SLC_par).</p>
+
+  <p><samp>coord_to_sarpix 19990915.slc.par - utm.dem_par 6245990
+  160350 600.0 19990915.diff_par<br></samp></p>
+
+  <p>Calculates the corresponding SAR MLI image pixel number and
+  writes it to standard output (azimuth/row, slant range/col).<br>
+  The dimensions and resolution of the image in SAR range-doppler
+  coordiantes (RDC) are obtained from the ISP image parameter
+  file.&nbsp; The DIFF_par contains offset polynomials derived
+  during geocoding of the image. These offset polynomials are used
+  to adjust the SLC pixel coordinates for errors in the state
+  vectors and azimuth timing.<br></p>
+
+  <p><samp>coord_to_sarpix 19990915 .slc.par - - 17. -114.
+  600.0</samp><br></p>
+
+  <p>Calculates the corresponding SAR image pixel number and writes
+  it to standard output (azimuth/row, slant range/col). The input
+  coordinates are geographic coordinates lat/long in
+  WGS84.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+  </p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">coord_to_sarpix</span>
+  calculates for an indicated map coordinate the corresponding
+  slant range and azimuth pixel numbers in the SAR range-Doppler
+  geometry defined by the indicated parameter file.&nbsp; If the
+  DEM parameter file is entered, then the point coordinates in map
+  coordinates are in the projection defined in the DEM parameter
+  file. If no DEM parameter file is specified, the command line
+  input coordinates are assumed to be latitude and longitude in
+  decimal degrees with a WGS84 reference ellipsoid,</p>
+
+  <p>The SAR image geometry is defined by the ISP image parameter
+  file. If an additional ISP OFF_par is specified, then the
+  image&nbsp; parameters will be taken from the OFF_par. In the
+  current use of the Gamma software, interferograms and MLI image
+  products typically cover the<br>
+  same areas as specified in the SLC/MLI par file and the OFF_par
+  can be ommitted.<br></p>
+
+  <p>Pixel numbers outside the SAR image or interferogram are
+  valid, including negative pixel numbers. These indicate that the
+  point specified in map coordinates lies outside the given SAR
+  image.<br></p>
+
+  <p>If the DIFF_par is provided on the command line, the geocoding
+  offset polynomials that are contained in the parameter file&nbsp;
+  after scene geocoding can be used to remove residual errors in
+  the pixel coordinates due to state vector and timing
+  errors.<br></p>
+
+  <p>The supported&nbsp; DEM projections are :</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>EQA</td>
+
+        <td>Equiangular geographical coordinates (degrees
+        lat/lon)</td>
+      </tr>
+
+      <tr>
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator Projection</td>
+      </tr>
+
+      <tr>
+        <td>TM</td>
+
+        <td>Transverse Mercator Projection</td>
+      </tr>
+
+      <tr>
+        <td>OM</td>
+
+        <td>Oblique Mercator</td>
+      </tr>
+
+      <tr>
+        <td>OMCH</td>
+
+        <td>Oblique Mercator (Switzerland)</td>
+      </tr>
+
+      <tr>
+        <td>HOM</td>
+
+        <td>Hotine Oblique Mercator</td>
+      </tr>
+
+      <tr>
+        <td>LCC</td>
+
+        <td>Lambert Conformal Conic (France)</td>
+      </tr>
+
+      <tr>
+        <td>LCC2</td>
+
+        <td>Lambert Conformal Conic Projection of Belgium,
+        Madagascar</td>
+      </tr>
+
+      <tr>
+        <td>PS</td>
+
+        <td>Polar Stereographic Projection</td>
+      </tr>
+
+      <tr>
+        <td>SCH</td>
+
+        <td>SAR Coordinates used at JPL</td>
+      </tr>
+
+      <tr>
+        <td>PC</td>
+
+        <td>Polyconic Projection</td>
+      </tr>
+
+      <tr>
+        <td>AEAC</td>
+
+        <td>Albers Equal Area Conic</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>A new DEM/map geometry can be defined using the program
+  <a href="create_dem_par.html">create_dem_par</a>.</p>
+
+  <p>The transformation of coordinates between different map
+  projections is supported by the program <a href=
+  "coord_trans.html">coord_trans</a>.</p>
+
+  <p>The inverse transformation (SAR image pixel number to map
+  coordinate) is supported by the program <a href=
+  "sarpix_coord.html">sarpix_coord</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="coord_trans.html">coord_trans</a>, <a href=
+  "sarpix_coord.html">sarpix_coord</a>, <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "datums.h.html">datums.h</a>, <a href=
+  "ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16--Sep-2010.
+</body>
+</html>

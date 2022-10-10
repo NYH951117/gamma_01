@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pt_density_reduction</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>pt_density_reduction</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pt_density_reduction.c">pt_density_reduction.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  pt_density_reduction - point density reduction to approx. target
+  point density</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>pt_density_reduction &lt;plist&gt; &lt;pmask&gt;
+  &lt;SLC_par&gt; &lt;pdata_in&gt; &lt;r_max&gt; &lt;pmask_out&gt;
+  [tg_pt_dens] [rank_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack of quality values (type:
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_max&gt;</td>
+
+        <td>maximum radius (range samples, default: 64 )</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask_out&gt;</td>
+
+        <td>record number in pdata_in and pdata_out to process
+        (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>[tg_pt_dens]</td>
+
+        <td>target point density (number of points, default:
+        100)</td>
+      </tr>
+
+      <tr>
+        <td>[rank_flag]</td>
+
+        <td>flag defining the ranking order of input data for point
+        reduction (0: decreasing (e.g. coherence), default=1:
+        increasing (e.g. psigma))</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>pt_density_reduction testsite.plist testsite.pmask
+  08256.rslc.par psigma1 25 testsite.pmask_out 100 1</samp></p>
+
+  <p>Determines a point mask such that the point density (= number
+  of points in the indicated search radius, in the example 25 slant
+  range pixels) is reduced to values approximately up to the
+  indicated target point density (tg_pt_dens, 100 points in the
+  example). The decision whether a valid input point (defined by
+  the point list testsite.plist and the point mask testsite.pmask)
+  is masked out is based on the target point density and the point
+  quality value provided (psigma1). The quality value is used to
+  preferably mask points of low quality.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code pt_density_reduction.c in ./IPTA/src, executable
+  version pt_density_reduction in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  pt_density_reduction supports the reduction of the point target
+  density using a quality measure such as the phase standard
+  deviation psigma of the IPTA regression residuals (low psigma
+  value = high quality) or the coherence (high value = high
+  quality).<br>
+  If a particular region of interest contains both built-up as well
+  as rural or vegetated area the point density distribution is very
+  likely to be spatially uneven: much more interferometric point
+  targets are found in the built-up area and along man-made
+  features.<br>
+  Thus, the user might want to reduce the point density in such a
+  way that for areas with high point densities only the best points
+  are kept while the number of points for areas with point
+  densities that are lower than the target point density is kept.
+  Such an approach can be used to achieve a more optimal point
+  density distribution and to reduce the size of point lists
+  without much loss of information.<br>
+  <br>
+  Together with the input point list an input point mask can be
+  indicated to consider or ignore specific points. "-" can be
+  indicated instead of a pmask file to consider all points of the
+  list.<br>
+  <br>
+  The SLC parameter file associated with the point list coordinate
+  geometry is required to calculate ground distances between pairs
+  of points. Such distances are calculated using the ground range
+  sampling (calculated from slant range sampling and incidence
+  angle) and the azimuth spacing. The maximum search area radius is
+  indicated in SLC range samples. Only valid points, i.e. points
+  with a non-zero value in the mask are considered. For points with
+  a zero in the mask the output is set to the NULL value.<br>
+  The program writes the search area size to the standard
+  output.<br>
+  <br>
+  A single-record point data stack (data type: float) is required
+  as the quality measure based upon which the point density
+  reduction is performed.<br>
+  <br>
+  The target point density (default: 100 points) indicates the
+  approximate max. point density that will be reached after point
+  density reduction. To get an idea on the point densities present
+  in the scene with a given search radius the program <a href=
+  "pt_density.html">pt_density</a> can be used.<br>
+  <br>
+  The rank flag defines the quality measure based ranking order (0:
+  high value = high quality, default=1: low value = high quality).
+  The correct rank flag for the phase standard deviation is 1.<br>
+  <br>
+  The result of pt_density_reduction is an output mask indicating
+  the reduced list of points.<br>
+  The number of valid points after point density reduction is
+  written to the standard output.<br>
+  To actually reduce the size of a point list file to a reduced
+  size can be done using the program <a href=
+  "cat_pt.html">cat_pt</a>.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  pt_density_reduction can be used iteratively. A possible apporach
+  is to first reduce the point density using a small search window.
+  In a further step the output pmask of the previous step is used
+  as input pmask and the size of the search window is increased.
+  This permits avoiding too high point densities at different
+  spatial scales./p&gt;</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="pt_density.html">pt_density.c</a>, <a href=
+  "cat_pt.html">cat_pt</a>, <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 29-Mar-2011.</p>
+</body>
+</html>

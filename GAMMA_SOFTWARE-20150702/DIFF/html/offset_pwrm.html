@@ -1,0 +1,238 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta name="generator" content="&lt;title">
+
+  <title></title>
+</head>
+
+<body>
+  DIFF Reference Manual: offset_pwrm
+
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_pwrm</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/offset_pwrm.c">offset_pwrm.c</a></i></p>
+
+  <p><strong>NAME</strong><br></p>
+
+  <p><em>offset_pwrm</em> estimate the range and azimuth
+  registration offset fields using cross correlation optimization
+  of the real valued data.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_pwrm &lt;PWR-1&gt; &lt;PWR-2&gt; &lt;DIFF_par&gt;
+  &lt;offs&gt; &lt;snr&gt; [rwin] [azwin] [offsets] [n_ovr] [nr]
+  [naz] [thres] [pflag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;PWR-1&gt;</td>
+
+        <td>(input) real valued intensity image 1 (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PWR-2&gt;</td>
+
+        <td>(input) real valued intensity image 2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>DIFF/GEO parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;offs&gt;</td>
+
+        <td>(output) offset estimates (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;snr&gt;</td>
+
+        <td>(output) offset estimation SNR (float)</td>
+      </tr>
+
+      <tr>
+        <td>[rwin]</td>
+
+        <td>search window size (range pixels, enter - for default
+        from DIFF_par)</td>
+      </tr>
+
+      <tr>
+        <td>[azwin]</td>
+
+        <td>search window size (azimuth pixels, enter - for default
+        from DIFF_par)</td>
+      </tr>
+
+      <tr>
+        <td>[offsets]</td>
+
+        <td>(output) range and azimuth offsets and SNR in text
+        format, enter - for no output</td>
+      </tr>
+
+      <tr>
+        <td>n_ovr]</td>
+
+        <td>image oversampling factor (integer 2**N (1,2,4) default
+        = 2)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of offset estimates in range direction (enter -
+        for default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[naz]</td>
+
+        <td>number of offset estimates in azimuth direction (enter
+        - for default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>offset estimation quality threshold (enter - for
+        default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[pflag]</td>
+
+        <td>&nbsp;print flag (0:print offset summary&nbsp;&nbsp;
+        1:print all offset data (default))</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_pwrm 8560_8059.pwr1 8560_9562.pwr1 i1_i2.diff_par
+  i1_i2.offs i1_i2.snr 64 128 i1_i2.offsets 1 24 24 7.0</samp><br>
+  Determines registration offset field of (multilook) SAR intensity
+  images 8560_8059.pwr1 and 8560_9562.pwr1.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code offset_pwrm.c in ./src. For compilation adjust and
+  use Makefile: Executable version offset_pwrm in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP and DIFF type definition files <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <em>offset_pwrm</em> estimates the range and azimuth registration
+  offset fields using cross correlation optimization of the input
+  intensity images. This cross correlation optimization algorithm
+  rapidly generates the offset fields by correlating image chips.
+  The image chips are nominally square and have sizes in the range
+  of 16 to 512, depending on resolution and degree of correlation
+  between the images. If the FFTW package is not being used, then
+  the chip size must be a power of 2. The coordinates of the image
+  section selected to be processed are relative to PWR-1.</p>
+
+  <p>The number of image chips used in range and azimuth, the range
+  and azimuth sizes of the image chips used in the search, and the
+  signal to noise (SNR) threshold to accept an estimate may be
+  entered on the command line. Default values are taken from the
+  DIFF/GEO offset parameter file. Recommended values are suggested
+  as default values in the programs <a href=
+  "create_diff_par.html">create_diff_par</a>. For the SNR
+  threshold, values of 6.5 and larger are recommended.</p>
+
+  <p>The range and azimuth offset estimates are written to a binary
+  data file (fcomplex format) with the offsets coded as pairs of
+  floating point numbers (range offset, azimuth offset). A
+  disadvantage of this algorithm is that some estimates can be very
+  far off and still show high SNR, especially in urban regions. In
+  other words the SNR values used as quality measure for the
+  reliability of each individual estimate are not always reliable
+  itself. Usually, such blunders can be effectively removed later
+  on based on its high deviation from the global fit (a feature
+  supported by the <em>offset_fitm</em> program which is used to
+  calculate the registration offset polynomial based on the offset
+  and SNR estimates.</p>
+
+  <p>For most cases a SNR threshold of 7.0 for the acceptance of an
+  offset leads to good results. In cases of low correlation the
+  selection of a larger estimation window may be the better choice
+  than the reduction of the threshold</p>
+
+  <p>Oversampling of the correlation function (parameter n_ovr) is
+  supported and is nominally 2.&nbsp; The location of the
+  correlation maximum is estimated using a two-dimensional
+  quadratic least squares fit.</p>
+
+  <p><b>OPTIONS</b><br>
+  The offset estimation programs use already existing range and
+  azimuth offset polynomials found in the DIFF/GEO parameter file
+  to improve its initial registration offset guess. An iterative
+  use of this feature permits accurate estimation of the offset
+  polynomials for scenes with large offsets and low correlation. An
+  initial estimate of the offset polynomials is determined using a
+  large search window size. With these quite accurate registration
+  polynomials <a href="offset_pwrm.html">offset_pwrm</a>, or
+  <a href="offset_pwr_trackingm.html">offset_pwr_trackingm</a> can
+  then be run efficiently on many locations throughout the image,
+  using small search windows.</p>
+
+  <p>In order to remove residual errors in a geocoding lookup table
+  using actual data requires comparison with a simulated SAR
+  intensity image derived from the DEM. This simulated image is
+  created using a two step process. First a lookup table is
+  calculated containing the range/Doppler coordinates for every
+  point in a DEM covering the region as well as a simulated SAR
+  image in DEM coordinates with program <a href=
+  "gc_map.html">gc_map</a>. This simulated SAR image is resampled
+  into SAR range/Doppler coordinates is the program <a href=
+  "geocode.html">geocode</a>. The offsets between the simulated and
+  actual images are estimated using the programs <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, and <a href=
+  "offset_fitm.html">offset_fitm</a>. The geocoding lookup table is
+  than shifted using the offset information using program <a href=
+  "gc_map_fine.html">gc_map_fine</a>. Finally the DEM can be
+  resampled precisely into the SAR range/Doppler coordinates using
+  <a href="geocode.html">geocode</a> and the refined lookup table
+  from <a href="gc_map_fine.html">gc_map_fine</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="create_diff_par.html">create_diff_par</a>, <a href=
+  "init_offsetm.html">init_offsetm</a>, <a href=
+  "offset_pwrm.html">offset_pwrm</a>, and <a href=
+  "offset_fitm.html">offset_fitm</a>, <a href=
+  "gc_map_fine.html">gc_map_fine</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 11-Feb-2005.
+</body>
+</html>

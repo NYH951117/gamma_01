@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: base_est_fft</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>base_est_fft</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/base_est_fft.c"><i>base_est_fft.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  base_est_fft - estimates perpendicular component of the
+  interferometric baseline from the interferogram</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_est_fft &lt;interf&gt; &lt;SLC_par&gt;
+  &lt;OFF_par&gt; &lt;baseline&gt; &lt;nazfft&gt; &lt;r_samp&gt;
+  &lt;az_line&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;interf&gt;</td>
+
+      <td>multi-look interferogram with range phase</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>SLC Parameter File (of reference pass)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par&gt;</td>
+
+      <td>ISP Processing/Offset Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;baseline&gt;</td>
+
+      <td>baseline parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;nazfft&gt;</td>
+
+      <td>size of azimuth FFT (# lines read from file)
+      (default=512)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;r_samp&gt;</td>
+
+      <td>range pixel offset to center of the FFT window
+      (default=center)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;az_line&gt;</td>
+
+      <td>line offset from start of the interf. for the FFT window
+      (default=center)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_est_fft 1352_1610.int 1352.par 1352_1610.off
+  1352_1610.base 2048</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_est_fft reads a section of a complex interferogram, and then
+  calculates the two-dimensional FFT to determine the local fringe
+  rate. The fringe rate in range and azimuth is used to to estimate
+  the perpendicular component of the baseline as a function of
+  azimuth position in the interferogram.</p>
+
+  <p>The baseline parameter file will be used for the removal of
+  the average phase trend of the interferogram and for the
+  computation of height and slope.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Instead of estimating the baseline from the fringe rate it can be
+  calculated from existing orbit state vectors using <a href=
+  "base_orbit.html">base_orbit</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_orbit.html">base_orbit</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> <a href="gamma.html">Gamma
+  Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

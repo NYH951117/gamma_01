@@ -1,0 +1,453 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: radcal_SLC and radcal_MLI</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>radcal_SLC and radcal_MLI</h2>
+
+  <p><i>ANSI-C programs:</i> <a href=
+  "../src/radcal_SLC.c"><i>radcal_SLC.c</i></a>, <a href=
+  "../src/radcal_MLI.c"><em>radcal_MLI.c</em></a></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">radcal_SLC</span> - Radiometric
+  calibration of single-look complex (SLC) images<br>
+  <span style="font-style: italic;">radcal_MLI</span> - Radiometric
+  calibration of multi-look intensity (MLI) images</p>
+
+  <p>These programs support the radiometric calibration of
+  single-look complex (SLC) and multi-look intensity (MLI) images.
+  The supported radiometric calibration steps include:<br>
+  - range spreading loss correction<br>
+  - antenna gain correction<br>
+  - normalization reference area correction<br>
+  - correction for calibration constant<br>
+  In addition the output can be scaled with an additional scaling
+  factor, as required, for example, for output in short integer
+  format.</p>
+
+  <p>Not supported radiometric calibration steps include:<br>
+  - correction for analog digital converter (ADC) saturation</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>radcal_SLC &lt;SLC&gt; &lt;SLC_par&gt; &lt;CSLC&gt;
+  &lt;CSLC_par&gt; [fcase] [antenna] [rloss_flag] [ant_flag]
+  [refarea_flag] [sc_dB] [K_dB] [pix_area]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input) SLC (fcomplex or scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of input SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CSLC&gt;</td>
+
+        <td>(output) radiometrically calibrated SLC (fcomplex or
+        scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CSLC_par&gt;</td>
+
+        <td>(output) SLC parameter file of output calibrated
+        SLC</td>
+      </tr>
+
+      <tr>
+        <td>[fcase]</td>
+
+        <td>format case (default = 1)<br>
+        1: fcomplex --&gt; fcomplex (pairs of float)<br>
+        2: fcomplex --&gt; scomplex (pairs of short integer)<br>
+        3: scomplex --&gt; fcomplex<br>
+        4: scomplex --&gt; scomplex</td>
+      </tr>
+
+      <tr>
+        <td>[antenna]</td>
+
+        <td>1-way antenna gain pattern file or - (if not
+        provided)</td>
+      </tr>
+
+      <tr>
+        <td>[rloss_flag]</td>
+
+        <td>range spreading loss correction (default=0: no
+        correction, 1: r^3 correction, -1: undo r^3 correction, 2:
+        r^4 correction, -2: undo r^4 correction)<br>
+        (r^3 correction is used except for ASAR APS mode data where
+        r^4 correction is used)</td>
+      </tr>
+
+      <tr>
+        <td>[ant_flag]</td>
+
+        <td>antenna pattern flag correction (default=0: no
+        correction, 1: correction, -1: undo correction)</td>
+      </tr>
+
+      <tr>
+        <td>[refarea_flag]</td>
+
+        <td>normalization reference area correction (default=0: no
+        correction, 1: correction to sigma0, 2: correction to
+        gamma0, -1: undo 1, -2: undo 2)</td>
+      </tr>
+
+      <tr>
+        <td>[sc_dB]</td>
+
+        <td>scale factor in dB (default=0.0, ESA published ERS1
+        K_dB update=-0.39, recommended for the upscaling scomplex
+        output format: 60.0 dB)</td>
+      </tr>
+
+      <tr>
+        <td>[K_dB]</td>
+
+        <td>Calibration factor in dB (default: -(value from
+        SLC_PAR) )<br></td>
+      </tr>
+
+      <tr>
+        <td>[pix_area]</td>
+
+        <td>ellipsoid-based ground range sigma/gamma nought pixel
+        reference area<br>
+        depending on refarea_flag. (1 or -1: sigma nought ref.
+        area, 2 or -2: gamma nought ref. area; float
+        format)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>and</p>
+
+  <p><code><b>radcal_MLI &lt;MLI&gt; &lt;MLI_PAR&gt;
+  &lt;OFF_PAR&gt; &lt;CMLI&gt; [antenna] [rloss_flag] [ant_flag]
+  [refarea_flag] [sc_dB] [K_dB] [pix_area]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;MLI&gt;</td>
+
+        <td>(input) MLI (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_PAR&gt;</td>
+
+        <td>(input) SLC parameter file of input MLI image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_PAR&gt;</td>
+
+        <td>(input) ISP offset/interferogram processing parameter
+        file<br>
+        (or - for image in SLC/MLI geometry)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CMLI&gt;</td>
+
+        <td>(output) radiometrically calibrated output MLI (float
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>[antenna]</td>
+
+        <td>1-way antenna gain pattern file or - (if not
+        provided)</td>
+      </tr>
+
+      <tr>
+        <td>[rloss_flag]</td>
+
+        <td>range spreading loss correction (default=0: no
+        correction, 1: r^3 correction, -1: undo r^3 correction, 2:
+        r^4 correction, -2: undo r^4 correction)<br>
+        (r^3 correction is used except for ASAR APS mode data where
+        r^4 correction is used)</td>
+      </tr>
+
+      <tr>
+        <td>[ant_flag]</td>
+
+        <td>antenna pattern flag correction (default=0: no
+        correction, 1: correction, -1: undo correction)</td>
+      </tr>
+
+      <tr>
+        <td>[refarea_flag]</td>
+
+        <td>normalization reference area correction (default=0: no
+        correction, 1: correction to sigma0, 2: correction to
+        gamma0, -1: undo 1, -2: undo 2)</td>
+      </tr>
+
+      <tr>
+        <td>[sc_dB]</td>
+
+        <td>scale factor in dB (default=0.0, ESA published ERS1
+        K_dB update=-0.39, recommended for the upscaling scomplex
+        output format: 60.0 dB)</td>
+      </tr>
+
+      <tr>
+        <td>[K_dB]</td>
+
+        <td>Calibration factor in dB (default: -(value from
+        SLC_PAR) )<br></td>
+      </tr>
+
+      <tr>
+        <td>[pix_area]</td>
+
+        <td>ellipsoid-based ground range sigma/gamma nought pixel
+        reference area<br>
+        depending on refarea_flag. (1 or -1: sigma nought ref.
+        area, 2 or -2: gamma nought ref. area; float
+        format)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><samp>radcal_SLC 1352.slc_esa 1352.slc_esa.par 1352.cslc_esa
+  1352.cslc_esa.par 4 ERS1_antenna.gain 1 1 1 59.61</samp></p>
+
+  <p>Calibrates the input SLC (provided by an official ESA
+  Processing and Archiving Facility (PAF) in scomplex format, i.e.
+  pairs of short integer) for the range spreading loss, the antenna
+  diagram, the normalization reference area correction, the
+  calibration constant (provided by the PAF and found in the
+  SLC_PAR), the update of the calibration constant (-0.39 dB), and
+  an additional scaling factor or +60.0 dB to scale the values into
+  an appropriate value range to be stored again in scomplex format.
+  The output format is scomplex. SQR(re) + SQR(im) corresponds to
+  1.e06 times the backscattering coefficient sigma0.</p>
+
+  <p><samp>radcal_SLC 1352.slc_esa 1352.slc_esa.par 1352.cslc_esa
+  1352.cslc_esa.par 3 ERS1_antenna.gain 1 1 2 -0.39</samp></p>
+
+  <p>Calibrates the input SLC (provided by an official ESA
+  Processing and Archiving Facility (PAF) in scomplex format, i.e.
+  pairs of short integer) for the range spreading loss, the antenna
+  diagram, the normalization reference area correction, the
+  calibration constant (provided by the PAF and found in the
+  SLC_PAR), and the update of the calibration constant (-0.39 dB).
+  The output format is fcomplex. SQR(re)+SQR(im) corresponds to the
+  backscattering coefficient gamma0 (defined as
+  sigma0/cos(incidence angle).</p>
+
+  <p><samp>radcal_MLI 1352.mli 1352.mli.par - 1352.cmli - 0 0 1
+  -0.39 -48.13</samp></p>
+
+  <p>Calibrates the input MLI (generated by multi-looking of an ESA
+  PAF provided SLC using the program multi_look) for the
+  normalization reference area correction, the calibration constant
+  -48.13 dB, and the update of the calibration constant (-0.39 dB).
+  The output mli values correspond to the backscattering
+  coefficient sigma0.</p>
+
+  <p><samp>radcal_MLI 1352_2435.pwr1 1352.slc.par 1352_2435.off
+  1352_2435.pwr1.tmp - 0 0 -1 0.0</samp></p>
+
+  <p>followed by</p>
+
+  <p><samp>radcal_MLI 1352_2435.pwr1.tmp 1352.slc.par 1352_2435.off
+  1352_2435.pwr1.gamma0 - 0 0 2 0.0</samp></p>
+
+  <p>Transforms 1352_2435.pwr1 from sigma0 backscattering
+  coefficients to gamma0 values.</p>
+
+  <p><samp>radcal_MLI 1352_2435.pwr1.tmp 1352.slc.par 1352_2435.off
+  1352_2435.pwr1.gamma0 - 0 0 2 0.0 - pix_area</samp></p>
+
+  <p>in addition, writes the ellipsoid-based gamma nought
+  normalization area (since refarea_flag = 2) to the output file
+  pix_area.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">radcal_SLC</span> performs
+  radiometric corrections for SAR data including the following
+  terms:</p>
+
+  <p>- range spreading loss correction<br>
+  - antenna gain correction<br>
+  - normalization reference area correction<br>
+  - correction for calibration constant</p>
+
+  <p>according to&nbsp; to the calibration procedure described in
+  the document: "ERS-1 SAR Calibration", H. Laur, ESA-ESRIN, 17.
+  October 1992, and "ERS-1 SAR Radiometric Calibration", H. Laur,
+  P. Meadows, J.I. Sanchez, and E. Dwyer, CEOS SAR Calibration
+  Workshop, ESA WPP-48.&nbsp; This approach can be applied to other
+  SAR sensors.&nbsp; Different sensors produce products that have
+  already corrected for this factors. Ideally, all&nbsp; the
+  spatially varying corrections have already been performed on the
+  delivered image products and only a constant scale factor is
+  required to scale the data to obtain relative radar
+  cross-section.&nbsp;&nbsp; Early systems such ERS-1, ERS-2, and
+  JERS-1 required spatially dependent corrections such as for the
+  elevation antenna pattern while current systems usually do not
+  since the correction has already been performed by the SAR
+  processor.</p>
+
+  <p>In order to provide flexibility scomplex (short complex) and
+  fcomplex (float complex) formats are supported for the input and
+  output SLC. When selecting scomplex as output format it has to be
+  taken into account that the output values have to be in the range
+  of the short integer values. With the expected SAR backscatter
+  levels of -10 dB we recommend to scale the calibrated intensities
+  with a factor of 1'000'000 (+60dB). This scales the real and
+  imaginary parts with a factor 1'000 (30dB). With this scaling a
+  backscattering value of -10 dB transfers to real and imaginary
+  parts of the order of 316. To achieve maximum accuracy it is
+  recommended to use fcomplex format for the calibrated SLC data
+  (especially for calibration experiments with strong point
+  targets). In general processing data with the Gamma software is
+  best done using float complex format for complex data to avoid
+  radiometric and phase errors.</p>
+
+  <p>The absolute calibration constant is stored in the SLC
+  parameter file and is expressed in dB.&nbsp; For example the
+  calibration constants for ERS-1 and ERS-2 are -48.52 dB and
+  -50.09 dB respectively. The calibration scale factor can also be
+  used for the scaling required for output SLC in scomplex
+  format.&nbsp; The scaling factors are for the backscattering
+  intensity are&nbsp; proportional to the square of the real and
+  imaginary parts of the SLC.</p>
+
+  <p>If the radar data have not been corrected for the antenna
+  elevation pattern, the programs can perform this correction. The
+  antenna file (text format) contains relative gain values as a
+  function of elevation&nbsp; angle relative to boresight.&nbsp;
+  There are two columns in the file, where the first column is the
+  angle relative to the antenna boresight in degrees, and the
+  second column has values of the relative power gain as a decimal
+  number. Note that the gain is not in decibels (dB).&nbsp; The
+  gain&nbsp; used to radiometrically correct the data for each look
+  angle is linearly interpolated from the the input antenna gain
+  table. It is recommended that the spacing of the sample values of
+  the antenna pattern should be spaced at most 1/50 the antenna
+  beam width. In the case of ERS-1, with a 5 degree elevation
+  beamwidth degrees the spacing is 0.1 degrees.<br>
+  <br>
+  Here is a section of the table from ERS-1 radar for the range
+  -1.0 to 1.0 degrees:.<br>
+  <br>
+  -1.000&nbsp;&nbsp; 1.00612<br>
+  -0.900&nbsp;&nbsp; 1.00520<br>
+  -0.800&nbsp;&nbsp; 1.00404<br>
+  -0.700&nbsp;&nbsp; 1.00265<br>
+  -0.600&nbsp;&nbsp; 1.00127<br>
+  -0.500&nbsp;&nbsp; 1.00011<br>
+  -0.400&nbsp;&nbsp; 0.99896<br>
+  -0.300&nbsp;&nbsp; 0.99850<br>
+  -0.200&nbsp;&nbsp; 0.99850<br>
+  -0.100&nbsp;&nbsp; 0.99896<br>
+  &nbsp;0.000&nbsp;&nbsp; 1.00000<br>
+  &nbsp;0.100&nbsp;&nbsp; 1.00173<br>
+  &nbsp;0.200&nbsp;&nbsp; 1.00381<br>
+  &nbsp;0.300&nbsp;&nbsp; 1.00647<br>
+  &nbsp;0.400&nbsp;&nbsp; 1.00937<br>
+  &nbsp;0.500&nbsp;&nbsp; 1.01239<br>
+  &nbsp;0.600&nbsp;&nbsp; 1.01543<br>
+  &nbsp;0.700&nbsp;&nbsp; 1.01918<br>
+  &nbsp;0.800&nbsp;&nbsp; 1.02294<br>
+  &nbsp;0.900&nbsp;&nbsp; 1.02695<br>
+  &nbsp;1.000&nbsp;&nbsp; 1.03086</p>
+
+  <p>As output normalization type either sigma0 or gamma0 can be
+  selected. For sigma0 the pixel reference area used in the
+  normalization corresponds to the product of the azimuth pixel
+  spacing and the projection of the slant range pixel spacing to a
+  local horizontal surface (taking into account the selected
+  reference ellipsoid). gamma0 is defined as sigma0/cos(inc_ang)
+  with inc_ang the incidence angle defined as the angle between the
+  look vector and the normal to the local reference ellipsoid. One
+  reason for selecting gamma0 values instead of sigma0 values is
+  the slightly reduced incidence angle, and therefore slant range,
+  dependence. For a perfect Lambert scatterer the backscattering
+  coefficient gamma0 is constant. Notice that SLC images processed
+  with the GAMMA Modular SAR Processor (MSP) are already
+  radiometrically calibrated. The image geometry is either
+  specified with the ISP SLC/MLI parameter file and the ISP/offset
+  parameter file (as it is the case for interferometric products)
+  or by the ISP SLC/MLI parameter file only for MLI files generated
+  by the program <a href="multi_look.html">multi_look</a>. In the
+  later case - is indicated instead of a valid ISP/offset parameter
+  file name.</p>
+
+  <p>For ENVISAT ASAR data a similar procedure as for ERS is used.
+  Main differences are that for APS mode (alternative polarization)
+  the r^4 range spreading loss correction has to be used instead of
+  the r^3 correction which is used for ERS and all other ASAR
+  modes. For ASAR the reference incidence angle is 90.0 degrees for
+  all modes. The calibration constant has changed throughout the
+  ENVISAT mission. The value for the image to be processed is
+  stored in the ISP parameter file under calibration_gain. This
+  value is automatically read in or can be specified on the command
+  line.</p>
+
+  <p>By specifying the last optional parameter, pix_area, the
+  ellipsoid-based ground-range sigma/gamma nought pixel
+  normalization area is written to disk in float format. The choice
+  between sigma nought or gamma nought normalization area is made
+  according to the user-defined <span style=
+  "font-style: italic;">refarea_flag</span> (1 or -1: sigma nought
+  ref. area, 2 or -2: gamma nought ref. area). The resulting pixel
+  normalization area can be used in combination with terrain-based
+  normalization areas obtained from the program <a href=
+  "../../DIFF/html/pixel_area.html">pixel_area</a> for an optimized
+  calibration of SAR data.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Setting the option flags to negative values allows to
+  specifically undo calibration corrections. This may be used, for
+  example, to convert <span style=
+  "font-style: italic;">sigma0</span> values to <span style=
+  "font-style: italic;">gamma0</span> values, by first undoing the
+  normalization reference area correction and then applying the
+  alternate normalization reference area correction.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "../../DIFF/html/pixel_area.html">pixel_area</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 3-Nov-2014.</p>
+</body>
+</html>

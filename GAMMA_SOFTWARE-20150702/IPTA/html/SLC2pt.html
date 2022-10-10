@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: SLC2pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>SLC2pt</h2>
+
+  <p><i>Perl script: <a href="../scripts/SLC2pt">SLC2pt</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  SLC2pt - create pSLC_par and pSLC data stacks</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC2pt &lt;SLC_tab&gt; &lt;plist&gt; &lt;pmask&gt;
+  &lt;pSLC_par&gt; &lt;pSLC&gt; &lt;SLC_rec_num&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC_tab&gt;</td>
+
+      <td>input two column list of resampled SLCs and SLC parameter
+      files (including paths) (ascii)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>input point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>input point data stack of mask values (uchar, set to - to
+      accept all points)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pSLC_par&gt;</td>
+
+      <td>(output) stack of SLC/MLI parameters for the resampled
+      SLC data (enter - for none)(binary)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pSLC&gt;</td>
+
+      <td>(output) point data stack of interpolated SLC values
+      (enter - for none)(fcomplex or scomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_rec_num&gt;</td>
+
+      <td>record number in the output point data stack (starting
+      with 1, default: - for all)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC2pt testsite.SLC_tab testsite.plist testsite.pmask
+  testsite.pSLCpar testsite.pslc -</samp></p>
+
+  <p>Reads the SLC parameter filenames and SLC parameter file names
+  from the SLC_tab file, writes the related parameters files in the
+  stack of SLC/MLI parameters, extracts the SLC data values at the
+  points specified by the point list and point mask and writes
+  these values to the SLC point data stack. This is done for all
+  records (respectively all lines of the SLC_tab).</p>
+
+  <p><samp>SLC2pt testsite.SLC_tab testsite.plist testsite.pmask
+  testsite.pSLCpar testsite.pslc 17</samp></p>
+
+  <p>Reads the SLC filenames and parameter files from the SLC_tab
+  file, writes the related parameters files in the stack of SLC/MLI
+  parameters, extracts the SLC data values at the points specified
+  by the point list and point mask and writes these values to the
+  SLC point data stack. This is done only for record 17
+  (respectively line 17 of the SLC_tab).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  SLC2pt is a Perl script in ./IPTA/scripts.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The use of point data stacks is an important element of the IPTA.
+  Registered SLC data at the selected points are stored in such a
+  point data stack with each record corresponding to an SLC image.
+  SLC parameters for each record (SLC image) are organized in a
+  stack of SLC parameters. This stack is in binary format and
+  contains for each record the parameters of the SLC/MLI parameter
+  file.</p>
+
+  <p>SLC2pt supports the transformation from the individual
+  co-registered SLC data files (fcomplex or scomplex) and related
+  SLC/MLI parameter files (ascii files with keyword value format)
+  and the the SLC point data stacks (fcomplex or scomplex) and
+  stacks of SLC parameters (binary).</p>
+
+  <p>SLC2pt permits to write the data and parameters of one
+  individual SLC data file and SLC/MLI parameter file to the
+  indicated record or if - is indicated instead of a record number
+  this is done for all records.</p>
+
+  <p>Note that it is possible to operate on either the pSLC_par or
+  pSLC file alone. For example, if only the pSLC_par file needs to
+  be updated the following command can be applied: <samp>SLC2pt
+  testsite.SLC_tab testsite.plist testsite.pmask testsite.pSLCpar -
+  -</samp></p>
+
+  <p>The filenames for the co-registered SLC and for the related
+  parameter files are stored in the SLC_tab file which is an ascii
+  file with two inputs per line. The line number corresponds the
+  the record number in the SLC point data record.</p>
+
+  <p>Line numbers and record numbers start with 1. The number of
+  records corresponds to the highest record number.</p>
+
+  <p>If a new stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.</p>
+
+  <p>The reference SLC (SLC used as reference in the
+  co-registration, SLC used as reference in the interferometric
+  analysis) does not need to have a specific record number.</p>
+
+  <p>The SLC parameters contain information on date and time,
+  geometry, format, processing parameters as the Doppler Centroid,
+  and state vectors of the SLC images.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "SLC_par_pt.html">SLC_par_pt</a>, <a href=
+  "data2pt.html">data2pt</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 4-Jul-2003.</p>
+</body>
+</html>

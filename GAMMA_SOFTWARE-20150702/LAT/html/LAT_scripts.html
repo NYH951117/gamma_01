@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: Scripts</title>
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+  <!-- cw/uw971214 -->
+</head>
+
+<body>
+  <h1><font size="5"><u>Gamma LAT: Reference Manual</u></font></h1>
+  <hr>
+
+  <h2>LAT Scripts</h2>
+
+  <p><i>tcsh-scripts:</i> <a href=
+  "../scripts/"><i>LAT/scripts</i></a></p>
+
+  <p><strong>PURPOSE</strong><br>
+  A number of TC-shell (tcsh) scripts are included to support the
+  efficient use of the LAT programs, primarily for polarimetric
+  processing. The scripts allow to run often used processing
+  sequences, more automatically, (guided by the script).<br>
+  The scripts may also be taken as examples on how to write new
+  scripts, matching the exact user demands.</p>
+
+  <p><strong>NAMES AND FUNCTIONS</strong><br></p>
+
+  <h3>Polarimetric tools:</h3>
+
+  <table border="1" cellspacing="2" cellpadding="7">
+    <tr>
+      <td><a href="../scripts/CLOUDE_DEC">CLOUDE_DEC</a></td>
+
+      <td>Eigenvector-based target decomposition (Cloude,
+      1996)</td>
+    </tr>
+
+    <tr>
+      <td><a href="../scripts/COH_MATRIX">COH_MATRIX</a></td>
+
+      <td>Generation of elements of coherency matrix T3</td>
+    </tr>
+
+    <tr>
+      <td><a href="../scripts/COV_MATRIX">COV_MATRIX</a></td>
+
+      <td>Generation of elements of covariance matrix C3</td>
+    </tr>
+
+    <tr>
+      <td><a href="../scripts/FD3C_DEC">FD3C_DEC</a></td>
+
+      <td>Surfacem double-bounce, volume scattering decomposition,
+      (Freeman, 1998)</td>
+    </tr>
+
+    <tr>
+      <td><a href="../scripts/HUYNEN_DEC">HUYNEN_DEC</a></td>
+
+      <td>Equivalent single target decomposition, Huynen
+      decomposition</td>
+    </tr>
+
+    <tr>
+      <td><a href=
+      "../scripts/KENNAUGH_MATRIX">KENNAUGH_MATRIX</a></td>
+
+      <td>Generation of elements of Kennaugh matrix K4</td>
+    </tr>
+  </table>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  Using the scripts without arguments returns information on the
+  input parameter list.</p>
+
+  <p>If a script does not result in the expected result (i.e. the
+  processing stops, the resulting file just contains NULL values,
+  etc.) we recommend to execute the program of the script
+  individually and to test for each program the input and output
+  for possible indications of the source of an error.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, MS last change 07-Dec-09</p>
+</body>
+</html>

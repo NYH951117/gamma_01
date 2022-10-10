@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: ERS_raw_fix</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ERS_fix</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ERS_fix.c">ERS_fix.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>ERS_fix</em> - Concatenation of
+  ERS SAR raw data files, conditioning of raw data, and writing of
+  PRF to MSP Processing Parameter File.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>ERS_fix &lt;station&gt;
+  &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;cc_flag&gt; &lt;input raw
+  data file(s)&gt; &lt;output raw data file&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;ERS_PAF&gt;</td>
+
+      <td>ERS receiving/processing facility providing raw
+      data<br clear="all">
+      (valid inputs are: ENVISAT ACRES CCRS COLUMBIA DPAF ESA/ESRIN
+      NASDA EIC CRISP UK/QinetiQ)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SAR_par&gt;</td>
+
+      <td>(input) MSP SAR Sensor Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par&gt;</td>
+
+      <td>(input) MSP Processing Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cc_flag&gt;</td>
+
+      <td>cross-correlation detection of missing lines (0=OFF
+      (default), 1=ON)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw data file(s)&gt;</td>
+
+      <td>(input) One or several input raw data files</td>
+    </tr>
+
+    <tr>
+      <td>&lt;output raw data file&gt;</td>
+
+      <td>(output) Output conditioned raw data file</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong><samp>ERS_fix EIC ERS_EIC.par
+  p8560.slc.par 0 8560.raw 8560.fix<br>
+  ERS_fix UK ERS2_UK.par p8560.slc.par 8560.raw.1 8560.raw.2
+  8560.raw.3 8560.fix</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  ERS_fix reads one or several ERS raw data files, checks their
+  contents and concatenates them into one output raw data file.
+  This allows you a) to check raw data files for missing or doubled
+  lines, b) to concatenate raw data files of consecutive frames
+  into one larger raw data file c) to concatenate the 3 raw data
+  files per scene provided by the UK-PAF, and CCRS (all prior to
+  1997) into a single raw data file. <em>ERS_fix</em> requires
+  information on the line and file header sizes. This information
+  is provided for a list of receiving stations/processing
+  facilities. In 1997 the European PAFs harmonized the CEOS leader
+  format. Currently, the list includes:</p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>ENVISAT</td>
+
+      <td>ERS data in ENVISAT format</td>
+    </tr>
+
+    <tr>
+      <td>ACRES</td>
+
+      <td>Australian PAF</td>
+    </tr>
+
+    <tr>
+      <td>CCRS</td>
+
+      <td>Canadian Centre for Remote Sensing PAF</td>
+    </tr>
+
+    <tr>
+      <td>COLUMBIA</td>
+
+      <td>Columbian S.America PAF</td>
+    </tr>
+
+    <tr>
+      <td>CRISP</td>
+
+      <td>Singapore receiving station</td>
+    </tr>
+
+    <tr>
+      <td>DPAF</td>
+
+      <td>German PAF data received and reformatted prior to
+      1997</td>
+    </tr>
+
+    <tr>
+      <td>EIC</td>
+
+      <td>ESA internal format for the VMP processor (not
+      distributed)</td>
+    </tr>
+
+    <tr>
+      <td>ESA/ESRIN</td>
+
+      <td>All ESA supported receiving stations (D-PAF, I-PAF,
+      ESRIN, UK-PAF) in CEOS format</td>
+    </tr>
+
+    <tr>
+      <td>NASDA</td>
+
+      <td>ERS data received by NASDA in Japan</td>
+    </tr>
+
+    <tr>
+      <td>UK/QinetiQ</td>
+
+      <td>ERS data produced by QinetiQ</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p>A scan of the raw data is performed to determine if the there
+  are any missing lines by checking the line counter in the header
+  of each line and evaluating the line to line correlation
+  coefficient. If lines are missing, a copy or multiple copies of
+  the current line is inserted into the reformatted data stream. In
+  the case where a missing line is detected using the correlation
+  that is not reflected in the line counter, the user will be
+  queried about how many lines they would like to insert into the
+  raw data stream. The situation has occurred with data that was
+  highly corrupted with hundreds of missing lines. The program
+  determines the range delay to the first sample and, if there is a
+  change in the range gate position, aligns all the data to a
+  common range delay. This range delay is written to the Processing
+  Parameter File. The Pulse Repetition Frequency (PRF) given in the
+  raw data is written to the MSP Processing Parameter File. If the
+  PRF changes throughout the raw data a warning is issued and the
+  original PRF is retained.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  New raw data formats may be defined by adding corresponding
+  stations to the list at the top of the program defining the data
+  structure containing the parameters describing each PAF raw data
+  format.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, MS, last change 16-Oct-2009.
+</body>
+</html>

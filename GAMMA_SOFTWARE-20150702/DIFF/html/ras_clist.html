@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: ras_clist</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF &amp; GEO Reference Manual</h1>
+
+  <h2>ras_clist</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ras_clist.c">ras_clist.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ras_clist - draw coordinate list locations on a SUN/BMP raster
+  image</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_clist &lt;clist&gt; &lt;ras_in&gt; &lt;ras_out&gt;
+  [xsf] [ysf] [r] [g] [b] [xs] [zflg]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;clist&gt;</td>
+
+        <td>(input) list of x,y pixel coordinates (text
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_in&gt;</td>
+
+        <td>(input) SUN/BMP raster file (8 or 24 bits/sample, enter
+        - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_out&gt;</td>
+
+        <td>(output) SUN/BMP raster file with marked point list
+        locations</td>
+      </tr>
+
+      <tr>
+        <td>[xsf]</td>
+
+        <td>horizontal scale factor for image relative to the
+        coordinates (default: 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[ysf]</td>
+
+        <td>vertical scale factor for image relative to the
+        coordinates (default: 1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[r]</td>
+
+        <td>cross color value red (0 --&gt; 255, default: 255)</td>
+      </tr>
+
+      <tr>
+        <td>[g]</td>
+
+        <td>cross color value green (0 --&gt; 255, default:
+        255)</td>
+      </tr>
+
+      <tr>
+        <td>[b]</td>
+
+        <td>cross color value blue (0 --&gt; 255, default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[xs]</td>
+
+        <td>size of cross in pixels, set to 1 for single points
+        (default: 3)</td>
+      </tr>
+
+      <tr>
+        <td>[zflg]</td>
+
+        <td>zero out flag (default=0: retain values, 1: set all
+        values to 0 except crosses)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br></p>
+
+  <p><span style="font-family: monospace;">ras_clist clist_RDC
+  19970924_seg.mli.ras 19970924_seg_clist.mli.ras 4 4 255 255 0
+  7</span></p>
+
+  <p>Generates an 8-bit SUN rasterfile which corresponds to the
+  input 8-bit SUN rasterfile <span style=
+  "font-family: monospace;">19970924_seg.mli.ras</span> except for
+  yellow crosses added at the coordinates of all points of the
+  point list. in range-Doppler coordinates. The MLI image was
+  calculated from the SLC image using 4 looks in range and 4 looks
+  in azimuth.<br></p>
+
+  <p><span style="font-family: monospace;">ras_clist clist_MAP
+  19970924_gec.mli.ras 19970924_gec_clist.mli.ras .25 .25 255 255 0
+  7</span></p>
+
+  <p>Generates an 8-bit SUN rasterfile which corresponds to the
+  input 8-bit SUN rasterfile <span style=
+  "font-family: monospace;">19970924_gec.mli.ras</span> except for
+  yellow crosses added at the coordinates of all points of the
+  point list. in Map coordinates. The points were selected using
+  sub-sampling factors of 4 in easting and northing when running
+  <a href="dem_RDC_list.html">dem_RDC_list</a>.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The clist contains coordinates (row and colomn pixel numbers) for
+  a set of locations generated using <a href=
+  "dem_RDC_list.html">dem_RDC_list</a>. <span style=
+  "font-weight: bold;">ras_clist</span> supports the generation of
+  a SUN/BMP raster file image which shows the point list locations
+  in the spatial context. As background the input SUN/BMP raster
+  file is used. For the input SUN/BMP raster file (in the "normal"
+  2-D raster image format) either in Range Doppler Coordinates
+  (RDC) or in a map projection described by the DEM_par2 generate
+  by <a href="dem_RDC_list.html">dem_RDC_list</a>.</p>
+
+  <p>The input SUN/BMP raster file can be 8-bit or 24-bit per
+  sample. The output SUN/BMP raster file will be of the same type
+  as the input SUN/BMP raster file. In the 8-bit case the color of
+  the crosses is added to the color table. In the case of a full
+  color table pixels belonging to color 255 are moved to color 254
+  and color 255 is used for the crosses.</p>
+
+  <p>For the crosses the color (red, green, blue values in the
+  range of 0 to 255 ) and the size (in pixels) can be indicated.
+  Using a size of 1 will plot a single pixel. Instead of using the
+  input SUN/BMP raster file as background only the crosses can be
+  written to the output rasterfile if the zero out flag is set to
+  1. Using this feature with a cross size one results in a
+  rasterfile which can serve as a mask with non-zero values only at
+  the point locations.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="dem_RDC_list.html">dem_RDC_list</a><a href=
+  "ipta.h.html"><br></a></p>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 7-Apr-2005.
+</body>
+</html>

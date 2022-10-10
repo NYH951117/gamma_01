@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: mask_data</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>mask_data</h2>
+
+  <p><i>ANSI-C program: <a href="../src/mask_data.c"></a><a href=
+  "../src/mask_data.c">mask_data.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>mask_data</i> - Mask data using a Sun or BMP format raster
+  image</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>mask_data &lt;data_in&gt; &lt;width&gt;
+  &lt;data_out&gt; &lt;mask&gt; [format_flag]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) data file (float or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>width of input data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>(output) data file, same data format as input</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mask&gt;</td>
+
+        <td>(input) mask file, Sun raster or BMP format,
+        8-bits/pixel<br>
+        NOTE: mask file must have the same width as the input data
+        file<br></td>
+      </tr>
+
+      <tr>
+        <td>[format_flag]</td>
+
+        <td>input/output data format:<br>
+        &nbsp;&nbsp; 0: FLOAT (default)<br>
+        &nbsp;&nbsp; 1: FCOMPLEX</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><b>EXAMPLE<br>
+  <br></b> <code><tt>mask_data 19990421_1999042.unw 2456
+  19990421_19990422.msk.unw
+  1</tt></code><tt><code>9990421_1999042.cc_msk.ras
+  0</code><br></tt></p>
+
+  <p>The unwrapped phase is set to 0 where
+  <code><tt>1</tt></code><tt><code>9990421_1999042.cc_msk.ras</code></tt>
+  has value 0. In this case the mask file was created using the
+  program <a href="rascc_mask.html">rascc_mask</a> to generate an
+  8-bit raster file (Sun raster or BMP format). The output validity
+  mask is a combined coherence and intensity display with all
+  samples of the image with coherence below the thresholds set to
+  0. The user can select thresholds for both correlation and
+  relative intensity.<br></p>
+
+  <p><b>DESCRIPTION</b><br>
+  <span style="font-style: italic;">mask_data</span> is used to set
+  values of an input data file (either fcomplex or float format) to
+  zero&nbsp; based on the values contained the 8-bit/pixel mask
+  file. The mask file is either Sun raster or BMP format.<br></p>
+
+  <p>One application of mask data is with phase unwrapping. When
+  unwrapping phase using <a href="mcf.html">mcf</a>, it is often
+  better to mask the unwrapped phase after unwrapping, rather than
+  before because the masking operation also recreates phase
+  inconsistances that must be resolved by the unwrapping
+  procedure.&nbsp; In images where there are large regions that are
+  incoherenent, the result will often be better using mask_data
+  after unwrapping by mcf.<br></p>
+
+  <p>mask_data can also be used to remove noisy regions from an
+  image to improve the display. The mask file can be created using
+  a program such as gimp. (<a href=
+  "www.gimp.org">www.gimp.org</a>)<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="mcf.html">mcf</a>,&nbsp; <a href=
+  "rascc_mask.html">rascc_mask</a><a href="interp_ad.html"></a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-May-2012</p>
+</body>
+</html>

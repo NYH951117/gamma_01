@@ -1,0 +1,35 @@
+#! /bin/csh -f
+if ($#argv < 2)then
+  echo "READ ERS SLC tape processed at the Alaska SAR Facility (ASF)"
+  echo "usage: ERS_ASF_SLC <orbit> <device> " 
+  echo "       <orbit>   orbit identifier (example: orbit number)"
+  echo "       <device>  EXABYTE tape device (no rewind); example: /dev/rmt/0mn"
+  exit
+endif
+
+set EXABYTE = $2
+rm -f $1.par.out
+
+echo "Reading ASF SLC tape..."
+
+echo "Reading ASF leader file: $1.ldr"
+dd bs=4628 if=$EXABYTE of=$1.ldr
+
+echo "Reading ASF SLC: $1.slc"
+dd bs=8204 if=$EXABYTE of=$1.slc
+
+echo "Reading ASF trailer file: $1.tlr"
+dd bs=1540 if=$EXABYTE of=$1.tlr
+
+echo "creating 20-look SUN rasterfile image from the SLC image: $1.slc_ras"
+echo "rasERS_SLC $1.slc 2048 1 0 2 10 1.0 .35 1"
+rasERS_SLC $1.slc 2048 1 0 2 10 1.0 .35 1
+
+echo "creating SLC parameter file: $1.par"
+echo "orbit $1 "| par_ASF $1.ldr $1.tlr $1.par > $1.par.out
+
+echo "compute doppler centroid from SLC data..."
+echo "az_spec_ESA $1.slc $1.par $1.azspec > $1.azspec.out "
+echo "y" | az_spec_ESA $1.slc $1.par $1.azspec > $1.azspec.out
+echo "  "
+echo "ERS_ASF_SLC completed"

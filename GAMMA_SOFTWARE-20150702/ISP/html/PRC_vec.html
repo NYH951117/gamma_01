@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: PRC_vec</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>PRC_vec</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/PRC_vec.c"><i>PRC_vec.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>PRC_vec</em> extracts ERS state vectors from orbit data
+  provided by ESA in the Precision Orbit Data (PRC) product. It
+  places 5 state vectors in the SLC parameter file that bracket the
+  center time of the SAR image. PRC state vectors are given at 30
+  second intervals.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>PRC_vec &lt;SLC_par&gt; &lt;PRC&gt;
+  [nstate]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;<a href="SLC_par.html">SLC_par</a>&gt;</td>
+
+      <td>parameter file for SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PRC&gt;</td>
+
+      <td>Precision Orbit data file</td>
+    </tr>
+
+    <tr>
+      <td>[nstate]</td>
+
+      <td>number of state vectors (default=5, maximum=9)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>PRC_vec 22331.par PRC_951021_22319_rev2 5</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>PRC_vec</em> reads ERS precision state vector files (*.prc)
+  and extracts a specified number of state vectors that bracket the
+  processed image data center time. The state vectors are written
+  into the ISP SLC/PRI/MLI image parameter file along with the
+  start time and time interval between state vectors. The PRC files
+  consist of 130 byte ASCII records containing the Julian date and
+  time of the state vector data, the position, velocity and
+  attitude of the ERS sensor, and data quality information. State
+  vectors are given on 30 second intervals. The default number of
+  state vectors is 5 and is adequate unless multiple frame images
+  are processed with the ISP.</p>
+
+  <p>The PRC data are available from an FTP server in Germany with
+  a delay of about 1 month after data acquisition by ERS. Apply to
+  the ESA HelpDesk at ESA ESRIN to get an account to access these
+  data. The PRC data contain the position and velocity of the
+  sensor in both body-fixed and inertial coordinates. Sensor
+  attitude data is also kept with the state vectors. PRC data are
+  available with a delay of about 1 month and cover a period of
+  about 5-7 days each. The PRC filenames contain the date of the
+  first state vector and the starting orbit number.</p>
+
+  <p>The state vectors in the SLC parameter file are used for the
+  removal of the average phase trend in the interferogram and for
+  determining the interferometric baseline.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Jan-2000.</p>
+</body>
+</html>

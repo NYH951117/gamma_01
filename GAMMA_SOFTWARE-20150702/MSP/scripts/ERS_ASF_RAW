@@ -1,0 +1,39 @@
+#! /bin/csh -fe
+if ($#argv < 3)then
+  echo "READ annotated ASF ERS raw data tape 11-Dec-97 clw"
+  echo "usage: ERS_ASF_RAW <orbit> <device> <data_set>"
+  echo "       orbit     orbit number"
+  echo "       device    EXABYTE tape device name; example: /dev/rmt/0mn"
+  echo "       data_set  number of ERS raw data set (example: for first data set enter 1)" 
+  exit
+endif
+
+set EXABYTE = $2
+setenv TAPE  $EXABYTE
+
+echo "rewinding tape..."
+mt rew
+
+echo "Reading ASF ERS annotated raw data tape"
+echo "extracting data set $3"
+
+echo "Reading CEOS volume directory file: $1.vdf"
+dd bs=360 if=$EXABYTE of=$1.vdf
+
+if($3 > 1) then
+  set nfiles = `echo $3 |awk '{print 2*($1 - 1)}'`
+  echo "skipping forward $nfiles files"
+  mt fsf $nfiles
+endif
+
+echo "Reading CEOS leader file: $1.ldr"
+echo "dd bs=5120 if=$EXABYTE of=$1.ldr"
+dd bs=5120 if=$EXABYTE of=$1.ldr
+
+echo "Reading ESA raw data file: $1.raw"
+echo "dd bs=11456 if=$EXABYTE conv=sync of=$1.raw"
+dd bs=11456 if=$EXABYTE conv=sync of=$1.raw
+ 
+echo "rewinding tape..."
+mt rew
+echo "ERS_ASF_RAW completed"

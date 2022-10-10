@@ -1,0 +1,293 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: offset_pwr_tracking</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_pwr_tracking</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/offset_pwr_tracking.c"><i>offset_pwr_tracking.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>offset_pwr_tracking</em> estimates range and azimuth offset
+  fields for SLC images using intensity tracking</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_pwr_tracking &lt;SLC1&gt; &lt;SLC2&gt;
+  &lt;par1&gt; &lt;par2&gt; &lt;OFF_par&gt; &lt;offs&gt;
+  &lt;snr&gt; [rwin] [azwin] [offsets] [n_ovr] [thres] [rstep]
+  [azstep] [rstart] [rstop] [azstart] [azstop]
+  [pflag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1&gt;</td>
+
+        <td>(input) single-look complex image 1 (reference,
+        fcomplex or scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2&gt;</td>
+
+        <td>(input) single-look complex image 2 (fcomplex or
+        scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;offs&gt;</td>
+
+        <td>(output) offset estimates (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;snr&gt;</td>
+
+        <td>(output) offset estimation SNR (float)</td>
+      </tr>
+
+      <tr>
+        <td>[rwin]</td>
+
+        <td>search region size (range pixels, enter - for default
+        from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[azwin]</td>
+
+        <td>search region size (azimuth pixels, enter - for default
+        from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[offsets]</td>
+
+        <td>(output) range and azimuth offsets and SNR data in text
+        format, enter - for no output</td>
+      </tr>
+
+      <tr>
+        <td>[n_ovr]</td>
+
+        <td>SLC over-sampling factor (integer 2**N (1,2,4) default:
+        2)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>offset estimation quality threshold (enter - for
+        default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[rstep]</td>
+
+        <td>step in range pixels (enter - for default: rwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[azstep]</td>
+
+        <td>step in azimuth pixels (enter - for default:
+        azwin/2)</td>
+      </tr>
+
+      <tr>
+        <td>[rstart]</td>
+
+        <td>starting range pixel (enter - for default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[rstop]</td>
+
+        <td>ending range pixel (enter - for default: nr - 1)</td>
+      </tr>
+
+      <tr>
+        <td>[azstart]</td>
+
+        <td>starting azimuth line (enter - for default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[azstop]</td>
+
+        <td style="height: 19px;">ending azimuth line (enter - for
+        default: nlines - 1)</td>
+      </tr>
+
+      <tr>
+        <td>[c_ovr]</td>
+
+        <td>correlation function oversampling factor (integer 2**N
+        (1,2,4,8,16) default: 4)</td>
+      </tr>
+
+      <tr>
+        <td>[pflag]</td>
+
+        <td>print flag:<br>
+        &nbsp; 0: print offset summary,<br>
+        &nbsp; 1: print all offset data</td>
+      </tr>
+
+      <tr>
+        <td>[pltflg]</td>
+
+        <td>plotting flag:<br>
+        &nbsp; 0: none (default)<br>
+        &nbsp; 1: output plots in PNG format<br>
+        &nbsp; 2: screen output and PNG format plots<br>
+        &nbsp; 3: output plots in PDF format</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_pwr_tracking 19990915.slc 19991020.slc
+  19990915.slc.par 19991020.slc.par 19990915_19991020.off</samp>
+  <samp>19990915_19991020.offs</samp> <samp>19990915_19991020.snr
+  32 64</samp> <samp>19990915_19991020.offsets 2 7.0 10 20 400 1600
+  1200 7200</samp></p>
+
+  <p>Estimates range and azimuth offset fields (offsets of
+  <span style="font-style: italic;">19991020.slc</span> relative to
+  <span style="font-style: italic;">19990915.slc</span>) using the
+  intensity tracking algorithm using a 32 x 64 pixels search chip
+  size.&nbsp; An SLC over-sampling factor of 2 is applied to the
+  SLC data. The search is repeated every 10 range pixels and every
+  20 azimuth lines, for the specified region of the image.</p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p><em>offset_pwr_tracking</em> estimates range and azimuth
+  offsets over a grid&nbsp; for a pair of SLC images. These offset
+  measurements can be used either for image co-registration or
+  offset tracking of features such as glaciers.</p>
+
+  <p>The intensity correlation tracking algorithm is used. Notice
+  that this algorithm requires features in the detected images. The
+  algorithm is not well suited for small search chip sizes (&lt; 16
+  x 16 pixels). Offsets are calculated for the indicated section of
+  the reference SLC (SLC-1) at the indicated range and azimuth
+  step. The related information is documented in the offset
+  parameter file.</p>
+
+  <p>Throughout the image small SLC data patches are selected and
+  used to determine the local range and azimuth offset fields. For
+  each such offset estimate, the intensity cross-correlation
+  function is calculated by convolution implemented using
+  FFTs.&nbsp; The SLC data can be over-sampled by a factor of 2
+  (default) or 4 prior to cross-correlation. The location of the
+  correlation maximum is estimated using a two-dimensional
+  quadratic least squares fit. The&nbsp; correlation function can
+  be interpolated by a specified factor (nominally 4)&nbsp; prior
+  to fitting.&nbsp;</p>
+
+  <p>The range and azimuth size of the rectangular chips used in
+  the calculation of the correlation function corresponds to the
+  search window sizes indicated. The search is centered at the
+  offsets indicated in the offset polynomials of the provided
+  offset parameter file.</p>
+
+  <p>The size of the patches needs to be in-line with the features
+  that shall be used in the matching and with the spatial dimension
+  of expected variations in the offsets. This method of measuring
+  offsets between SLC images is complementary to the fringe
+  visibility method used in <em>offset_SLC</em> and
+  <em>offset_SLC_tracking</em>.</p>
+
+  <p>For most cases a SNR threshold of 7.0 for the acceptance of an
+  offset gives a reliable result. In cases of too low correlation,
+  the use of larger search chip and window sizes is
+  suggested.&nbsp;</p>
+
+  <p>The estimated offset fields and related matching SNR values
+  are written to binary output files of fcomplex (*.offs) and float
+  (*.snr) format. The offsets can be converted to offsets in the
+  original (reference) geometry using the program <a href=
+  "offset_tracking.html">offset_tracking</a>. The program <a href=
+  "offset_fit.html">offset_fit</a> can be used to obtain estimates
+  of the coefficients of range and azimuth offset
+  polynomials.&nbsp;</p>
+
+  <p>No search is conducted for chips with a 0 value in the center
+  of the search chips. Setting the SLC values of areas which are
+  not of interest to the 0 value may permit to strongly reduce the
+  required processing time, while still covering the area of
+  interest at high spatial resolution (small range and azimuth
+  step).</p>
+
+  <p>The binary offsets file (*.offs) contains offsets in SAR image
+  pixels (of the reference image) in fcomplex format. The real
+  parts correspond to range offsets and the imaginary parts to
+  azimuth offsets. The positions of the offset estimates are
+  defined by the starting range and azimuth positions and the range
+  and azimuth steps, as documented in the offset parameter
+  file.</p>
+
+  <p><b>OPTIONS</b></p>
+
+  <p>Range and azimuth chip sizes, range and azimuth steps, and
+  range and azimuth search regions can all be specified on the
+  command line, permitting for example to use search chips, search
+  windows, and steps which are larger in azimuth directions as may
+  be appropriate considering the different ground-range and azimuth
+  sampling of most SLC data.</p>
+
+  <p><strong>SEE ALSO</strong></p>
+
+  <p><a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>, <a href=
+  "offset_tracking.html">offset_tracking</a>, <a href=
+  "offset_fit.html">offset_fit</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>, <a href=
+  "offset_SLC_tracking.html">offset_SLC_tracking</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_pwr_tracking.html">offset_pwr_tracking</a>, <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>, <a href=
+  "init_offset.html">init_offset</a>, <a href=
+  "create_offset.html">create_offset</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-May-2014.</p>
+</body>
+</html>

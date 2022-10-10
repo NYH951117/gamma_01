@@ -1,0 +1,218 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$scale = .25;	#display scale factor
+$exp = 0.35;	#display exponent
+$psc = 0.5;	#phase scaling factor for display
+
+$fspf_rad = 0;
+$dx = 6.28318530718;
+$qfmodel = -1;
+$dr = 1;	#use every point to determine trend
+$daz = 1;
+$nr = 3;
+$nl = 3;
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale, 'p=f' => \$psc, 'f=i' => \$fspf_rad, 'q=i'=>\$qfmodel);
+
+if (($#ARGV + 1) < 9){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v1.4 10-Apr-2015 clw ***
+*** Generate time-series from a stack of unwrapped sequential interferograms and optionally apply fast spatial or quad-fit filtering ***
+
+usage: $0 <diff_tab> <TS_dir> <roff> <loff> <nr> <nl> <TS_tab> <MLI> <MLI_par> 
+    diff_tab  (input) three column list of input unwrapped phase files (including paths)
+              NOTE: all unwrapped phase files must have the same number of samples/line with
+	      filename  delta_T  T1
+    TS_dir    directory for the output time-series data
+    roff      offset to starting sample for the reference region (samples) (enter - for default: 0)
+    loff      offset to starting line (lines) (enter - for default: 0)
+    nr        number of range samples for the reference region (enter - for default: $nr)
+    nl        number of lines to copy (enter - for default: $nl)
+    TS_tab    (output) list of the output data files with TS_dir in the path
+    MLI       (input) MLI image with same rlks and azlks as the interferogram used for background intensity
+    MLI_par   MLI or SLC parameter file with the same number of looks as the data that are being filtered 
+  
+    -f radius  (option) use fast GPRI spatial filter estimate differential atmospheric phase and subtract (nominal: 300 samples)
+    -q model   (option) use polynomial model to estimate differential atmospheric phase and subtract (nominal: quadratic)
+        0: a0 + a1*x + a2*y + a3*x*y + a4*x^2 + a5*y^2
+        1: a0 + a4*x^2 + a5*y^2
+        2: a0 + a1*x + a2*y + a3*x*y
+        3: a0 + a1*x + a2*y 
+        4: a0 + a1*x + a4*x^2 (use for GPRI2 quadratic range dependent atmospheric phase)
+        5: a0 + a1*x          (use for GPRI2 linear range dependent atmospheric phase)
+    -s scale   (option) set image display scale factor (default: $scale)   
+    -e exp     (option) set image display exponent (default: $exp)
+    -p pscale  (option) set phase scaling for output display, 1 cycle = 2PI/pscale (default: $psc)
+        
+    NOTE: current directory is denoted using .
+    ex
+EOS
+
+open(DATA_TAB, "<$ARGV[0]") or die "\nERROR $0: data file: $ARGV[0]\n\n";
+print "DIFF_tab list of input unwrapped phase data: $ARGV[0]\n";
+
+$TS_dir  = $ARGV[1];
+$roff    = $ARGV[2];
+$loff    = $ARGV[3];
+$ARGV[4] eq '-' or $nr = $ARGV[4];
+$ARGV[5] eq '-' or $nl = $ARGV[5];
+$TS_tab  = $ARGV[6];
+$mli     = $ARGV[7];
+$MLI_par = $ARGV[8];
+
+$itab_ts = $TS_dir."/itab_ts";
+$DIFF_par = $TS_dir."/DIFF_par";
+@width = extract_param($MLI_par, "range_samples:");
+print "range samples $width[1]\n";
+
+unless (-d $TS_dir) {
+  (mkdir $TS_dir) or die "ERROR $0: non-zero exit status, could not create time-series directory: $TS_dir\n";
+}
+
+open(TSTAB,">$TS_tab") or die "ERROR $0: cannot create list of output data files: $TS_tab\n\n";
+open(ITAB_TS,">$itab_ts") or die "ERROR $0: cannot create time-series itab file: $itab_ts\n\n";
+
+print "output TS directory: $TS_dir\n";
+print "output list of time series TS_tab: $TS_tab\n";
+print "time-series itab file: $itab_ts\n";
+print "offset sample: $roff   samples: $nr\n";
+print "offset line:   $loff   lines:   $nl\n";
+
+$width[1] =~ /\d+$/ && $width[1] > 0 or die "ERROR $0: width must be a valid integer > 0: $width[1]\n";
+(($loff =~ /\d+$/ && $loff >= 0 ) or ($loff eq "-")) or die "ERROR $0: invalid offset to first line: $loff\n";
+(($nl =~ /\d+$/ && $nl > 0) or ($nl eq "-")) or die "ERROR $0: invalid number of lines: $nl\n";
+(($roff =~ /\d+$/ && $roff >= 0) or ($roff eq "-")) or die "ERROR $0: invalid offset to first pixel: $roff\n";
+(($nr =~ /\d+$/ && $nr > 0) or ($nr eq "-")) or die "ERROR $0: invalid number of pixels: $nr\n";
+
+$time = localtime;
+print "\nprocessing start: $time\n";  
+$log = "$TS_dir/mk_ts_2d.log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n\n";
+LOG->autoflush;
+
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "\nprocessing start: $time\n";  
+print LOG "output TS directory: $TS_dir\n";
+print LOG "offset line:   $loff   lines:  $nl\n";
+print LOG "offset sample: $roff   samples: $nr\n";
+close LOG;
+$tscnt = 0;
+$unw_tmp1 = "$TS_dir/unw_tmp1";
+$unw_tmp2 = "$TS_dir/unw_tmp2";
+$unw_tmp3 = "$TS_dir/unw_tmp3";
+
+if($qfmodel >= 0){
+  print "creating DIFF_par to run quad_fit: $DIFF_par\n";
+  execute("create_diff_par $MLI_par - $DIFF_par 1 0", $log);
+}
+$cnt = 0;
+LINE: while (<DATA_TAB>) {	#read lines of processing list file into $_
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+   
+  $dat = $fields[0];
+  if ($#fields + 1 > 1) {
+    $delta = $fields[1];
+    $tstr = $fields[2];
+  }
+  
+  -e $dat or die "ERROR $0: input data file does not exist: $dat\n";    
+  my ($s1, $dir1, $ext1) = fileparse($dat, qr/\.[^.]*/); #extension is the last bit after the last period
+
+  $cnt_str = sprintf("%04d",$cnt);
+  $tsf = "$TS_dir/ts_".$cnt_str;
+  $filt_ras = "$TS_dir/$s1"."_filt.bmp";
+  $ts_ras = $tsf.".bmp";
+  printf "\nfile %4d  %s  $tsf   raster image: $ts_ras\n",$tscnt+1, $dat;
+ 
+  if ($qfmodel >= 0) {
+    $qfmodel < 6 or die "ERROR: quadfit phase model must be in the range 0 to 5: $qfmodel\n";
+    print "Note: calculating and subtracting quad_fit phase model: $qfmodel\n";
+    execute("quad_fit $dat $DIFF_par $dr $daz - - $qfmodel", $log);
+    execute("quad_sub $dat $DIFF_par $unw_tmp2 0 0", $log);
+  }
+
+  if ($fspf_rad > 0) {
+    if ($qfmodel >= 0) {	#use a temp file name to store quadfit filtered scene
+      print "Note: applying fast spatial filter with radius: $fspf_rad after quad_fit\n";
+      rename $unw_tmp2, $unw_tmp3;
+      execute("fspf $unw_tmp3 $unw_tmp1 $width[1] - $fspf_rad 4 $MLI_par", $log);
+      execute("float_math $unw_tmp3 $unw_tmp1 $unw_tmp2 $width[1] 1", $log);  #subtract filtered signal
+      print "deleting $unw_tmp3\n";
+      unlink $unw_tmp3;
+    }
+    else {
+      print "Note: applying fast spatial filter with radius: $fspf_rad\n";
+      execute("fspf $dat $unw_tmp1 $width[1] - $fspf_rad 4 $MLI_par", $log);
+      execute("float_math $dat $unw_tmp1 $unw_tmp2 $width[1] 1", $log);  #subtract filtered signal
+    }
+    print "deleting $unw_tmp1\n";
+    unlink $unw_tmp1;
+  }
+
+  if ($fspf_rad > 0 or $qfmodel >= 0) {   #unwrapped phase data have been spatially filtered
+    execute("rasrmg $unw_tmp2 $mli $width[1] 1 1 0 1 1 $psc $scale $exp 0.0 1 $filt_ras", $log);
+    print "Note: adding filtered uwrapped phase to time series\n";
+
+    if ($tscnt == 0) {		#first in the time series
+      execute("cp $unw_tmp2 $tsf", $log);
+    }
+    else {
+      execute("float_math $ts0 $unw_tmp2 $tsf $width[1] 0 $roff $loff $nr $nl - 0",$log);
+    }
+    print "deleting $unw_tmp2\n";
+    unlink $unw_tmp2;    
+  }
+  else {
+    if ($tscnt == 0) {		#first in the time series
+      execute("cp $dat $tsf\n", $log);
+    }
+    else {
+      execute("float_math $ts0 $dat $tsf $width[1] 0 $roff $loff $nr $nl - 0",$log);
+    }
+  }
+
+  $ts0 = $tsf;		#update name of current integrated sum
+  execute("rasdt_pwr24 $tsf $mli $width[1] 1 1 0 1 1 $dx $scale $exp 1 $ts_ras", $log);
+  print TSTAB "$tsf  $delta   $tstr\n";
+  $tscnt = $tscnt + 1;
+  printf ITAB_TS "1  %4d %4d 1\n",$tscnt, $tscnt;
+  $cnt++;
+ }
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open existing log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open new log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: mk_tab</title>
+  <meta http-equiv="CONTENT-TYPE" content=
+  "text/html; charset=us-ascii">
+</head>
+
+<body>
+  <h1>Gamma DIFF Reference Manual: mk_tab</h1>
+  <hr>
+
+  <h2>mk_tab</h2>
+
+  <p><i>Perl Script: <a href=
+  "../scripts/mk_tab">mk_tab</a><br></i></p>
+
+  <p><strong>NAME</strong><br>
+  mk_tab - Generate SLC_tab, MLI_tab, or RAW_list for
+  processing</p>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  mk_tab &lt;dir&gt; &lt;ext-1&gt; &lt;ext-2&gt;
+  &lt;tab&gt;</b></code><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;dir&gt;</td>
+
+        <td>(input) directory including paths that contain the data
+        files<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;ext-1 &gt;</td>
+
+        <td>(input) pattern to select data files (examples: slc,
+        raw...)&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ext-2&gt;</td>
+
+        <td>(input) pattern to select parameter files that match
+        the data (enter -&nbsp; for none, examples: slc.par,
+        raw_par, raw.par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;tab&gt;</td>
+
+        <td>(output) list of data filenames and associated
+        parameter files (including paths) (text)&nbsp;<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4><strong>EXAMPLE<br></strong></h4><code><big style=
+  "font-family: monospace;"><font color="#FF00FF">mk_tab slc slc
+  slc_par SLC_tab<br></font></big><br style=
+  "font-family: monospace;">
+  <big style="font-family: monospace;"><font color=
+  "#FF00FF"><span style="color: rgb(51, 51, 255);">SLC_tab:<br>
+  slc/19990915.slc&nbsp;&nbsp;&nbsp;
+  slc/19990915.slc.par</span><br style="color: rgb(51, 51, 255);">
+  <span style=
+  "color: rgb(51, 51, 255);">slc/19991020.slc&nbsp;&nbsp;&nbsp;
+  slc/19991020.slc.par</span></font><font color=
+  "#FF00FF"><br></font></big></code>
+
+  <p style="color: black;" class="code-western" lang="en-GB">
+  <big><small>This example generates an SLC_tab from the slc files
+  and slc parameter files in the slc
+  directory.&nbsp;</small></big></p><small><big><big style=
+  "font-family: monospace;"><font color="#FF00FF">mk_tab slc_WBs
+  20071020_?.slc slc_WBs 20071020_?.slc.par
+  SLC_WBs_20071020_tab</font></big></big><small><br></small></small><big style="color: rgb(51, 51, 255);"><span style="font-family: monospace;">SLC_WBs_20071020_tab:</span><br style="font-family: monospace;">
+
+  <span style="font-family: monospace;">slc_WBs/20071020_1.slc
+  slc_WBs/20071020_1.slc.par</span><br style=
+  "font-family: monospace;">
+  <span style="font-family: monospace;">slc_WBs/20071020_2.slc
+  slc_WBs/20071020_2.slc.par</span><br style=
+  "font-family: monospace;">
+  <span style="font-family: monospace;">slc_WBs/20071020_3.slc
+  slc_WBs/20071020_3.slc.par</span><br style=
+  "font-family: monospace;">
+  <span style="font-family: monospace;">slc_WBs/20071020_4.slc
+  slc_WBs/20071020_4.slc.par</span><br style=
+  "font-family: monospace;">
+  <span style="font-family: monospace;">slc_WBs/20071020_5.slc
+  slc_WBs/20071020_5.slc.par</span></big><br style=
+  "color: rgb(51, 51, 255);">
+  <br>
+  This example generates an SLC_tab from only a subset of the files
+  contained in the slc_WBs directory using the "?" single character
+  wildcard.<br>
+
+  <p></p>
+
+  <h4><strong>DESCRIPTION</strong></h4>
+
+  <p>The image and image parameter files should be&nbsp; colocated
+  in the same directory.&nbsp; The files listed in column 1 of the
+  output tab file has the extension specified by the <span style=
+  "color: blue;">ext-1</span> command line parameter and column 2
+  has the value specified by the <span style=
+  "color: blue;">ext-2</span> parameter.&nbsp; If " -" is entered
+  for ext-2, only a single column list is produced.<br></p>
+
+  <p>The tab files are used by <a href=
+  "mk_mli_all.html">mk_mli_all</a> and the the series of scripts
+  for the formation and processing differential interferomgrams
+  including <a href="mk_diff_2d.html">mk_diff_2d</a> and related
+  scripts<br></p>
+
+  <p><strong>SEE ALSO</strong></p><a href=
+  "mk_diff_2d,html">mk_diff_2d</a>
+  <hr>
+  Copyright for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<br>
+  last change 7-Jun-2011<br>
+  <br>
+</body>
+</html>

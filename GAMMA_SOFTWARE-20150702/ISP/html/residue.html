@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: residue, residue_cc</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>residue</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/residue.c"><i>residue.c</i></a><i>,</i><a href=
+  "../src/residue_cc.c"><i>residue_cc.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>residue</em> - Reads smoothed interferogram, determines phase
+  residues and writes these into the flag file.</p>
+
+  <p><em>residue_cc</em> - Reads smoothed interferogram, determines
+  phase residues under consideration of low coherence areas and
+  writes these into the flag file.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>residue &lt;interferogram&gt; &lt;flagfile&gt;
+  &lt;width&gt; [xmin] [xmax] [ymin] [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;interferogram&gt;</td>
+
+      <td>complex image data (smoothed interferogram)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;flagfile&gt;</td>
+
+      <td>flag filename</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[xmin]</td>
+
+      <td>offset to starting range pixel (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmax]</td>
+
+      <td>offset last range pixel (default = <b>width-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>offset to starting azimuth row (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>offset to last azimuth row (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>residue 1352_1610.sm 1352_1610.flag 2500</samp></p>
+
+  <p><samp>residue_cc 1352_1610.sm 1352_1610.flag 2500</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>residue</em> and <em>residue_cc</em> read smoothed
+  interferograms, determine phase residues and write these into the
+  unwrapping flag file. Residues are important for the phase
+  unwrapping process. Growing the phase around a residue leads to
+  an inconsistency of 2PI. There are both positive and negative
+  residues depending on the sign of the inconsistency. The tree
+  generation program (e.g. <em>tree_cc</em> or <em>tree_gzw</em>)
+  connects these changes to create neutral trees that will not
+  generate large global unwrapping errors. The unwrapping flag file
+  is generated with the program <em>corr_flag</em>. This file
+  contains information on the location of the trees, branch cuts,
+  region unwrapped, regions of low correlation, and neutrons. The
+  meaning of the individual bits in the bit mask of each pixel is
+  explained in <em>typedef_ISP.h</em>. The information contained in
+  the flagfile can be displayed with the programs <em>disflag</em>
+  and <em>rastree.</em></p>
+
+  <p>residue_cc does not consider the phases of the low coherence
+  areas. As a consequence much fewer residues are found, which will
+  speed up the connection of the residues by brach cuts as done by
+  the program <a href="tree_cc.html">tree_cc</a>. When using
+  <em>residue_cc</em> the branch cuts should be determined with
+  <a href="tree_cc.html">tree_cc</a> rather than with <a href=
+  "tree_gzw.html">tree_gzw</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "corr_flag.html">corr_flag</a>, <a href=
+  "tree_cc.html">tree_cc</a>, <a href="tree_gzw.html">tree_gzw</a>,
+  <a href="neutron.html">neutron</a>, <a href=
+  "ISP_display.html">disflag</a>, <a href=
+  "ISP_display.html">rastree</a>.</p>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Jan-2000.</p>
+</body>
+</html>

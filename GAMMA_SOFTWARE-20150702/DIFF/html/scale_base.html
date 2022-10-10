@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: scale_base</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>scale_base</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/scale_base.c">scale_base.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  scale_base - Scale unwrapped phase with location dependent scale
+  factor determined from baseline files.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>&lt;unw-2&gt; &lt;scaled_unw-2&gt; &lt;baseline-1&gt;
+  &lt;SLC-1_par-1&gt; &lt;interf_par-1&gt; &lt;baseline-2&gt;
+  &lt;SLC-1_par-2&gt; &lt;interf_par-2&gt;&lt;
+  &lt;int_flt_flag&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;unw-2&gt;</td>
+
+      <td>unwrapped interferogram file name (to be scaled)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;scaled_unw-2&gt;</td>
+
+      <td>(output) scaled unwrapped file name</td>
+    </tr>
+
+    <tr>
+      <td>&lt;baseline-1&gt;</td>
+
+      <td>baseline file of 1. interferogram</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC-1_par-1&gt;</td>
+
+      <td>parameter file of SLC-1 of 1. interferogram</td>
+    </tr>
+
+    <tr>
+      <td>&lt;interf_par-1&gt;</td>
+
+      <td>interferogram/offset processing parameters of 1.
+      interferogram</td>
+    </tr>
+
+    <tr>
+      <td>&lt;baseline-2&gt;</td>
+
+      <td>baseline file of 2. interferogram (to be scaled)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC-1_par-2&gt;</td>
+
+      <td>parameter file of SLC-1 of 2. interferogram (to be
+      scaled)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;interf_par-2&gt;</td>
+
+      <td>interferogram/offset processing parameters of 2.
+      interferogram (to be scaled)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;int_flt_flag&gt;</td>
+
+      <td>interferogram (0) or flattened interferogram (1) to scale
+      (default=0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  scale_base ../25394_05721/25394_05721.int_sm.unw
+  25394_16242.phase_sim 25394_16242.base 25394.slc_esa.par
+  25394_16242.off ../25394_05721/25394_05721.base
+  ../25394_05721/25394.slc_esa.par ../25394_05721/25394_05721.off
+  0</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code scale_base.c in ./src. For compilation adjust and use
+  Makefile: Executable version scale_base in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  scale_base is used in 3- and 4- pass differential interferometry
+  to scale the unwrapped phase of an interferogram used as
+  reference for the topographic phase of the differential
+  interferogram.</p>
+
+  <p>Both unflattened and flattened unwrapped interferograms can be
+  scaled.</p>
+
+  <p>The location dependent phase scale factor is calculated from
+  the baselines of the interferogram used as topographic reference
+  and the differential interferogram. Baseline estimates can be
+  calculated based on the orbit data, based on the registration
+  offsets, based on the (unflattened) interferogram fringe
+  frequency, or by a combination of these methods.</p>
+
+  <p>The real valued scaled unwrapped phase is subtracted from the
+  differential interferogram to determine the surface displacement
+  estimation using the program <a href=
+  "sub_phase.html">sub_phase</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "baseline_file.html">baseline file</a>, <a href=
+  "sub_phase.html">sub_phase</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1999.<br>
+  <a href="tazio_strozzi.html">TS</a>, <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 11-Aug-1999.</p>
+</body>
+</html>

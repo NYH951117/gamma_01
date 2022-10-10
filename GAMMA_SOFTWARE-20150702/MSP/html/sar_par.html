@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: sar_par</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>SAR Sensor Parameter File</h2>
+
+  <p>(ASCII file) such as &lt;sensor&gt;.par</p>
+
+  <p><strong>NAME</strong><br clear="all">
+  &lt;sensor&gt;.par - contains parameter values describing the SAR
+  sensor used to acquire the SAR raw data. This information is used
+  throughout the SAR processing.</p>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  ERS1_ESA.par, an existing SAR sensor parameter file for the SAR
+  on the ERS Satellites is used as an example:</p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>title:</td>
+
+        <td>ERS-1 C-BAND radar 5.3000 GHZ 15.5500 MHz BW</td>
+      </tr>
+
+      <tr>
+        <td>sensor_name:</td>
+
+        <td>ERS-1</td>
+      </tr>
+
+      <tr>
+        <td>chirp_direction:</td>
+
+        <td>UP_CHIRP</td>
+      </tr>
+
+      <tr>
+        <td>receiver_adc_mode:</td>
+
+        <td>IQ</td>
+      </tr>
+
+      <tr>
+        <td>sample_type:</td>
+
+        <td>BYTE</td>
+      </tr>
+
+      <tr>
+        <td>receiver_spectrum_type:</td>
+
+        <td>NORMAL</td>
+      </tr>
+
+      <tr>
+        <td>SAR_center_frequency:</td>
+
+        <td>5.300000e+09 Hz</td>
+      </tr>
+
+      <tr>
+        <td>chirp_bandwidth:</td>
+
+        <td>1.555000e+07 Hz</td>
+      </tr>
+
+      <tr>
+        <td>chirp_duration:</td>
+
+        <td>3.712000e-05 s</td>
+      </tr>
+
+      <tr>
+        <td>ADC_sampling_frequency:</td>
+
+        <td>1.8962468e+07 Hz</td>
+      </tr>
+
+      <tr>
+        <td>file_header_size:</td>
+
+        <td>11644 bytes</td>
+      </tr>
+
+      <tr>
+        <td>record_length:</td>
+
+        <td>11644 bytes</td>
+      </tr>
+
+      <tr>
+        <td>record_header_size:</td>
+
+        <td>412 bytes</td>
+      </tr>
+
+      <tr>
+        <td>samples_per_record:</td>
+
+        <td>5616</td>
+      </tr>
+
+      <tr>
+        <td>antenna_azimuth_3dB_beamwidth:</td>
+
+        <td>0.2880 degrees</td>
+      </tr>
+
+      <tr>
+        <td>antenna_range_3dB_beamwidth:</td>
+
+        <td>5.4000 degrees</td>
+      </tr>
+
+      <tr>
+        <td>nominal_antenna_azimuth_angle:</td>
+
+        <td>90.0000 degrees</td>
+      </tr>
+
+      <tr>
+        <td>nominal_antenna_look_angle:</td>
+
+        <td>20.3500 degrees</td>
+      </tr>
+
+      <tr>
+        <td>nominal_platform_pitch_angle:</td>
+
+        <td>0.0000 degrees</td>
+      </tr>
+
+      <tr>
+        <td>antenna_pattern_filename:</td>
+
+        <td>ERS1_antenna.gain</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong></p>
+
+  <p>The data types are defined in the MSP software include file
+  <em>typedef_MSP.h</em></p>
+
+  <table border="1" cellspacing="1" cellpadding="7" width="841">
+    <tbody>
+      <tr>
+        <td>title</td>
+
+        <td>ascii text description of parameter file</td>
+      </tr>
+
+      <tr>
+        <td>sensor_name</td>
+
+        <td>sensor name (ERS-1, JERS-1, ...)</td>
+      </tr>
+
+      <tr>
+        <td>chirp_direction</td>
+
+        <td>chirp direction flag values: (UP_CHIRP,
+        DOWN_CHIRP)</td>
+      </tr>
+
+      <tr>
+        <td>receiver_adc_mode</td>
+
+        <td>Receiver ADC mode: (REAL, IQ), REAL denotes offset
+        video sampling, while IQ is in-phase/quadrature ADC
+        sampling, 2 samples/point</td>
+      </tr>
+
+      <tr>
+        <td>sample_type</td>
+
+        <td>sample type (FLOAT, BYTE), floats are 4 bytes/value and
+        bytes are of type unsigned char, 1 byte/value</td>
+      </tr>
+
+      <tr>
+        <td>receiver_spectrum_type</td>
+
+        <td>SAR receiver spectrum: (NORMAL,INVERT), inverted
+        spectrum caused by the receiver L.O. frequency above the
+        chirp signal spectrum.</td>
+      </tr>
+
+      <tr>
+        <td>SAR_center_frequency</td>
+
+        <td>carrier frequency for radar (Hz)</td>
+      </tr>
+
+      <tr>
+        <td>chirp_bandwidth</td>
+
+        <td>chirp bandwidth (Hz)</td>
+      </tr>
+
+      <tr>
+        <td>chirp_duration</td>
+
+        <td>chirp duration (sec)</td>
+      </tr>
+
+      <tr>
+        <td>ADC_sampling_frequency</td>
+
+        <td>range analog-digital convertor (ADC) sampling frequency
+        (Hz)</td>
+      </tr>
+
+      <tr>
+        <td>file_header_size</td>
+
+        <td>SAR raw data file header size (bytes)</td>
+      </tr>
+
+      <tr>
+        <td>record_length</td>
+
+        <td>length of record (echo) in bytes</td>
+      </tr>
+
+      <tr>
+        <td>record_header_size</td>
+
+        <td>record header size in bytes</td>
+      </tr>
+
+      <tr>
+        <td>samples_per_record</td>
+
+        <td>number of samples/echo (an I/Q pair counts as a single
+        sample)</td>
+      </tr>
+
+      <tr>
+        <td>antenna_azimuth_3dB_beamwidth</td>
+
+        <td>azimuth antenna 3 dB (half-power) beamwidth (decimal
+        deg.)</td>
+      </tr>
+
+      <tr>
+        <td>antenna_range_3dB_beamwidth</td>
+
+        <td>range antenna 3 dB (half-power) beamwidth (decimal
+        deg.)</td>
+      </tr>
+
+      <tr>
+        <td>nominal_antenna_azimuth_angle</td>
+
+        <td>nominal azimuth antenna angle (including average.
+        squint for simulation) (decimal degrees CW about N, right
+        looking SAR 90.0, left looking: -90.0)</td>
+      </tr>
+
+      <tr>
+        <td>nominal_antenna_look_angle</td>
+
+        <td>nominal antenna look angle (decimal degrees CW
+        (includes ave. roll for simulation) about the final T axis,
+        rotation dependent on right or left looking</td>
+      </tr>
+
+      <tr>
+        <td>nominal_platform_pitch_angle</td>
+
+        <td>nominal platform pitch angle, CW rot. about the temp. C
+        axis, nose up is +</td>
+      </tr>
+
+      <tr>
+        <td>antenna_pattern_filename</td>
+
+        <td>antenna pattern filename (relative to peak, one-way
+        gain) (not in dB!)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p>COORDINATE SYSTEM FOR AZIMUTH, LOOK AND PITCH ANGLES:<br>
+  N = DOWN<br>
+  C = N x V /|N x V|<br>
+  T = C x N<br>
+  ROLL is measured about T axis CW + (right wing down)<br>
+  PITCH is measured CW about the temp C axis (nose up +)<br>
+  YAW is measured CW about +N axis (looking down).</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;sensor&gt;.par - contains parameter values for SAR Sensor
+  used throughout the interferometric data processing. This file
+  does not change for JERS-1 and varies slightly for different
+  processing and archive facilities for ERS. For Radarsat and SIR-C
+  this file is created for each new processing run because of the
+  large number of modes supported by each radar. &lt;sensor&gt;.par
+  - is either taken from the existing SAR sensor parameter files or
+  generated using <a href="create_sar_par.html">create_sar_par</a>.
+  The formats used in &lt;sensor&gt;.par are defined in the in MSP
+  type definition file <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The values of the SAR sensor parameter file &lt;sensor&gt;.par
+  may be displayed together with the definitions using <a href=
+  "create_sar_par.html">create_sar_par</a>. This file can also be
+  modified using a text editor.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "create_sar_par.html">create_sar_par</a>,&nbsp;<a href=
+  "SIRC_proc.html">SIRC_proc</a>, <a href=
+  "RSAT_raw.html">RSAT_raw</a>,&nbsp;<a href=
+  "ASAR_IM_proc.html">ASAR_IM_proc</a>.&nbsp;<br></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Aug-2003.
+</body>
+</html>

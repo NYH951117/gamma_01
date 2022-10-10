@@ -1,0 +1,149 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$osf = 16;
+$scale = .2;	#display scale factor
+$exp = 0.5;	#display exponent
+$sz = 16; 	#size of window that is interpolated
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale);
+
+if (($#ARGV + 1) < 7){die <<EOS ;}
+*** $0
+*** Copyright 2013, Gamma Remote Sensing, v1.7 25-Mar-2013 clw ***
+*** Perform point target analysis and calibration factor evaluation for a set of point targers ***
+
+usage: $0 <CR_tab> <SLC> <SLC_par> <cal_dir> <sigma> <c_rpos> <c_azpos> [osf]
+
+    CR_tab  (input) 3 column list of row and sample number of corner reflectors
+                1. Corner reflector id
+		2. SLC column  (includes path)
+                3. SLC row    (includes path)
+    SLC	      SLC image
+    SLC_par   SLC_parameter file
+    cal_dir   directory for output calibration results    
+    sigma     Radar cross-section of the corner reflectors
+    c_rpos    range sample number of the center of the region used to estimate region
+    c_azpos   azimuth line of the center of the region used to estimate clutter
+    osf       SLC over-sampling factor 2, 4, 8, 16, 32, 64 (default: $osf)
+    -s scale  (option) set image display scale factor (default: $scale)   
+    -e exp    (option) set image display exponent (default: $exp)   		       
+EOS
+
+$targ_tab  = $ARGV[0];
+$slc = $ARGV[1];
+$slc_par = $ARGV[2];
+$cal_dir = $ARGV[3];
+$psigma  = $ARGV[4];
+$c_rpos = $ARGV[5];
+$c_azpos = $ARGV[6];
+
+if($#ARGV >= 7){
+  $osf = $ARGV[7];
+  ($osf >= 2  && $osf <= 64) or die "\nERROR: invalid over-sampling factor: $osf\n";
+}
+print "$0  @ARGV\n";
+my ($s1, $dir1, $ext1) = fileparse($slc, qr/\.[^.]*/); #extension is the last bit after the last period
+
+open(TARG_TAB, "<$targ_tab") or die "\nERROR $0: table of point target locations: $targ_tab\n\n";
+print "table of corner reflector positions: $targ_tab\n"; 
+-d $cal_dir or system("mkdir $cal_dir");
+$log = "$cal_dir/mk_cr_cal_$s1.log";  
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+
+$time = localtime;
+print "start: $time  log file: $log\n";
+print "CR_tab:  $targ_tab\n";
+print "SLC: $slc\n";
+print "SLC parameter file: $slc_par\n";
+print "calibration directory:  $cal_dir\n";
+print "clutter region center range: $c_rpos   azimuth: $c_azpos\n";
+print "RCS of target (m**2): $psigma\n";
+print "over-sampling factor: $osf\n";
+
+print LOG "start: $time  log file: $log\n";
+print LOG "CR_tab:  $targ_tab\n";
+print LOG "SLC: $slc\n";
+print LOG "SLC parameter file: $slc_par\n";
+print LOG "calibration directory:  $cal_dir\n";
+print LOG "clutter region center range: $c_rpos   azimuth: $c_azpos\n";
+print LOG "RCS of target (m**2): $psigma\n";
+print LOG "over-sampling factor: $osf\n";
+
+#read in the contents of the RSLC_TAB file and store in arrays
+LINE: while (<TARG_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+ 
+  @fields = split;		#extract the corner target positions
+  $rpos = $fields[1];
+  $azpos = $fields[2];
+  $coord = $rpos."_".$azpos;
+
+  $ptr_image = "$cal_dir/".$s1."_$coord.ptarg";
+  $rplt = "$cal_dir/".$s1."_$coord.rplt";
+  $azplt = "$cal_dir/".$s1."_$coord.azplt";
+  $ptr_par = "$cal_dir/".$s1."_$coord.ptr_par"; 
+  $pcal = "$cal_dir/".$s1."_$coord.pcal"; 
+  $ptr_width = $sz * $osf;
+  $ptr_length = $sz * $osf;
+  $cmd = "ptarg_cal $slc_par $slc $rpos $azpos $psigma $c_rpos $c_azpos $ptr_image $rplt $azplt $pcal $osf";
+
+  printf "\nCR: %2d  range: $rpos    azimuth: $azpos\n",$i+1;
+  printf "$cmd\n";
+  printf "\nover-sampled SLC image of point: $ptr_image\n";
+  printf "range cut plot data: $rplt\n";
+  printf "azimuth cut plot data: $azplt\n";
+  printf "point target parameters: $ptr_par\n";
+  $ptarg_cal_out = `$cmd`;
+  
+  printf LOG "\nCR: %2d  range: $rpos    azimuth: $azpos\n",$i+1;
+  printf LOG "$cmd\n";
+  printf LOG $ptarg_cal_out;
+  printf LOG "\nover-sampled SLC image of point: $ptr_image\n";
+  printf LOG "range cut plot data: $rplt\n";
+  printf LOG "azimuth cut plot data: $azplt\n";
+  close  LOG;
+  
+  execute("rasmph $ptr_image $ptr_width $ptr_length+1 0 1 1 $scale $exp 1 $ptr_image.bmp", $log);
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n"; 
+  $i++;
+}
+
+print LOG"\n";
+print "\n";
+close LOG;
+
+$time = localtime;
+print "processing end: $time\n";
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "processing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

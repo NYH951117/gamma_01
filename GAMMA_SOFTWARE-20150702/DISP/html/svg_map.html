@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: svg_map</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>svg_map</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/svg_map.c">svg_map.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>svg_map</i> - Creates a map with scales in scalable vector
+  graphics format with a linke to a given image using geometry from
+  a dem_par file.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>svg_map &lt;image&gt; &lt;dem_par&gt; &lt;svg&gt;
+  [font] [fsize] [color] [gcolor] [majorx] [majory] [minorx]
+  [minory] [thick] [grid]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tr>
+      <td>&lt;image&gt;</td>
+
+      <td>(input) URL of background image in bmp, png or jpg
+      format</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dem_par&gt;</td>
+
+      <td>(input) corresponding dem_par file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;svg&gt;</td>
+
+      <td>(output) svg output file</td>
+    </tr>
+
+    <tr>
+      <td>[font]</td>
+
+      <td>name of labelling font (default = sans-serif)</td>
+    </tr>
+
+    <tr>
+      <td>[fsize]</td>
+
+      <td>font size (default = 14)</td>
+    </tr>
+
+    <tr>
+      <td>[color]</td>
+
+      <td>color of ticks and labels (default = black)</td>
+    </tr>
+
+    <tr>
+      <td>[gcolor]</td>
+
+      <td>color of grid (default = black)</td>
+    </tr>
+
+    <tr>
+      <td>[majorx]</td>
+
+      <td>major x-ticks in dem_par coordinates (default = 1)</td>
+    </tr>
+
+    <tr>
+      <td>[majory]</td>
+
+      <td>major y-ticks in dem_par coordinates (default = 1)</td>
+    </tr>
+
+    <tr>
+      <td>[minorx]</td>
+
+      <td>minor x-ticks in dem_par coordinates (default = 0.1)</td>
+    </tr>
+
+    <tr>
+      <td>[minory]</td>
+
+      <td>minor y-ticks in dem_par coordinates (default = 0.1)</td>
+    </tr>
+
+    <tr>
+      <td>[thick]</td>
+
+      <td>tick and gridline thickness in pixels (default = 1)</td>
+    </tr>
+
+    <tr>
+      <td>[grid]</td>
+
+      <td>1 = draw grid, 0 = no grid (default = 0)</td>
+    </tr>
+
+    <tr>
+      <td>[gopac]</td>
+
+      <td>grid opacity, 0.0 (fully transparent) to 1.0 (fully
+      opaque), default=1.0</td>
+    </tr>
+
+    <tr>
+      <td>[gdash]</td>
+
+      <td>grid dash size in px (default = 0 = no dashes)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>svg_map biomass_6_14_eqa.bmp biomass_6_14_eqa.dem_par
+  biomass_6_14.svg</tt></p>
+
+  <p>Generates a map with standard scales around
+  biomass_6_14_eqa.bmp and stores it in biomass_6_14.svg a scalable
+  vector graphics file. It can be viewed by any SVG capable
+  graphics program such as inkscape, sodipodi or a standard web
+  browser.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>svg_map</i> creates a map with scales in SVG XML format that
+  can be displayed in a wide range of graphics software and image
+  browsers. Its advantage is its portability and the vector format
+  that allows to scale text and lines without quality loss. SVG is
+  an open standard published by the World Wide Web Consortium. The
+  resulting SVG file can be edited in any text editor.<br></p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="http://www.w3.org/Graphics/SVG/">W3C page: Scalable
+  Vector Graphics (SVG)</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  awi, last change 21-May-2007.
+</body>
+</html>

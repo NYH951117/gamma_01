@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF/GEO Reference Manual: atm_mod</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2005 Gamma Remote Sensing clw -->
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>atm_mod</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/atm_mod.c">atm_mod.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  atm_mod&nbsp;-&nbsp; Evaluate linear regression of unwrapped
+  phase with respect to height and calculate a model of the
+  atmospheric phase</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>atm_mod &lt;diff_unw&gt; &lt;hgt&gt; &lt;DIFF_par&gt;
+  &lt;model&gt; [dr] [daz] [overlay]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;diff_unw&gt;</td>
+
+        <td>&nbsp;unwrapped differential interferogram including
+        atmospheric phase signal (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;hgt&gt;</td>
+
+        <td>(input) height coregistered to the interferogram</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input) differential interferogram parameters</td>
+      </tr>
+
+      <tr>
+        <td>&lt;model&gt;</td>
+
+        <td>(output) modeled phase values from the regression of
+        phase with respect to height (float)</td>
+      </tr>
+
+      <tr>
+        <td>[dr]</td>
+
+        <td>range sample increment (enter - for default: 32)</td>
+      </tr>
+
+      <tr>
+        <td>[daz]</td>
+
+        <td>azimuth sample increment (enter - for default: 32)</td>
+      </tr>
+
+      <tr>
+        <td>[overlay]</td>
+
+        <td>(input) SUN raster/BMP format overlay mask, 0 pixels
+        are excluded ( -: no overlay)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>atm_mod&nbsp;19960421_19960422.adf.unw&nbsp;lan_dem.rdc&nbsp;19960421_19960422.diff_par&nbsp;1996421_19960422.atm_model
+  4 4<br></samp></p>
+
+  <p>determines the linear regression coefficients of the residual
+  phase with respect to height in the unwrapped
+  interferogram19960421_19960422.adf.unw &nbsp;using the height
+  data in lan_dem.rdc and generates the phase model of the height
+  dependent atmospheric phase
+  delay.&nbsp;</p><strong>DESCRIPTION</strong><br>
+  This program is used to determine the height dependence of the
+  unwrapped atmosphereric phase. This means that any topographic
+  related phase due to the interferometric baseline must first be
+  removed. Depending on atmospheric conditions there is an altitude
+  dependence of the path delay with respect to altitude caused by
+  changes in the atmospheric water vapor and preassure profiles
+  between the acquisitions of the interferometric image pair.
+  &nbsp;<span style="font-style: italic;">atm_mod</span> estimates
+  the parameters of a linear model of the residual phase with
+  respect to the altitude values in the input height stack
+  <span style="font-style: italic;">phgt</span>. The model consists
+  of a phase constant <span style=
+  "font-weight: bold; font-style: italic;">a0</span> in radians and
+  phase slope <span style="font-weight: bold;"><span style=
+  "font-style: italic;">a1</span></span> in unitis of radians per
+  meter.<br>
+  <br>
+  It is important that only phase due to atmosphere is present in
+  the differential interferogram phase. For this reason the raster
+  image overlay should be applied used to exclude any moving points
+  from consideration in the regression. The overlay image must be
+  an 8 bit raster image, all points in the image with RGB
+  value&nbsp;000 are excluded from the regression. The overlay
+  should have the exact number of rows and columns as the unwrapped
+  phase file.<br>
+  <br>
+  The output phase model has the height dependent unwrapped phase
+  &nbsp;as determined from the regression: <span style=
+  "font-style: italic;"><span style=
+  "font-weight: bold;">&nbsp;</span></span><span style=
+  "font-weight: bold; font-style: italic;">model</span>
+  <span style="font-weight: bold;">[x,y]</span> <span style=
+  "font-weight: bold; font-style: italic;">= a0 +
+  a1*hgt</span><span style="font-weight: bold;">[x,y]<span style=
+  "font-style: italic;">.</span></span> The program <a href=
+  "sub_phase.html">sub_phase</a> can then be used to remove the
+  modelled phase from all the points in the stack. The phase model
+  is calculated for all points where valid height values are
+  available not just those in the overlay. Valid heights are
+  defined as non-zero values in the set of point heights.&nbsp;
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="sub_phase_pt.html">sub_phase</a><a href=
+  "atm_mod.html"></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 17-Jun-2014.
+</body>
+</html>

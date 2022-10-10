@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: adf</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>adf</h2><i>ANSI-C program: <a href=
+  "../src/adf.c">adf.c</a></i>
+
+  <p><b>NAME</b><br>
+  adf - Adaptive filtering with filtering function based on local
+  fringe spectrum.</p>
+
+  <p><b>SYNOPSIS</b></p>
+
+  <p><b><tt>adf &lt;int&gt; &lt;sm&gt; &lt;cc&gt; &lt;width&gt;
+  &lt;alpha&gt; [nfft] [cc_win] [step] [ymin] [nlines]
+  [wfrac]</tt></b></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;int&gt;</td>
+
+        <td>(input) interferogram (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sm&gt;</td>
+
+        <td>(output) smoothed interferogram (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;cc&gt;</td>
+
+        <td>(output) coherence derived from smoothed
+        interferogram<br>
+        (enter - to avoid writing out cc)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line</td>
+      </tr>
+
+      <tr>
+        <td>[alpha]</td>
+
+        <td>exponent for non-linear filtering (default=0.5)</td>
+      </tr>
+
+      <tr>
+        <td>[nfft]</td>
+
+        <td>filtering FFT window size (default=32, 8 --&gt;
+        512)</td>
+      </tr>
+
+      <tr>
+        <td>[cc_win]</td>
+
+        <td>coherence parameter estimation window size (odd,
+        default=7, max=15)</td>
+      </tr>
+
+      <tr>
+        <td>[step]</td>
+
+        <td>processing step (default=nfft/8)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting azimuth line to process
+        (default:0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to process (default=0: to end of
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[wfrac]</td>
+
+        <td>minimum fraction of points required to be non-zero in
+        the filter window (default=0.700) &nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>EXAMPLE</b></p>
+
+  <p><tt>adf 1352_1610.flt 1352_1610.sm 1352_1610.sm_cc 2500 0.4 32
+  5 4 0 0 0.8</tt></p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>adf</i> reads the complex valued interferogram, computes
+  locally the interferogram power spectrum, designs a filter based
+  on the power spectrum, filters the interferogram , estimates the
+  phase noise coherence value for the filtered interferogram and
+  writes out the filtered interferogram and coherence map.&nbsp;
+  The algorithm is based upon the paper by Goldstein and Werner
+  (<i>Geophysical Research Letters</i>, vol. 25, no. 21. pp.
+  4035-4038, 1998).</p>
+
+  <p>The goal of the adaptive filtering step is to reduce phase
+  noise thereby reducing the number of residues.A residue is a
+  point in the&nbsp; interferogram where the sum of the phase
+  differences between pixels around a closed path is not 0.0. The
+  phase differences in the wrapped interferogram lie between -PI
+  and +PI . Phase unwrapping determines the number of multiples of
+  2PI to add to every point in the interferogram based on some
+  minimization criterium. Residues exist as pairs. Generally,
+  thermal noise causes pairs of residues that are close together to
+  be generated. Filtering of the interferogram reduces the noise
+  and hence the total number of residues.</p>
+
+  <p>On the other hand the user must be aware that too strong
+  filtering may introduce phase unwrapping errors by eliminating
+  fringes. The filter significantly reduces the phase noise for
+  areas with sufficiently reliable phase information. while high
+  phase noise areas are minimally affected. The exponent for
+  non-linear filtering determines the filter strength with larger
+  values leading to greater filtering. Filtering is implemented
+  using the FFT, which is nominally restricted to a power of 2,
+  though use of the FFTW subroutine library, loosens this
+  restriction, such that the FFT size for this application should
+  be even.&nbsp; For the filtering of rapidly changing phase
+  aassociated with the&nbsp; topographic phase of rugged terrain a
+  small FFT size (16,32) is better.&nbsp; Larger FFT window sizes
+  are preferred in regions of low fringe visibility but this only
+  when the phase slope can be assumed constant over the estimation
+  window. In the case rather flat terrain and for terrain phase
+  removed differential interferograms larger window sizes as 32
+  --&gt;246 lead to good results. Multiple application of the
+  filter is possible, and can lead to better results when using
+  large values of the filter exponent parameter.</p>
+
+  <p>The argument of the complex valued output filtered
+  interferogram corresponds to the filtered phase, the magnitude to
+  a "phase noise coherence estimate" of the output image. This
+  "phase noise coherence estimate" is a measure for the phase noise
+  of the filtered interferogram and can be used in the phase
+  unwrapping to mask low coherence areas. To facilitate this it is
+  possible to write the "phase noise coherence estimate" out to a
+  seperate file.</p>
+
+  <p>The processing step parameter influences the processing time.
+  Small values lead to a slightly smoother filtered output image
+  and longer processing times. The dimensions of the smoothed
+  interferogram file are identical to that of the interferogram
+  file. Therefore, the programs to generate SUN raster or BMP
+  format images and screen display may use the same parameters.</p>
+
+  <p>An important parameter is the fraction of points that are
+  non-zero within the filter window,&nbsp;<i><font color=
+  "#000000">wfrac_min</font></i><font color="#FF0000">.</font> This
+  threshold prevents filtering of regions with few valid data
+  values such at image edges. Setting the value to .25 gives
+  filtered output at every input pixel with non-zero input
+  value</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="adapt_filt.html">adapt_filt</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.<br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Aug-2006.
+</body>
+</html>

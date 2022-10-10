@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: product_cpx</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>product_cpx</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/product_cpx.c">product_cpx.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  product - Calculation of product=(data_1 )*(datat_2) betweeen two
+  complex value data images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>product &lt;f1&gt; &lt;f2&gt; &lt;product&gt;
+  &lt;width&gt; [start] [mlines] [conj_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;pwr1&gt;</td>
+
+        <td>(input) data file 1 (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pwr2&gt;</td>
+
+        <td>(input) data file 2 (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;product_out&gt;</td>
+
+        <td>(output) product &nbsp;data_1 * data_2 (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[start]</td>
+
+        <td>starting line for computing product (default: 0 = first
+        line)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines used for product computation (default:
+        - corresponding to all lines)</td>
+      </tr>
+
+      <tr>
+        <td>[conj_flag]</td>
+
+        <td>conjugation flag:<br>
+        &nbsp; 0: none (default)<br>
+        &nbsp; 1: conjugate f2 before multiplication&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>product 20070423.hh.slc 20070423.hv.slc
+  20070423.hh_hv.product 2500 0 - 1</samp></p>
+
+  <p>The product between the HH- and the HV-polarized channels of a
+  polarimetric dataset is computed. The conjugation flag is set to
+  one thus meaning that the product is taken between the first data
+  file and the conjugate of the second data file.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  product_cpx estimates the product between two complex value
+  images. This program is particularly useful for the derivation of
+  polarimetric measures, such as the elements of the correlation
+  and the coherency matrix. For this the option of conjugating the
+  second data file has been included. The conjugate of a complex
+  value number corresponds to a complex number having the same real
+  part and the opposite imaginary part, i.e. the same mangnitude
+  and the opposite phase.<br>
+  <br>
+  The input and the output data are binary files of type
+  FCOMPLEX.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a>MS</a> last change
+  20-Nov-2009..</p>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: rc_real</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>rc_real</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/rc_real.c">rc_real.c</a></i></p>
+
+  <p><strong>NAME</strong><br clear="all">
+  <em>rc_real</em> - Range compression of offset video (real) SAR
+  raw data (SIR-C).</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>rc_real &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;raw_data&gt;
+  &lt;rc_data&gt; [loff] [nl] [kaiser] [nr_ext] [fr_ext] [r_chirp]
+  [rfi_flag] [rfi_thres]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) MSP SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;raw_data&gt;</td>
+
+        <td>(input) uncompressed raw SAR signal data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rc_data&gt;</td>
+
+        <td>(output) output range compressed data filename</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (enter - for default=parameter
+        file value)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines filter/range compress (enter - for
+        default=parameter file value)</td>
+      </tr>
+
+      <tr>
+        <td>[kaiser]</td>
+
+        <td>range chirp Kaiser window parameter beta
+        (default=2.120, -30 dB sidelobes)</td>
+      </tr>
+
+      <tr>
+        <td>[nr_ext];</td>
+
+        <td>near range swath extension in samples (default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[fr_ext]</td>
+
+        <td>near range swath extension in samples (default from
+        PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[rfi_filt]</td>
+
+        <td>RFI suppression filtering (0:OFF (default) 1:ON)</td>
+      </tr>
+
+      <tr>
+        <td>[rfi_thres]</td>
+
+        <td>range chirp samples (default: calculated from SAR
+        sensor parameters)</td>
+      </tr>
+
+      <tr>
+        <td>[r_chirp]</td>
+
+        <td>RFI detection threshold, nominal range 1.0 --&gt; 1.5
+        (default= 1.100)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong><samp>rc_real SIRC.par
+  p19951009.slc.par p19951009.raw 19951009.rc</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  This program range compresses offset video SAR data, such as
+  produced by SIR-C. A matched filter is calculated from the
+  parameters stored in the Sensor Parameter file and applied using
+  FFT convolution. The fully range compressed samples are stored on
+  disk for autofocus and azimuth compression. The program also
+  accepts a a text file containing the range chirp values rather
+  than calculating a synthetic chirp. This feature can be useful if
+  a non-chirp, or distorted chirp waveform is used for range
+  compression. The format of the range chirp file consists of pairs
+  of entries: sample number floating point chirp value, one pair
+  per line, separated by spaces or a tab character (white
+  space).</p>
+
+  <p>Input data are offset video rather than IQ complex format,
+  therefore the data must be converted to IQ complex prior to
+  azimuth filtering. A "quicklook" image can be created by first
+  range compressing the data with <em>rc_real</em> followed by
+  azimth filtering and decimating the result. The program <a href=
+  "prefilt.html">prefilt</a> performs this function on the range
+  compressed data set.</p>
+
+  <p><em>rc_real</em> has the capability to extend the processed
+  image swath beyond the region of full resolution. The nominal
+  number of samples in the range compressed data for offset video
+  input data is:</p>
+
+  <p><em>(echo_samples_processed - range_chirp_samples)/2.</em></p>
+
+  <p>Outside of the nominal full resolution swath are two bands,
+  one in the near range and the other in the far range. Both of
+  these bands are as wide as the range chirp width in samples.
+  Across these bands the resolution degrades linearly starting at
+  the full resolution and going to zero. These regions also fade in
+  intensity proportional to the loss in resolution due to the
+  decreasing number of echo samples for these image pixels. The
+  user can specify the swath extension for both the near and far
+  range in the processing parameter file or via the command line
+  parameters <em>nr_ext</em> and <em>fr_ext</em>.</p>
+
+  <p>Radio frequency interference (RFI) due to ground radars can be
+  a problem with L-Band data collected by SIR-C. The interference
+  will cause noisy regions to appear in the image, possibly
+  completely obliterating the scene. <em>rc_real</em> has the
+  option to apply an filter that adaptively suppresses RFI at the
+  possible cost of higher range and azimuth sidelobes. The
+  interfering signals are generaly narrow band and can be detected
+  in the range spectra. An adaptive notch filter eliminates the
+  affected spectral windows when the spectrum is greater than the
+  expected value as specified by the <em>rfi_thres</em> command
+  line parameter. Increasing <em>rfi_thres</em> decreases the
+  amount of filtering while lower values of <em>rfi_thres</em> will
+  increase the amount of rejected bandwidth.</p>
+
+  <p>The raw data is divided into blocks of 512 lines, Within each
+  block the spectrum is evaluated for RFI and filtered. A plot of
+  the spectrum and the notch filter is stored in the file
+  range_spectra.dat for the first block. The program gnuplot can be
+  applied to examine the spectrum and associated filter with the
+  command:<br></p>
+
+  <p>To plot the spectrum with gnuplot on the
+  screen:<code><samp><br></samp></code></p>
+
+  <p><code>echo "set xlabel 'FFT sample'; set ylabel 'Relative
+  Power'; set title 'Power Spectrum'; plot 'range_spectra.dat' with
+  lines lw .5 "|gnuplot</code></p>
+
+  <p>or plot to a png image file with gnuplot:<br>
+  <br>
+  <code>echo "</code><code>set term png; set output
+  'range_spectra.png';</code> <code>set xlabel 'FFT sample'; set
+  ylabel 'Relative Power'; set title 'Power Spectrum'; plot
+  'range_spaectra.dat' with lines lw .5 "|gnuplot<br></code></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">Sensor parameter file</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Jun-2012.
+</body>
+</html>

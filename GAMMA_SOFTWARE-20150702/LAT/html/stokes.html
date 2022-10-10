@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: stokes</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>stokes</h2>
+
+  <p><i>ANSI-C program: <a title="stokes " href=
+  "../src/stokes.c">stokes.c</a></i></p>
+
+  <p><strong><a href=
+  "http://en.wikipedia.org/wiki/Stokes_parameters"></a>NAME</strong><br>
+
+  stokes - Calculate Stokes parameters from co-polarized and
+  cross-polarized linear polarization SLC images, for example HH
+  and HV, or VV and VH.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>stokes &lt;SLC-1&gt; &lt;SLC-2&gt; &lt;SLC1_par&gt;
+  &lt;SLC2_par&gt; &lt;S&gt; &lt;S_par&gt; &lt;rlks&gt;
+  &lt;azlks&gt; [loff] [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) HH, VV, RH, LH single-look complex image
+        (scomplex or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) HV, VH, RV, LV single-look complex image
+        coregistered with SLC-1 (scomplex or fcomplex format)<br>
+        <br>
+        NOTE: 1. SLC images must be a co-pol and cross-pol pair
+        with the same transmit polarization<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        and linear receive polarization (HH, HV), (VV, VH), (RH,
+        RV), or (LH, LV)<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2. SCOMPLEX SLC data are scaled by .001 to increase dynamic
+        range<br>
+        <br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-2 coregistered
+        with SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;S&gt;</td>
+
+        <td>(output) root file name of 4 Stokes parameter files
+        with extensions .s0, .s1, .s2, .s3&nbsp; (float)<br>
+        NOTE: expressed in the H,V polarization basis, BSA
+        convention, the Stokes parameters given by:<br>
+        <br>
+        &nbsp; s0: &lt;|E_h|**2 + |E_v|**2&gt;<br>
+        &nbsp; s1: &lt;|E_h|**2 - |E_v|**2&gt;<br>
+        &nbsp; s2: 2Re&lt;E_h E_v*&gt;<br>
+        &nbsp; s3: -2Im&lt;E_h E_v*&gt;</td>
+      </tr>
+
+      <tr>
+        <td>&lt;S_par&gt;</td>
+
+        <td>(output) image parameter file associated with the
+        Stokes parameter data files (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks used to calculate Stokes
+        parameters</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>number of azimuth looks used to calculate Stokes
+        parameters</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line (default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (enter - for default:
+        entire file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>stokes 20080415_HH.slc 20080415_HV.slc 20080415_HH.slc.par
+  20080415_HV.slc.par 20080415_HH_HV 20080415_HH_HV.mli.par 2
+  4</samp></p>
+
+  <p style="text-align: left;">This calculates the 4 Stokes
+  parameters s0,&nbsp; s1,&nbsp; s2, and s3&nbsp; and stores them
+  in the files 20080415_HH_HV.s0, 20080415_HH_HV.s1,
+  20080415_HH_HV.s2, 20080415_HH_HV.s3</p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p style="text-align: justify;">The Stokes parameters describe
+  the polarization state of an electromagnetic field,&nbsp; see
+  <a href=
+  "http://en.wikipedia.org/wiki/Stokes_parameters">http://en.wikipedia.org/wiki/Stokes_parameters</a>.
+  The set of 4 parameters are given different designations in the
+  literature with the letters (I, Q, U, V),&nbsp; (s<sub>0</sub>,
+  s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>),&nbsp;
+  (s<sub>1</sub>, s<sub>2</sub>, s<sub>3</sub>, s<sub>4</sub>),
+  (g0, g1, g2, g3) are also widely used. The parameters denote the
+  amount of power in the different possible polarization basis:
+  linear, 45 degree, and circular as well as the total power
+  scattered by&nbsp; the scene.</p>
+
+  <p style="text-align: justify;">The program <span style=
+  "font-style: italic;">stokes</span> calculates the following
+  terms given linear polarized H and V SLC radar data as input:</p>
+
+  <p>s<sub>0</sub> = &lt; |E<sub>H</sub>|<sup>2</sup> +
+  |E<sub>V</sub>|<sup>2</sup> &gt;</p>
+
+  <p>s<sub>1</sub> = &lt; |E<sub>H</sub>|<sup>2</sup> -
+  |E<sub>V</sub>|<sup>2</sup> &gt;</p>
+
+  <p>s<sub>2</sub> = 2 Re&lt;E<sub>H</sub>
+  E<sup>*</sup><sub>V</sub>&gt;</p>
+
+  <p>s<sub>3</sub> = -2 Im&lt;E<sub>H</sub>
+  E<sup>*</sup><sub>V</sub>&gt;</p>
+
+  <p style="text-align: justify;">The single-pixel Stokes
+  parameters are averaged over a rectangular region that is
+  <span style="font-style: italic;">rlks</span> by <span style=
+  "font-style: italic;">azlks</span> in size and the average values
+  are written to the individual output files. What is significant
+  about the Stokes parameters is that they are real-valued
+  parameters and can fully describe the polarization state of the
+  field. <span style="font-style: italic;">s<sub>0</sub></span> is
+  the average total incident power while the other three parameters
+  describe the difference of powers in each of the polarization
+  bases. <span style=
+  "font-style: italic;">s</span><sub><span style="font-style: italic;">1</span></sub>
+  gives the difference in power of the H and V linear components,
+  <span style="font-style: italic;">s<sub>2</sub></span> the
+  difference of the linear components at 45 and 135 degrees, and
+  <span style="font-style: italic;">s<sub>3</sub></span> the
+  difference between the right-hand and left-hand circularly
+  polarized components.&nbsp; An electromagnetic field with random
+  polarization will have components <span style=
+  "font-style: italic;">s<sub>1</sub>, s<sub>2</sub></span>, and
+  <span style="font-style: italic;">s<sub>3</sub></span> equal to
+  0. The degree of polarization <span style=
+  "font-style: italic;">m</span> is defined as:</p>
+
+  <p>m = (s<sub>1</sub><sup>2</sup> + s<sub>2</sub><sup>2</sup> +
+  s<sub>3</sub><sup>2</sup>)<sup>1</sup><sup>/2</sup> /
+  s<sub>0</sub></p>If the field is totally polarized, such as for a
+  monochromatic plane wave:
+
+  <p>s<sub>0</sub> = (s<sub>1</sub><sup>2</sup> +
+  s<sub>2</sub><sup>2</sup> +
+  s<sub>3</sub><sup>2</sup>)<sup>1</sup><sup>/2</sup></p>
+
+  <p>The Stokes parameters <span style=
+  "font-style: italic;">s<sub>1</sub>, s<sub>2</sub>,</span>&nbsp;
+  and <span style="font-style: italic;">s<sub>3</sub></span> can be
+  represented as a point in 3 dimensions on the Poincar&eacute;
+  sphere, see <a href=
+  "http://en.wikipedia.org/wiki/Polarization_%28waves%29">http://en.wikipedia.org/wiki/Polarization_(waves)</a>&nbsp;
+  and <a href=
+  "http://spie.org/x32375.xml">http://spie.org/x32375.xml</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, &nbsp; <a href=
+  "stokes_qm.html">stokes_qm</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change 5-Jun-2013
+</body>
+</html>

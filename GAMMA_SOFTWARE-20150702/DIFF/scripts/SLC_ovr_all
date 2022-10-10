@@ -1,0 +1,106 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v2.0 9-Apr-2015 clw ***
+*** Oversample in range a set of SLC data listed in the SLC_tab ***
+
+usage: $0 <SLC_tab> <SLC2_dir> <r_ovr> <SLC_tab2>
+    SLC_tab    (input) two column list of input SLC files and SLC_par files (including paths) (text)
+    SLC2_dir   directory to contain oversampled SLC images
+    r_ovr      range over-sampling factor between 2 and 16
+    SLC_tab2   (output) two column list of oversampled SLC files and SLC_par files (including paths) (text)
+       
+    NOTE: current directory is denoted using .
+    
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of slc images and parameter files does not exist: $ARGV[0]\n\n";
+$rslc2_dir = $ARGV[1];
+$r_ovr     = $ARGV[2];
+
+unless (-d $rslc2_dir) {
+  print "NOTE: directory for output oversampled SLC files does not exist, creating director: $rslc2_dir\n";
+  (mkdir $rslc2_dir) or die "ERROR $0: non-zero exit status, could not create SLC data directory $rslc2_dir\n";
+}
+
+open(SLC_TAB2, ">$ARGV[3]") or die "\nERROR $0: table of output SLC images and parameter files cannot be created: $ARGV[3]\n\n";
+
+$r_ovr =~ /\d+$/ && $r_ovr >= 2 or die "ERROR $0: invalid range oversampling factor: $r_ovr\n";
+print "SLC_tab table of SLC images and parameter files: $ARGV[0]\n"; 
+print "SLC oversample factor: $r_ovr\n";
+print "output oversampled SLC directory: $rslc2_dir\n";
+print "SLC_tab2 table of oversampled SLC images and parameter files: $ARGV[3]\n"; 
+$time = localtime;
+print "\nprocessing start: $time\n";  
+$log = "$rslc2_dir/SLC_ovr_all.log"; 
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "SLC_tab table of SLC images and parameter files: $ARGV[0]\n"; 
+print LOG "SLC oversample factor: $r_ovr\n";
+print LOG "output oversampled SLC directory: $rslc2_dir\n";
+print LOG "SLC_tab2 table of oversampled SLC images and parameter files: $ARGV[3]\n"; 
+close LOG;
+ 
+LINE: while (<SLC_TAB>) {	#read lines of processing list file into $_
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+   
+  $rslc = $fields[0]; 
+  $rslc_par = $fields[1];
+  -e $rslc or die "ERROR $0: SLC file does not exist: $rslc\n";    
+  -e $rslc_par or die "ERROR $0: ISP parameter file does not exist for the input SLC: $rslc_par\n";
+  
+  my ($s1, $dir1, $ext1) = fileparse($rslc, qr/\.[^.]*/); #extension is the last bit after the last period 
+   
+  $rslc2 = "$rslc2_dir/$s1"."$ext1";
+  $rslc2_par = "$rslc2_dir/$s1"."$ext1.par";
+    
+  $time = localtime;
+  print"\ninput SLC:  $rslc  \tSLC_par: $rslc_par\n";
+  print "output SLC: $rslc2  \tSLC_par: $rslc2_par  start time: $time\n";  
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  print LOG "\ninput SLC: $rslc  output SLC: $rslc2  start time: $time\n";   
+  close LOG;
+  execute("SLC_ovr $rslc $rslc_par $rslc2 $rslc2_par $r_ovr", $log);
+  print SLC_TAB2 "$rslc2  $rslc2_par\n";
+}
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+  if (-e $log){
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  }
+  else {
+    open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";
+  } 
+  LOG->autoflush;   
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n\n";
+}

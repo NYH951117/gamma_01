@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw961216 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: base_perp</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>base_perp</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/base_perp.c">base_perp.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  base_perp - Computation of baseline components normal and
+  parallel to look vector.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_perp &lt;baseline&gt; &lt;SLC-1_par&gt;
+  &lt;interf_par&gt; [right/left] [time_reverse]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;baseline&gt;</td>
+
+      <td>baseline file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC-1_par&gt;</td>
+
+      <td>parameter file of first (master) SLC image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;interf_par&gt;</td>
+
+      <td>interferogram/offset processing parameter file</td>
+    </tr>
+
+    <tr>
+      <td>[right/left]</td>
+
+      <td>right/left side illumination of SAR<br>
+      (default: 1=right, -1=left)</td>
+    </tr>
+
+    <tr>
+      <td>[time_reverse]</td>
+
+      <td>SLC image time reverse flag<br>
+      (default: 1=normal, -1=reversed)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_perp 1352_1610.base 1352.part 1352_1610.off 1
+  1</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code base_perp.c in ./src. For compilation adjust and use
+  Makefile: Executable version base_perp in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  base_perp reads the input baseline file and calculates for a
+  number of locations in the image (starting pixel etc defined in
+  interferoemtric processing/offset parameter file) the baseline
+  components parallel and perpendicular to the local look
+  vector.</p>
+
+  <p>If the baseline file contains a precision estimate (i.e. if
+  the third and fourth line contains non-zero values) the precision
+  baseline estimate is used, otherwise the initial estimate.</p>
+
+  <p>The image locations (range, azimuth pixel numbers) and the
+  baseline components are printed to standard output.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "orbit.base.html">baseline file</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

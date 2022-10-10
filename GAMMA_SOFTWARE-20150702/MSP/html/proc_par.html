@@ -1,0 +1,1064 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: Processing Parameter file</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>Processing Parameter file</h2>
+
+  <p>MSP processing parameter file: (ASCII text-file): such as
+  p&lt;orbit&gt;.slc.par</p>
+
+  <p><strong>NAME<br></strong><em>p&lt;orbit&gt;.slc.par</em> - The
+  parameters in the MSP processing parameter file command the
+  processor and report the results of processing.</p>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <code>p.7225.slc.par</code>: An example to generate a single look
+  complex (SLC) image for ERS-1 SAR raw data using the Gamma
+  MSP:</p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>title:</td>
+
+        <td>Sydney orbit 7225</td>
+      </tr>
+
+      <tr>
+        <td>date:</td>
+
+        <td>1992 12 2</td>
+      </tr>
+
+      <tr>
+        <td>raw_data_start_time:</td>
+
+        <td>12 59 16.3623</td>
+      </tr>
+
+      <tr>
+        <td>channel/mode:</td>
+
+        <td>VV</td>
+      </tr>
+
+      <tr>
+        <td>earth_semi_major_axis:</td>
+
+        <td>6378137.0000 m</td>
+      </tr>
+
+      <tr>
+        <td>earth_semi_minor_axis:</td>
+
+        <td>6356752.3141 m</td>
+      </tr>
+
+      <tr>
+        <td>scene_center_latitude:</td>
+
+        <td>-33.408930 decimal degrees</td>
+      </tr>
+
+      <tr>
+        <td>scene_center_longitude:</td>
+
+        <td>151.428214 decimal degrees</td>
+      </tr>
+
+      <tr>
+        <td>track_angle:</td>
+
+        <td>-17.786854 degrees</td>
+      </tr>
+
+      <tr>
+        <td>platform_altitude:</td>
+
+        <td>797236.8885 m</td>
+      </tr>
+
+      <tr>
+        <td>terrain_height:</td>
+
+        <td>0.0000 m</td>
+      </tr>
+
+      <tr>
+        <td>sensor_position_vector:</td>
+
+        <td>0.000000 0.000000 797236.888473 m m m</td>
+      </tr>
+
+      <tr>
+        <td>sensor_velocity_vector:</td>
+
+        <td>7120.354250 0.000000 0.000000 m/s m/s m/s</td>
+      </tr>
+
+      <tr>
+        <td>sensor_acceleration_vector:</td>
+
+        <td>0.000000 0.000000 0.000000 m/s^2 m/s^2 m/s^2</td>
+      </tr>
+
+      <tr>
+        <td>pulse_repetition_frequency:</td>
+
+        <td>1679.902394 Hz</td>
+      </tr>
+
+      <tr>
+        <td>I_bias:</td>
+
+        <td>15.330689</td>
+      </tr>
+
+      <tr>
+        <td>Q_bias:</td>
+
+        <td>15.403095</td>
+      </tr>
+
+      <tr>
+        <td>I_sigma:</td>
+
+        <td>4.892531</td>
+      </tr>
+
+      <tr>
+        <td>Q_sigma:</td>
+
+        <td>4.873933</td>
+      </tr>
+
+      <tr>
+        <td>IQ_corr:</td>
+
+        <td>-0.016376</td>
+      </tr>
+
+      <tr>
+        <td>SNR_range_spectrum:</td>
+
+        <td>18.028</td>
+      </tr>
+
+      <tr>
+        <td>DAR_doppler:</td>
+
+        <td>483.785 Hz</td>
+      </tr>
+
+      <tr>
+        <td>DAR_snr:</td>
+
+        <td>6.346</td>
+      </tr>
+
+      <tr>
+        <td>doppler_polynomial:</td>
+
+        <td>5.23685e+02 -1.42805e-04 -1.18529e-09 1.26902e-14 Hz
+        Hz/m Hz/m^2 Hz/m^3</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">doppler_poly_dot<br></td>
+
+        <td style="vertical-align: top;">4.57287e+00&nbsp;
+        3.07875e-05&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;&nbsp;
+        Hz/s&nbsp;&nbsp; Hz/s/m&nbsp;&nbsp; Hz/s/m^2<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">doppler_poly_dot</td>
+
+        <td style="vertical-align: top;">0.00000e+00&nbsp;
+        0.00000e+00&nbsp; 0.00000e+00&nbsp; 0.00000e+00&nbsp;
+        Hz/s^2 Hz/s^2/m Hz/s^2/m^2 Hz/s^2/m^3<br></td>
+      </tr>
+
+      <tr>
+        <td>echo_time_delay:</td>
+
+        <td>5.606270e-03 s</td>
+      </tr>
+
+      <tr>
+        <td>receiver_gain:</td>
+
+        <td>-15.00000 dB</td>
+      </tr>
+
+      <tr>
+        <td>calibration_gain:</td>
+
+        <td>0.00000 dB</td>
+      </tr>
+
+      <tr>
+        <td>near_range_raw:</td>
+
+        <td>840358.7318 m</td>
+      </tr>
+
+      <tr>
+        <td>center_range_raw:</td>
+
+        <td>862554.6001 m</td>
+      </tr>
+
+      <tr>
+        <td>far_range_raw:</td>
+
+        <td>884750.4684 m</td>
+      </tr>
+
+      <tr>
+        <td>near_range_slc:</td>
+
+        <td>840358.7318 m</td>
+      </tr>
+
+      <tr>
+        <td>center_range_slc:</td>
+
+        <td>853767.1708 m</td>
+      </tr>
+
+      <tr>
+        <td>far_range_slc:</td>
+
+        <td>867167.7040 m</td>
+      </tr>
+
+      <tr>
+        <td>range_pixel_spacing:</td>
+
+        <td>7.90591925 m</td>
+      </tr>
+
+      <tr>
+        <td>range_resolution:</td>
+
+        <td>13.49548042 m</td>
+      </tr>
+
+      <tr>
+        <td>sec_range_migration:</td>
+
+        <td>OFF</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_deskew:</td>
+
+        <td>OFF</td>
+      </tr>
+
+      <tr>
+        <td>autofocus_snr:</td>
+
+        <td>48.0031</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_bandwidth_fraction:</td>
+
+        <td>0.8000</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_presum_factor:</td>
+
+        <td>1</td>
+      </tr>
+
+      <tr>
+        <td>total_raw_echos:</td>
+
+        <td>28000</td>
+      </tr>
+
+      <tr>
+        <td>offset_to_first_echo_to_process:</td>
+
+        <td>8192</td>
+      </tr>
+
+      <tr>
+        <td>echoes_to_process:</td>
+
+        <td>6000</td>
+      </tr>
+
+      <tr>
+        <td>range_offset:</td>
+
+        <td>0 samples</td>
+      </tr>
+
+      <tr>
+        <td>raw_range_samples:</td>
+
+        <td>4096</td>
+      </tr>
+
+      <tr>
+        <td>far_range_extension:</td>
+
+        <td>0</td>
+      </tr>
+
+      <tr>
+        <td>near_range_extension:</td>
+
+        <td>0</td>
+      </tr>
+
+      <tr>
+        <td>range_looks:</td>
+
+        <td>1</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_looks:</td>
+
+        <td>1</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_offset:</td>
+
+        <td>5.20209 s</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_pixel_spacing:</td>
+
+        <td>4.07418 m</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_resolution:</td>
+
+        <td>4.98331 m</td>
+      </tr>
+
+      <tr>
+        <td>range_pixels:</td>
+
+        <td>3392</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_pixels:</td>
+
+        <td>4907</td>
+      </tr>
+
+      <tr>
+        <td>image_format:</td>
+
+        <td>FCOMPLEX</td>
+      </tr>
+
+      <tr>
+        <td>sensor_latitude:</td>
+
+        <td>-34.044705 decimal degrees</td>
+      </tr>
+
+      <tr>
+        <td>sensor_longitude:</td>
+
+        <td>148.420538 decimal degrees</td>
+      </tr>
+
+      <tr>
+        <td>sensor_track_angle:</td>
+
+        <td>-142.061475 decimal degrees</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_1:</td>
+
+        <td>-33.5830257 151.0704025 0.0000 deg. deg. m</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_2:</td>
+
+        <td>-33.4140581 151.8108727 0.0000 deg. deg. m</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_3:</td>
+
+        <td>-33.4116550 151.0056088 0.0000 deg. deg. m</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_4:</td>
+
+        <td>-33.2430451 151.7442523 0.0000 deg. deg. m</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_5:</td>
+
+        <td>-33.4089298 151.4282142 0.0000 deg. deg. m</td>
+      </tr>
+
+      <tr>
+        <td>number_of_state_vectors:</td>
+
+        <td>5</td>
+      </tr>
+
+      <tr>
+        <td>time_of_first_state_vector:</td>
+
+        <td>46756.36328 s</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_interval:</td>
+
+        <td>3.75200 s</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_1:</td>
+
+        <td>-5054313.6408 3089759.0195 -4037474.9145 m m m</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_1:</td>
+
+        <td>-2597.2075 3662.2046 6060.8538 m/s m/s m/s</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_2:</td>
+
+        <td>-5063164.7212 3104867.9900 -4014703.8025 m m m</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_2:</td>
+
+        <td>-2573.7903 3651.8231 6077.2265 m/s m/s m/s</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_3:</td>
+
+        <td>-5071923.7485 3119940.2723 -3991871.4297 m m m</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_3:</td>
+
+        <td>-2550.3456 3641.3611 6093.5070 m/s m/s m/s</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_4:</td>
+
+        <td>-5080590.6303 3134975.5394 -3968978.1428 m m m</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_4:</td>
+
+        <td>-2526.8737 3630.8188 6109.6950 m/s m/s m/s</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_5:</td>
+
+        <td>-5089165.2755 3149973.4648 -3946024.2892 m m m</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_5:</td>
+
+        <td>-2503.3751 3620.1962 6125.7903 m/s m/s m/s</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <br>
+
+  <p><strong>FORMATS AND DEFINITIONS</strong><br>
+  The formats are defined in the MSP type definition file <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a></p>
+
+  <table border="1" cellspacing="1" cellpadding="7" width="72%">
+    <tbody>
+      <tr>
+        <td>title:</td>
+
+        <td>title of the scene and processing parameters</td>
+      </tr>
+
+      <tr>
+        <td>date:</td>
+
+        <td>date DD MMM YYYY)</td>
+      </tr>
+
+      <tr>
+        <td>raw_data_start_time:</td>
+
+        <td>time of first record in signal data file (HH MM
+        SS.SSSS)</td>
+      </tr>
+
+      <tr>
+        <td>channel/mode:</td>
+
+        <td>polarization/channel to be processed out of the set
+        {HH, HV, VH, VV, CH1, CH2}</td>
+      </tr>
+
+      <tr>
+        <td>earth_semi_major_axis:</td>
+
+        <td>ellipsoid semi-major axis (m)</td>
+      </tr>
+
+      <tr>
+        <td>earth_semi_minor_axis:</td>
+
+        <td>ellipsoid semi-minor axis (m)</td>
+      </tr>
+
+      <tr>
+        <td>scene_center_latitude:</td>
+
+        <td>latitude of scene center (decimal deg.)</td>
+      </tr>
+
+      <tr>
+        <td>scene_center_longitude:</td>
+
+        <td>longitude of scene center (decimal deg.)</td>
+      </tr>
+
+      <tr>
+        <td>track_angle:</td>
+
+        <td>track angle (degrees)</td>
+      </tr>
+
+      <tr>
+        <td>platform_altitude:</td>
+
+        <td>altitude above geoid (m)</td>
+      </tr>
+
+      <tr>
+        <td>terrain_height:</td>
+
+        <td>average height of terrain above geoid (m)</td>
+      </tr>
+
+      <tr>
+        <td>sensor_position_vector:</td>
+
+        <td>(x,y,z)-position of the SAR platform (m) at the center
+        of the prefiltered data</td>
+      </tr>
+
+      <tr>
+        <td>sensor_velocity_vector:</td>
+
+        <td>velocity of the SAR platform (m/sec) at the center of
+        the prefiltered data</td>
+      </tr>
+
+      <tr>
+        <td>sensor_acceleration_vector:</td>
+
+        <td>acceleration of the SAR platform (m/sec^2) at the
+        center of the prefiltered data</td>
+      </tr>
+
+      <tr>
+        <td>pulse_repetition_frequency:</td>
+
+        <td>radar pulse repetition frequency (pulses/sec)</td>
+      </tr>
+
+      <tr>
+        <td>I_bias:</td>
+
+        <td>DC bias of the raw data I channel</td>
+      </tr>
+
+      <tr>
+        <td>Q_bias:</td>
+
+        <td>DC bias of the raw data Q channel</td>
+      </tr>
+
+      <tr>
+        <td>I_sigma:</td>
+
+        <td>standard deviation of the raw data I channel</td>
+      </tr>
+
+      <tr>
+        <td>Q_sigma:</td>
+
+        <td>standard deviation of the raw data Q channel</td>
+      </tr>
+
+      <tr>
+        <td>IQ_corr:</td>
+
+        <td>correlation of the I and Q channels</td>
+      </tr>
+
+      <tr>
+        <td>SNR_range_spectrum:</td>
+
+        <td>average SNR determined from range spectrum</td>
+      </tr>
+
+      <tr>
+        <td>DAR_doppler:</td>
+
+        <td>Doppler ambiguity resolver estimate of the doppler
+        centroid at center swath</td>
+      </tr>
+
+      <tr>
+        <td>DAR_snr:</td>
+
+        <td>unambiguous doppler estimate signal to noise ratio</td>
+      </tr>
+
+      <tr>
+        <td>doppler_polynomial:</td>
+
+        <td>Doppler polynomial coeff.<br>
+        <big style="font-weight: bold;"><big><small><span style=
+        "font-style: italic; font-family: monospace;">fd(r, t) = a0
+        + b0*t + c0*t**2 + (a1 + b1*t)*r +
+        a2*r**2</span></small></big></big><br>
+        a0=fdp[0], a1=fdp[1], a2=fdp[2], a3=fdp[3]</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">doppler_poly_dot<br></td>
+
+        <td style="vertical-align: top;"><big style=
+        "font-weight: bold;"><big><small><span style=
+        "font-style: italic; font-family: monospace;">fdot(r, t) =
+        b0*t + (b1*t)*r&nbsp;<br></span></small></big></big>
+        b0=fdp_dot[0], b1=fdp_fdot[1]<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">doppler_poly_ddot</td>
+
+        <td style="vertical-align: top;"><big style=
+        "font-weight: bold;"><big><small><span style=
+        "font-style: italic; font-family: monospace;">fddot(r, t) =
+        c0*t**2<br></span></small></big></big>
+        b0=fdp_ddot[0]<big style=
+        "font-weight: bold;"><big><small><span style=
+        "font-style: italic; font-family: monospace;"><br></span></small></big></big></td>
+      </tr>
+
+      <tr>
+        <td>sec_range_mig:</td>
+
+        <td>secondary range migration (ON, OFF)</td>
+      </tr>
+
+      <tr>
+        <td>az_deskew :</td>
+
+        <td>azimuth deskew of data to zero doppler (ON, OFF)</td>
+      </tr>
+
+      <tr>
+        <td>autofocus_snr:</td>
+
+        <td>autofocus signal to noise ratio</td>
+      </tr>
+
+      <tr>
+        <td>echo_time_delay:</td>
+
+        <td>time delay between transmission of pulse and first
+        sample of echo (seconds)</td>
+      </tr>
+
+      <tr>
+        <td>receiver_gain:</td>
+
+        <td>receiver attenuation gain used for relative calibration
+        (dB)</td>
+      </tr>
+
+      <tr>
+        <td>calibration_gain:</td>
+
+        <td>calibration gain factor to determine relative or
+        absolute backscatter intensity</td>
+      </tr>
+
+      <tr>
+        <td>near_range_raw:</td>
+
+        <td>first slant range for the RAW SAR data</td>
+      </tr>
+
+      <tr>
+        <td>center_range_raw:</td>
+
+        <td>center slant range for the RAW SAR data</td>
+      </tr>
+
+      <tr>
+        <td>far_range_raw:</td>
+
+        <td>last slant range for the RAW SAR data</td>
+      </tr>
+
+      <tr>
+        <td>near_range_slc:</td>
+
+        <td>first slant range for the output image</td>
+      </tr>
+
+      <tr>
+        <td>center_range_slc:</td>
+
+        <td>center slant range for the output image</td>
+      </tr>
+
+      <tr>
+        <td>far_range_slc:</td>
+
+        <td>last slant range for the output image</td>
+      </tr>
+
+      <tr>
+        <td>range_pixel_spacing:</td>
+
+        <td>slant range image pixel spacing (m)</td>
+      </tr>
+
+      <tr>
+        <td>range_resolution:</td>
+
+        <td>slant range image resolution (m)</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_bandwidth_fraction:</td>
+
+        <td>fraction of doppler bandwidth to process (Hz)</td>
+      </tr>
+
+      <tr>
+        <td>prefilter_azimuth_offset:</td>
+
+        <td>initial azimuth prefilter decimation factor (i.e. 4 for
+        a 4:1 decimation)</td>
+      </tr>
+
+      <tr>
+        <td>total_raw_echoes:</td>
+
+        <td>total number of raw data echoes in the SAR signal data
+        file</td>
+      </tr>
+
+      <tr>
+        <td>offset_to_first_echo_to_process:</td>
+
+        <td>offset in echoes from the start of SAR signal data
+        file</td>
+      </tr>
+
+      <tr>
+        <td>echoes_to_process:</td>
+
+        <td>number of echoes to process</td>
+      </tr>
+
+      <tr>
+        <td>range_offset:</td>
+
+        <td>offset (samples) to first range sample to process, each
+        I/Q pair counts as 1 sample</td>
+      </tr>
+
+      <tr>
+        <td>raw_range_samples:</td>
+
+        <td>number of raw range samples to process in each
+        echo</td>
+      </tr>
+
+      <tr>
+        <td>near_range_extension:</td>
+
+        <td>number of samples to extend the swath in the near range
+        (with loss of resolution)</td>
+      </tr>
+
+      <tr>
+        <td>far_range_extension:</td>
+
+        <td>number of samples to extend the swath in the far range
+        (with loss of resolution)</td>
+      </tr>
+
+      <tr>
+        <td>range_looks:</td>
+
+        <td>number of range looks per sub-aperture</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_looks:</td>
+
+        <td>number of azimuth looks per sub-aperture</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_offset:</td>
+
+        <td>azimuth offset (s) of first image line from first
+        prefiltered data line</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_pixel_spacing:</td>
+
+        <td>azimuth image pixel spacing (m)</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_resolution:</td>
+
+        <td>azimuth image resolution (m)</td>
+      </tr>
+
+      <tr>
+        <td>range_pixels:</td>
+
+        <td>image size in range</td>
+      </tr>
+
+      <tr>
+        <td>azimuth_pixels:</td>
+
+        <td>image size in azimuth</td>
+      </tr>
+
+      <tr>
+        <td>image_format:</td>
+
+        <td>data format for image data: FCOMPLEX, SCOMPLEX, FLOAT,
+        SHORT, BYTE</td>
+      </tr>
+
+      <tr>
+        <td>sensor_latitude:</td>
+
+        <td>SAR geodetic latitude at image center (deg.)</td>
+      </tr>
+
+      <tr>
+        <td>sensor_longitude:</td>
+
+        <td>SAR geodetic longitude at image center (deg.)</td>
+      </tr>
+
+      <tr>
+        <td>sensor_track_angle:</td>
+
+        <td>track angle of the sensor at image center (deg.)</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_1:</td>
+
+        <td>latitude (dec. deg.), longitude (dec. deg.) and
+        elevation (m) of 1. corner of processed image</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_2:</td>
+
+        <td>latitude (dec. deg.), longitude (dec. deg.) and
+        elevation (m) of 2. corner of processed image</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_3:</td>
+
+        <td>latitude (dec. deg.), longitude (dec. deg.) and
+        elevation (m) of 3. corner of processed image</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_4:</td>
+
+        <td>latitude (dec. deg.), longitude (dec. deg.) and
+        elevation (m) of 4. corner of processed image</td>
+      </tr>
+
+      <tr>
+        <td>map_coordinate_5:</td>
+
+        <td>latitude (dec. deg.), longitude (dec. deg.) and
+        elevation (m) of center of processed image</td>
+      </tr>
+
+      <tr>
+        <td>number_of_state_vectors:</td>
+
+        <td>number of state vectors given in this file</td>
+      </tr>
+
+      <tr>
+        <td>time_of_first_state_vector:</td>
+
+        <td>time of first state vector (s)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_interval:</td>
+
+        <td>time interval between state vectors (s)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_1:</td>
+
+        <td>(x,y,z)-coordinates of state vector 1 (m)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_1:</td>
+
+        <td>(x,y,z)-coordinates of velocity of state vector 1
+        (m/sec)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_2:</td>
+
+        <td>(x,y,z)-coordinates of state vector 2 (m)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_2:</td>
+
+        <td>(x,y,z)-coordinates of velocity of state vector 2
+        (m/sec)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_3:</td>
+
+        <td>(x,y,z)-coordinates of state vector 3 (m)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_3:</td>
+
+        <td>(x,y,z)-coordinates of velocity of state vector 3
+        (m/sec)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_4:</td>
+
+        <td>(x,y,z)-coordinates of state vector 4 (m)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_4:</td>
+
+        <td>(x,y,z)-coordinates of velocity of state vector 4
+        (m/sec)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_position_5:</td>
+
+        <td>(x,y,z)-coordinates of state vector 5 (m)</td>
+      </tr>
+
+      <tr>
+        <td>state_vector_velocity_5:</td>
+
+        <td>(x,y,z)-coordinates of velocity of state vector 5
+        (m/sec)</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <br>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  This parameter file is usually created by reading the CEOS leader
+  file included with raw data from ERS, JERS-1, and Radarsat. These
+  readers are adapted to the particular format of CEOS leader file
+  produced by each of the receiving stations. Due to the
+  differnences between the various implementations between the CEOS
+  format different readers are required for each of these
+  implementations. If no specific program exists for your format
+  there exits the more general program requiring user input of all
+  critical parameters called <a href=
+  "create_proc_par.html">create_proc_par</a>. Alternatively, an
+  existing processing parameter file can be modified using a
+  standard text editor. The variables used in
+  p&lt;orbit&gt;.slc.par are defined in the in MSP type definition
+  file <a href="typedef_MSP.h.html">typedef_MSP.h</a>. Contact
+  Gamma if you are experiencing difficulty with a particular
+  format.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "create_proc_par.html">create_proc_par</a> <a href=
+  "ERS_proc_all.html">ERS_proc_&lt;station&gt;</a>, <a href=
+  "JERS_proc_all.html">JERS_proc</a>, <a href=
+  "SIRC_proc.html">SIRC_proc</a>, <a href=
+  "RSAT_raw.html">RSAT_raw</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 4-Jul-2003.
+</body>
+</html>

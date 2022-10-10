@@ -1,0 +1,11 @@
+#! /bin/csh -fe
+
+  echo ""
+  echo "PROGRAM_CHANGE_NOTICE (17-Apr-01):"
+  echo "The program PRI_to_MLI was replaced by the ISP program radcal_PRI."
+  echo "Run radcal_PRI without input parameters to receive a list of the required input parameters".
+  echo "or see the ISP documentation (ISP_reference_manual.html) for further information".
+  echo ""
+
+exit(0)
+

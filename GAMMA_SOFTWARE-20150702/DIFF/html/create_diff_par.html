@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: create_diff_par</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>create_diff_par</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/create_diff_par.c">create_diff_par.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  create_diff_par - create DIFF/GEO parameter file for image
+  registration, geocoding and differential interferometry</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>create_diff_par &lt;PAR1&gt; &lt;PAR2&gt;
+  &lt;DIFF_par&gt; [PAR_type] [iflg]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;PAR1&gt;</td>
+
+        <td>(input) image parameter file 1 (see PAR_type
+        option)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PAR2&gt;</td>
+
+        <td>(input) image parameter file 2 (or - if not
+        provided)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DIFF_par&gt;</td>
+
+        <td>(input/output) DIFF/GEO parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[DIFF_par]</td>
+
+        <td>&nbsp;PAR1 and PAR2 parameter file type (enter - for
+        default):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: OFF_par&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        ISP offset and interferogram parameters<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: SLC/MLI_par&nbsp; ISP SLC/MLI parameters (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: DEM_par&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; DIFF/GEO DEM
+        parameters<br></td>
+      </tr>
+
+      <tr>
+        <td>[iflg]</td>
+
+        <td>interactive mode flag (enter -&nbsp; for default)<br>
+        &nbsp; 0: non-interactive<br>
+        &nbsp; 1: interactive (default)<span style=
+        "font-family: monospace;"><br></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p><samp>create_diff_par
+  19990915.mli.par 19991020.mli.par 19990915_19991020.diff_par
+  1</samp><br>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">create_diff_par</span> reads
+  two parameter files (*.off, *.slc.par, *.mli.par, or *.dem_par)
+  and creates a DIFF parameter file used for image registration,
+  terrain geocoding, and 2- and 3-pass differential
+  interferometry.</p>
+
+  <p>The parameter files provide the image geometry (number of cols
+  and rows) and pixel dimensions for the first and second files
+  respectively. Instead of a second parameter file - can be typed
+  to indicate that the geometric specifications (i.e. number of
+  cols and rows) of the two images are identical.</p>
+
+  <p>In the interactive mode, the user is queried to provide the
+  number of locations to estimate the range and azimuth offsets
+  between two images. These images may be the intensity images
+  associated with two interferograms or a SAR intensity image and a
+  simulated SAR image produced from a DEM with the program <a href=
+  "geocode.html">geocode</a>. The exact definitions and formats of
+  the individual parameters are specified in <a href=
+  "DIFF_par.html">DIFF_par</a>.</p>Automated processing in a script
+  can be implemented using by setting the iflg parameter to 0. In
+  this case default values fot the number of range and azimuth
+  offsets, patch size for offset measurement, and the SNR threshold
+  to accept a measurement are used.<br>
+  These defaults are 32 range and 32 azimuth locations, patch size
+  is 256, an the SNR threshold is 7.0.&nbsp;<br>
+  <code><br></code> <code><samp>create_diff_par</samp></code>
+  <code>19990915.mli.par 19991020.mli.par
+  19990915_19991020.diff_par 1 0</code><br>
+  <br>
+  Alternately the user can provide a text file with desired inputs
+  using the shell &lt; redirection command:<br>
+
+  <p><samp>create_diff_par</samp> <samp>19990915.mli.par
+  19991020.mli.par 19990915_19991020.diff_par 1 &lt; input<br>
+  <br></samp> where input is a file containing a sufficient number
+  of newlines to automatically select default values as
+  required.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_par.html">DIFF_par</a>, <a href=
+  "gc_map.html">gc_map</a>, <a href="gc_map.html">gc_map_grd</a>,
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-May-2013.
+</body>
+</html>

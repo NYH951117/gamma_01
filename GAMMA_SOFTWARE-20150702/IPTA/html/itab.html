@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: itab</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>itab</h2>
+
+  <p>In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>In an IPTA analysis there are typically two main stack
+  families used. The first one is the point data stack of SLC
+  values (pSLC) together with the stack of SLC parameters
+  (pSLC_par). The second one includes all the point data stacks and
+  parameter stacks related to interferometric pairs.</p>
+
+  <p>The itab is an ascii text file containing a table associating
+  interferogram stack records with pairs of SLC stack records. Each
+  line contains four entries, which are:<br>
+  pSLC_rec1 - the SLC stack record number of the master SLC<br>
+  pSLC_rec2 - the SLC stack record number of the slave SLC<br>
+  pINT_rec - the interferogram stack number<br>
+  switch_flag - a flag to activate (not 0) or deactivate a line</p>
+
+  <p>The itab plays an important element in the IPTA. It
+  facilitates the handling of large amounts of data sets, parameter
+  files etc. in a clear, flexible, and efficient manner.<br></p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 19-Sep-2003.</p>
+</body>
+</html>

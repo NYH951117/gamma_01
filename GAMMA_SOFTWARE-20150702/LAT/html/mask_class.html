@@ -1,0 +1,192 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>LAT Reference Manual: mask_class</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>mask_class</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/mask_class.c"><i>mask_class.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>mask_class</em> - Set image data values belonging to a single
+  class or set of classes or the complement to a user-defined
+  value.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mask_class &lt;class_map&gt; &lt;file_in&gt;
+  &lt;file_out&gt; &lt;format_flag&gt; &lt;LR&gt;
+  &lt;selection_flag&gt; &lt;n_class&gt; &lt;class_1&gt; ...
+  [class_n] [null_value]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;class_map&gt;</td>
+
+      <td>class_mask file (class map 8-bit SUN (*.ras), BMP (*.bmp)
+      raster file)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;file_in&gt;</td>
+
+      <td>input data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;file_out&gt;</td>
+
+      <td>ouput data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;format_flag&gt;</td>
+
+      <td>input/output data format flag (0: float, 1: fcomplex, 2:
+      SUN (*.ras) or BMP (*.bmp) raster image, 3: unsigned char
+      )</td>
+    </tr>
+
+    <tr>
+      <td>&lt;LR&gt;</td>
+
+      <td>left/right sense of class map image file 1:normal,
+      -1:mirror image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;selection_flag&gt;</td>
+
+      <td>1: mask is the region belonging to the selected
+      classes<br>
+      -1: mask is the complement of the region belonging to the
+      selected classes</td>
+    </tr>
+
+    <tr>
+      <td>&lt;n_class&gt;</td>
+
+      <td>number of classes to consider, up to 20 classes can be
+      defined</td>
+    </tr>
+
+    <tr>
+      <td>
+        <p align="left">&lt;class_1&gt;</p>
+      </td>
+
+      <td>class map value 1.</td>
+    </tr>
+
+    <tr>
+      <td>...</td>
+
+      <td><code><b>n_class</b></code> class map values must be
+      entered</td>
+    </tr>
+
+    <tr>
+      <td>&lt;class_n&gt;</td>
+
+      <td>class map value n.</td>
+    </tr>
+
+    <tr>
+      <td>[null value]</td>
+
+      <td>value written within the masked region<br>
+      float: default = 0.0<br>
+      complex: default = (0.0, 0.0)<br>
+      SUN, BMP raster image: default = 0 0 0<br>
+      unsigned char: default = 0</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>mask_class 1825_1868.landuse.ras 1825_1868.cc
+  1825_1868.cc_masked 1 -1 3 4 5 7</samp></p>
+
+  <p>Sets the coherence values (input file 1825_1868.cc) for pixels
+  corresponding to classes 4, 5, and 7 (indicated in the
+  co-registered landuse map (1825_1868.landuse.ras) to 0.0.</p>
+
+  <p><samp>mask_class 1825_1868.landuse.ras 1825_1868.cc
+  1825_1868.cc_masked -1 0.0 1 3 4 5 7</samp></p>
+
+  <p>Sets the coherence values (input file 1825_1868.cc) for pixels
+  not corresponding to classes 4, 5, or 7 (indicated in the
+  co-registered landuse map (1825_1868.landuse.ras) to 0.0.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code mask_class.c in $LAT_HOME/src. For compilation adjust
+  and use Makefile: Executable of <em>mask_class</em> resides in
+  $LAT_HOME/bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>mask_class</em> supports image classification and analysis.
+  All values of an input data file taht belong to a certain class
+  are set to a user-defined value. The class is defined a number of
+  values of a co-registered SUN raster or BMP format image, (or by
+  the compliment to those values).</p>
+
+  <p>Let us take as an example the following land-use
+  classification. The class forest is recognized by a value 5 in
+  the landuse map. For all areas belonging to the class forest we
+  want know to retrieve further information. This may be a more
+  detailed classsification into different forest types or it may be
+  the retrieval of a geophysical or biophysical parameter. Lets
+  assume, that we apply a retrieval algorithm which provides the
+  forest biomass based on the cohrence and backscatter information.
+  Such a classisfication algorithm applies only to forested areas,
+  but not to other surface classes. Non-forested areas can be
+  excluded using the program <em>mask_class</em> and set to 0.</p>
+
+  <p>The considered class can either be specified by the values of
+  pixels belonging ot the class or by values of pixels not
+  belonging to the class. The second option is particularly
+  practical if the class includes all values exept for one or a
+  small number of values.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The class mask map in SUN raster or BMP format may be left/right
+  flipped relative to the image data. Up to 20 values may be used
+  to define the class.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  none.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 29-May-2000.</p>
+</body>
+</html>

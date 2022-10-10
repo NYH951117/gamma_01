@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Users Guide: azsp_IQ</title>
+</head>
+
+<body>
+  <h1>GAMMA Modular SAR Processor (MSP): Reference Manual</h1>
+  <hr align="left">
+
+  <h2>azsp_IQ</h2>
+
+  <p><i>(ANSI-C program) <a href=
+  "../src/azsp_IQ.c">azsp_IQ.c</a></i></p>
+
+  <p><strong>NAME<br></strong> <em>azsp_IQ</em> - Doppler centroid
+  estimation using SAR I/Q raw data.<br></p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>azsp_IQ &lt;SAR_par&gt;
+  &lt;PROC_par&gt; &lt;signal_data&gt; &lt;spectrum&gt; [loff]
+  [roff] [nsub] [ambig_flag] [namb][pltflg]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input) input uncompressed IQ raw SAR data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;spectrum&gt;</td>
+
+        <td>(output) output azimuth spectrum (text format)<br></td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset to start of estimation window
+        (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>range samples offset to center of estimation window
+        (enter - for default: center_swath)</td>
+      </tr>
+
+      <tr>
+        <td>[nsub]</td>
+
+        <td>number of azimuth subapertures for spectrum estimation
+        (enter - for default: 24)</td>
+      </tr>
+
+      <tr>
+        <td>[ambig_flag]</td>
+
+        <td>Doppler ambiguity resolution mode:<br>
+        &nbsp;&nbsp; 0 = add multiples of PRF specified by the namb
+        command line parameter<br>
+        &nbsp;&nbsp; 1 = use unambiguous Doppler centroid estimate
+        from the PROC_param file (default)</td>
+      </tr>
+
+      <tr>
+        <td>[namb]</td>
+
+        <td>number of multiples of the PRF to add to the ambiguous
+        Doppler estimate (enter - for default: 0)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pltflg]<br></td>
+
+        <td style="vertical-align: top;">azimuth spectrum plotting
+        flag:<br>
+        &nbsp;&nbsp; 0: none (default)<br>
+        &nbsp;&nbsp; 1: output plot in PNG format<br>
+        <br></td>
+      </tr>
+    </tbody>
+  </table><strong><br>
+  EXAMPLE</strong><br>
+
+  <p><span style="font-family: monospace;">azsp_IQ ERS1_ESA.par
+  p19920505.slc.par</span> <span style=
+  "font-family: monospace;"><span style=
+  "font-family: monospace;">19920505</span></span><span style=
+  "font-family: monospace;">.raw</span> <span style=
+  "font-family: monospace;"><span style=
+  "font-family: monospace;">19920505</span></span><span style=
+  "font-family: monospace;">.azsp 0 - - - 1 0 1<br></span></p>
+
+  <p>Estimate the doppler centroid using the periodogram method.
+  The radar azimuth spectrum will be plotted to a file in PNG
+  format by setting the value of the <span style=
+  "font-style: italic;">pltflg</span> parameter.<span style=
+  "font-family: monospace;"><br></span></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This Doppler centroid estimation program processes raw SAR data
+  and obtains an accurate estimate of the Doppler centroid by
+  summation of azimuth power spectra.&nbsp; For a block of 512
+  range values, azimuth FFTs are calculated and averaged to obtain
+  the estimate of the Doppler spectrum. The Doppler spectrum as a
+  function of the normalized azimuth Doppler frequency is written
+  to an output text file. It is also possible to plot the azimuth
+  spectrum to a file and also to display the spectrum on the screen
+  by setting the pltflgt<span style=
+  "font-family: monospace;"><br></span></p>
+
+  <p>The MSP processing parameter file is updated with the estimate
+  of the Doppler polynomial constant coefficient.<br></p>
+
+  <p>In cases where the unambiguous Doppler centroid is greater
+  than the&nbsp; PRF/2&nbsp; (PRF= SAR pulse repetition frequency)
+  or less than the -PRF/2, it is necessary to add the appropriate
+  multiple of the PRF to the value. The Doppler is ambiguous
+  because the PRF is insufficently high. No aliasing occurs in the
+  data because the sampling rate is greater than the azimuth
+  bandwidth. The program <a href="dop_ambig.html">dop_ambig</a>
+  obtains an approximate estimate of the unambiguous Doppler
+  centroid that can be used by <em>azsp_IQ</em> to resolve the
+  number of multiples of the PRF to add to the Doppler estimate.
+  <em>dop_ambig</em> uses the mult-ilook crosscorrelation (MLCC) or
+  multi-look beat frequency (MBLF) algorithm to resolve the
+  unambiguous Doppler centroid.<br></p>
+
+  <p>Another way to estimate the ambiguity number is to perform
+  autofocus on the range compressed data. The autofocus program
+  <a href="af.html">af</a> estimates the uncompensated range
+  migration between the generated azimuth looks. If this exceeds
+  half of the expected range migration caused by an ambiguity
+  error, the doppler centroid is updated by the estimated number of
+  multiples of the PRF. This is the best way to estimate the
+  ambiguity for scenes with some contrast.<br></p>
+
+  <p>Plotting of the spectrum is controlled by the <span style=
+  "font-style: italic;">pltflg</span> command line parameter. When
+  the pltflg is 1, the azimuth spectrum plot is stored as an image
+  in PNG format.&nbsp; &nbsp;</p>
+
+  <p><img style="width: 640px; height: 480px;" alt=
+  "azimuth spectrum" title="azimuth spectrum" src=
+  "19990915.azsp.png"><br></p>
+
+  <p><strong>SEE ALSO<br>
+  <a href="af.html">af</a>,</strong> <a href=
+  "dop_ambig.html">dop_ambig,</a> <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote</a> .<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 4-Feb-2015.
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: trigo</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>trigo</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/trigo.c">trigo.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  trigo - Calculation of trigonometric function for real-valued
+  data files</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>trigo &lt;data1&gt; &lt;func&gt; &lt;data2&gt;
+  &lt;width&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data1&gt;</td>
+
+        <td>(input) angle data in radians (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;func&gt;</td>
+
+        <td>(input) 1: sin, 2: cos, 3: tan, 4: asin, 5: acos, 6:
+        atan</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data2&gt;</td>
+
+        <td>(output) data calculated as func(data1) (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>trigo 20070423.inc 2 20070423.cos_inc 2500</samp></p>
+
+  <p>In this example the cosine of an image containing local
+  incidence angles, as those obtained with the programs such as
+  gc_map in the DIFF/GEO</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">trigo</span> computes one of
+  the six trigonometric functions available in the list of
+  supported functions. The input data set must express the angle in
+  radians.<br>
+  <br>
+  The input and the output data are binary files of type FLOAT.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a>MS</a> last change 3-Sep-2013</p>
+</body>
+</html>

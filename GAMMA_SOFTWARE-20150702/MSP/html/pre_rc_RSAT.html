@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: pre_rc_JERS</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>pre_rc_RSAT</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pre_rc_RSAT.c">pre_rc_RSAT.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>pre_rc_RSAT</em> - Prefilter and
+  range compression of Radarsat StripMap mode raw data. Includes
+  correction of along-track gain variations and implements
+  secondary range migration.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>pre_rc_RSAT
+  &lt;SAR_param&gt; &lt;PROC_param&gt; &lt;raw_data&gt;
+  &lt;rc_data&gt; [prefilt_dec] [loff] [nl] [nr_samp] [kaiser]
+  [filt_lm] [nr_ext] [fr_ext]</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>(input) SAR sensor parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>(input) MSP Processing Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;raw_data&gt;</td>
+
+      <td>(input) uncompressed raw SAR signal data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rc_data&gt;</td>
+
+      <td>(output) prefiltered range compressed data file</td>
+    </tr>
+
+    <tr>
+      <td>[prefilt_dec]</td>
+
+      <td>prefilter decimation factor (default from proc_par)</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>number of lines offset (enter - for default=parameter
+      file value)</td>
+    </tr>
+
+    <tr>
+      <td>[nl]</td>
+
+      <td>number of lines filter/range compress (enter - for
+      default=parameter file value)</td>
+    </tr>
+
+    <tr>
+      <td>[nr_samp]</td>
+
+      <td>number of range samples (enter - for default from
+      PROC_param)</td>
+    </tr>
+
+    <tr>
+      <td>[kaiser]</td>
+
+      <td>range chirp Kaiser window parameter beta (default=2.120,
+      -25 dB side-lobes)</td>
+    </tr>
+
+    <tr>
+      <td>[filt_lm]</td>
+
+      <td>filter length multiplier (default filt_lm=8) FIR_length =
+      FIR_lm *prefilt_dec + 1</td>
+    </tr>
+
+    <tr>
+      <td>[nr_ext];</td>
+
+      <td>near range swath extension in samples (default from
+      PROC_par)</td>
+    </tr>
+
+    <tr>
+      <td>[fr_ext]</td>
+
+      <td>near range swath extension in samples (default from
+      PROC_par)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong><samp>pre_rc_RSAT RSAT.par
+  pBogota.slc.par Bogota.raw Bogota.rc</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  Similar to <a href="pre_rc.html">pre_rc</a> but also includes
+  secondary range migration and correction of along-track receiver
+  gain variations. Secondary range migration corrects for range
+  defocusing that can occur as a result of relatively high-squint
+  angles. RadarSat data often has Doppler centroids corresponding
+  to squints of over 3 degrees. This program compensates for
+  along-track variations in receiver gain as recorded in the sensor
+  information contained in the raw data. Gain values can change
+  every 8 echoes along track. This program takes into account that
+  the echo record length varies along-track due to the inclusion of
+  rechirp samples in the header</p>
+
+  <p>This program has the option to perform decimation in azimuth
+  (prefiltering) by applying a bandpass filter followed by
+  subsampling. This is useful for survey mode processing to
+  generate a "quicklook" image. Any integer decimation factor can
+  be used because. The filter is implemented with as an FIR filter
+  in the time-domain. The number of taps in the finite impulse
+  response filter determines how closely the azimuth filter
+  approximates an ideal response. Since the Doppler centroid varies
+  in the cross-track direction, somewhat better results may be
+  obtained by range compressing the entire data set followed by
+  applying the azimuth bandpass filter and decimation rather than
+  filtering prior to range compression. The program <a href=
+  "prefilt.html">prefilt</a> performs this function on the range
+  compressed data set.</p>
+
+  <p><em>pre_rc_RSAT</em> has the capability to extend the
+  processed image swath beyond the region of full resolution. The
+  nominal number of samples in the range compressed data is the
+  number of echo samples processed minus the number of samples in
+  the range chirp. Outside of the nominal full resolution swath are
+  two bands, one in the near range and the other in the far range.
+  Both of these bands are as wide as the range chirp width in
+  samples. Across these bands the resolution degrades linearly
+  starting at the full resolution and going to zero. These regions
+  also fade in intensity proportional to the loss in resolution due
+  to the decreasing number of echo samples for these image pixels.
+  The user can specify the swath extension for both the near and
+  far range in the processing parameter file or via the command
+  line parameters <em>nr_ext</em> and <em>fr_ext</em> .</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">Sensor parameter file</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "prefilt.html">prefilt</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-Oct-2000.
+</body>
+</html>

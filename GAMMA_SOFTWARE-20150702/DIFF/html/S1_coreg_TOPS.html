@@ -1,0 +1,379 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2015 Gamma Remote Sensing --><!-- uw20150625 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: S1_coreg_TOPS</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>S1_coreg_TOPS</h2>
+
+  <p><i>C-shell script: <a href=
+  "../scripts/S1_coreg_TOPS">S1_coreg_TOPS</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">S1_coreg_TOPS -</span> Script to
+  co-register a Sentinel-1 TOPS mode burst SLC to a reference burst
+  SLC by iteratively applying intensity matching and "spectral
+  diversity" methods.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>S1_coreg_TOPS &lt;SLC1_tab&gt; &lt;SLC1_ID&gt;
+  &lt;SLC2_tab&gt; &lt;SLC2_ID&gt; &lt;RSLC2_tab&gt; [hgt] [RLK]
+  [AZLK] [poly1] [poly2] [cc_thresh] [fraction_thresh]
+  [ph_stdev_thresh] [cleaning] flag1 [RSLC3_tab]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_tab&gt;</td>
+
+        <td>(input) SLC_tab of S1 TOPS burst SLC reference (e.g.
+        20141015.SLC_tab)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_ID&gt;</td>
+
+        <td>(input) ID for reference files (e.g. 20141015)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_tab&gt;</td>
+
+        <td>(input) SLC_tab of S1 TOPS burst SLC slave (e.g.
+        20141027.SLC_tab)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_ID&gt;</td>
+
+        <td>(input) ID for slave files (e.g. 20141027)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;RSLC2_tab&gt;</td>
+
+        <td>(input) SLC_tab of co-registered S1 TOPS burst SLC
+        slave (e.g. 20141027.RSLC_tab)</td>
+      </tr>
+
+      <tr>
+        <td>[hgt]</td>
+
+        <td>(input) height map in RDC of MLI-1 mosaic (float, or
+        constant height value; default=0.1)</td>
+      </tr>
+
+      <tr>
+        <td>RLK</td>
+
+        <td>number of range looks in the output MLI image
+        (default=10)</td>
+      </tr>
+
+      <tr>
+        <td>AZLK</td>
+
+        <td>number of azimuth looks in the output MLI image
+        (default=2)</td>
+      </tr>
+
+      <tr>
+        <td>poly1</td>
+
+        <td>polygon file indicating area used for matching
+        (relative to MLI reference to reduce area used for
+        matching)</td>
+      </tr>
+
+      <tr>
+        <td>[cc_thresh]</td>
+
+        <td>coherence threshold used (default = 0.8)</td>
+      </tr>
+
+      <tr>
+        <td>[fraction_thresh]</td>
+
+        <td>minimum valid fraction of unwrapped phase values used
+        (default = 0.01)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_stdev_thresh]</td>
+
+        <td>phase standard deviation threshold (default = 0.8
+        radian)</td>
+      </tr>
+
+      <tr>
+        <td>[cleaning]</td>
+
+        <td>flag to indicate if intermediate files are deleted
+        (default=1 --&gt; deleted, 0: not deleted)</td>
+      </tr>
+
+      <tr>
+        <td>flag1</td>
+
+        <td>flag to indicate if existing intermediate files are
+        used (default = 0 --&gt; not used, 1: used)</td>
+      </tr>
+
+      <tr>
+        <td>[RSLC3_tab]</td>
+
+        <td>(input) 3 column list of already available
+        co-registered TOPS slave image to use for overlap
+        interferograms</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>S1_coreg_TOPS 20141003.SLC_tab 20141003 20141015.SLC_tab
+  20141015.SLC_tab 20141015.RSLC_tab 20141003.hgt 10 2
+  20141003.mask.poly1 20141003.mask.poly2 0.7 0.02 0.8 1</samp></p>
+
+  <p>Conducts a co-registration procedure for the S1 burst SLC
+  slave (20141015.SLC_tab) to the S1 burst SLC reference geometry
+  (20141003.SLC_tab). The output co-registered burst SLC slave is
+  available as burst SLC (20141015.RSLC_tab) and as SLC mosaic
+  (20141015.rslc, 20141015.rslc.par). Furthermore, quality
+  information on the iterative co-registration steps (in
+  20141003_20141015.coreg_quality) and the differential
+  interferogram (20141003_20141015.diff) are generated - the later
+  also as quality check (with possible phase jumps at burst and
+  sub-swath interfaces in the case of inaccurate co-registration or
+  as a result of along-track motion or ionospheric
+  effects).</p><samp>S1_coreg_TOPS 20141003.SLC_tab 20141003
+  20141015.SLC_tab 20141015.SLC_tab 20141015.RSLC_tab 20141003.hgt
+  10 2 - - 0.7 0.02 0.8 1</samp>
+
+  <p>Command example without providing polygon files to limit the
+  area where the intensity matching (poly1 area) and spectral
+  diversity (poly2 area) methods are applied.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>S1_coreg_TOPS</em> supports running an S1 IWS co-registration
+  and differential interferogram generation procedure that includes
+  an iterative co-registration refinement estimated using intensity
+  matching followed by an iterative co-registration refinement
+  estimated using the spectral diversity method for the burst
+  overlap areas as supported by <a href=
+  "S1_poly_overlap.html">S1_poly_overlap</a>.</p>
+
+  <p>The main steps of the of S1 TOPS SLC co-registration procedure
+  correspond to the procedure described in Section 6.1 of the
+  <a href="Sentinel-1_users_guide.pdf">Sentinel-1 Users Guide</a>,
+  including the calculation of a co-registration lookup table based
+  on the orbit geometry and terrain height and refinements of this
+  lookup table using the intensity matching and the spectral
+  diversity methods. The script <em>S1_coreg_TOPS</em> automates
+  the entire procedure up the the differential interferogram. In
+  this it iterates the matching refinement until the azimuth
+  correction determined is below a defined threshold (0.01 SLC
+  pixel). After reaching this quality it iterates the spectral
+  diversity method until the azimuth correction determined is below
+  another defined threshold (0.005 SLC pixel).</p>
+
+  <p>As one important output an ASCII file containing quality
+  information is generated. The name of this quality file is
+  automatically generated from the reference and slave scene IDs
+  using the style "ID1_ID2.coreg_quality". This file provides
+  detailed information on the (iterative) co-registration
+  refinements done, first using intensity matching and then using
+  the spectral diversity method. For the intensity matching
+  statistics of the matching are indicated. For the spectral
+  diversity method information on the coherence and phase
+  statistics are provided for each bursdt overlap area considered.
+  Furthermore, the weighting factors used in the calculation of the
+  global phase offset are indicated.</p>
+
+  <p>In such a co-registration process the slave IWS SLC is
+  resampled several times to the master geometry. This resampling
+  can be significantly accelerated if it is done only for a small
+  section of the entire scene. To limit the area (resampled and)
+  used for the intensity matching refinement iterations a polygon
+  area (20150308.mask.poly1) can be indicated. In the case the LAT
+  programs are available only the data of this area is then
+  resampled for the intensity matching refinement iterations.
+  Similarly, the program <a href=
+  "S1_poly_overlap.html">S1_poly_overlap</a> is used (within
+  <em>S1_coreg_TOPS</em>) to only resample the burst overlap areas
+  when doing the co-registration refinement iterations using the
+  spectral diversity method.</p>
+
+  <p>Furthermore, a second polygon area (20150308.mask.poly2) can
+  be indicated to restrict the use of the spectral diversity method
+  to suited areas. Here the focus is not on the accelaration of the
+  resampling, but on avoiding low coherence and instable (moving)
+  areas. The second polygon area can be used to exclude incoherence
+  areas (e.g. ocean) as well as areas with significant movement in
+  azimuth direction (e.g. glaciers) from the spectral diversity
+  method. This is recommended as for areas with significant
+  movement in azimuth direction phase offsets not related to the
+  co-registration are expected.</p>
+
+  <p>Polygon areas can be defined using the LAT program
+  <em>polyras</em>. Without LAT programs <em>S1_coreg_TOPS</em>
+  ignores the indicated polygons and does the resampling for the
+  entire area. While this ensures that the program still runs users
+  without access to the LAT module cannot benefit from the related
+  significant computational efficiency gain possible.</p>
+
+  <p>Once the final co-registration function (consisting of the
+  lookup table that was updated with the intensity matching
+  refinements, and the azimuth offset in the ISP offset parameter
+  file "ID1_ID2.off" determined by iteratively using the spectral
+  diversity method) the slave burst SLC is resampled to the
+  reference burst SLC geometry. Furthermore, the mosaic SLC is
+  calculated as well as the differential interferogram. To
+  calculate the differential interferogram <a href=
+  "phase_sim_orb.html">phase_sim_orb</a> is used to calculate the
+  topopgraphic phase and <a href=
+  "SLC_diff_intf.html">SLC_diff_intf</a> to calculate the
+  multi-look differntial interferogram.</p>
+
+  <p>The main reason that the differential interferogram
+  ("ID1_ID2.diff") is calculated is that it should always be
+  carefully checked by an operator for phase jumps at the burst
+  interfaces. Such phase jumps are a clear indication for either a
+  remaining co-registration error in the azimuth direction, or the
+  presence of along-track motion that causes the phase jump, or the
+  presence of ionospheric effects (along-track gradients in the
+  ionospheric free electron concentration) that can also cause
+  positional offsets in the azimuth direction which may then cause
+  phase jumps.</p>
+
+  <p>As input a pair (master and slave) of two Sentinel-1 (S1)
+  Interferometric Wide Swath (IWS) burst SLCs in their original
+  geometry are provided. These burst SLCs consist of the sub-swath
+  burst SLCs for one or several sub-swaths as defined in the
+  SLC_tabs provided for the reference (e.g. 20141003.SLC_tab) and
+  the slave (20141015.SLC_tab). For each sub-swath the SLC_tab
+  contains one line with the burst SLC name (e.g 20141015.IW1.slc),
+  the name of the SLC parameter file of the burst SLC (e.g
+  20141015.IW1.slc.par), and the related TOPS parameter file (e.g.
+  20141015.IW1.slc.TOPS_par). In this IW1 is used to indicate that
+  it is for the first sub-swath (IW1).</p>
+
+  <p>The indicated ID parameters (e.g. 20141003 and 20141015) are
+  used in the naming of the intermediate files automatically
+  generated by the program.</p>
+
+  <p>Then an SLC_tab for the output slave scene that was resampled
+  to the geometry of the reference burst SLC needs to be indicated.
+  For an input slave SLC_tab 20141015.SLC_tab a possible output
+  SLC_tab could be 20141015.RSLC_tab. For each sub-swath this
+  output SLC_tab contains one line with the burst SLC name (e.g
+  20141015.IW1.rslc), the name of the SLC parameter file of the
+  burst SLC (e.g 20141015.IW1.rslc.par), and the related TOPS
+  parameter file (e.g. 20141015.IW1.rslc.TOPS_par). These are all
+  new filename of not yet existing files to be used as names for
+  the generated resampled (co-registered) data sets. The output
+  SLC_tab can be created using manual editing or using commands
+  as<br>
+  <i>echo "20141015.IW1.rslc 20141015.IW1.rslc.par
+  20141015.IW1.rslc.TOPS_par" &gt; 20141015.RSLC_tab</i><br>
+  <i>echo "20141015.IW2.rslc 20141015.IW2.rslc.par
+  20141015.IW2.rslc.TOPS_par" &gt;&gt; 20141015.RSLC_tab</i><br>
+  <i>echo "20141015.IW3.rslc 20141015.IW3.rslc.par
+  20141015.IW3.rslc.TOPS_par" &gt;&gt; 20141015.RSLC_tab</i><br>
+  .</p>
+
+  <p>The height map indicated has to be in the same slant range
+  geometry as the MLI mosaic image of the reference scene
+  (generated using the same number of range and azimuth looks as
+  indicated on the command line. Instead of indicating an existing
+  height file it is possible to indicate a constant height value
+  (e.g. 0.1 meter) to be used as a constant height reference. As a
+  consequence the initial transormation lookup table calculated
+  based on the orbit geometry and the DEM will be of slightly lower
+  quality. The level of degradation of the quality also depends
+  significantly on the perpendicular baseline between the master
+  and slave scenes. For longer baselines (&gt; 100m) and in high
+  mountainous areas using DEM heigth is strongly recommended.</p>
+
+  <p>To apply the refined azimuth offset refinement you need to
+  rerun the slave burst SLC resampling, but using the output offset
+  parameter file instead of the input offset parameter file (when
+  running the the program SLC_interp_S1_TOPS).</p>
+
+  <p>In the second part of the iterative co-registration
+  refinement</p>
+
+  <p><em>S1_coreg_TOPS</em> runs the program <a href=
+  "S1_coreg_overlap.html">S1_coreg_overlap</a> to apply a spectral
+  diversity method to all the available burst overlap regions of
+  all the available sub-swaths (expect those areas masked by the
+  indicated polygon poly2). On the command line of
+  <em>S1_coreg_TOPS</em> it is possible to indicate relevant
+  parameters used by <a href=
+  "S1_coreg_overlap.html">S1_coreg_overlap</a> such as the
+  coherence threshold used, the minimum valid fraction of unwrapped
+  phase values used, and the phase standard deviation threshold
+  used.</p>
+
+  <p>The determined azimuth offset correction from <a href=
+  "S1_coreg_overlap.html">S1_coreg_overlap</a> is used to update
+  the constant value of the azimuth offset polynomial in the offset
+  parameter file.</p>
+
+  <p><em>S1_coreg_TOPS</em> generates a large amount of
+  intermediate files, including interferograms, coherence maps,
+  coherence masks, unwrapped phases, etc. for every available burst
+  overlap regions. Normally, these many intermediate files are
+  directly deleted at the end of the program without looking at it
+  in detail. In cases where the co-registration refinement result
+  does not converge or where the quality number give indications of
+  problems it is recommended not to deleted the intermediate files
+  and check them carefully to be able to optimize the tresholds
+  used. Deleting or not deleting the intermediate files is done by
+  setting the cleaning flag to 1 (which is the default and which
+  means the files are deleted) or to 0 to keep the intermediate
+  files.</p>
+
+  <p><strong>OPTIONS</strong><br></p>
+
+  <p>Using <em>S1_coreg_TOPS</em> to do the co-registration for a
+  slave acquired with a long temporal separation from the master
+  scene may result in generally reduced coherence. As a way to
+  optimize the coherence it is possible to indicate in addition to
+  the master burst SLC a second already co-registered SLC (possibly
+  one close in time to the slave considered). The program uses then
+  this second scene to calculate the double-difference
+  interferograms, while the master geometry is the one of the true
+  master.</p>
+
+  <p>There is the possibility to set the flag1 parameter to 1 to
+  use already existing files (e.g. the MLI mosaic of the reference
+  scene or the looklup table calculated using rdc_trans. This
+  option may be suited to gain time when testing..</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="S1_coreg_overlap.html">S1_coreg_overlap</a>, <a href=
+  "S1_coreg_subswath_overlap.html">S1_coreg_subswath_overlap</a>,
+  <a href="S1_poly_overlap.html">S1_poly_overlap</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "Sentinel-1_users_guide.pdf">Sentinel-1 Users Guide</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 25-Jun-2015</p>
+</body>
+</html>

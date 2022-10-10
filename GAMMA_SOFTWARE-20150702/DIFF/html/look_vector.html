@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing -->
+<!-- uw040810 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: look_vector</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>look_vector</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/look_vector.c">look_vector.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  look_vector - Calculation of SAR look-vector direction (pointing
+  towards SAR) in map geometry.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>look_vector &lt;SLC_par&gt; &lt;OFF_par&gt;
+  &lt;DEM/MAP_par&gt; &lt;DEM&gt; &lt;lv_theta&gt;
+  &lt;lv_phi&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) parameter file of SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par&gt;</td>
+
+      <td>(input) ISP offset/interferogram parameter file<br>
+      enter - for SLC or MLI data</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM/MAP_par&gt;</td>
+
+      <td>(input) DEM/MAP parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM&gt;</td>
+
+      <td>(input) DEM data file (or constant height value)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lv_theta&gt;</td>
+
+      <td>(output) SAR look-vector elevation angle (at each map
+      pixel)<br>
+      lv_theta: PI/2 -&gt; up, -PI/2 -&gt; down</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lv_phi&gt;</td>
+
+      <td>(output) SAR look-vector orientation angle at each map
+      pixel<br>
+      lv_phi: 0 -&gt; East, PI/2 -&gt; North</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>look_vector 8560.slc.par 8560_9562.off aoi.dem_par aoi.dem
+  aoi.lv_theta aoi.lv_phi</samp></p>
+
+  <p>Calculates the look vector elevation (theta) and orientation
+  (phi) angle fields (in map geometry).</p>
+
+  <p><samp>look_vector 8560.rmli.par - aoi.dem_par aoi.dem
+  aoi.lv_theta aoi.lv_phi</samp></p>
+
+  <p>Calculates the look vector elevation (theta) and orientation
+  (phi) angle fields (in map geometry).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code look_vector.c in ./src. For compilation adjust and
+  use Makefile: Executable version look_vector in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP and DIFF type definition files <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  look_vector calculates SAR look-vector direction (pointing
+  towards SAR) in map geometry.</p>
+
+  <p>Based on the SAR imaging and DEM geometries the look vector is
+  calculated for each pixel of the DEM/map section specified in the
+  DEM parameter file. The local topography is taken into account.
+  The look vector is expressed in the local map coordinates through
+  the SAR look-vector elevation angle and the SAR look-vector
+  orientation angle, both calculated at each map pixel.</p>
+
+  <p>The SAR image geometry is specified in the SLC/MLI and ISP
+  offset/interferogram parameter files for (multi-looked)
+  interferometric datasets or in the SLC/MLI parameter file for SLC
+  or MLI data.</p>
+
+  <p>The map projection is defined in the DEM/map prameter
+  file.</p>
+
+  <p>The output look vector elevation and orientation angles are
+  stored in separate binary files (float). The look vector
+  elevation angle is defined as the angle between the horizontal
+  surface and the look vector with positive angles indicating
+  sensor positions above the surface. The look vector orientation
+  angle is defined as the angle between the East direction and the
+  projection of the look vector on the horizontal surface plan. The
+  orientation angle increases towards north, with the North
+  direction corresponding to PI/2 (and south to -PI/2). Both angles
+  are expresed in radian.</p>
+
+  <p>An important use of look vectors expressed in map geometry is
+  the interpretation of surface deformation - the DINSAR approach
+  provides the deformation component in the look vector
+  direction.</p>
+
+  <p>The look vector information as provided by the program
+  look_vector is used in the calculation of 3D look vector fields
+  from differential interferometric observations and an deformation
+  direction field as supported by the programs <a href=
+  "dispmap_vec.html">dispmap_vec</a> and <a href=
+  "dispmap_vec2.html">dispmap_vec2</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="dispmap_vec.html">dispmap_vec</a>, <a href=
+  "dispmap_vec2.html">dispmap_vec2</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 11-Aug-2004.</p>
+</body>
+</html>

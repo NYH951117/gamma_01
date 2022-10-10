@@ -1,0 +1,139 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+$cal = "-";
+$noise = "-";
+
+GetOptions ('c' => \$cflg, 'n' => \$nflg, 't' => \$tflg );
+
+if (($#ARGV + 1) < 4){die <<EOS;}
+*** Preprocessing of Sentinel-1 TOPS GRD products, extract GRD data and generate MLI prodcuts ***
+*** Copyright 2015, Gamma Remote Sensing, v1.1 23-Jun-2015 clw ***
+
+usage: $0 <S1_list> <MLI_dir> <pol> <log>
+  S1_list  (input) single column text file. Enteries are directories (including path) containing Sentinel-1 TOPS GRD products
+  MLI_dir  directory for output SLC data files and SLC parameter files
+           Note: output file names have the form : 20150119_hh.mli
+  pol      SLC polarization to extract (hh,hv,vh,vv)
+  log      (output) S1 GRD pre-processing log file
+  -c       (option) apply radiometric calibration factor without noise subtraction
+  -n       (option) apply radiometric calibration factor with noise subtraction
+  -t       (option) include full timestamp YYYYMMDDtHHMMSSin SLC and SLC_par filenames, default YYYYMMDD
+EOS
+
+$out_dir = $ARGV[1];
+$pol = $ARGV[2];
+$log = "$out_dir/$ARGV[3]";
+print "S1 GRD product list: $ARGV[0]\n";
+print "GRD output directory: $ARGV[1]\n";
+print "Polarization: $pol\n";
+print "log file: $log\n";
+
+unless (-d $out_dir) {
+  print "creating output directory for S1 IW GRD products: $out_dir\n";
+  $exit = system("mkdir -p $out_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir -p $out_dir\n"
+}
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;			#set filehandle special variable to flush output immediately
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+
+$time = localtime;
+print "PROCESSING START: $time\n";
+print LOG "PROCESSING START: $time\n";
+open(SLIST, "<$ARGV[0]") or die "ERROR $0: Sentinel list of product directories does not exist: $ARGV[0]\n";
+
+LINE: while (<SLIST>) {		#read list of directories with unreformated SLC data
+  chomp $_;
+  next LINE if /^$/; 		#skip blank lines in input list
+  next LINE if /^#/; 		#skip comments in the input list
+  @fields = split;		#extract the identifier
+  $path = $fields[0];
+
+  @ann_files = glob "$path/annotation/s1a-iw-grd-".$pol."*.xml";
+  @tiff_files = glob "$path/measurement/s1a-iw-grd-".$pol."*.tiff";
+  @cal_files = glob "$path/annotation/calibration/calibration-s1a-iw-grd-".$pol."*.xml";
+  @noise_files = glob "$path/annotation/calibration/noise-s1a-iw-grd-".$pol."*.xml";
+
+  @mfiles = glob "$path/measurement/s1a-iw-grd-*.tiff";
+  print "\nGeoTIFF measurement files:\n";
+  foreach my $i (0 .. $#mfiles){
+    print "$mfiles[$i]\n"
+  }
+
+  -e $tiff_files[0] or die "GeoTIFF missing: $path/measurement/s1a-iw1-grd-$pol*.tiff\n";
+  my ($base, $dir1, $ext1) = fileparse($tiff_files[0], qr/\.[^.]*/); #extension is the last bit after the last period
+  if($tflg) {
+    $tstart = substr($base,15,15);
+  }
+  else {
+    $tstart = substr($base,15,8);
+  }
+  printf("GRD start timestamp: %s\n",$tstart);
+  
+  print "\n*** S1 GRD product directory files: $path\n";
+  #print "Annotation:\n",join("\n", @ann_files);
+  #print "\n\nMeasurement:\n",join("\n", @tiff_files);
+  #print "\n\nCalibration:\n",join("\n", @cal_files);
+  #print "\n\nNoise:\n",join("\n", @noise_files);
+  #print "\n";
+
+  foreach my $i (0 .. $#tiff_files){
+    my ($base, $dir1, $ext1) = fileparse($tiff_files[$i], qr/\.[^.]*/); #extension is the last bit after the last period
+    if($tflg) {
+      $tstart = substr($base,14,15);
+    }
+    else {
+      $tstart = substr($base,14,8);
+    }
+    print "GeoTIFF:        $base$ext1\n";
+    print "annotation XML: $ann_files[$i]\n";
+    print "cal. LUT XML:   $cal_files[$i]\n";
+    print "noise LUT XML:  $noise_files[$i]\n";
+    $id = $tstart."_".$pol;
+    $mli_par = "$out_dir"."\/".$id.".mli.par";
+    $mli = "$out_dir"."\/".$id.".mli";
+    if ($cflg) {$cal = $cal_files[$i];}
+    if ($nflg) {$noise = $noise_files[0]}
+    print "mli:         $mli\n";
+    print "MLI_par:     $mli_par\n";
+    execute("par_S1_GRD $tiff_files[$i] $ann_files[$i] $cal $noise $mli_par $mli", $log);
+    print "\n";
+  }
+}
+
+$time = localtime;
+print "PROCESSING END: $time\n";
+print LOG "PROCESSING END: $time\n";
+exit 0;
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub execute{
+  my ($command, $log) = @_;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+  if (-e $log){
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  }
+  else {
+    open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";
+  }
+  LOG->autoflush;
+}

@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: SIRC_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>SIRC_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/SIRC_proc.c">SIRC_proc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  SIRC_proc - Generates MSP Sensor parameter and Processing
+  Parameter Files for SIR-C data</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>SIRC_proc
+  &lt;CEOS_leader&gt; &lt;SAR_param&gt; &lt;PROC_param&gt;
+  &lt;PROC_param&gt; [UTC/MET]</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;CEOS_leader&gt;</td>
+
+      <td>CEOS leader file for SIRC data provided by CCRS</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>SAR Sensor Parameter File (example: SIRC.par)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>MSP Processing Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>[UTC/MET]</td>
+
+      <td>raw data time reference: 0=UTC, 1=Mission Elapsed Time,
+      default=UTC</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>SIRC_proc pr43860_ldr_ceos SIRC.par
+  p43860.slc.par</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <em>SIRC_proc</em> reads the CEOS file leader to extracts the
+  parameters required to create the SAR sensor parameter file
+  (usually called SIRC.par) and the MSP processing parameter file.
+  Parameters in SIRC.par depend upon the SIRC SAR mode used for the
+  data acquisition. These modes are characterized by parameters
+  including frequency, polarization mode, and bandwidth.</p>
+
+  <p>The time reference for the raw data can be selected to be
+  either Mission Elapsed Time or UTC, with the default set to UTC.
+  MET can be used for extraction of state vectors from state vector
+  data collected during SRL-2 if the included state vectors are in
+  an inertial reference frame rather than in an Earth fixed frame.
+  User specified input parameters include the size of the range
+  FFT, starting range, and the number of echoes to process, and the
+  offset to the first echo to begin processing.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html">SAR raw data (&lt;orbit&gt;.raw)</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Feb-2000.
+</body>
+</html>

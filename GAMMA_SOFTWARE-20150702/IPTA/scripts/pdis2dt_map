@@ -1,0 +1,67 @@
+#! /bin/csh -f
+
+##################################################################
+#
+# uw 5-Apr-2004
+# Script to display 2 point data sets such as deformation rates in map geometry
+#
+##################################################################
+
+if ($#argv < 8)then
+  echo " " 
+  echo "usage: pdis2dt_map <plist_map> <pmask> <DEM_par> <pdata1> <rec_num1> <pdata2> <rec_num2> <cycle> [radius]" 
+  echo " " 
+  echo "       plist_map  (input) point list containing map coordinates (int)"  
+  echo "       pmask      (input) point data stack of mask values (uchar, pmask[i]=0 excludes point i, enter - if not available)"  
+  echo "       DEM_par    (input) DIFF/GEO DEM parameter file"  
+  echo "       pdata1     (input) 1. point data stack (float)"  
+  echo "       rec_num1   1. record number to process"  
+  echo "       pdata2     (input) 2. point data stack (float)"  
+  echo "       rec_num2   2. record number to process"  
+  echo "       cycle      data value per color cycle"  
+  echo "       radius     interpolation window radius used default:   4.00)"  
+  echo " " 
+  exit
+endif
+
+set plist   = $1
+set pmask   = $2
+set DEM_par = $3
+set pdata1   = $4
+set rec_num1 = $5
+set pdata2   = $6
+set rec_num2 = $7
+set cycle   = $8
+set radius = "4"
+if ($#argv >= 9)then
+  set radius = $9
+endif
+
+set width = `awk '$1 == "width:" {printf("%s",$2)}' $DEM_par `
+set nlines = `awk '$1 == "nlines:" {printf("%s",$2)}' $DEM_par `
+set post_north = `awk '$1 == "post_north:" {printf("%s",$2)}' $DEM_par `
+set post_east = `awk '$1 == "post_east:" {printf("%s",$2)}' $DEM_par `
+
+set tmp1 = tmp1.pdis2dt_map
+if (-e $tmp1)then
+  /bin/rm $tmp1
+endif
+set tmp2 = tmp2.pdis2dt_map
+if (-e $tmp2)then
+  /bin/rm $tmp2
+endif
+
+set npt    = `npt $plist | awk '$1 == "total_number_of_points:" {printf("%d",$2)}'`
+set nbytes = `ls -l $pdata | awk '{printf("%d",$5)}'`
+set nrec   = `echo $nbytes $npt 4|awk '{print ($1/$2/$3)}'`
+
+if (1) then
+  pt2d $plist $pmask $pdata1 $rec_num1 $tmp1 $width $nlines $post_east $post_north 1 1 2 3 $radius 1
+  pt2d $plist $pmask $pdata2 $rec_num2 $tmp2 $width $nlines $post_east $post_north 1 1 2 3 $radius 1
+  dis2hgt $tmp1 $tmp2 $width $width 1 0 0 0 $cycle
+endif
+
+if (1) then
+  /bin/rm $tmp1
+  /bin/rm $tmp2
+endif

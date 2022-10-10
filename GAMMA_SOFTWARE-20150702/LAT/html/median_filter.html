@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing --><!-- awi040514 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: median_filter</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>median_filter</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/median_filter.c">median_filter.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  median_filter - Median filter for files of type float.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>median_filter &lt;input_data&gt; &lt;output_data&gt;
+  &lt;width&gt; &lt;bx&gt; [by]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;input_data&gt;</td>
+
+        <td>input data (file of type float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;output_data&gt;</td>
+
+        <td>output data (file of type float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bx&gt;</td>
+
+        <td>filter size in x direction (number of cols)</td>
+      </tr>
+
+      <tr>
+        <td>[by]</td>
+
+        <td>filter size in y direction (number of
+        rows)(default=bx)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>median_filter 19990421.mli 1990421_median.mli 2456 4
+  4</samp></p>
+
+  <p>applies a spatial median filter using a 4x4
+  window<samp><br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">median_filter</span> filters
+  the input data of type float with a spatial median filter. The
+  size of the rectangular window is specified on the command
+  line.&nbsp; The samples within the window are ranked and the
+  median is selected.&nbsp; By default the window is square with
+  edge width specified by the <span style=
+  "font-style: italic;">bx</span> parameters.&nbsp; Specifying the
+  <span style="font-style: italic;">by</span> parameter tpermits
+  non-rectanugular filter windows.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "average_filter.html">average_filter</a> <a href=
+  "frost.html">frost</a> <a href="gamma_map.html">gamma_map</a>
+  <a href="lee.html">lee</a> <a href=
+  "enh_lee.html">enh_lee</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<span style=
+  "text-decoration: underline;"><br></span> <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 18-Oct-2012
+</body>
+</html>

@@ -1,0 +1,127 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$scale = 0.7;	#default display scale factor
+$exp = 0.35;	#default display exponent
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale,);
+
+if (($#ARGV + 1) < 7){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v1.1 10-Apr-2015 clw ***
+*** Calculate average of a list of fcomplex images after subtracting phase of the average of the reference region ***
+
+usage: $0 <cpx_tab> <cpx_ave> <width> <roff> <loff> <nr> <nl>
+    cpx_tab   (input)  list of coregistered complex images including path (fcomplex)
+    cpx_ave   (output) filename including path of the average of the input images (fcomplx)
+    width     image width in samples
+    roff      offset to starting sample for the reference region (samples) (enter - for default: 0)
+    loff      offset to starting line (lines) (enter - for default: 0)
+    nr        number of range samples for the reference region
+    nl        number of lines for the reference region
+  
+    -s scale   (option) set image display scale factor (default: $scale)   
+    -e exp     (option) set image display exponent (default: $exp)
+EOS
+
+open(CPX_TAB, "<$ARGV[0]") or die "\nERROR $0: data file: $ARGV[0]\n\n";
+print "cpx_tab list of input images: $ARGV[0]\n";
+
+$cpx_ave = $ARGV[1];
+$width   = $ARGV[2];
+$roff    = $ARGV[3];
+$loff    = $ARGV[4];
+$nr      = $ARGV[5];
+$nl      = $ARGV[6];
+$cpx_sum = "./cpx_sum";
+$cpx_tmp = "./cpx_tmp";
+$cpx_ave_ras = $cpx_ave.".bmp";
+
+print "output average file: $cpx_ave\n";
+my ($s2, $dir2, $ext2) = fileparse($cpx_ave, qr/\.[^.]*/); #extension is the last bit after the last period
+
+unless (-d $dir2) {
+  (mkdir $dir2) or die "ERROR $0: non-zero exit status, could not create output directory $dir2\n";
+}
+print "image width: $width\n";
+print "reference region offset sample: $roff   samples: $nr\n";
+print "reference offset line:   $loff   lines:   $nl\n";
+print "output complex average image: $cpx_ave\n";
+
+$time = localtime;
+print "\nprocessing start: $time\n";  
+$log = "./mk_cpx_ave_2d.log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n\n";
+LOG->autoflush;
+
+(($loff =~ /\d+$/ && $loff >= 0 ) or ($loff eq "-")) or die "ERROR $0: invalid offset to first line of reference region: $loff\n";
+(($nl =~ /\d+$/ && $nl > 0) or ($nl eq "-")) or die "ERROR $0: invalid number of lines for the reference region: $nl\n";
+(($roff =~ /\d+$/ && $roff >= 0) or ($roff eq "-")) or die "ERROmR $0: invalid offset to first pixel of the reference region: $roff\n";
+(($nr =~ /\d+$/ && $nr > 0) or ($nr eq "-")) or die "ERROR $0: invalid number of pixels width of the reference region: $nr\n";
+
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "\nprocessing start: $time\n";  
+print LOG "output complex average: $cpx_ave\n";
+print LOG "image width (samples): $width\n";
+print LOG "reference offset line:   $loff   lines:  $nl\n";
+print LOG "reference offset sample: $roff   samples: $nr\n";
+print LOG "output complex average image: $cpx_ave\n";
+print LOG "output raster image of average image: $cpx_ave_ras\n";
+close LOG;
+$cnt = 0;
+
+LINE: while (<CPX_TAB>) {	#read lines of processing list file
+  $time = localtime;
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+
+  $cpx = $fields[0];
+  (-e $cpx) or die "ERROR $0: complex image does not exist: $cpx\n";
+  if ($cnt == 0) {
+    execute("cp $cpx $cpx_tmp",$log);
+  } 
+  else {
+    execute("cpx_math $cpx_tmp $cpx $cpx_sum $width 0 $roff $loff $nr $nl - - - 1", $log);
+    print "rename $cpx_sum --> $cpx_tmp\n";
+    rename $cpx_sum, $cpx_tmp;
+  }
+  $cnt++
+}
+if ($cnt > 1) { #divide by the number of scenes
+  $sc = 1.0/$cnt;
+  printf "\nnumber of scenes: $cnt  scale: $sc\n";
+  execute("cpx_math $cpx_tmp - $cpx_ave $width 2 - - - - $sc 0.0", $log);
+  print "deleting $cpx_sum, $cpx_tmp\n";
+  unlink $cpx_sum;
+  unlink $cpx_tmp;
+}
+else {
+  print "rename $cpx_tmp, $cpx_ave";
+  rename $cpx_tmp, $cpx_ave;
+}
+
+execute("rasmph $cpx_ave $width 1 0 1 1 $scale $exp 1 $cpx_ave_ras", $log);
+print "# image of complex average: $cpx_ave_ras\n";
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open existing log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open new log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}

@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$sc = 1.0;	#display scale factor
+$exp = 0.35;	#display exponent
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$sc);
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.0 25-Feb-2014 clw ***
+*** Generate 24-bit BMP images from LOS displacement maps or unwrapped phase ***
+
+usage: $0 <DISP_tab> <RMLI_image> <width> <cycle>
+
+    DISP_tab    (input) list of displacement or unwrapped phase files
+    MLI_image   intensity image for background, same width as input data in DISP_tab (enter - for none) (float)
+    width       number of samples/line
+    cycle       color cycle in meters for raster images (default = .1 m/cycle)
+    -s scale    (option) set image display scale factor (default: $sc)   
+    -e exp      (option) set image display exponent (default: $exp)
+EOS
+
+$disp_tab =  $ARGV[0];
+open(DISP_TAB, "<$disp_tab") or die "\nERROR $0: table of displacement or unwrapped phase files does not exist: $disp_tab\n\n";
+
+$mli = $ARGV[1];
+$width = $ARGV[2];
+$cycle =  $ARGV[3];
+
+print "DISP_tab: $disp_tab\n";
+print "MLI reference image: $mli\n";
+-e $mli or die "ERROR $0: MLI reference image file does not exist: $mli\n";
+
+($sc > 0.0) or die "\nERROR $0: display scale factor <= 0.0 : $sc\n";
+($exp > 0.0) or die "\nERROR $0: display exponent <= 0.0 : $exp\n";
+$log = "mk_rasdt_all.log";
+
+print "$0 log file: $log\n";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "$0 @ARGV\n\n";
+
+print "units/color cycle: $cycle\n";
+print "display intensity scale factor: $sc\n";
+print "display exponent: $exp\n\n";
+print "image width (samples): $width\n";
+
+print LOG "units/color cycle: $cycle\n";
+print LOG "display intensity scale factor: $sc\n";
+print LOG "display exponent: $exp\n\n";
+print LOG "image width (samples): $width\n";
+close LOG;
+
+LINE: while (<DISP_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $disp = $fields[0];
+  -e $disp or die "ERROR $0: data file does not exist: $disp\n";
+  $disp_ras = $disp.".bmp";
+  execute("rasdt_pwr24 $disp $mli $width 1 1 0 1 1 $cycle $sc $exp 1 $disp_ras",$log);
+}
+exit (0);
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log  command: $command\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log  command: $command\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+

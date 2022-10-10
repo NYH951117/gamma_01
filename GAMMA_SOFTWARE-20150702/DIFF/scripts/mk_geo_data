@@ -1,0 +1,120 @@
+#!/usr/bin/perl
+# 
+# Terrain Geocoding of a data set in SAR RDC coordinates clw 16-Sep-2005
+
+use FileHandle;
+
+if (($#ARGV + 1) < 8){die <<EOS ;}
+*** $0
+*** Copyright 2012, Gamma Remote Sensing, 1.5 17-Apr-2012 clw ***
+*** Terrain geocoding of data sets in SAR slant-range coordinates ***
+
+usage: $0 <MLI_par> <DEM_seg_par> <gc> <data> <data_geo> <interp_mode> <format> <log>
+  MLI_par      (input) MLI image parameter file with same dimensions as input data
+  DEM_seg_par  (input) DEM parameter file for output geocoded product 
+  gc           (input) geocoding lookup table (map coordinates --> RDC), use refined lookup table if available
+  data         (input) input data set with same dimensions as the MLI image
+  data_geo     (output) output terrain geocoded data set 
+  interp_mode  interpolation mode:
+                 0: nearest-neighbor
+		 1: bicubic 
+		 2: bicubic-log 
+  format       input data format:
+                 0: float (4 bytes/value)
+		 1: fcomplex (re,im float)
+		 2: SUN raster/BMP
+		 3: unsigned byte
+		 4: short integer (2 bytes/value)
+  log          log file name
+    			       		   
+EOS
+
+$mli_par = $ARGV[0];
+$dem_seg_par = $ARGV[1];
+$gc = $ARGV[2];
+$dat = $ARGV[3];
+$dat_geo = $ARGV[4];
+$interp_mode = $ARGV[5];
+$format = $ARGV[6];
+$log = $ARGV[7];
+
+@types = ("float", "fcomplex", "Sun raster/BMP image", "unsigned char", "short integer");
+@interp = ("nearest-neighbor", "spline", "spline-log", "bilinear", "bilinear_log");
+
+($interp_mode >= 0 && $interp_mode <= 2) or die "\nERROR $0: invalid interpolation mode: $interp_mode\n\n";
+($format >= 0 && $format <= 4) or die "\nERROR $0: invalid data format: $format\n\n";
+
+-e $dat or die "\nERROR $0: input data file does note exist: $dat\n";
+-e $mli_par or die "\nERROR $0: MLI image parameter file does not exist: $mli_par\n";
+-e $gc or die "\nERROR: $0: lookup table does not exist: $gc\n";
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+    
+$time = localtime;
+print LOG "$0 @ARGV\n\n";
+print LOG "*** $0 processing start: $time  mode: $mode ***\n";
+print "*** $0 processing start: $time  mode: $mode ***\n";
+print "log file: $log\n";
+
+@mli_width = extract_param($mli_par,"range_samples:");
+@mli_lines = extract_param($mli_par,"azimuth_lines:"); 
+@mli_rps = extract_param($mli_par,"range_pixel_spacing:"); 
+@mli_azps = extract_param($mli_par,"azimuth_pixel_spacing:"); 
+@dem_seg_width = extract_param($dem_seg_par,"width:");
+@dem_seg_lines = extract_param($dem_seg_par,"nlines:"); 
+
+print "\ninput data file: $dat\n";
+print "ISP image parameter file: $mli_par\n";
+print "data width: $mli_width[1]   lines: $mli_lines[1]\n";
+print "data pixel spacing (m) range: $mli_rps[1]  azimuth: $mli_azps[1]\n";
+print "data type: $types[$format]\n";
+
+print "\noutput geocoded data: $dat_geo\n";
+print "DEM parameter file for geocoded data: $dem_seg_par\n";
+print "output map width: $dem_seg_width[1]  lines: $dem_seg_lines[1]\n";
+print "geocoding lookup table: $gc\n";
+print "interpolation mode: $interp[$interp_mode]\n\n";
+
+print LOG "\ninput data file: $dat\n";
+print LOG "ISP image parameter file: $mli_par\n";
+print LOG "data width: $mli_width[1]   lines: $mli_lines[1]\n";
+print LOG "data pixel spacing (m) range: $mli_rps[1]  azimuth: $mli_azps[1]\n";
+print LOG "data type: $types[$format]\n";
+print LOG "\noutput geocoded data: $dat_geo\n";
+print LOG "DEM parameter file for geocoded image: $dem_seg_par\n";
+print LOG "output map width: $dem_seg_width[1]  lines: $dem_seg_lines[1]\n";
+print LOG "geocoding lookup table: $gc\n";
+print LOG "interpolation mode: $interp[$interp_mode]\n\n";
+close LOG;
+
+execute("geocode_back $dat $mli_width[1] $gc $dat_geo $dem_seg_width[1] $dem_seg_lines[1] $interp_mode $format", $log);
+print "\n*** $0 completed  $time ***\n";
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "\n*** $0 completed  $time ***\n"; 
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

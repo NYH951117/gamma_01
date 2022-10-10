@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: SLC_corners</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_corners</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/SLC_corners.c"><i>SLC_corners.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_corners - calculate image corner and center coordinates in
+  lat/lon. Calculate minimum and maximum values of latitde and
+  longitude.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_corners &lt;SLC_par&gt;
+  [terra_alt]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ISP SLC/MLI image parameter file (text
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[terra_alt]<br></td>
+
+        <td style="vertical-align: top;">(input) average terrain
+        altitude (default: 300.000 meters)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><code>SLC_corners
+  19971018.mli.par</code><br></p><strong>DESCRIPTION</strong><br>
+  <em>SLC_corners</em> determines the latitude and longitude
+  (decimal degrees) of the corners and center pixel of an SLC or
+  MLI&nbsp; SAR image. The image can be in either ground-range or
+  slant-range geometry. The average terrain height can be entered
+  on the command line. <em><br>
+  <br>
+  SLC_corners</em> also calculates the minimum and maximum values
+  of the latitude and logititude as well as the differences in
+  latitude and longitude for the image. The differences are useful
+  for determining the section of a larger DEM required for terrain
+  geocoding of a SAR images. The coordinates are calculated on the
+  basis of the WGS84 ellipsoid. The default terrain altitude above
+  the ellipsoid is 300 meters, but can be changed by entering a
+  value for the <span style="font-style: italic;">terr_alt</span>
+  parameter on the command line. An example of the output is shown
+  below with a nominal terrain altitude selected to be 1000
+  meters:<br>
+  <br>
+
+  <table style="text-align: left; width: 725px; height: 182px;"
+  border="1" cellpadding="2" cellspacing="2">
+    <tbody>
+      <tr>
+        <td><code><span style="font-family: monospace;">$
+        SLC_corners 19990915.slc.par 1000<br>
+        *** Calculate SLC/MLI image corners in geodetic latitude
+        and longitude (deg.)<br>
+        *** Copyright 2010, Gamma Remote Sensing, v1.5 5-Oct-2010
+        clw ***<br>
+        <br>
+        latitude (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        35.10047588&nbsp; longitude (deg.):&nbsp;&nbsp;&nbsp;
+        -115.54173894<br>
+        latitude (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        35.28374024&nbsp; longitude (deg.):&nbsp;&nbsp;&nbsp;
+        -116.61026273<br>
+        latitude (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        34.16197807&nbsp; longitude (deg.):&nbsp;&nbsp;&nbsp;
+        -115.79043064<br>
+        latitude (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        34.34472513&nbsp; longitude (deg.):&nbsp;&nbsp;&nbsp;
+        -116.84555720<br>
+        <br>
+        center latitude (deg.):&nbsp;&nbsp;&nbsp; 34.73052463&nbsp;
+        center longitude (deg.):&nbsp; -116.23491341<br>
+        min. latitude (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        34.16197807&nbsp; max. latitude
+        (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 35.28374024<br>
+        min. longitude (deg.):&nbsp;&nbsp; -116.84555720&nbsp; max.
+        longitude (deg.):&nbsp;&nbsp;&nbsp; -115.54173894<br>
+        delta latitude (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1.12176217&nbsp; delta longitude
+        (deg.):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1.30381826<br></span></code></td>
+      </tr>
+    </tbody>
+  </table><strong><br>
+  OPTIONS</strong><br>
+  The output is sent to the standard output file that can be
+  redirected using the &gt; shell redirection.<br>
+  <br>
+  <code><span style="font-family: monospace;">SLC_corners
+  19971018.mli.par &gt; 19971018.corners</span></code><br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Oct-2010
+</body>
+</html>

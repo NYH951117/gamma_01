@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pt_density</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>pt_density</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pt_density.c">pt_density.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  pt_density - point density calculation (number of adjacent points
+  within a radius)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>pt_density &lt;plist&gt; &lt;pmask&gt; &lt;SLC_par&gt;
+  &lt;pdens_out&gt; [r_max]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdens_out&gt;</td>
+
+        <td>(output) point density (number of adjacent points)
+        (type: float)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max];</td>
+
+        <td>maximum radius (range samples, default: 64 )</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>pt_density testsite.plist testsite.pmask 08256.rslc.par
+  testsite.pdens_out 100</samp></p>
+
+  <p>Calculates, for each point in a point list, the number of
+  points (point density) found within a given search radius (100
+  SLC range samples). The point density is then stored in the point
+  data stack testsite.pdens_out (type: float).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code pt_density.c in ./IPTA/src, executable version
+  pt_density in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  pt_density calculates, for each point in a point list, the number
+  of points (point density) found within a given search radius
+  (default: 64 SLC range samples).<br>
+  <br>
+  Together with the input point list an input point mask can be
+  indicated to consider or ignore specific points. "-" can be
+  indicated instead of a pmask file to consider all points of the
+  list.<br>
+  <br>
+  The SLC parameter file associated with the point list coordinate
+  geometry is required to calculate ground distances between pairs
+  of points. Such distances are calculated using the ground range
+  sampling (calculated from slant range sampling and incidence
+  angle) and the azimuth spacing. The maximum search area radius is
+  indicated in SLC range samples. Only valid points, i.e. points
+  with a non-zero value in the mask are considered. For points with
+  a zero in the mask the output is set to the NULL value.<br>
+  <br>
+  The local search area in km^2 is written to standard output (look
+  for: Local search area around point (km^2): value).<br>
+  <br>
+  The result of pt_density is a point data stack (type: float)
+  indicating a point density for each input point.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="pt_density_reduction.html">pt_density_reduction.c</a>,
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 29-Mar-2011.</p>
+</body>
+</html>

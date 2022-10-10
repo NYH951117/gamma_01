@@ -1,0 +1,165 @@
+#! /bin/csh -fe
+echo " "
+echo "JERS_PROC: Process IQ SAR data from JERS-1 v3.2 6-Aug-2001 clw/uw"
+echo " "
+if ($#argv < 4)then
+  echo "usage: JERS_PROC <sensor> <scene> <RLK> <AZLK> [RAW_dir] [RC_dir] [SLC_dir] [AZ_PATCH]\n"
+  echo " "
+  echo "       sensor      JERS-1 sensor parameter file,  example:JERS-1_720.par"
+  echo "       scene       scene name (example: 940722, use the acquisition date, orbit number, or your own identifier)"
+  echo "       RLK         number of range looks in the multilook intensity (MLI) image"
+  echo "       AZLK        number of azimuth looks in the MLI image"
+  echo "       RAW_dir     SAR raw data file directory (. for curent directory) "
+  echo "       RC_dir      range compressed data file directory (. for curent directory) "
+  echo "       SLC_dir     single look complex image file directory (. for curent directory) "
+  echo "       AZ_PATCH    azimuth patch size: 4096, 8192 (nominal=8192) "
+  echo " "
+  exit
+endif
+
+set RAW = "."
+if ($#argv >= 5) then 
+  set RAW = $5
+endif
+
+set RC = "."
+if ($#argv >= 6) then 
+  set RC = $6
+endif
+
+set SLC = "."
+if ($#argv >= 7) then 
+  set SLC = $7
+endif
+
+set AZ_PATCH = 8192
+if ($#argv >= 8) then 
+  set AZ_PATCH = $8
+endif
+
+# tests if required input files exist:
+if(1) then
+  echo "test if required input/output files and directories exist"
+  if (-e "$1" == 0 ) then 
+    echo "ERROR: sensor parameter file ($1) does not exist"
+    exit(-1)
+  endif 
+  if ((-e "p$2.slc.par" == 0 )) then 
+    echo "ERROR: MSP processing parameter file (p$2.slc.par) does not exist"
+    exit(-1)
+  endif 
+  if (($#argv >= 5) && (-e "$5" == 0 )) then 
+    echo "ERROR: RAW_dir ($5) does not exist"
+    exit(-1)
+  endif 
+  if ((-e "$RAW/$2.raw" == 0 ) && (-e "$RAW/$2.fix" == 0 )) then 
+    echo "ERROR: Raw data file ($RAW/$2.raw or $RAW/$2.fix) does not exist"
+    exit(-1)
+  endif 
+  if( ($#argv >= 6) && (-e "$6" == 0 ) ) then
+    echo "ERROR: RC_dir ($6) does not exist"
+    exit(-1)
+  endif 
+  if( ($#argv >= 7) && (-e "$7" == 0 ) ) then 
+    echo "ERROR: SLC_dir ($7) does not exist"
+    exit(-1)
+  endif 
+  echo "required input/output files and directories exist"
+endif
+
+set SENSOR = $1
+set RLK = $3
+set AZLK = $4
+
+set DECIM = 1
+set DOP_ALGOR = 1
+set AMB_FLAG = 1
+set NSUB = 24
+set AUTOF_SNR_MIN = 3.0
+
+set R_COMP = pre_rc_JERS
+set AZ_PROC = az_proc
+set ANTENNA = JERS1_antenna.gain
+
+set SAR = `awk '$1 == "sensor_name:" {print $2}' $1`
+if ( "$SAR" == "JERS1" )then
+  set CAL_FACT = "-22.1"
+else
+  echo "ERROR: Sensor ($SAR) is not JERS1"
+  exit(-1)
+endif
+
+# check if fixed raw data file exists (missing lines, range gate etc.)
+
+if (-e $RAW/$2.fix) then
+  set RAW_DATA = $RAW/$2.fix
+else
+  set RAW_DATA = $RAW/$2.raw
+endif
+
+echo ""
+echo "raw data decimation factor: $DECIM"
+echo "number of range looks:      $RLK"
+echo "number of azimuth looks:    $AZLK"
+echo "minimum autofocus SNR:      $AUTOF_SNR_MIN"
+echo "azimuth patch size:         $AZ_PATCH"
+echo "range compression program:  $R_COMP"
+echo "azimuth processing program: $AZ_PROC"
+echo "antenna pattern filename:   $ANTENNA"
+echo "raw data file:              $RAW_DATA"
+echo "range compressed data:      $RC/$2.rc"
+echo "SLC image data:             $SLC/$2.slc"
+echo "Multi-Look Intensity:       $2.mli"
+
+#echo ""
+#rm -f dop_ambig.spec
+#echo "dop_ambig $SENSOR p$2.slc.par $RAW_DATA 1 - $2.mlcc > dop_ambig_$2.out"
+#dop_ambig $SENSOR p$2.slc.par $RAW_DATA 1 - $2.mlcc > dop_ambig_$2.out
+
+echo ""
+rm -f $2.mlcc 
+echo "dop_mlcc $SENSOR p$2.slc.par $RAW_DATA $2.mlcc > dop_mlcc_$2.out"
+dop_mlcc $SENSOR p$2.slc.par $RAW_DATA $2.mlcc > dop_mlcc_$2.out
+
+echo " "
+rm -f dop_$2.out
+echo "doppler $SENSOR p$2.slc.par $RAW_DATA $2.dop - $NSUB $AMB_FLAG > doppler_$2.out"
+doppler $SENSOR p$2.slc.par $RAW_DATA $2.dop - $NSUB $AMB_FLAG > doppler_$2.out
+
+echo " "
+rm -f rspec_IQ_$2.out
+echo "rspec_IQ $SENSOR p$2.slc.par $RAW_DATA $2.rspec > rspec_IQ_$2.out"
+rspec_IQ $SENSOR p$2.slc.par $RAW_DATA $2.rspec > rspec_IQ_$2.out
+
+echo " "
+rm -f rspec_JERS_2.out
+echo "rspec_JERS $SENSOR p$2.slc.par $RAW_DATA $2.psd > rspec_JERS_$2.out"
+rspec_JERS $SENSOR p$2.slc.par $RAW_DATA $2.psd > rspec_JERS_$2.out
+
+echo " "
+rm -f pre_$2.out
+echo "$R_COMP $SENSOR p$2.slc.par $2.psd $RAW_DATA $RC/$2.rc $DECIM > pre_rc_JERS_$2.out"
+$R_COMP $SENSOR p$2.slc.par $2.psd $RAW_DATA $RC/$2.rc $DECIM > pre_rc_JERS_$2.out
+
+echo " "
+rm -f autof_$2.out 
+echo "autof $SENSOR p$2.slc.par $RC/$2.rc $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1 > autof_$2.out"
+autof $SENSOR p$2.slc.par $RC/$2.rc $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1 > autof_$2.out 
+
+echo " "
+echo "autof $SENSOR p$2.slc.par $RC/$2.rc $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1 >> autof_$2.out"
+autof $SENSOR p$2.slc.par $RC/$2.rc $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1 >> autof_$2.out 
+
+echo " "
+rm -f az_$2.out
+echo "$AZ_PROC $SENSOR p$2.slc.par $RC/$2.rc $SLC/$2.slc $AZ_PATCH 0 $CAL_FACT 0  > az_proc_$2.out"
+$AZ_PROC $SENSOR p$2.slc.par $RC/$2.rc $SLC/$2.slc $AZ_PATCH 0 $CAL_FACT 0 > az_proc_$2.out
+
+echo " "
+rm -f mli_$2.out
+echo "multi_SLC  p$2.slc.par p$2.mli.par $SLC/$2.slc $2.mli $RLK $AZLK > multi_SLC_$2.out"
+multi_SLC p$2.slc.par p$2.mli.par $SLC/$2.slc $2.mli $RLK $AZLK > multi_SLC_$2.out
+
+#echo ""
+#echo "rm $RC/$2.rc"
+#rm $RC/$2.rc

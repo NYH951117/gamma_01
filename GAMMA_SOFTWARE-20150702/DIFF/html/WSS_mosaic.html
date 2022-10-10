@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF/GEO Reference Manual: WSS_mosaic</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GO: Reference Manual</h1>
+  <hr>
+
+  <h2>WSS_mosaic</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/WSS_mosaic.c"><i>WSS_mosaic.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>WSS_mosaic</em> - mosaic MLI images and interferograms
+  produced from ESA Wide-Swath SLC products</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>usage: WSS_mosaic &lt;WSS_tab&gt; &lt;SLC_par&gt;
+  &lt;WSS_data&gt; &lt;type&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;WSS_tab&gt;</td>
+
+        <td>(input) two column list of MLI data files and MLI image
+        parameter files for each sub-swath (including paths)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; required
+        file order: SS1, SS2, SS3, SS4, SS5</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP image parameter file for the mosaicked WSS
+        MLI image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;WSS_data&gt;</td>
+
+        <td>(output) WSS mosaicked interferogram or MLI image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type &gt;</td>
+
+        <td>&nbsp;WSS data type:<br>
+        &nbsp;&nbsp; 0: FLOAT<br>
+        &nbsp;&nbsp; 1: FCOMPLEX</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE:</strong></p>
+
+  <p><strong style="font-weight: normal;">To mosiac the slant range
+  swath MLI images &nbsp;of the 5 WSS
+  sub-swaths:</strong><br></p><code>WSS_mosaic WSS_20040208_mli_tab
+  20040208_mosaic.slc.par&nbsp;20040208_mosaic.mli 0<br>
+  <br></code> <strong style="font-weight: normal;">To mosiac the
+  slant range swath interferograms of the 5 WSS
+  sub-swaths:</strong>
+
+  <p><code>WSS_mosaic WSS_20040208_20030921_int_tab
+  20040208_mosaic.slc.par&nbsp;20040208_20030921_mosaic.int
+  1</code></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  WSS_mosaic is a program to mosiac the subswaths of the ESA
+  Widw-Swath SLC (WSS)&nbsp; products produced from ASAR scansar
+  data. The WSS products are generated such that the output SLC
+  samples are on a 0-Doppler grid. This has th consequence that the
+  images and interferograms from each of the sub-swaths can be
+  exactly mosaicked using nearest-neighbor resampling. The
+  processing sequence to produce a mosaicked WSS interferogram
+  :</p>
+
+  <ol>
+    <li>Extract the 5 WSS subswath data sets from the ASAR image
+    product obtained from ESA using ISP program <span style=
+    "font-style: italic;">par_ASAR</span>.</li>
+
+    <li>Generate multi-look intensity (MLI) images from each of the
+    sub-swaths. The individual bursts are detected and summed to
+    produce the MLI image using ISP program
+    multi_SLC_WSS.c&nbsp;</li>
+
+    <li>Terrain geocode each of the MLI image swaths using
+    &nbsp;<a href="gc_map.html"><span style=
+    "text-decoration: underline;">gc_map</span></a>,&nbsp;&nbsp;as
+    well as the other programs used for terrain geocoding and
+    refinement</li>
+
+    <li>Resample WSS data to the reference image using <a href=
+    "rdc_trans.html">rdc_trans</a>, and&nbsp; <a href=
+    "WSS_interp_lt.html">WSS_interp_lt</a> , then generate an MLI
+    image of the resampled SLC (multi_SLC_WSS) and measure the
+    offsets between the MLI image of the resampled WSS scene and
+    the MLI image of the reference scene. The offsets are used to
+    generate an offset polynomial model using <a href=
+    "offset_fitm.html">offset_fitm</a>.that is then applied in
+    <a href="WSS_interp_lt.html">WSS_interp_lt</a> to improve the
+    coregistration.</li>
+
+    <li>Generate the interferogram for the sub-swath using <a href=
+    "WSS_intf.html">WSS_intf.c</a></li>
+
+    <li>Repeat the above steps 2-5 for each of the 5
+    sub-swaths.</li>
+
+    <li>Give the MLI images and interferograms of the 5 sub-swaths,
+    &nbsp;mosaic the MLI images using WSS_mosaic with data type set
+    to 0 (FLOAT).&nbsp;</li>
+
+    <li>Given the interferograms from the subswaths that are
+    coregistered to the MLI image of the reference track, mosaic
+    using WSS_ with the data type set to 1 (FCOMPLEX)</li>
+  </ol>To mosaic the data, a WSS_tab text file is entered on the
+  command line that contains the file names and the image parameter
+  file names for each of the swaths in the mosaic. For example, to
+  mosiac<br>
+  the MLI images from each of the sub-swaths, the WSS_tab contains
+  the following lines for a particular &nbsp;WSS image:<br>
+
+  <p>
+  <code>slc/20040208/20040208.VV.IS1.mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  slc/20040208/20040208.VV.IS1.mli.par<br>
+  slc/20040208/20040208.VV.IS2.mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  slc/20040208/20040208.VV.IS2.mli.par<br>
+  slc/20040208/20040208.VV.IS3.mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  slc/20040208/20040208.VV.IS3.mli.par<br>
+  slc/20040208/20040208.VV.IS4.mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  slc/20040208/20040208.VV.IS4.mli.par<br>
+  slc/20040208/20040208.VV.IS5.mli&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  slc/20040208/20040208.VV.IS5.mli.par</code><em><br></em></p>Fore
+  the interferograms swaths, the WSS_tab has appears as below.
+
+  <p><code>int/20040208_20030921/20040208_20030921.IS1.int &nbsp;
+  &nbsp;slc/20040208/20040208.VV.IS1.mli.par<br>
+  int/20040208_20030921/20040208_20030921.IS2.int&nbsp; &nbsp;
+  slc/20040208/20040208.VV.IS2.mli.par<br>
+  int/20040208_20030921/20040208_20030921.IS3.int &nbsp;
+  &nbsp;slc/20040208/20040208.VV.IS3.mli.par<br>
+  int/20040208_20030921/20040208_20030921.IS4.int &nbsp;
+  &nbsp;slc/20040208/20040208.VV.IS4.mli.par<br>
+  int/20040208_20030921/20040208_20030921.IS5.int &nbsp;&nbsp;
+  slc/20040208/20040208.VV.IS5.mli.par</code></p>
+
+  <p>Each line in the WSS_tab file contains a pair of entries. The
+  first is the data file and the second is the MLI image parameter
+  file that is describes the geometry. In this particular example
+  the 5 swaths are denoted IS1 to IS5. The reference track is
+  20040208.&nbsp;Note also that fewer thn 5 swaths can be specified
+  in the WSS_tab, but they must be in increasing order of slant
+  range and the sub-swaths must be adjoining</p>
+
+  <p>Note that the interferogram must be coregistered to the MLI
+  for each subswath.&nbsp; The WSS data are not multi-looked in
+  range, only 1 range look is taken. In this way the images have
+  the best range resolution possible and support the larest
+  possible value of perpendicular baseline, given the available
+  range bandwidth and imaging geometry.</p>
+
+  <p>The output <span style=
+  "font-style: italic;">SLC_par</span>&nbsp; image parameter file
+  constains the parameters of the mosaicked image. It contains the
+  same parameters if either MLI images or interferograms are
+  mosaicked. Finally the <span style=
+  "font-style: italic;">type</span> command line parameter
+  specifies if MLI images in FLOAT format or FCOMPLEX
+  interferograms are specified in the WSS_tab.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="rdc_trans.html">rdc_trans,</a> <a href=
+  "WSS_intf.html">&nbsp;WSS_intf</a>,&nbsp;<a href=
+  "WSS_interp_lt.html">WSS_interp_lt</a>,&nbsp;<a href=
+  "offset_fitm.html">offset_fitm</a>.<a href=
+  "gc_map.html"><span style=
+  "text-decoration: underline;">gc_map</span></a>, <a href=
+  "geocode.html">geocode</a>, <a href=
+  "geocode_back.html">geocode_back</a>. <a href=
+  "OFF_par.html"></a></p>
+  <hr>
+  &nbsp;<a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change &nbsp;8-May-2006.
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: unw_model_pt</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing -->
+  <!-- uw 20-Feb-2003 -->
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>unw_model_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/unw_model_pt.c">unw_model_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  unw_model_pt - unwrap complex interferogram using a phase model
+  (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>unw_model_pt &lt;plist&gt; &lt;pmask&gt; &lt;pint&gt;
+  &lt;rec_num&gt; &lt;punw_model&gt; &lt;punw&gt; [np_ref]
+  [ref_ph]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(input) point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar, set to -
+      to accept all points)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pint&gt;</td>
+
+      <td>(input) point data stack of interferograms
+      (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num&gt;</td>
+
+      <td>record number to process (default -: all records)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;punw_model&gt;</td>
+
+      <td>(input) point data stack of approximate unwrapped phases
+      (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;punw&gt;</td>
+
+      <td>(output) point data stack of unwrapped phases
+      (float)</td>
+    </tr>
+
+    <tr>
+      <td>[np_ref]</td>
+
+      <td>phase reference point number (beginning from 1,
+      default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[ref_ph]</td>
+
+      <td>phase value to use at np_ref (if not provided value of
+      unw_model is used)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>unw_model_pt testsite.plist testsite.pmask testsite.pdiff 3
+  testsite.punw_model testsite.pdiff.unw 824 0.0</samp></p>
+
+  <p>Unwraps the interferometric phase for record 3 of the input
+  stack of interferograms, assuming that the unwrapped phases lie
+  within PI of the provided unwrapped phase model. Point 824 is
+  used as reference and the phase at this reference point is set to
+  0.0.</p>
+
+  <p><samp>unw_model_pt testsite.plist testsite.pmask
+  testsite.pdiff - testsite.punw_model
+  testsite.pdiff.unw</samp></p>
+
+  <p>Unwraps the interferometric phase for all records of the input
+  stack of interferograms, assuming that the unwrapped phases lie
+  within PI of the provided unwrapped phase model. Point 1 is used
+  as reference and the phase at this reference point is set to the
+  value of the model.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code unw_model_pt.c in ./IPTA/src, executable version
+  unw_model_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  unw_model_pt conducts a very simple model based phase unwrapping
+  for interferograms in point data format. This can be done for a
+  single record of the stack of interferograms or all records.</p>
+
+  <p>The coordinates of the points considered are defined in the
+  point list. The optional mask file (in point data format)
+  indicates for each point if it is valid (1, i.e. considered) or
+  not valid (0, excluded).</p>
+
+  <p>The input interferograms are provided as a point data stack.
+  This stack is of fcomplex type. The phase model is provided as a
+  point data stack of type float with the values coresponding to
+  unwrapped phases. The type of the output stack of unwrapped
+  interferograms is of float format.</p>
+
+  <p>Unwrapped phases are calculated for each valid point of the
+  point list. Valid points are points with a non-zero input
+  interferogram value, a non-zero point mask value (if provided),
+  and a non-zero raster mask value (if provided).</p>
+
+  <p>In the model based phase unwrapping it is assumed that the
+  unwrapped phases of the model are almost accurate to within PI.
+  Each complex valued phase is converted to the unwrapped phase
+  which is within PI of the phase model such that a re-wrapping
+  would result in the original wrapped phase.</p>
+
+  <p>Only at the end a phase offset as can optionally be indicated
+  by specifying the phase for an referent point, is subtracted from
+  each unwrapped phase value.</p>
+
+  <p>The unwrapped phases are written to the output point data
+  stack of unwrapped phases at the indicated record number.</p>
+
+  <p>If a new output stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.</p>
+
+  <p>The reliability of unw_model_pt depends on the quality of the
+  phase model used. In the case the phase model is reliable enough,
+  unw_model_pt is a very straight-forward (and efficient) way of
+  phase unwrapping.</p>
+
+  <p>To display the complex or real valued input or output
+  interferograms contained in the point data stack the programs
+  pt2data or pt2d can be used to convert the point data to raster
+  data format which can then be displayed using conventional
+  display programs.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="mcf_pt.html">mcf_pt</a>, <a href=
+  "def_mod_pt.html">def_mod_pt</a>, <a href=
+  "def_mod_pt.html">multi_def_pt</a>, <a href=
+  "pt2data.html">pt2data</a>, <a href="pt2d.html">pt2d</a>,
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

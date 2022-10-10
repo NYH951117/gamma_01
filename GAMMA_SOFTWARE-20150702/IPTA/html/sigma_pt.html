@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: stat_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>sigma_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/sigma_pt.c">sigma_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  sigma_pt - estimate sigma of unwrapped phase or displacement
+  (float data) using values in a circular region about each
+  point</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sigma_pt &lt;plist&gt; &lt;pmask&gt; &lt;pdata&gt;
+  &lt;psigma&gt; [rec_num] [r_max] [w_func] [np_min]
+  [np_max]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;psigma&gt;</td>
+
+        <td>(output) standard deviation using points in a circular
+        region</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata to process (default -: all
+        records)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum search radius (range samples, default:
+        2)<br></td>
+      </tr>
+
+      <tr>
+        <td>[w_func]</td>
+
+        <td>radial weighting function (0: 1.0&nbsp; 1: 1.0 -
+        radius/r_max, default -: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[np_min]</td>
+
+        <td>minimum number of points in the estimate: default:
+        5</td>
+      </tr>
+
+      <tr>
+        <td>[np_max]</td>
+
+        <td>maximum number of points in the estimate: all</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>sigma_pt plist pmsk1 pdisp3 pdisp3_sigma - 3 0
+  5<br></samp></p>determines the standard deviation of the values
+  with a radius of 3 about each point . Uniform weighting is used.
+  The standard deviation<br>
+  is only estimated if there are a minimum of 5 values within the
+  search radius of &nbsp;each point.<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code sigma_pt.c in ./IPTA/src, executable version sigma_pt
+  in ./IPTA/bin</p><strong>DESCRIPTION</strong><br>
+  Program is used to estimate standard deviation of data values
+  within a specified radius of each point in the data stack. This
+  can be<br>
+  applied &nbsp;to each individual layer in a data stack. This
+  program &nbsp;is useful only for float data files and can be used
+  to evaluate the standard deviation of deformation, height, or
+  other parameters. There is the option to weight points on the
+  basis of relative distance in the search region.
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="stat_pt.html">stat_pt.c</a>,&nbsp;<a href=
+  "ccs_pt.html">ccs_pt.c</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 7-Jul-2005.
+</body>
+</html>

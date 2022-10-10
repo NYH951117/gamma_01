@@ -1,0 +1,252 @@
+#!/usr/bin/perl
+use FileHandle;
+$imode = 0;					#set default itab imode 
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2006, Gamma Remote Sensing, v1.1 7-Apr-2006 clw ***
+*** generate output file with and delta_T values ***
+*** generate interferogram table (itab) file  ***
+
+usage: $0 <SLC_tab> <SLC_par> <pair_file> <itab> [itab_type] [delta_T_min] [delta_T_max]
+
+    SLC_tab      (input) two column list of SLC filenames and SLC parameter filenames (including paths) (ascii)
+                   1. SLC filename  (includes path)
+                   2. SLC parameter filename (includes path)
+    SLC_par      (input) reference SLC parameter filename (include path)
+    pair_file    (output) list of dates, and delta_T for interferogram pairs in the itab (text)
+    itab         (output) interferogram table with 4 column format:
+                   1. row number in SLC_tab of the reference SLC 
+		   2. row number in SLC_tab of SLC-2 of the interferogram
+		   3. line number in the itab
+		   4. flag used to indicate if this interferogram is used in IPTA processing (0:not used  1:used)
+    itab_type    itab type:
+                   0: single reference (default)
+		   1: all pairs
+    delta_T_min  minimum number of days between passes (default = 1, enter - for default) 
+    delta_T_max  maximum number of days between passes  
+    
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table SLC images and parameter files missing: $ARGV[0]\n";
+
+$slc_tab = $ARGV[0];
+$orb1_par = $ARGV[1];
+$bpf = $ARGV[2];
+$itab = $ARGV[3];
+
+$log = "itab_calc.log";
+$bperp_max = -1;
+$bperp_min = -1;
+$dt_min = 1;
+$dt_max = -1;
+
+-e $orb1_par or die "ERROR $0: reference RSLC image parameter file does not exist: $orb1_par\n";
+#-x "/usr/local/bin/convdate" or die "\nERROR: program convdate not available, install as part of the DELFT getorb package\n";
+
+open(PF,">$bpf") or die "ERROR $0: cannot open pair text file: $bpf\n";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+
+$time = localtime;
+print LOG "$0  @ARGV\n";
+print LOG "\n$0 processing started: $time \n";
+print LOG "xmgrace plot file: $grf\n";
+print LOG "reference SLC parameter file: $orb1_par\n";
+print LOG "pair text file:    $bpf\n\n";
+print LOG "output ITAB file:  $itab\n";
+
+print "$0 processing started: $time \n";
+print "SLC_tab table SLC images and parameter files: $ARGV[0]\n"; 
+print "xmgrace plot file: $grf\n";
+print "reference SLC parameter file: $orb1_par\n";
+print "pair text file:    $bpf\n";
+print "output itab file:  $itab\n";
+
+if(($#ARGV + 1) >= 5){
+  if ($ARGV[4] ne "-"){      
+    $imode = $ARGV[4];
+    ($imode == 0 || $imode == 1) or die "ERROR: invalid itab_mode: $imode\n";
+    if($imode == 0){
+      print LOG "itab generation mode: single SLC reference scene\n";
+      print "itab generation mode: single SLC reference scene\n";
+    }
+    if($imode == 1){
+      print LOG "itab_mode: all possible pairs\n";
+      print "itab_mode: all possible pairs\n";
+    }	 
+  }
+}    
+
+if(($#ARGV + 1) >= 6){
+  if ($ARGV[5] ne "-"){
+    $dt_min = $ARGV[5];
+    print LOG "minimum delta_T (days): $dt_min\n\n";
+    print "minimum delta_T (days): $dt_min\n\n";
+  }
+} 
+   
+if(($#ARGV + 1) >= 7){
+  if ($ARGV[6] ne "-"){
+    $dt_max = $ARGV[6];
+    print LOG "maximum delta_T (days): $dt_max\n\n";
+    print "maximum delta_T (days): $dt_max\n\n";
+  }
+}    
+
+@date = extract_param($orb1_par,"date:");	#determine image date
+print "reference frame @date\n";
+$d1 = sprintf "%4d%02d%02d",@date[1],@date[2],@date[3];
+@sensor = extract_param($orb1_par,"sensor:");	#determine image format
+$s1 = @sensor[1];
+print "reference sensor: $s1\n";
+$mjd1 = julday(@date[1],@date[2],@date[3]);
+
+$i = 1;
+LINE: while (<SLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  
+  @orb2_par[$i-1] = @fields[1];
+  @date = extract_param(@orb2_par[i-1],"date:");	#determine image 2 date
+  @sensor = extract_param(@orb2_par[i-1],"sensor:");	#determine image format
+  $date2 = sprintf "%4d-%02d-%02d",@date[1],@date[2],@date[3];
+  @d2[$i-1] = sprintf "%4d%02d%02d",@date[1],@date[2],@date[3];
+  @d3[$i] = @d2[$i-1];
+  $mjd2 = julday(@date[1],@date[2],@date[3]);
+  $delta[$i-1] = $mjd2 - $mjd1;  
+  if($orb1_par eq @orb2_par[$i-1]){
+    $rn = $i-1;
+  }  
+  $i++; 
+} 
+$nim = $i-1; 
+print "number of SLC images: $nim\n\n";
+$nc = 0;
+
+if($imode == 0){			#single reference
+  open(ITAB,">$itab") or die "ERROR $0: cannot output itab file: $itab\n"; 
+  print "reference orbit number: $rn\n";
+  for($j=0; $j < $nim; $j++){
+    $jj = $j+1;
+    if((($dt_max == -1) || ($dt_max >= abs($delta[$j]))) &&
+       ($dt_min <= abs($delta[$j])) && ($orb1_par ne @orb2_par[$j]) ) {
+      $nc++;
+      printf ITAB "%3d %3d %4d  1\n",$rn+1,$jj,$nc;
+      printf PF "%3d @orb1_par[$rn] @orb2_par[$j] @d2[$rn-1] @d2[$j] %6d\n",$nc,@delta[$j];
+      printf "%3d @orb2_par[$rn] @orb2_par[$j] reference: @d2[$rn-1] @d2[$j] delta_T (days): %6d\n",$nc,@delta[$j];
+    }
+  }
+}
+
+if($imode == 1){			#all unique pairs
+  print "*** checking all SLC pairs ***\n";
+  $bp_ave = 0.0;
+  $nbp = 0;
+  open(ITAB,">$itab") or die "ERROR $0: cannot output ITAB file: $itab\n"; 
+
+  for($k = 0; $k < $nim-1; $k++){
+    $kk = $k + 1;
+
+    for($j = $k + 1; $j < $nim; $j++){		#don't check with self
+      $jj = $j + 1;
+      $bp = $bperp[$j] - $bperp[$k];
+      $dt = $delta[$j] - $delta[$k];
+
+      if((($dt_max == -1) || ($dt_max >= abs($dt))) &&
+	  ($dt_min <= abs($dt))){
+	  
+        $nc++;
+        printf ITAB "%3d %3d %4d  1\n",$kk,$jj,$nc;
+        printf PF "%3d @orb2_par[$k] @orb2_par[$j] @d2[$j] %6d\n",$nc,@delta[$j] - @delta[$k];
+        printf "%3d @orb2_par[$k] @orb2_par[$j] reference: @d2[$k] @d2[$j] delta_T (days): %6d\n",$nc,@delta[$j]-@delta[$k];
+      }
+    }
+  }
+}
+
+print"\nnumber of SLC pairs that meet the bperp_max and delta_T_max criteria: $nc\n";   
+$time = localtime;
+print LOG "\n $0 processing completed: $time \n";
+print "\n $0 processing completed: $time \n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n\n";
+}
+
+sub julday {
+##################################
+# Julian Day from Gregorian Date #
+##################################
+
+use integer;
+my ( $y, $m, $d) = @_;
+#print "y,m,d: $y $m $d\n";
+my $jd = (1461 * ($y + 4800 + 
+($m - 14) / 12)) / 4 + (367 * 
+($m - 2 - 12 * (($m - 14) / 12))) 
+/ 12 - (3 * (($y + 4900 + ($m - 14)
+/ 12) / 100)) / 4 + $d - 32075;
+#print "jd: $jd\n";
+return $jd;
+};
+
+sub caldat {
+##################################
+# Gregorian Date from Julian Day #
+##################################
+
+use integer;
+my ($d,$i,$j,$jd,$l,$m,$n,$y);
+$jd = shift;
+$l = $jd + 68569;
+$n = ( 4 * $l ) / 146097;
+$l = $l - ( 146097 * $n + 3 ) / 4;
+$i = ( 4000 * ( $l + 1 ) ) / 1461001;
+$l = $l - ( 1461 * $i ) / 4 + 31;
+$j = ( 80 * $l ) / 2447;
+$d = $l - ( 2447 * $j ) / 80;
+$l = $j / 11;
+$m = $j + 2 - ( 12 * $l );
+$y = 100 * ( $n - 49 ) + $i + $l;
+return ($y,$m,$d);
+};
+
+=pod
+
+Algorithms taken from Peter Meyer´s web site
+hermetic.magnet.ch/cal_stud/cal_art.htm
+
+Test numbers: 
+Given $y = 1; $m = 1; $d = 1;   $jd == 1721426;
+Given $y = -4713; $m = 11; $d = 24;  $jd == 0;
+Given $y = 1858; $m = 11; $d = 16;   $jd == 2400000;
+
+$jd = julday(1858,11,16);
+printf "julian day 16-Nov-1858: %d\n", $jd;
+printf "date of julian day %d: %d %d %d\n\n",$jd, caldat($jd);
+
+=cut

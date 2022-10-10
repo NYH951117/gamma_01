@@ -1,0 +1,307 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Reference Manual: az_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>az_proc</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/az_proc.c">az_proc.c</a></i><br></p>
+
+  <p><strong>NAME<br></strong> <em>az_proc</em> - SAR Range/Doppler
+  azimuth compression processor with along-track Doppler centroid
+  update</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code>az_proc &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;rc_data&gt;
+  &lt;SLC&gt; [az_patch] [SLC_format] [cal_fact] [SLC_type]
+  [kaiser] [npatch]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>MSP Processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rc_data&gt;</td>
+
+        <td>input range compressed data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>output single look complex image</td>
+      </tr>
+
+      <tr>
+        <td>[az_patch]</td>
+
+        <td>along-track azimuth patch size (range lines): (2**N,
+        2048, 4096, 8192...)<br>
+        NOTE: See Examples in User's Guide for the specific
+        sensor</td>
+      </tr>
+
+      <tr>
+        <td>[SLC_format]</td>
+
+        <td>SLC output format:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0: FCOMPLEX, pairs of 4-byte
+        float values<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: SCOMPLEX, pairs of 2-byte
+        short integers<br>
+        <br>
+        NOTE: default in MSP processing parameter file; if not
+        given FCOMPLEX will be used<br></td>
+      </tr>
+
+      <tr>
+        <td>[cal_fact]</td>
+
+        <td>processor radiometric calibration factor (dB), (enter -
+        for default, from PROC_par)<br>
+        <br>
+        NOTE: absolute calibration factors (dB) are listed in
+        sensor_cal_MSP.dat<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;add
+        60.0 dB to the value from sensor_cal_MSP.dat if SLC_format
+        is SCOMPLEX<br></td>
+      </tr>
+
+      <tr>
+        <td>[SLC_type]</td>
+
+        <td>output SLC data type:<br>
+        0: sigma0 = (SQR(re) + SQR(im) (default)<br>
+        1: gamma0 = (SQR(re) + SQR(im)/cos(inc)<br></td>
+      </tr>
+
+      <tr>
+        <td>[kaiser]</td>
+
+        <td>&nbsp;Kaiser window parameter for azimuth reference
+        function weighting (enter - for default: 2.120)<br></td>
+      </tr>
+
+      <tr>
+        <td>[npatch]</td>
+
+        <td>number of along-track patches to process (default:
+        sufficent for entire file)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong> <samp>az_proc ERS2_ESA.par
+  p19960421.slc.par 19960421.rc 19960421.cslc 2048 0 -2.8
+  0</samp><br>
+  Generates radiometrically calibrated SLC in FCOMPLEX format
+  (pairs of 4-byte-float). SQR(re)+SQR(im) corresponds to the
+  backscattering coefficient sigma0.</p>
+
+  <p><samp>az_proc ERS2_ESA.par p19960421.slc.par 19960421.rc
+  19960421.slc 2048 0 -2.8 1</samp><br>
+  Generates radiometrically calibrated SLC in FCOMPLEX format
+  (pairs of 4-byte-float). SQR(re)+SQR(im) corresponds to the
+  backscattering coefficient gamma0
+  (gamma0=sigma0/cos(inc_ang)).</p>
+
+  <p><samp>az_proc ERS2_ESA.par p19960421.slc.par 19960421.rc
+  19960421.slc 2048 1 57.2 0</samp><br>
+  Generates radiometrically calibrated SLC in SCOMPLEX format
+  (pairs of 2-byte-short-integer). 1.e06*(SQR(re)+SQR(im))
+  corresponds to the backscattering coefficient sigma0.</p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>az_proc</em> reads the
+  MSP SAR sensor parameter file, MSP SAR processing parameter file,
+  and the SAR range compressed data. It performs azimuth
+  compression using the range/doppler algorithm. Range migration is
+  performed using <em>sinc</em> interpolator optimized for minimum
+  error. The azimuth reference function is calculated from the
+  along-track velocity and slant range distance. Output is in the
+  form of complex floating point numbers (8 bytes per pixel) or
+  complex short integer (4 bytes per pixel). The data is optionally
+  deskewed and phase corrected to zero-Doppler geometry depending
+  if the azimuth_deskew parameter in the MSP processing parameter
+  file is ON or OFF. Radiometric compensation and calibration is
+  applied. Corrections are performed for the slant range, antenna
+  pattern, and receiver gain.</p>
+
+  <p>The SAR sensor parameter File contains information on the SAR
+  sensor system parameters and RAW data format. It also contains
+  the SAR look angle at center swath and the name of the file
+  containing the antenna diagram. The antenna diagram contains the
+  1-way antenna gain pattern. Antenna gain patterns for the current
+  spaceborne sensors are found in the <a href=
+  "../sensors/">MSP/sensors/</a> directory. If the specific antenna
+  diagram is not available a constant antenna gain (file
+  MSP/sensors/constant_antenna.gain) can be used. The antenna gain
+  pattern file shall be copied to the working directory.</p>
+
+  <p>The two main functions of the MSP processing parameter File
+  are the specification and documentation of SAR processing
+  parameters. Certain processing parameters were extracted from the
+  CEOS leader file provided with the SAR RAW data. Others were
+  directly estimated from the SAR RAW data. Parameters specifying
+  the image section to process, are defined by the user.</p>
+
+  <p>For the output SLC the MSP processing parameter file documents
+  the processing done as well as the image geometry and
+  radiometry.<br>
+  <span style="font-style: italic;">az_proc</span> has the added
+  capability to track the azimuth Doppler centroid variations when
+  a 2D Doppler polynomial is stored in the processing parameter
+  file. This 2D Doppler polynomial is generated using the program
+  <a href="doppler_2d.html">doppler_2d</a> and is most useful for
+  multi-frame Radarsat or JERS-1 data sets.</p>
+
+  <p>The ouput SLC is either in FCOMPLEX (pairs of float) or
+  SCOMPLEX (pairs of short integer) format, as specified in the
+  slc_format parameter on the command line (0:FCOMPLEX,
+  1:SCOMPLEX). The advantage of the SCOMPLEX format is the smaller
+  (half) size of the output file. Nevertheless, care has to be
+  taken that the real and imaginary parts of the output values are
+  in the short integers range. The values can be scaled with the
+  calibration factor cal_fact. Assuming absolute radiometric
+  calibration and a scale factor of 1.0e06 (i.e. 1'000'000) results
+  in a maximum backscattering coefficient of +30.3 dB.</p>
+
+  <p>Continuous patch processing of the range compressed data is
+  implemented. The range compressed data are processed in patches
+  with FFT sizes of&nbsp; N*1024 (2048, 4096, &nbsp;6144, 8192,
+  10240, 12240, 16384 ...) lines/block. The size of the block is
+  optimally 2 times the length of the azimuth reference function.
+  For ERS/ENVISAT this is 4096 samples.&nbsp;</p>
+
+  <p><br>
+  After the processing of each patch the result is written out to
+  the output SLC. The number of lines written out is the patch size
+  reduced by the length of the azimuth reference function and some
+  additional lines to account for the image skew. To optimize the
+  efficiency of the processing large patches are recommended, but
+  the entire data for one patch should be in the computer memory
+  without using the much slower swap space. This way multiple
+  frames of ERS data with over 150000 lines have been processed to
+  full resolution.</p>
+
+  <p><strong>Radiometric Calibration</strong><br>
+  The az_proc supports the radiometric calibration of the processed
+  data. The output data is calibrated for the:<br>
+  - range spreading loss<br>
+  - antenna gain pattern<br>
+  - ground-range projection factor</p>
+
+  <p>The radiometric calibration factors are stored in a text
+  format file (sensor_cal_MSP.dat) that can be found in the
+  <a href="../sensors/">MSP/sensors/</a> directory. It can be
+  examined with a text editor.</p>
+
+  <p>Calibration experiments were conducted to determine absolute
+  calibration factors for the processing of ERS1, ERS2, and JERS.
+  In the case of ERS1 and ERS2 SAR RAW data over the Flevoland
+  calibration site was used to determine the calibration factor
+  based on active transponders with known radar cross sections. The
+  MSP ERS1 and ERS2 calibration factors were validated by
+  comparison of the MSP processed data with ERS PAF processed SLC
+  data which were calibrated following the methodology described by
+  H. Laur et al., ERS-1 SAR Radiometric Calibration, ESA-ESRIN,
+  Frascati, Italy. The offset between MSP and ESA PAF processing
+  was below 0.5 dB for both ERS-1 and ERS-2. The often almost
+  identical values observed in ERS1 / ERS2 Tandem pairs further
+  confirms the very good ERS calibration accuracy.</p>
+
+  <p>Similarly, JERS RAW data over the Japanese Calibration site
+  was used to determine the calibration factor based on active
+  transponders with known radar cross sections. The MSP JERS
+  calibration factor was validated by comparison of MSP processed
+  data with a NASDA processed PRI product over a tropical forest
+  site. For the validation example the NASDA processed values are
+  0.77 dB lower than the MSP ones.</p>
+
+  <p>Values for ENVISAT ASAR are currently available for the main
+  mode, i.e. IS2 VV-polarization. The calibration constant was
+  determined by comparing the MSP processed data with SLC data from
+  ESA and calibrated with the GAMMA software. Several ROIs were
+  selected and intensity values were compared, showing a constant
+  offset.</p>
+
+  <p>Similarly the calibration constants for a number of ALOS
+  PALSAR modes were determined by comparing the MSP processed data
+  with SLC data from JAXA EORC (calibrated). Several ROIs were
+  selected and intensity values were compared. Typically the
+  difference showed a constant offset which was set to correspond
+  to GAMMA's MSP calibration constant. For more details it is
+  referred to the file sensor_cal_MSP.dat.</p>
+
+  <p>The&nbsp; calibration factors &nbsp;in sensor_cal_MSP.dat are
+  for float value SLC data. &nbsp;If the data are in SCOMPLEX
+  format, this scale factor must be augmented by 60 dB greater than
+  the value in sensor_cal_MSP.dat . Currently we are determining
+  the absolution radiometric calibration constants for
+  Radarsat-1.<br></p>
+
+  <p>Supported SLC output types are sigma0 and gamma0. In the case
+  of sigma0 the SLC image intensity (SQR(re) + SQR(im)) corresponds
+  to the backscattering coefficient sigma0 (normalized to the
+  horizontal ground surface). In the case of gamma0 the SLC image
+  intensity (SQR(re) + SQR(im)) corresponds to the backscattering
+  coefficient gamma0. gamma0 and sigma0 are related by gamma0 =
+  sigma0/cos(inc_ang) with inc_ang the incidence angle of the
+  horizontal surface.</p>
+
+  <p>As default Kaiser window parameter beta for the azimuth
+  reference function 2.120 is used. A lower value such as 1.0 leads
+  to somewhat sharper point targets (such as calibration targets),
+  nevertheless at the price of a higher stopband ripple. The
+  radiometric calibration is not affected by the selected kaiser
+  window parameter beta.</p>
+
+  <p>The resulting complex images in FCOMPLEX format can be
+  displayed using <a href="MSP_display.html">disSLC</a>. The
+  resulting complex images in SCOMPLEX format can be displayed
+  using the ISP program disERS_SLC. Notice that the zero byte line
+  header size needs to be indicated when using disERS_SLC.
+  Multi-looking of the complex output image in FCOMPLEX format can
+  be done with <a href="multi_SLC.html">multi_SLC</a>.
+  Multi-looking of the complex output image in SCOMPLEX format can
+  be done with the ISP program multi_look_ESA after creation of the
+  ISP SLC parameter file using the ISP program par_MSP.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "doppler_2d.html">doppler_2d,&nbsp;</a> <a href=
+  "doppler.html">doppler</a>, <a href="proc_par.html">MSP
+  Processing Parameter File</a>, <a href="az_SLC.html">az_SLC</a>,
+  <a href="MSP_display.html">disSLC</a>, <a href=
+  "MSP_display.html">rasSLC</a>, <a href=
+  "multi_SLC.html">multi_SLC</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, ms, last change 05-Jun-2008
+</body>
+</html>

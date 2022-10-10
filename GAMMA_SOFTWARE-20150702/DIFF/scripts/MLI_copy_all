@@ -1,0 +1,127 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+
+$sc = 0.8;
+$exp = .35;
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.1 26-Feb-2013 clw ***
+*** Create a new set of MLI data by copying a common segment from an existing set of MLI data ***
+
+usage: $0 <MLI_tab> <MLI2_dir> <roff> <nr> <loff> <nl> [scale] [exp]
+    MLI_tab   (input) two column list of coregistered input MLI files and MLI parameter files (including paths) (text)
+    MLI2_dir  directory to contain copied segments of the input MLI data and the associated parameter files
+    roff      offset to starting range sample
+    nr        number of range samples (enter -: to end of line)
+    loff      offset number of lines to start
+    nl        number of lines to copy (enter -: to end of file)
+    scale     relative intensity display scale factor (default: $sc)
+    exp       display exponent (default: $exp)
+    
+    NOTE: current directory is denoted using .
+    
+EOS
+
+open(MLI_TAB, "<$ARGV[0]") or die "\nERROR $0: table of float format (MLI) images and parameter files does not exist: $ARGV[0]\n\n";
+print "MLI_tab table of float format images and parameter files: $ARGV[0]\n"; 
+
+$rmli2_dir = $ARGV[1];
+$roff      = $ARGV[2];
+$nr        = $ARGV[3];
+$loff      = $ARGV[4];
+$nl        = $ARGV[5];
+
+if($#ARGV + 1 > 6){$sc = $ARGV[6];}
+if($#ARGV + 1 > 7){$exp = $ARGV[7];} 
+
+($sc > 0.0) or die "\nERROR $0: MLI display scale factor <= 0.0 : $sc\n";
+($exp > 0.0) or die "\nERROR $0: MLI display exponent <= 0.0 : $exp\n";
+
+unless (-d $rmli2_dir) {
+  print "creating directory for output MLI images: $rmli2_dir\n";
+  (mkdir $rmli2_dir) or die "ERROR $0: non-zero exit status, could not create MLI data directory $rmli2_dir\n";
+}
+
+print "output resampled  directory: $rmli2_dir\n";
+print "offset line:         $loff   lines:   $nl\n";
+print "offset range sample: $roff   samples: $nr\n";
+
+$loff =~ /\d+$/ && $loff >= 0 or die "ERROR $0: invalid offset to first line: $loff\n";
+(($nl =~ /\d+$/ && $nl >= 0)  or ($nl eq "-")) or die "ERROR $0: invalid number of lines: $nl\n";
+$roff =~ /\d+$/ && $roff >= 0 or die "ERROR $0: invalid offset to first pixel: $roff\n";
+(( $nr =~ /\d+$/ && $nr >= 0) or ($nr eq "-")) or die "ERROR $0: invalid number of pixels: $nr\n";
+
+$time = localtime;
+print "\nprocessing start: $time\n";  
+$log = "$rmli2_dir/MLI_copy_all.log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n\n";
+LOG->autoflush;  
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "output resampled MLI directory: $rmli2_dir\n";
+print LOG "\nprocessing start: $time\n";  
+print LOG "offset line:         $loff   lines:  $nl\n";
+close LOG;
+ 
+LINE: while (<MLI_TAB>) {	#read lines of processing list file into $_
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+   
+  $rmli = $fields[0]; 
+  $rmli_par = $fields[1];
+  -e $rmli or die "ERROR $0: MLI file does not exist: $rmli\n";    
+  -e $rmli_par or die "ERROR $0: ISP parameter file does not exist for the input MLI: $rmli_par\n";
+  my ($s1, $dir1, $ext1) = fileparse($rmli, qr/\.[^.]*/); #extension is the last bit after the last period 
+ 
+  $ext2 = substr $ext1,1;		#delete period at the start of the extension
+  $rmli2 = "$rmli2_dir/$s1.$ext2";
+  $rmli2_par = "$rmli2.par";
+     
+  $time = localtime;
+  print"\ninput MLI: $rmli  output MLI: $rmli2   start time: $time\n";  
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+  print LOG "\ninput MLI: $rmli  output MLI: $rmli2  start time: $time\n";
+  close LOG; 
+
+  @format = extract_param($rmli_par,"image_format:");	#determine image format
+  if ($format[1] ne "FLOAT"){
+    die "ERROR $0: input MLI file is not float data format: $format[1]\n";
+  }
+  execute("MLI_copy $rmli $rmli_par $rmli2 $rmli2_par $roff $nr $loff $nl",$log);
+  execute("raspwr $rmli2 $nr 1 0 1 1 $sc $exp", $log);
+}
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open existing log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open new log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}
+

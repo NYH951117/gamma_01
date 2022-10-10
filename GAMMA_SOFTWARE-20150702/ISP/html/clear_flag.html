@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: clear_flag</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>clear_flag</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/clear_flag.c"><i>clear_flag.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  clear_flag - Resets flags in flagfile used throughout the various
+  steps necessary for the unwrapping of the interferometric
+  phase.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>clear_flag &lt;flag_file&gt; &lt;width&gt;
+  &lt;flag_bits&gt; [xmin] [xmax] [ymin] [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;flag_file&gt;</td>
+
+      <td>phase unwrapping flag filename</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>&lt;flag_bits&gt;</td>
+
+      <td>byte with value of flag(s) to be cleared</td>
+    </tr>
+
+    <tr>
+      <td>[xmin]</td>
+
+      <td>starting range pixel offset (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmax]</td>
+
+      <td>last range pixel offset (default = <b>width-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>starting azimuth row offset, relative to start (default =
+      <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>last azimuth row offset, relative to start (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>clear_flag 1352_1610.flag 2500 3</samp><i>(resets residues
+  flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 4</samp><i>(resets guides
+  flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 8</samp><i>(resets low SNR
+  flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 16</samp><i>(resets visited
+  residue flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 32</samp><i>(resets starting
+  node of a branch flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 64</samp><i>(resets cuts
+  flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 128</samp><i>(resets lawn
+  area flag)</i><br>
+  <samp>clear_flag 1352_1610.flag 2500 80</samp><i>(resets cuts and
+  visited area flags flag)</i></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  clear_flag allows to reset individual or multiple flags of the
+  flagfile. There are 8 bits stored for each pixel,each is a flag
+  bit. The meaning of the individual bits is defined in the
+  <em>typedef_ISP.h</em> file. The information contained in the
+  flagfile can be examined with the programs <a href=
+  "ISP_display.html">disflag</a> or <a href=
+  "ISP_display.html">rastree</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ISP_display.html">disflag,</a> <a href=
+  "ISP_display.html">rastree</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Jan-2000.</p>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: mkgrid</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>mkgrid</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/mkgrid.c">mkgrid.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  mkgrid - generate point list of coordinates of regular 2-D
+  grid</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mkgrid &lt;plist&gt; &lt;nr&gt; &lt;naz&gt; [r_step]
+  [az_step] [roff] [loff]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(output) point list of coordinates of regular 2-D grid
+      (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;nr&gt;</td>
+
+      <td>number of grid points in range</td>
+    </tr>
+
+    <tr>
+      <td>&lt;naz&gt;</td>
+
+      <td>number of grid points in azimuth</td>
+    </tr>
+
+    <tr>
+      <td>[r_step]</td>
+
+      <td>interval between points in range (default=10)</td>
+    </tr>
+
+    <tr>
+      <td>[az_step]</td>
+
+      <td>interval between points in azimuth (default=10)</td>
+    </tr>
+
+    <tr>
+      <td>[roff]</td>
+
+      <td>offset to starting range of segment to analyze (default:
+      0)</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>offset to starting azimuth line of segment to analyze
+      (default: 0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>mkgrid testsite.plist 199 199 5 25 5 25</samp></p>
+
+  <p>Generates a point list of coordinates on a regular grid. The
+  SLC size is assumed to be 1000 range x 5000 azimuth pixels. The
+  grid has 199 points in range and 199 points in azimuth direction,
+  located at SLC coordinates
+  (5,25),(10,25),...,(995,25),...,(995,4975).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code mkgrid.c in ./IPTA/src, executable version mkgrid in
+  ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>mkgrid supports the generation of point lists of points which
+  are located on a regular grid. Such lists are of interest when
+  converting "conventional" interferograms from the 2-D raster
+  geometry to the vector data format used in the IPTA. In this
+  transformation a sub-sampling is applied. This permits to
+  strongly reduce the file sizes and strongly increases the
+  efficiency of subsequent point list operations.</p>
+
+  <p>The grid coordinates to select are specified on the command
+  line through the offset to the first point (in range and
+  azimuth), the step between grid points (in range and azimuth),
+  and the number of grid points in range and azimuth.</p>
+
+  <p>Point list coordinates selected with mkgird do generelly not
+  correspond to point targets.</p>
+
+  <p>Instead of the full area of the SLC a sub-section can be
+  selected.</p>
+
+  <p>Other programs to generate new point lists are image2pt,
+  merge_pt, prox_pt, pwr_stat, and sp_stat.</p>
+
+  <p>Programs to validate existing point lists are qc_pt and
+  expand_pt.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="expand_pt.html">expand_pt</a>, <a href=
+  "merge_pt.html">merge_pt</a>, <a href=
+  "image2pt.html">image2pt</a>, <a href="prox_pt.html">prox_pt</a>,
+  <a href="pwr_stat.html">pwr_stat</a>, <a href=
+  "qc_pt.html">qc_pt</a>, <a href="sp_stat.html">sp_stat</a>,
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

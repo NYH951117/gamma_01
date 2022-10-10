@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: ph_slope_base</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>ph_slope_base</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ph_slope_base.c"><i>ph_slope_base.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  ph_slope_base - Subtract/add interferogram flat-Earth phase trend
+  as estimated from initial baseline.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ph_slope_base &lt;int_in&gt; &lt;SLC-1.par&gt;
+  &lt;OFF_par&gt; &lt;base&gt; &lt;int_out&gt; [int_type]
+  [inverse]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;int_in&gt;</td>
+
+        <td>(input) interferogram (FCOMPLEX) or unwrapped phase
+        (FLOAT) (unflattened)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ISP parameter file for the reference SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;base&gt;</td>
+
+        <td>(input) baseline file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;int_out&gt;</td>
+
+        <td>(output) interferogram (fcomplex) or unwrapped
+        interferogram (float) with phase trend
+        subtracted/added</td>
+      </tr>
+
+      <tr>
+        <td>&lt;int_type&gt;</td>
+
+        <td>interferogram type: 0=unwrapped phase, 1=complex
+        interf. (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;inverse&gt;</td>
+
+        <td>subtract/add inversion flag (0=subtract phase ramp,
+        1=add phase ramp (default=0)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ph_slope_base 1352_1610.int 1352.par 1352_1610.off
+  1352_1610.base 1352_1610.flt 1 0</samp></p>
+
+  <p><samp>ph_slope_base 1352_1610.flt.unw 1352.par 1352_1610.off
+  1352_1610.base 1352_1610.int.unw 0 1</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>ph_slope_base</em> reads the input complex (or real valued
+  unwrapped) interferogram and subtracts/adds the flat-Earth phase
+  trend calculated from the initial baseline (first two lines of
+  provided \ baseline file).</p>
+
+  <p>The most common use is to remove the flat-Earth phase ramp of
+  a complex valued interferogram (*.int), a process often named
+  interferogram "flattening", and write out the flattened complex
+  valued interferogram (*flt).</p>
+
+  <p>The subtracted/added phase ramp is calculated by determining
+  the component of the baseline parallel to the look vector for
+  each point across the range swath.</p>
+
+  <p>Removal of the phase ramp is necessary for accurate estimation
+  of the correlation function, and phase unwrapping. This is
+  especially true for larger interferometric baselines with a large
+  range phase trend. This is because high fringe rates violate the
+  assumption that the phase is constant over the region used to
+  estimate the correlation.</p>
+
+  <p>For the baseline a time offset (in seconds) can be specified.
+  The time of a specific image time corresponds to the time as
+  specified by the SLC and ISP/offset interferogram parameter
+  files\ plus the indicated time offset.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  <em>ph_slope_base</em> can also be used for unwrapped
+  interferograms in float format.</p>
+
+  <p>Furthermore, instead of subtracting the flat-Earth phase trend
+  it can be added, allowing to invert the interferogram
+  flattening.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "OFF_par.html">OFF_par</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-Aug-2003.</p>
+</body>
+</html>

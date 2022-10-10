@@ -1,0 +1,172 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: dcomp_sirc</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>dcomp_sirc, dcomp_sirc_quad</h2>
+
+  <p><i>ANSI-C programs:</i> <a href=
+  "../src/dcomp_sirc.c"><i>dcomp_sirc.c</i></a>,&nbsp; <a href=
+  "../src/dcomp_sirc_quad.c"><i>dcomp_sirc_quad.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  dcomp_sirc - uncompress SIR-C data (SINGLE POLARIZATION MODE)</p>
+
+  <p>dcomp_sirc_quad - uncompress SIR-C data (QUAD POLARIZATION
+  MODE)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dcomp_sirc &lt;infile&gt; &lt;outfile&gt;
+  &lt;samples&gt; [loff] [nlines] [threshold]</b></code></p>
+
+  <table style="width: 589px; height: 234px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;infile&gt;</td>
+
+        <td>input SIR-C SLC compressed data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;outfile&gt;</td>
+
+        <td>output complex floating point data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;samples&gt;</td>
+
+        <td>#samples per input line (4 bytes/complex sample)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>starting line (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>#lines to copy(default: entire file, 0 = entire
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[threshold]</td>
+
+        <td>amplitude threshold to reject samples, (default, no
+        threshold, all points accepted)</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <code><b>dcomp_sirc_quad &lt;infile&gt; &lt;outfile&gt;
+  &lt;samples&gt; &lt;parameter&gt; [loff] [nlines]<br></b></code>
+
+  <table style="width: 592px; height: 475px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;infile&gt;</td>
+
+        <td>input SIR-C SLC compressed data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;outfile&gt;</td>
+
+        <td>output complex floating point data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;samples&gt;</td>
+
+        <td>#samples per input line (4 bytes/complex sample)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;parameter&gt;</td>
+
+        <td>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+        &nbsp;0:&nbsp; SLC total power<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1:&nbsp; SLC-HH<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2:&nbsp; SLC-HV<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3:&nbsp; SLC-VH<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4:&nbsp; SLC-VV<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5:&nbsp; MLC total power<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6:&nbsp; MLC-HVHV*<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        7:&nbsp; MLC-VVVV*<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        8:&nbsp; MLC-HHHH*<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        9:&nbsp; MLC-HHHV*<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        10: MLC-HHVV*<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        11: MLC-HVVV*</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>starting line (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>#lines to copy(default: entire file, 0 = entire
+        file)</td>
+      </tr>
+    </tbody>
+  </table><strong><br>
+  EXAMPLE</strong><samp><br>
+  dcomp_sirc pr16915_img_ceos.slc 16915.slc 4912</samp>
+
+  <p><samp>dcomp_sirc_quad&nbsp;pr11458_img_ceos 11458.hh 0 1540
+  1</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>dcomp_sirc</em> reads the compressed Single Polarization Mode
+  SIR-C SLC data (as provided by JPL-NASA), decompresses it and
+  writes it out in 4-byte float format. The par_SIRC program can be
+  used to create the SLC image parameter file to determine the
+  number of image samples in each line.&nbsp;</p>
+
+  <p>Quad-pol SLC and MLC (multi-look SLC) image products are
+  stored in the 10 byte/value JPL polarimetric data formation. The
+  program <em>dcomp_sirc_quad</em> functions&nbsp; supports
+  selection of the desired parameter from either the SLC or MLC
+  products. If the input data file is a polarimetric SLC, select
+  parmeters 0 through 4. MLC data parameters can be extracted using
+  parameter values 5 through 11.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Jul-2015.
+</body>
+</html>

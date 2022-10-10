@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF&amp;GEO Reference Manual: sarpix_coord</title>
+  <meta http-equiv="content-type" content=
+  "text/html; charset=us-ascii">
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>sarpix_coord</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/sarpix_coord.c">sarpix_coord.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  sarpix_coord -Transform SAR image coordinates to map projection
+  or geographic (lat/lon) coordinates</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sarpix_coord &lt;SLC_par&gt; [OFF_par] [DEM_par] [azlin]
+  [rpix] [ref_hgt]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ISP SLC/MLI parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[interf_par]</td>
+
+        <td>(input) ISP offset/interferogram parameter file, enter
+        - for SLC or MLI data</td>
+      </tr>
+
+      <tr>
+        <td>[DEM_par]</td>
+
+        <td>(input) DEM parameter file, enter - for WGS84
+        lat/lon</td>
+      </tr>
+
+      <tr>
+        <td>[azlin]</td>
+
+        <td>&nbsp;SAR image azimuth line</td>
+      </tr>
+
+      <tr>
+        <td>[rpix]</td>
+
+        <td>SAR image slant range pixel number</td>
+      </tr>
+
+      <tr>
+        <td>[ref_hgt]</td>
+
+        <td>(input) reference height (m) in map datum</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p><samp>sarpix_coord 19990421.slc.par 19990421_19990422.off
+  utm.dem_par 75 1800 600.0</samp><br></p>
+
+  <p>Calculates geographic coordinates in the UTM map projection as
+  defined in the DEM parameter file <span style=
+  "font-style: italic;">utm.dem_par.</span> The map coordinates and
+  UTM projection coordinates are calculated for the 4 corners of
+  the interferogram specified by the SLC parameter file
+  <span style="font-style: italic;">19990421.slc.par</span> and the
+  offset/interferogram parameter file <span style=
+  "font-style: italic;">19990421_19990422.off</span>. The UTM
+  projection coordinates are also calculated for the position
+  specified on the command line (75, 1800). The reference height is
+  specified to be 600 meters.</p>
+
+  <p><samp>sarpix_coord 19990421.slc.par - utm.dem_par 75.5
+  1800.3</samp><br></p>
+
+  <p>Calculates geographic coordinates in the UTM map projection as
+  defined in the DEM parameter file <span style=
+  "font-style: italic;">utm.dem_par.</span> The map coordinates and
+  UTM projection coordinates are calculated for the 4 corners of
+  the SLC specified by the SLC parameter file <span style=
+  "font-style: italic;">19990421.slc.par</span>. The UTM projection
+  coordinates are also calculated for the position specified on the
+  command line (75.5, 1800.3). The reference height is the default
+  value of 0.0 meters.</p>
+
+  <p><samp>sarpix_coord 19990421.slc.par</samp><br></p>
+
+  <p>Calculates geographic (latitude, longitude) coordinates of the
+  four corners of an SLC image (geometry defined by
+  19990421.slc.par), using a reference height in the WGS84 datum of
+  0.0 meter.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">sarpix_coord</span> calculates
+  geographic coordinates of a selected pixel of an image in SAR
+  range-Doppler geometry and of the four SAR image corners.&nbsp;
+  The SAR image geometry for an SLC or MLI image is described by
+  the ISP image parameter file.</p>
+
+  <p>Only in the case where an interferogram that covers only a
+  subregion of the SLC is the ISP offset-parameter file (OFF_par)
+  required that defines the region boundaries.&nbsp; Coordinates
+  are then relative to the interferogram geometry.</p>
+
+  <p>When specifying a location in the SAR image on command line,
+  the coordinates <span style="font-style: italic;">azlin</span>
+  and <span style="font-style: italic;">rpix</span> can be floating
+  point numbers. Pixel numbers outside the SAR image or
+  interferogram are also valid, including negative pixel
+  numbers.</p>
+
+  <p>The output map geometry is defined by the DEM parameter file
+  entered on the command line.&nbsp; If no DEM_par is entered, then
+  the map coordinate values will be latitude and longitude for the
+  WGS84 ellipsoid.</p>A&nbsp; reference height can be provided on
+  the command line. The specified height is in the output map
+  datum.
+
+  <p>The transformation of individual coordinates between different
+  map projections is supported by the program <a href=
+  "coord_trans.html">coord_trans</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="coord_trans.html">coord_trans</a>, <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "datums.h.html">datums.h</a>, <a href=
+  "ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Mar-2013.
+</body>
+</html>

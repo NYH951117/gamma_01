@@ -1,0 +1,225 @@
+#!/usr/bin/perl
+use FileHandle;
+
+$radius = 8;
+$DTR = .0174532925199;	# degrees to radians
+$nrfft = 512;
+$nazfft = 512;
+
+if (($#ARGV + 1) < 9){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2004, Gamma Remote Sensing, v1.6 30-May-2005 clw ***
+*** estimate baseline correction using base_init FFT mode for point differential interferograms  ***
+
+usage: $0 <plist> <pmask> <pSLC_par> <itab> <pdiff> <rlks> <azlks> <pbase_in> <pbase_out> [radius] [nrfft] [nazfft]
+    plist     (input) point list (int)
+    pmask     (input) point data stack of mask values (uchar, set to - to accept all points)
+    pSLC_par  (input) stack of SLC/MLI parameters for the resampled SLC data (binary)
+    itab      (input) table associating interferogram stack records with pairs of SLC stack records (text)
+    pdiff     (input) differential interferogram stack
+    rlks      (input) number of range looks for the interpolated 2D interferogram
+    azlks     (input) number of azimuth looks for the interpolated 2D interferogram
+    pbase_in  (input) stack of baseline parameters (binary)
+    pbase_out (output) stack of baseline parameters (binary) 
+    radius    (input) interpolation window radius (default: $radius);  
+    nrfft     (input) range FFT size (default: $nrfft);
+    nazfft    (input) azimuth FFT size (default: $nazfft);      
+EOS
+
+$plist	  = $ARGV[0];
+$pmask    = $ARGV[1];
+$pSLC_par = $ARGV[2];
+$itab     = $ARGV[3];
+$pdiff    = $ARGV[4];
+$rlks     = $ARGV[5];
+$azlks    = $ARGV[6];
+$pbase_in  = $ARGV[7];
+$pbase_out = $ARGV[8];
+
+if($#ARGV >= 9){$radius = $ARGV[9];}
+if($#ARGV >= 10){$nrfft = $ARGV[10];}
+if($#ARGV >= 11){$nazfft = $ARGV[11];}
+
+-e $plist or die "ERROR $0: point list does not exist: $plist\n";
+-e $pmask || $pmask =~ /-/ or die "ERROR $0: point data stack of point maks values does not exist: $pmask\n";
+-e $pSLC_par or die "ERROR $0: stack of SLC/MLI parameters for the resampled SLC data does not exist: $pSLC_par\n";
+open(ITAB, "<$itab") or die "ERROR $0: cannot open itab file: $itab\n";
+$log = "mk_base_init_pt.log";  
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+-e $pbase_in or die "ERROR $0: stack of baseline parameters does not exist: $pbase_in\n";
+execute("cp $pbase_in $pbase_out",$log); 	#copy input baseline stack to output stack to preserve initial baseline values
+-e $pdiff or die "ERROR $0: point data stack of differential interferograms does not exist: $pdiff\n";
+
+#check input parameter validity
+($rlks >= 1) or die "ERROR $0: number of range looks < 1: $rlks";
+($azlks >= 1) or die "ERROR $0: number of azimuth looks < 1: $azlks";
+($radius >= 1) or die "ERROR $0: interpolation radius < 1: $radius";
+($nrfft >= 128) or die "ERROR $0 range FFT size too small: $nrfft";
+($nazfft >= 128) or die "ERROR $0 azimuth FFT size too small: $nazfft";
+
+$time = localtime;
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n\n";
+print "$0 start: $time\n";
+print "point list:             $plist\n";
+print "pmask:                  $pmask\n";
+
+$npt_out = `npt $plist`;
+@lines = split /^/m, $npt_out;	#split npt output into lines
+foreach $l1 (@lines) {		#examine each line
+  chomp $l1;
+  @tok = split /:/, $l1;	#break line on semicolon and check if "base perpendicular" is in th line
+  if (@tok[0] =~ m/total_number_of_points/) {
+    $npt = @tok[1];		#save number of points
+  }
+} 
+print "number of points:      $npt\n";
+print "itab:                  $itab\n";
+print "diff. interferograms:  $pdiff\n";
+print "input baselines:       $pbase_in\n";
+print "range looks: $rlks  azimuth looks: $azlks\n";
+print "interpolation radius: $radius\n"; 
+print "range FFT size: $nrfft  azimuth FFT size: $nazfft\n";
+
+print LOG "number of points:      $npt\n";
+print LOG "itab:                  $itab\n";
+print LOG "diff. interferograms:  $pdiff\n";
+print LOG "input baselines:       $pbase_in\n";
+print LOG "interpolation radius: $radius\n"; 
+print LOG "range FFT size: $nrfft  azimuth FFT size: $nazfft\n";
+
+print "\n";
+$slc_par1 = "slc_par1.tmp";
+$slc_par2 = "slc_par2.tmp";
+$off_par = "off_par.tmp";
+$diff_2d = "diff_2d.tmp";
+$base0 = "base0.tmp";
+$base1 = "base1.tmp";
+$base2 = "base2.tmp";
+$off_par_in = "off_par.in";
+
+$n = 0;
+LINE: while (<ITAB>) {		#read lines of processing list file
+  $n++;
+  $diff2d = "diff_$n";		#temp file for 2d interferogram
+  system("rm -f $slc_par1 $slc_par2 $off $diff2d $base0 $base1 $base2");
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  next LINE if (@fields[3] == 0); #do not unwrap interferograms with the layer flag set to 0
+  $r1 = @fields[0];
+  $r2 = @fields[1];
+  execute("SLC_par_pt $slc_par1 $pSLC_par $r1 0",$log);	#read SLC parameter files from stack
+  execute("SLC_par_pt $slc_par2 $pSLC_par $r2 0",$log);
+  execute("base_par_pt $base0 $pbase_in $n 0",$log);	#read initial baseline for interferogram
+  
+  @width = extract_param($slc_par1,"range_samples:");
+  @lines = extract_param($slc_par1,"azimuth_lines:");
+  @rps = extract_param($slc_par1,"range_pixel_spacing:");
+  @azps = extract_param($slc_par1,"azimuth_pixel_spacing:");
+  @inc = extract_param($slc_par1,"incidence_angle:");
+  @b0 = extract_param($base0,"initial_baseline(TCN):");
+  @b0_dot = extract_param($base0,"initial_baseline_rate:");
+
+  print "SLC 1 width: @width[1]  lines: @lines[1]\n"; 
+  print "SLC 1 pixel spacing range (m): @rps[1]  azimuth (m): @azps[1]\n";
+  print "SLC 1 incidence angle: @inc[1]\n";
+  print "\ninitial baseline:\n";
+  print "@b0\n";
+  print "@b0_dot\n\n";
+ 
+  $rps_int = $rlks*@rps[1];
+  $azps_int = $azlks*@azps[1];
+  $lines_int = @lines[1]/$azlks;
+  $width_int = @width[1]/$rlks;
+  $grps = @rps[1]/sin(@inc[1]*$DTR);
+ 
+  print LOG "SLC 1 width: @width[1]  lines: @lines[1]\n"; 
+  print LOG "SLC 1 pixel spacing range (m): @rps[1]  azimuth (m): @azps[1]\n";
+  print LOG "SLC 1 incidence angle: @inc[1]\n";
+
+  print "SLC 1 ground range pixel spacing (m): $grps\n";
+  print "interf. pixel spacing range (m): $rps_int  azimuth (m): $azps_int\n\n";
+  print LOG "SLC 1 ground range pixel spacing (m): $grps\n\n";
+  print LOG "interf. pixel spacing range (m): $rps_int  azimuth (m): $azps_int\n\n";
+  print LOG "\n@b0\n";
+  print LOG "@b0_dot\n\n";
+ 
+#create offset parameter file
+  open(MPAR, ">$off_par_in") or die "ERROR $0: cannot create file with inputs to create_offset: $off_par_in\n\n";
+  print MPAR "$r1 $r2\n\n\n\n\n\n\n";
+  close MPAR;
+
+  $exit = system("create_offset $slc_par1 $slc_par2 $off_par < $off_par_in");
+  $exit == 0 or die "ERROR $0: non-zero exit status: create_offset $slc_par1 $slc_par2 $off_par\n";
+
+#set parameter values for the interferogram
+  execute("set_value $off_par $off_par \"interferogram_range_looks\" $rlks",$log); 
+  execute("set_value $off_par $off_par \"interferogram_azimuth_looks\" $azlks",$log); 
+  execute("set_value $off_par $off_par \"interferogram_azimuth_lines\" $lines_int",$log); 
+  execute("set_value $off_par $off_par \"interferogram_width\" $width_int",$log); 
+  execute("set_value $off_par $off_par \"number_of_nonzero_range_pixels\" $width_int",$log); 
+  execute("set_value $off_par $off_par \"interferogram_range_pixel_spacing\" $rps_int",$log); 
+  execute("set_value $off_par $off_par \"interferogram_azimuth_pixel_spacing\" $azps_int",$log); 
+  print "\n";
+  execute("pt2d $plist $pmask $pdiff $n $diff_2d $width_int $lines_int $grps @azps[1] $rlks $azlks 0 3 $radius", $log);
+  execute("cp $base0 $base2", $log);
+
+  if ($r1 != $r2){
+    execute("base_init $slc_par1 $slc_par2 $off_par $diff_2d $base1 4 $nrfft $nazfft", $log);   
+#    execute("dismph $diff_2d $width_int",$log);
+    @b1 = extract_param($base1,"initial_baseline(TCN):");
+    @b1_dot = extract_param($base1,"initial_baseline_rate:");
+    print "\nbaseline update:\n";
+    print "@b1\n";
+    print "@b1_dot\n\n";
+    print LOG "\nbaseline update:\n";
+    print LOG "@b1\n";
+    print LOG "@b1_dot\n\n";
+
+    @b2[1] = @b0[1] + @b1[1]; 	#update baseline using correction from base_init
+    @b2[2] = @b0[2] + @b1[2]; 
+    @b2[3] = @b0[3] + @b1[3]; 
+    @b2_dot[1] = @b0_dot[1] + @b1_dot[1]; 
+    @b2_dot[2] = @b0_dot[2] + @b1_dot[2]; 
+    @b2_dot[3] = @b0_dot[3] + @b1_dot[3];
+    execute("set_value $base2 $base2 \"initial_baseline(TCN)\" \"@b2[1]   @b2[2]   @b2[3]  m  m  m\"", $log); 
+    execute("set_value $base2 $base2 \"initial_baseline_rate\" \"@b2_dot[1]   @b2_dot[2]   @b2_dot[3]  m  m  m\"", $log); 
+ }
+ print("\nupdated baseline:\n");
+ system("cat $base2");
+ execute("base_par_pt $base2 $pbase_out $n 1",$log); 
+}
+system("rm -f $slc_par1 $slc_par2 $off_par.tmp $diff_2d $base0 $base1 $base2 $off_par_in");
+
+$time = localtime;
+print "\n*** processing end $0: $time ***\n";
+print LOG "\n*** processing end $0: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

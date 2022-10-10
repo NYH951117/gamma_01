@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: projection_params.h</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>projection_params.h</h2>
+
+  <p>List of DEM/Map Projection Parameter Sets.</p>
+
+  <p>To display the current list contained in projection_params.h
+  press <a href="../src/projection_params.h">here.</a></p>
+
+  <p>Used by the DIFF programs create_dem_par and coord_trans to
+  support the DEM/Map Projection Parameter definition, for the
+  projections for UTM, TM, OMCH, LCC, PC, AEAC.</p>
+
+  <p>Each line of the list contains the following parameters
+  (corresponding to the structure <code>PRO_PAR</code> defined in
+  <a href="typedef_DIFF.h.html">typedef_DIFF.h</a>:<br></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><strong>Structure Elements</strong></td>
+
+      <td><strong>Example</strong></td>
+
+      <td><strong>Definition</strong></td>
+    </tr>
+
+    <tr>
+      <td>name[80]</td>
+
+      <td>TM - United Kingdom, England</td>
+
+      <td>name of projection</td>
+    </tr>
+
+    <tr>
+      <td>pro_par_num</td>
+
+      <td>34</td>
+
+      <td>projection parameter set number (line in the list)</td>
+    </tr>
+
+    <tr>
+      <td>zone</td>
+
+      <td>0</td>
+
+      <td>zone number</td>
+    </tr>
+
+    <tr>
+      <td>false_east</td>
+
+      <td>400000</td>
+
+      <td>false easting x0 (m)</td>
+    </tr>
+
+    <tr>
+      <td>false_north</td>
+
+      <td>-100000</td>
+
+      <td>false northing y0 (m)</td>
+    </tr>
+
+    <tr>
+      <td>k0</td>
+
+      <td>0.9996012717</td>
+
+      <td>scale factor k0</td>
+    </tr>
+
+    <tr>
+      <td>lon0</td>
+
+      <td>-2</td>
+
+      <td>center longitude (decimal degrees)</td>
+    </tr>
+
+    <tr>
+      <td>lat0</td>
+
+      <td>49</td>
+
+      <td>center latitude (decimal degrees)</td>
+    </tr>
+  </table>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_users_guide.html">Users Guide</a>, <a href=
+  "datums.h.html">datums.h</a>, <a href=
+  "ellipsoids.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

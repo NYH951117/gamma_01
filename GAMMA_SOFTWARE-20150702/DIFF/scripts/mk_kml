@@ -1,0 +1,98 @@
+#!/usr/bin/perl
+# 
+# Generate kml data structure
+use FileHandle;
+use File::Basename;
+
+if (($#ARGV + 1) < 3){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, 1.0 6-Jan-2015 clw ***
+*** Generate a Google Earth kml file for an JPEG/BMP format image in EQA projection ***
+
+usage: $0 <DEM_par> <image> <kml>
+  DEM_par (input) DEM parameter file with image dimensions
+  image   (input) image in geometry described by DEM_par (JPEG, BMP format)
+  kml     (output) kml format output file
+   			       		   
+EOS
+
+$DEM_par = $ARGV[0];
+$image = $ARGV[1];
+$kml = $ARGV[2];
+
+-e $DEM_par or die "\nERROR $0: DEM parameter file does not exist: $DEM_par\n";
+
+open(KML,">$kml") or die "ERROR $0: cannot open output kml file: $kml\n";
+KML->autoflush;  
+    
+$time = localtime;
+
+@proj = extract_param($DEM_par,"DEM_projection:");
+@clat = extract_param($DEM_par,"corner_lat:");
+@clon = extract_param($DEM_par,"corner_lon:");
+@width = extract_param($DEM_par,"width:");
+@nlines = extract_param($DEM_par,"nlines:");
+@post_lat = extract_param($DEM_par,"post_lat:");
+@post_lon = extract_param($DEM_par,"post_lon:");
+($name, $path, $ext) =  fileparse($image, qr/\.[^.]*/); #anything after the last period is the extension
+
+(@proj[1] eq "EQA") or die "ERROR: projection is not EQA: @proj[1]";
+
+print "\ninput image: $image\n";
+print "image name: $name  path: $path  extension: $ext\n";
+print "DEM parameter file: $DEM_par\n";
+print "image corner (deg) lat: $clat[1]  lon: $clon[1]\n";
+print "image width: $width[1]   lines: $nlines[1]\n";
+print "image posting (deg) lat: $post_lat[1]  lon: $post_lon[1]\n\n";
+print "output kml file: $kml\n";
+
+$north_lat = $clat[1] - $post_lat[1] / 2.0;		#upper corner lat
+$south_lat = $north_lat + $post_lat[1] * $nlines[1];
+
+$west_lon = $clon[1] - $post_lon[1] / 2.0;		#western edge
+$east_lon = $west_lon + $width[1] * $post_lon[1];
+
+print "north latitude (deg.): $north_lat  south latitude (deg.): $south_lat\n";
+print "west longitude (deg.): $west_lon   east longitude (deg.): $east_lon\n";
+
+#generate KML string
+$data_name = $name.$ext;
+
+$kml = sprintf <<EOS, $north_lat, $south_lat, $east_lon, $west_lon;
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.1">
+  <Document>
+    <name>$kml</name>
+    <GroundOverlay>
+      <name>$image</name>
+      <Icon>
+        <href>$data_name</href>
+      </Icon>
+      <LatLonBox>
+        <north> %f </north>
+        <south> %f </south>
+        <east>  %f </east>
+        <west>  %f </west>
+      </LatLonBox>
+    </GroundOverlay>
+  </Document>
+</kml>
+EOS
+
+#write out KML string to file
+print KML $kml;
+print "\n*** $0 completed  $time ***\n";
+exit 0;
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: create_offset</title>
+</head>
+
+<body align="justify">
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>create_offset</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/create_offset.c"><i>create_offset.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  create_offset - Create or update ISP offset and interferogram
+  parameter file<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>create_offset &lt;SLC1_par&gt; &lt;SLC2_par&gt;
+  &lt;OFF_par&gt; [offset_algorithm] [rlks] [azlks]
+  [iflag]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1/MLI-1 ISP image parameter file
+        (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2/MLI-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(output) ISP interferogram and offset parameter
+        file</td>
+      </tr>
+
+      <tr>
+        <td>[algorithm]</td>
+
+        <td>offset estimation algorithm:<br>
+        &nbsp;&nbsp; 1: intensity cross-correlation (default)<br>
+        &nbsp;&nbsp; 2: fringe visibility</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>interferogram range looks (enter -&nbsp; for default:
+        1)</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>interferogram azimuth looks (enter - for default:
+        1)</td>
+      </tr>
+
+      <tr>
+        <td>[iflg]</td>
+
+        <td>interactive mode flag (enter -&nbsp; for default)<br>
+        &nbsp;&nbsp; 0: non-interactive<br>
+        &nbsp;&nbsp; 1: interactive (default)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>create_offset 199600421.slc.par 19960422.slc.par
+  19960421_19960422.off 1 1 1 1<br></samp></p>
+
+  <p>Use the intensity cross-correlation algorithm to measure the
+  offsets between SLCs 19960521.slc and 19960422.slc. Enter
+  parameters in interactive mode.</p>
+
+  <p><code>create_offset 199600421.slc.par 19960422.slc.par
+  19960421_19960422.off - - - 1</code><br>
+  Use the intensity cross-correlation algorithm to measure the
+  offsets between SLCs 19960521.slc and 19960422.slc. Enter
+  parameters in non-interactive mode. Select default values for
+  <span style="font-style: italic;">algorithm</span>, <span style=
+  "font-style: italic;">rlks</span>, and <span style=
+  "font-style: italic;">azlks</span> parameters.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>create_offset</em> reads the SLC parameter files and queries
+  the user for parameters required to calculate the offsets using
+  either the cross correlation of intensity (CCI) or fringe
+  visibility (FV) algorithms.&nbsp;</p>
+
+  <p>The CCI algorithm is implemented in the program <a href=
+  "offset_pwr.html">offset_pwr</a> while the FV algorithm is
+  implements by the program <a href=
+  "offset_SLC.html">offset_SLC</a>. The SLC images are detected and
+  a patch of selectable dimensions is correlated with a patch in
+  the second image. Correlation of the intensity images generally
+  is less accurate than the FV algorithm, but has the advantage
+  that images that have no interferometric correlation, can still
+  be co-registered. The FV algorithm extracts patches from the two
+  SLC images and forms a small interferogram. This interferogram is
+  Fourier transformed and the peak of the fringe spectrum is
+  extracted. This algorithm is slower but quite sensitive even for
+  low fringe visibilities.&nbsp;</p>
+
+  <p>The CCI algorithm can work a larger range of offsets in the
+  image since the offsets are measured using patches. The&nbsp;
+  patch size should be selected to be a power of 2 (32, 64,
+  128...)&nbsp; because FFTs are used to perform the correlation
+  matching. The FV algorithm interpolates the data by a factor of
+  two and scans a region in half pixel offsets in range and
+  azimuth. The accuracy of the FV and CCI approaches is about equal
+  and CCI is almost exclusively used in practice because it is
+  faster and works even in regions of low interferometric
+  coherence.</p>
+
+  <p>Required parameters to run the co-registration program are the
+  initial range and azimuth offsets between SLC-1 and SLC-2. The
+  initial offsets can either be entered manually by identification
+  of identical locations in SLC-1 and SLC-2 or by automatic offset
+  estimation using program <a href=
+  "init_offset.html">init_offset</a>. Other parameters specify
+  where in the image the offsets will be measured. A regular grid
+  in range and azimuth are used for the offset locations. The grid
+  parameters are the starting range, ending range, and number of
+  points in range, and the starting azimuth, ending azimuth, and
+  number of points in azimuth.</p>
+
+  <p>A minimum threshold for the SNR of the offset estimate is user
+  specified. Generally, SNR values less than 5 for the CCI
+  algorithm yields unreliable results. Similarly, SNR values below
+  2 for the FV algorithm are not significant. The user can specify
+  the region of the image to generate an interferogram. The
+  coordinates of the image section selected to be processed are
+  relative to the geometry of SLC-1.</p>The default interferogram
+  parameters are determined from the reference SLC-1 parameters and
+  the <span style="font-style: italic;">rlks</span> and
+  <span style="font-style: italic;">azlks</span> values entered on
+  the command line. These default interferogram parameters can then
+  be used by the DIFF/GEO program <a href=
+  "../../DIFF/html/phase_sim.html">phase_sim</a> even if the
+  interferogram has not yet been calculated (see <a href=
+  "SLC_intf.html">SLC_intf</a> &nbsp;or <a href=
+  "WSS_intf.html">WSS_intf</a>)
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href="OFF_par.html">OFF_par</a>,
+  <a href="init_offset.html">init_offset</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>,&nbsp;<a href=
+  "offset_pwr_tracking.html">offset_pwr_tracking</a>,&nbsp;<a href=
+  "offset_fit.html">offset_fit</a>,&nbsp;<a href=
+  "SLC_intf.html">SLC_intf</a> , <a href=
+  "WSS_intf.html">WSS_intf</a>.</p>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">?</a> Copyrights for <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 3-May-2013.
+</body>
+</html>

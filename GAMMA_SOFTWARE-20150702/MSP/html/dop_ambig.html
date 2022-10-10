@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: dop_ambig</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>dop_ambig</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dop_ambig.c">dop_ambig.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>dop_ambig</em> - Doppler
+  ambiguity estimation from IQ SAR raw data</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>dop_ambig &lt;SAR_par&gt;
+  &lt;PROC_par&gt; &lt;raw_data&gt; [algorithm] [loff]
+  [plot]</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_par&gt;</td>
+
+      <td>(input) MSP SAR sensor parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par&gt;</td>
+
+      <td>(input) MSP processing parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;signal_data&gt;</td>
+
+      <td>(input) uncompressed raw SAR signal data (I/Q
+      complex)</td>
+    </tr>
+
+    <tr>
+      <td>[algorithm]</td>
+
+      <td>algorithm selection:<br>
+      1: Multi-Look Cross Correlation (MLCC)<br>
+      2: Multi-Look Beat Frequency (MLBF) (default)<br></td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>number of lines offset (enter - for default: parameter
+      file value)</td>
+    </tr>
+
+    <tr>
+      <td>[plot]</td>
+
+      <td>(output) plot file of the MLCC phase differences, or MLBF
+      azimuth spectrum</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br clear="all">
+  <samp>dop_ambig JERS_1.par p8560.slc.par 8560.raw 1 -
+  dop_ambig.dat<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  The Doppler centroid is a necessary parameter for SAR processing.
+  Due to the fact that the radar is a sampled data system, i.e. the
+  SAR acquires echoes at the rate of the pulse repetition frequency
+  (PRF), the Doppler spectrum is aliased modulo the PRF. This means
+  that some other method must be used to determine an unambiguous
+  value of the Doppler centroid apart from simple fourier analysis
+  of the azimuth spectrum. A very effective method is to measure
+  the range migration rate of targets in the scene. This can be
+  combined with the auto-focus that determines the effective value
+  of the along-track velocity for precise focus. If the correct
+  Doppler ambiguity has been be selected, then the cross
+  correlation between images formed from different segments of the
+  Doppler spectrum will be aligned in slant range.</p>
+
+  <p>The raw SAR data (IQ complex data)can be used to estimate the
+  ambiguity number of the Doppler centroid using the methods
+  described by Wong and Cumming (A Combined SAR Doppler Centroid
+  Estimation Scheme based upon Signal Phase, <em>IEEE Trans.
+  Geosci. Remote Sensing</em>, Vol. 34, No. 3, May 1996, pp.
+  696-707.) The signal phase from different complex range looks is
+  used to obtain an unambiguous estimate of the Doppler centroid.
+  This value is stored in the Processing Parameter file in the
+  DAR_doppler structure member. The programs <a href=
+  "doppler.html">doppler</a> and <a href="azsp_IQ.html">azsp_IQ</a>
+  can use the unambiguous Doppler estimate to determine the Doppler
+  ambiguity number and add it to the accurate, but ambiguous
+  estimate.</p>
+
+  <p>Two algorithm are available to obtain unambiguous Doppler
+  estimates. The Multi-Look Cross Correlation (MLCC) algorithm
+  measures the difference in Doppler centroid as a function of
+  frequency. The correlation method of centroid estimation is
+  implemented as in <a href="doppler.html">doppler</a> for two
+  segments of the range spectrum. The rate of change of Doppler
+  with respect to frequency yields an unambiguous estimate of the
+  Doppler centroid. The second algorithm (Multi-Look Beat
+  Frequency) or MLBF is the most robust for most applications looks
+  at the cross spectrum between range looks and depends on coherent
+  point targets to be effective. See discussion in the <a href=
+  "MSP_users_guide.html">Users Guide</a>. The data segment used for
+  the estimation can be specified by the user by setting the offset
+  in lines relative to the beginning of the file.</p>
+
+  <p>The MLCC plots the Doppler in radians of phase shift between
+  range lines versus the slant range pixel. If the average of the
+  correlation coefficient between range pulses is PI/2, then the
+  centroid is PRF/2 + N*PRF where N is the number of ambiguities in
+  the Doppler centroid. The phase of the correlation is plotted for
+  both the upper and lower segments of the range bandwidth. The
+  last column is the difference between the Doppler centroid
+  estimates of the upper and lower band range bandwidth. This
+  difference can be used to determine a noisy estimate of the
+  unambiguous Doppler centroid. The avarage value of the difference
+  is used to determine the unambiguous estimate of the Doppler
+  centroid. The program <a href="dop_mlcc.html">dop_mlcc</a> can be
+  used to process an entire file.</p>
+
+  <h3>MLCC output file format</h3>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <th>Column</th>
+
+      <th>Parameter</th>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          1
+        </center>
+      </td>
+
+      <td>range sample number</td>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          2
+        </center>
+      </td>
+
+      <td>line to line corrlation phase dp1 for lower half of the
+      range spectrum in units of radians. Doppler centroid = fd1 =
+      dp1*PRF/(2*PI)</td>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          3
+        </center>
+      </td>
+
+      <td>line to line corrlation phase dp2 for upper half of the
+      range spectrum in units of radians. Doppler centroid = fd2 =
+      dp2*PRF/(2*PI)</td>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          4
+        </center>
+      </td>
+
+      <td>difference of line to line correlation in units of
+      radians (=dp3). DAR_dop = (dp2-dp1)*PRF/(2*PI) unambiguous
+      Doppler centroid estimate: DAR_dop = -f_c*PRF*dp3/(2*PI*df)
+      where df = f_adc/2 and f_adc is the range sampling frequency
+      and f_c is the radar carrier frequency.</td>
+    </tr>
+  </table><br>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "dop_mlcc.html">dop_mlcc</a> <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">Sensor parameter file</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 4-May-2007.
+</body>
+</html>

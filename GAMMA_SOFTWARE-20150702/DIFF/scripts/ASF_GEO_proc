@@ -1,0 +1,248 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use FILE::Path;
+use Getopt::Long;
+
+$scd = 1.0;		#image display intensity scale factor
+$expd = 0.4;		#image display exponent
+$ext = "bmp";		#default image extension BMP
+$n_ovr = 4;
+
+GetOptions ('e=f' => \$expd, 's=f' => \$scd, 'b' => \$ext_flg, 'q' => \$qflg, 'p' => \$pix_flg, 'c' => \$cal_flg, 'j' => \$ls_flg);
+
+if (($#ARGV + 1) < 5){die <<EOS;}
+*** Preprocessing of a set of ASF SLC images using par_ASF_SLC
+*** Copyright 2014, Gamma Remote Sensing, v1.5 6-May-2014 cw/km ***
+*** RTC Processing of ASF SLC products ***
+
+usage: $0 <CEOS_list> <DEM> <DEM_par> <mode> <GEO_dir> <log>
+    CEOS_list	(input) 2 column list of CEOS format SLC image products
+		  1. CEOS format SLC image data (*.D, IMG*)
+                  2. CEOS format leader file (*.L, LED*)
+    DEM         (input) input DEM
+    DEM_par     (input) input DEM parameter file
+    mode        processing mode:
+                  0: read in CEOS format data from different Sensors (PALSAR, ERS-1, ERS-2, JERS-1, Radarsat-1)
+                  1: perform geocoding and pixel area correction
+    GEO_dir     directory to store geocoded results
+    log         (output) processing log file
+
+    -s scale     (option) set image display scale factor (default: $scd)   
+    -e exp       (option) set image display exponent (default: $expd)
+    -b           (option) set raster image type to SUN raster (default: $ext)
+    -q           (option) quiet mode, run through with no display
+    -p           (option) use pixel area program to generate simulated SAR image in range-doppler coordinates
+    -c           (option) generate calibrated image products
+    -j           (option) do not use layover-shadow map in call to pixel_area
+    -o n_ovr     (option) offset estimation patch over-sampling factor (default:4)
+
+  NOTE: Each frame listed in the CEOS_list must be in a separate directory. The same DEM is used for all images in
+  the CEOS_list
+EOS
+
+$options =" -o $n_ovr -e $expd -s $scd";   #set the oversampling factor for offset matching to 4
+if($ext_flg == 1){$options = $options." -b";}   #set to Sun Raster, BMP is default
+if($qflg == 1)   {$options = $options." -q";}
+if($pix_flg == 1){$options = $options." -p";}
+if($cal_flg == 1){$options = $options." -c";}
+if($ls_flg == 1) {$options = $options." -j";}  #do not use lay-over/shadow mask when running pixel_area within mk_geo_radcal
+
+open(SLIST, "<$ARGV[0]") or die "ERROR $0: ASF CEOS format SLC list does not exist: $ARGV[0]\n";
+$dem = $ARGV[1];
+$dem_par =$ARGV[2];
+my ($dem_name, $dir1, $ext1) = fileparse($dem, qr/\.[^.]*/); #extension is the last bit after the last period 
+
+$mode = $ARGV[3];
+($mode == 0 || $mode == 1) or die "ERROR: invalid value for mode: $ARGV[3]\n";
+
+print "ASF_GEO_proc options: $options\n";
+
+LINE: while (<SLIST>) {		#read list of directories with unreformated SLC data
+  $time = localtime;
+  chomp $_;
+  next LINE if /^$/; 		#skip blank lines in input list
+  next LINE if /^#/; 		#skip comments in the input list
+  @fields = split;		#extract data file name
+  $ceos_data = $fields[0];
+  $ceos_ldr = $fields[1];
+  my ($s1, $dir1, $ext1) = fileparse($ceos_data, qr/\.[^.]*/); #extension is the last bit after the last period 
+  print "\nCEOS data file: $ceos_data    CEOS leader file: $ceos_ldr\n";
+  
+  $log = $dir1.$ARGV[5];
+  open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+  print LOG "$0 @ARGV\n\n";	#print command line that was used
+  print "PROCESSING START: $time\n\n";
+  print LOG "PROCESSING START: $time\n\n";
+  close LOG;
+  
+  my @ceos_params = ldr_parse("$ceos_ldr");	#parse CEOS leader file
+  $id = $ceos_params[2];
+  $satellite = $ceos_params[1];
+  $beam = $ceos_params[4];
+  $adc = $ceos_params[5];
+  print "radar beam: $beam   ADC rate: $adc\n";
+  
+  $geo_dir = $ARGV[4];
+  if ($ceos_params[1] eq "ALOS"){
+    $id_tmp = $id;
+    if ($s1 =~ /IMG-([HV][HV])/){   #match H or V and return math in $1
+      $id = $id_tmp."_$1";
+      $geo_dir = $geo_dir."_$1";
+    }
+  }
+  
+  $slc = "$dir1".$id.".slc";
+  $slc_par = "$dir1".$id.".slc.par";
+  $mli = "$dir1".$id.".mli";
+  $mli_par = "$dir1".$id.".mli.par";
+
+  print "SLC image: $slc     SLC parameter file: $slc_par\n";
+  print "MLI image: $mli     MLI parameter file: $mli_par\n";
+  
+  if ($mode == 0){
+    if($ceos_params[1] eq "RSAT-1"){
+      execute("par_RSAT_SLC $ceos_ldr $slc_par $ceos_data $slc 60.0", $log);
+      if ($id =~ /_FN/){
+        execute("multi_look $slc $slc_par $mli $mli_par 2 2",$log);
+      }
+      else {
+        execute("multi_look $slc $slc_par $mli $mli_par 1 4",$log);
+      }
+    }
+    elsif ($ceos_params[1] eq "ALOS"){
+    
+      execute("par_EORC_PALSAR $ceos_ldr $slc_par $ceos_data $slc", $log);
+      if ($adc eq "16.000"){
+        execute("multi_look $slc $slc_par $mli $mli_par 1 4",$log);
+      }
+      else {
+        execute("multi_look $slc $slc_par $mli $mli_par 1 2",$log);
+      }
+    }
+    else {  #ERS-1, ERS-2, JERS-1
+      execute("par_ASF_SLC $ceos_ldr $slc_par $ceos_data $slc",$log);
+      if($satellite eq "JERS-1"){
+        execute("multi_look $slc $slc_par $mli $mli_par 1 3",$log);
+      }
+      else{  #ERS-1, ERS-2
+        execute("multi_look $slc $slc_par $mli $mli_par 1 5",$log);
+     }
+    }
+    @width = extract_param($mli_par, "range_samples:");
+    execute("raspwr $mli $width[1] 1 0 1 1 $scd $expd 1 $mli".".$ext", $log);
+  }
+  else {
+    $dem_seg = "$dir1".$geo_dir."\/".$dem_name."_seg.dem";
+    $dem_seg_par = $dem_seg."_par";
+    $geo_dir1 = $dir1.$geo_dir;
+    
+    print "DEM segment name: $dem_seg  DEM segment parameter file $dem_seg_par\n";
+    
+    if($ceos_params[1] eq "RSAT-1"){
+      if ($id =~ /_FN/){
+        $post = 6.944444e-5;  #1/4 arc-sec
+      }
+      else {
+        $post = 1.388888e-4;  #1/2 arc-sec
+      }
+    }
+    elsif ($ceos_params[1] eq "ALOS"){
+      if ($adc eq "16.000"){
+        $post = 1.388888e-4;  #1/2 arc-sec
+      }
+      else {
+        $post = 6.944444e-5;  #1/4 arc sec
+      }  #1/2 arc-sec
+    }
+    else {  #ERS-1, ERS-2, JERS-1
+      if($satellite eq "JERS-1"){
+        $post = 1.388888e-4;  #1/2 arc-sec
+      }
+      else{  #ERS-1, ERS-2
+        $post = 1.388888e-4;  #1/2 arc-sec
+     }
+    }
+    
+    $cmd = "mk_geo_radcal $mli $mli_par $dem $dem_par $dem_seg $dem_seg_par $geo_dir1 $id $post";
+    execute($cmd." 0 2 $options", $log);
+    eval {
+      execute($cmd." 1 2 $options", $log);
+    } or do {
+      print "ASF_GEO_proc mode 1: Determination of the initial offset failed, skipping initial offset for $mli\n";
+    };
+    eval {
+      execute($cmd." 2 2 $options", $log);
+    } or do {
+       print "ASF_GEO_proc mode2: Failed to determine offset model for $mli\n";
+       next LINE;
+    };
+    execute($cmd." 3 2 $options", $log);
+  }
+}
+
+$time = localtime;
+print "\nPROCESSING END: $time\n";
+print LOG "\nPROCESSING END: $time\n";
+exit 0;
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub execute{
+  my ($command, $log) = @_;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+  if (-e $log){
+    open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  }
+  else {
+    open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";
+  }
+  LOG->autoflush;
+}
+
+sub ldr_parse {
+  my ($infile)=@_;		# Get passed parameters
+  open (INPUT, "$infile") or die "ERROR: opening CEOS leader file: $infile\n";
+  binmode INPUT;
+
+  my ($process, $satellite);
+  my ($buf, @parms);
+  
+  read (INPUT, $buf, 4096);
+  $process = substr($buf, 31, 9);
+  $process =~ s/^\s+//;    #remove leading whitespace
+  $process =~ s/\s+$//;    #remove trailing whitespace
+  
+  $satellite = substr($buf, 1116, 6);
+  $satellite =~ s/^\s+//;
+  $satellite =~ s/\s+$//;
+  
+  $id=substr($buf, 740, 24);
+  $id =~ s/^\s+//; 
+  $id =~ s/\s+$//;
+  
+  $date = substr($buf, 788, 8);
+  close (INPUT);
+  print "Processor : $process  Satellite: $satellite  ID: $id  Date: $date\n";
+  
+  $beam = substr($buf, 2488, 3);
+  $adc = substr($buf, 1436, 6);
+  
+  @parms=("$process", "$satellite", "$id", "$date", "$beam", "$adc");
+  return @parms;
+}

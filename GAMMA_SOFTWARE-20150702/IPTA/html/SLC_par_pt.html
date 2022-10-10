@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: SLC_par_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>SLC_par_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/SLC_par_pt.c">SLC_par_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_par_pt - read/write record of SLC/MLI parameter stack</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_par_pt &lt;SLC_par&gt; &lt;pSLC_par&gt;
+  &lt;SLC_rec_num&gt; &lt;rw_flag&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>SLC/MLI parameter file (enter - for output to
+      stdout)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pSLC_par&gt;</td>
+
+      <td>stack of SLC/MLI parameters (binary)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_rec_num&gt;</td>
+
+      <td>record number in the stack of SLC/MLI parameters (starts
+      with 1)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rw_flag&gt;</td>
+
+      <td>read/write flag (0: read from pSLC_par 1: write to
+      pSLC_par)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC_par_pt 08560.rslc.par testsite.ppar 4 1</samp></p>
+
+  <p>Writes the SLC parameter file 08560.rslc.par (ascii) into
+  record 4 of the stack of SLC parameters testsite.ppar
+  (binary).</p><samp>SLC_par_pt - testsite.ppar 5 0</samp>
+
+  <p>Reads record 5 of the stack of SLC parameters testsite.ppar
+  and writes it to standard output.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code SLC_par_pt.c in ./IPTA/src, executable version
+  SLC_par_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The use of point data stacks is an important element of the IPTA.
+  Registered SLC data at the selected points are stored in such a
+  point data stack with each record corresponding to an SLC image.
+  SLC parameters for each record (SLC image) are organized in a
+  stack of SLC parameters. This stack is in binary format and
+  contains for each record the parameters of the SLC/MLI parameter
+  file.</p>
+
+  <p>SLC_par_pt supports the transformation between the individual
+  SLC/MLI parameter files and the stack of SLC parameters
+  (binary).</p>
+
+  <p>SLC_par_pt permits to write the parameters of an individual
+  SLC/MLI parameter file to the indicated record of a stack of SLC
+  parameters. It is important to use the identical order in the SLC
+  data stack and in the SLC parameters stack (i.e. the same record
+  number should refer to the same image).</p>
+
+  <p>SLC_par_pt also permits to extract the SLC parameters of an
+  indicated record of the stack of SLC parameters and to either
+  write these parameters to an individual SLC/MLI parameter file
+  (ascii) or to print the parameters to the screen (standard
+  output) by indicating "-" instead of a SLC/MLI parameter file
+  name.</p>
+
+  <p>The record numbers start with 1. The number of records
+  corresponds to the highest record number.</p>
+
+  <p>If a new stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.</p>
+
+  <p>Typically, the co-registered SLC (*.rslc) are in the SLC data
+  stack. Consequently, the SLC/MLI parameter files of the
+  co-registered SLC (*.rslc.par) shall be written to the stack of
+  SLC parameters.</p>
+
+  <p>The reference SLC (SLC used as reference in the
+  co-registration, SLC used as reference in the interferometric
+  analysis) does not need to have a specific record number.</p>
+
+  <p>The SLC parameters contain information on date and time,
+  geometry, format, processing parameters as the Doppler Centroid,
+  and state vectors of the SLC images.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

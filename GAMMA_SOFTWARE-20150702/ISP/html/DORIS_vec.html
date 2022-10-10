@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: DORIS_vec</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>DORIS_vec</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/DORIS_vec.c"><i>DORIS_vec.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>DORIS_vec</em>&nbsp; - extract state vectors from DORIS
+  precision orbit state vector files and copy to the ISP SLC/MLI
+  image parameter file<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>DORIS_vec &lt;SLC_par&gt;</b></code> <code>&lt;DOR&gt;
+  [nstate]</code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;<a href="SLC_par.html">SLC_par</a>&gt;</td>
+
+        <td>(input/output) ISP SLC/MLI&nbsp; image parameter
+        file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DOR&gt;</td>
+
+        <td>&nbsp;(input) ASAR DORIS data file (DOR_VOR_AXVF)</td>
+      </tr>
+
+      <tr>
+        <td>[nstate]</td>
+
+        <td>number of state vectors to extract (default=5, )</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>DORIS_vec 22331.par</samp>
+  DOR_VOR_AXVF-P20040830_135600_20040720_215528_20040722_002328</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  DORIS_vec reads state vectors produced from the DORIS instrument
+  data on Envisat. The state vectors are written into the ISP
+  SLC/MLI image parameter file along with the start time and time
+  interval between state vectors. The DORIS file consist of 129
+  byte text records containing the date, time, offset between UTC
+  and UT1, orbit, position, and velocity, and data quality
+  information. State vectors are given on 60 second intervals. The
+  default number of state vectors is 9 spaced at&nbsp; 60 second
+  intervals, up to 64 state vectors can be extracted.&nbsp; Format
+  of the DORIS&nbsp; data file records is described in an ESA
+  document&nbsp; available from <a href=
+  "http://envisat.esa.int/dataproducts/asar/CNTR2-9-3.htm">http://envisat.esa.int/dataproducts/asar/CNTR2-9-3.htm</a>.&nbsp;
+  Access to the DORIS data is via a request to the ESRIN Help
+  desk&nbsp; State vectors are used for calculation of
+  interferometric baselines and terrain geocoding of the SAR
+  data</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-Nov-2004</p>
+</body>
+</html>

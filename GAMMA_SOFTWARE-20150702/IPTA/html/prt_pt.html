@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: prt_pt</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing --><!-- uw 20-Feb-2003 -->
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>prt_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/prt_pt.c">prt_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  prt_pt - print data stack elements to a text file</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>prt_pt &lt;plist&gt; &lt;pdata&gt; &lt;np_start&gt;
+  &lt;np&gt; &lt;type&gt; [output] [rec_num] [n_rec]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;<br></td>
+
+        <td>&nbsp;(input) point data stack of mask values (uchar,
+        pmask[i]=0 excludes point i, enter - if not
+        available)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;np_start&gt;</td>
+
+        <td>starting point index to display (beginning with 0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;np&gt;</td>
+
+        <td>number of points to display in each layer&nbsp; (enter
+        - to end of list)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>data type (0:fcomplex 1:scomplex 2:float 3:int 4:short
+        5:byte 7:position 8:coordinates(int) 9:phase (fcomplex
+        input))</td>
+      </tr>
+
+      <tr>
+        <td>[output]</td>
+
+        <td>(output) text file (enter - for output to stdout)</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>starting record number (default=1, starting with
+        1)</td>
+      </tr>
+
+      <tr>
+        <td>[n_rec]</td>
+
+        <td>number of records to display (default=to end of
+        stack)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>prt_pt testsite.plist pmsk1 testsite.punw 214 5 2
+  testsite.unw.txt</samp></p>
+
+  <p>Reads the input point list, and writes to the output ascii
+  file the corresponding values from the input point data stack for
+  the indicated number of points starting with the indicated
+  starting point number.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code prt_pt.c in ./IPTA/src, executable version prt_pt in
+  ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  prt_pt extracts values of the indicated number of points starting
+  at the indicated starting point number from a point data stack
+  and writes these out to a text file or standard output.</p>
+
+  <p>The value extraction can be restricted to a range of records
+  of the point data stack by indicating a starting record number
+  and a number of records to consider.</p>
+
+  <p>Various point data stack types are supported. Point
+  coordinates begin with x=0, y=0 and the point indices begin with
+  0.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="prox_prt.html">prox_prt</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 6-Sep-2004.</p>
+</body>
+</html>

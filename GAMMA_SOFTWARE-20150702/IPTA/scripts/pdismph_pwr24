@@ -1,0 +1,67 @@
+#! /bin/csh -f
+
+##################################################################
+#
+# uw 24-Jun-2003
+# Script to display point data such differential interferograms
+#
+##################################################################
+
+if ($#argv < 7)then
+  echo " " 
+  echo "usage: pdismph_pwr24 <plist> <pmask> <SLC_par> <pdiff> <rec_num> <par_out> <mli> [radius]" 
+  echo " " 
+  echo "       plist      (input) point list (int)"  
+  echo "       pmask      (input) point data stack of mask values (uchar, pmask[i]=0 excludes point i, enter - if not available)"  
+  echo "       SLC_par    (input) SLC parameter file of point list coordinates"  
+  echo "       pdiff      (input) point data stack (fcomplex)"  
+  echo "       rec_num    record number to process (default -: all records)"  
+  echo "       par_out    (input) SLC/MLI parameter file of 2-D output image data file"  
+  echo "       mli        (input) 2-D image data file used as output image intensity"  
+  echo "       radius     interpolation window radius used default:   4.00)"  
+  echo " " 
+  exit
+endif
+
+set plist   = $1
+set pmask   = $2
+set SLC_par = $3
+set pdiff   = $4
+set rec_num = $5
+set par_out = $6
+set mli     = $7
+set radius = "4"
+if ($#argv >= 8)then
+  set radius = $8
+endif
+
+set width = `awk '$1 == "range_samples:" {printf("%s",$2)}' $par_out `
+
+set tmp = tmp.pdismph_pwr24
+if (-e $tmp)then
+  /bin/rm $tmp
+endif
+
+set npt    = `npt $plist | awk '$1 == "total_number_of_points:" {printf("%d",$2)}'`
+set nbytes = `ls -l $pdiff | awk '{printf("%d",$5)}'`
+set nrec   = `echo $nbytes $npt 8|awk '{print ($1/$2/$3)}'`
+
+if ("$rec_num" == "-") then
+  set rec = 0
+  while ($rec != $nrec)
+    set rec = `echo $rec 1|awk '{print $1+$2}'`
+    pt2data $plist $pmask $SLC_par $pdiff $rec $tmp $par_out 0 3 $radius 1
+    echo "data record: $rec"
+    dismph_pwr24 $tmp $mli $width 1 1 0 1. .4
+  end
+else
+  echo "data record: $rec_num"
+  pt2data $plist $pmask $SLC_par $pdiff $rec_num $tmp $par_out 0 3 $radius 1
+  dismph_pwr24 $tmp $mli $width 1 1 0 1. .4
+endif
+
+if (1) then
+  if (-e $tmp)then
+    /bin/rm $tmp
+  endif
+endif

@@ -1,0 +1,289 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: sp_stat</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>sp_stat</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/sp_stat.c">sp_stat.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  sp_stat - generate point list using low spectral diversity to
+  identify point targets</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sp_stat &lt;SLC&gt; &lt;pwr&gt; &lt;cc&gt; &lt;MSR&gt;
+  &lt;plist&gt; &lt;width&gt; [PWR_min] [CC_min] [MSR_min] [rlks]
+  [azlks] [roff] [loff] [nr] [nl] [bx] [by] [type]
+  [r_ovr]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC&gt;</td>
+
+      <td>(input) SLC file (fcomplex or scomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr&gt;</td>
+
+      <td>(output) intensity image (float, enter - for none)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cc&gt;</td>
+
+      <td>(output) spectral correlation image (float, enter - for
+      none)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MSR&gt;</td>
+
+      <td>(output) mean/sigma ratio image (float, enter - for
+      none)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(output) point list (int, enter - for none)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row of the SLC data</td>
+    </tr>
+
+    <tr>
+      <td>[PWR_min]</td>
+
+      <td>intensity minimum threshold (relative to spatial average)
+      to accept a point (0.0 to ignore, default -:10.0)</td>
+    </tr>
+
+    <tr>
+      <td>[CC_min]</td>
+
+      <td>spectral correlation minimum threshold to accept a point
+      (0.0 to ignore, default -:0.4)</td>
+    </tr>
+
+    <tr>
+      <td>[MSR_min]</td>
+
+      <td>mean/sigma ratio minimum threshold (relative to spatial
+      average) to accept a point (0.0 to ignore, default
+      -:1.2)</td>
+    </tr>
+
+    <tr>
+      <td>[rlks]</td>
+
+      <td>number of range looks to use (default -: 4)</td>
+    </tr>
+
+    <tr>
+      <td>[azlks]</td>
+
+      <td>number of azimuth looks to use (default -: 4)</td>
+    </tr>
+
+    <tr>
+      <td>[roff]</td>
+
+      <td>offset to starting range of section to analyze (default
+      -: 0)</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>offset to starting line of section to analyze (default -:
+      0)</td>
+    </tr>
+
+    <tr>
+      <td>[nr]</td>
+
+      <td>number of range pixels to analyze (default -: to end of
+      line)</td>
+    </tr>
+
+    <tr>
+      <td>[nl]</td>
+
+      <td>number of azimuth lines to analyze (default -: to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[bx]</td>
+
+      <td>window width in SLC pixels used for spectral statistics
+      (default -: 3)</td>
+    </tr>
+
+    <tr>
+      <td>[by]</td>
+
+      <td>window number of SLC lines used for spectral statistics
+      (default -: 3)</td>
+    </tr>
+
+    <tr>
+      <td>[type]</td>
+
+      <td>SLC type (default=0: fcomplex, 1: scomplex)</td>
+    </tr>
+
+    <tr>
+      <td>[r_or]</td>
+
+      <td>SLC SLC range over-sampling factor (default: 1)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>sp_stat 08456.rslc 08456.sp_stat.pwr 08456.sp_stat.cc
+  08456.sp_stat.MSR testsite.plist 1000 10. 0.4 1.2 4 4 - - - - 4 4
+  1</samp></p>
+
+  <p>Generates a point list of coordinates of points with a low
+  spectral diversity (i.e. high spectral correlation value) and a
+  dominant intensity. The image files 08456.sp_stat.pwr,
+  08456.sp_stat.cc, and 08456.sp_stat.MSR are generated for visual
+  control of the features used in the identification of the
+  points.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code sp_stat.c in ./IPTA/src, executable version sp_stat
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>sp_stat supports the generation of lists of points with "point
+  target characteristics". This is done based on a single SLC image
+  based on the spectral diversity. Only for point targets it is
+  expected that the energy remains more or less the same when
+  processing different looks with fractional azimuth and range
+  bandwidth. Based on this low spectral diversity, respectivity
+  based on correlation values above the indicated threshold
+  potential point targets can be identified. As additional criteria
+  a dominent intensity, i.e. pwr relative to an average power is
+  above a given threshold, and a high mean to sigma ratio (MSR)
+  between the spectral looks, can be used.</p>
+
+  <p>The physical basis for the methodology used is that point
+  targets (i.e. SAR image resolution cells for which the scattering
+  is dominated by a target which is small in size as compared to
+  the size of the resolution cell) do not exhibit the speckle
+  observed for extended targets. For a point target almost the same
+  backscattering intensity is found when processing different looks
+  with fractional azimuth and range bandwidth.</p>
+
+  <p>sp_stat uses the Mean to Standard deviation Ratio (MSR) as the
+  (inverse) measure of the spectral variability. Lower spectral
+  variability corresponds to higher MSR values. 1.2 might be a
+  possible threshold to use.</p>
+
+  <p>As an additional (or alternative) criteria an SLC intensity
+  above a minimum value can be indicated. As a simplification not
+  an absolute value, but one relative to the spatial average is
+  used. The idea behind this second criteria is to limit the points
+  to dominating points (which need to be above the background
+  level).</p>
+
+  <p>An alternative measure for the spectral diversity is the
+  spectral correlation which is calculated in sp_stat. This measure
+  is high for a low diversity. Concsequently, values above a given
+  threshold are point target candidates. One advantage of the
+  correlation measure is that it is "well focussed", meanning that
+  in the case of a point target a high values is typically only
+  found for one pixel, while the other criteria tend to be met also
+  by some adjecent pixels.</p>
+
+  <p>In sp_stat the point list is determined from a single SLC.
+  This means that no temporal criteria are considered. So the
+  criteria used is clearly not temporal stability, but the point
+  target characteristics expected in a single image.</p>
+
+  <p>To combine the functionality of sp_stat with multi-temporal
+  criteria point lists sp_stat can be used to generated point lists
+  for multiple co-registered SLC and then to combine these into a
+  single list using the program merge_pt.</p>
+
+  <p>Advantages of sp_stat are that it can also be used in the case
+  of a small serie of SLC (or even with a single SLC). Furthermore,
+  it is less critical than pwr_stat, what concerns the radiometric
+  calibration. On the other hand the SLC used should be well
+  focussed.</p>
+
+  <p>A clear disadvantage of sp_stat is that the temporal stability
+  criteria is not used. For an interferometric analysis of point
+  targets it is essential that the point targets remain visible,
+  which is only the case for a fraction of the point targets. A
+  car, for example, may be identified as a point target, but it may
+  not be present at the same location in a second SLC.</p>
+
+  <p>For large series of co-registered SLC pwr_stat is the
+  preferred program to point lists. For small series sp_stat
+  combined with a temporal consistancy element coming from the
+  merging of several point lists using merge_pt is preferred.</p>
+
+  <p>Instead of the full area of the SLC a sub-section can be
+  selected.</p>
+
+  <p>If the SLC has been oversampled in range, then the integer
+  range over-sampling factor must be specified on the command line
+  using the r_ovr parameter.</p>
+
+  <p>Other programs to generate new point lists are image2pt,
+  mkgrid, merge_pt, prox_pt, and sp_stat.</p>
+
+  <p>Programs to validate existing point lists are qc_pt and
+  expand_pt.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="expand_pt.html">expand_pt</a>, <a href=
+  "image2pt.html">image2pt</a>, <a href=
+  "merge_pt.html">merge_pt</a>, <a href="mkgrid.html">mkgrid</a>,
+  <a href="prox_pt.html">prox_pt</a>, <a href=
+  "pwr_stat.html">pwr_stat</a>, <a href="qc_pt.html">qc_pt</a>,
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 1-May-2006.</p>
+</body>
+</html>

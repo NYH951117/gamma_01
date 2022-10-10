@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: init_offset_orbit</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>init_offset</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/init_offset_orbit.c"><i>init_offset_orbit.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  init_offset_orbit - Initial registration offset estimation based
+  on orbit data in the SLC parameter files.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>init_offset_orbit &lt;SLC1_par&gt; &lt;SLC2_par&gt;
+  &lt;OFF_par&gt; [rpos] [azpos] [cflag]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2 parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input/output) ISP/offset parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[rpos]</td>
+
+        <td>range position for offset estimation (enter - for
+        default: center of SLC-1)</td>
+      </tr>
+
+      <tr>
+        <td>[azpos]</td>
+
+        <td>azimuth position for offset estimation (enter - for
+        default: center of SLC-1)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[cflag]<br></td>
+
+        <td style="vertical-align: top;">copy offsets to the range
+        and azimuth offset polynomials in the OFF_par<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: yes<br>
+        <br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>init_offset_orbit 19990421.slc.par 19999422.slc.par
+  19990421_19990422.off 500 500<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">init_offset</span> reads the
+  SLC parameter files <em>SLC1_par</em> and <em>SLC2_par</em>,
+  extracts the oribt data and calculates a registration offset
+  estimated for the indicated position of SLC-1. The estimation
+  considers if the SLC images are in deskewed geometry. The
+  estimated range and azimuth offset are written out to the ISP
+  offset parameter file.</p>
+
+  <p>Examples of ERS data show that the precision of the estimate
+  is often better than 2 pixels. With TerraSAR-X the high precision
+  state vectors usually have sub-pixel accuracy.&nbsp; The
+  precision depends&nbsp; on the accuracy of the orbit data. The
+  initial offset estimate can be refined with a two-dimensional
+  cross correlation analysis, using on of the program <a href=
+  "init_offset.html">init_offset</a>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The position of the initial registration offset estimation can be
+  indicated. As default the SLC-1 image center is used for the
+  estimate. The user can specify that the initial offset value is
+  is written to the range and azimuth offset polynomials.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>, <a href=
+  "init_offset.html">init_offset</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>, <a href=
+  "create_offset.html">create_offset</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 25-Sep-2012.
+</body>
+</html>

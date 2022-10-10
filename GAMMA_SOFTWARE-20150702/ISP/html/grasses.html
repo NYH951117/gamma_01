@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: grasses</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>grasses</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/grasses.c"><i>grasses.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  grasses - Unwrapping of the interferometric phase based on the
+  complex valued interferogram, the phase unwrapping flag file,
+  and, if existing, the already partially unwrapped phse file.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>grasses &lt;int&gt; &lt;flag&gt; &lt;unw&gt;
+  &lt;width&gt; [xmin] [xmax] [ymin] [ymax] [xinit] [yinit]
+  [init_ph_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;int&gt;</td>
+
+      <td>interferogram filename (fcomplex)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;flag&gt;</td>
+
+      <td>unwrapping flag filename (char)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;unw&gt;</td>
+
+      <td>unwrapped phase filename (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[xmin]</td>
+
+      <td>offset to starting range pixel (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmax]</td>
+
+      <td>offset last range pixel (default = <b>width-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>offset to starting azimuth row, relative to start
+      (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>offset to last azimuth row, relative to start (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xinit]</td>
+
+      <td>starting range pixel for unwrapping (default =
+      <b>width/2</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[yinit]</td>
+
+      <td>starting row to unwrap (default = <b>height/2</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[init_ph_flag]</td>
+
+      <td>flag to set phase at starting point to 0.0<br>
+      (default 0: not set to 0.0, 1: set to 0.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>grasses 1352_1610.flt.sm 1352_1610.flag 1352_1610.unw
+  2500</samp></p>
+
+  <p>Unwraps the filtered complex interferogram 1352_1610.flt.sm
+  starting the unwrapping at the image center.</p>
+
+  <p><samp>grasses 1352_1610.flt.sm 1352_1610.flag 1352_1610.unw
+  2500 0 2499 0 4800 1200 4000 1</samp></p>
+
+  <p>Unwraps the filtered complex interferogram 1352_1610.flt.sm
+  starting at pixel number (1200,4000). The phase at the starting
+  location is set to 0.0 (to facilitate consecutive scaling of
+  multiple unwrapped phase images).</p>
+
+  <p><samp>grasses 1352_1610.flt.sm 1352_1610.flag035 1352_1610.unw
+  2500</samp><br>
+  followed by<br>
+  <samp>grasses 1352_1610.flt.sm 1352_1610.flag020 1352_1610.unw
+  2500</samp><br>
+  Unwraps in a first step the filtered complex interferogram
+  1352_1610.flt.sm using the flag file 1352_1610.flag035 (generated
+  using a coherence threshold of 0.35). In a second step the
+  already unwrapped phase image is read together with the flag file
+  1352_1610.flag020 (generated using a coherence threshold of
+  0.20), to increase the unwrapped area. Values already unwrapped
+  in the first round are kept and used as starting points to
+  continue the unwrapping in the second round. This process can be
+  continued.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  grasses reads the smoothed interferogram, the phase unwrapping
+  flag file, and, if existing, the provided unwrapped phase image,
+  and unwraps the interferometric phase using the tree structure
+  saved in the flagfile to constrain a region filling algorithm.
+  The unwrapping starts at a user defined location, nominally the
+  center of the image. The program keeps track of the unwrapped
+  area. Once the unwrapped area is surrounded by lines that cannot
+  be crossed, these are the border of the data and <em>branches of
+  the trees</em> it stops.</p>
+
+  <p>After the unwrapping of a region stopped, <a href=
+  "bridge.html">bridge</a> supports the continuation of the phase
+  unwrapping in the remaining disconnected areas not unwrapped yet.
+  Once unwrapped, the image is written to a file. For each pixel a
+  flag of 8 bits is stored. The meaning of the individual bits is
+  explained in the <em>typedef_ISP.h</em> file. The phase unwrapped
+  interferogram can be displayed using the program <em>disrmg</em>
+  or written to a SUN rasterfile using <em>rasrmg</em>.</p>
+
+  <p>The information contained in the flagfile can be displayed
+  with the program <a href="ISP_display.html">disflag</a> or as a
+  SUN raster or BMP format image using <a href=
+  "ISP_display.html">rastree<em>.</em></a></p>
+
+  <p>As a way to optimize the trade off between the maximization of
+  the unwraped area (or minimization of the not unwrapped gaps) and
+  the maximization of the confidence in the phase unwrapping (or
+  minimization of phase unwrapping errors) we recommend to run
+  grasses multiple times with different flag files which were
+  determined with different coherence thresholds.</p>
+
+  <p>If the unwrapped phase file indicated on the command line is
+  already existing the program reads it and modifies the indicated
+  flag file to mark the already unwrapped area. The unwrapping
+  process is continued for the remaining area only. The user has
+  the option to set the phase for the starting location to 0.0.
+  This feature can be useful for the combination of multiple
+  unwrapped phase images over the same area.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "bridge.html">bridge</a> <a href="ISP_display.html">disflag</a>,
+  <a href="ISP_display.html">rasrmg</a>, <a href=
+  "ISP_display.html">disrmg</a>, <a href=
+  "ISP_display.html">rastree</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

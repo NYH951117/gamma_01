@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: res_map</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>res_map</h2><i>ANSI-C program: <a href=
+  "../src/res_map.c">res_map.c</a></i>
+
+  <p><b>NAME</b><br>
+  res_map - Uses the interferometrically derived terrain heights
+  (in slant range geometry) and true ground ranges (in slant range
+  geometry) to derive a rectified height map.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <b><tt>res_map &lt;hgt&gt; &lt;gr&gt; &lt;data&gt;
+  &lt;SLC_par&gt; &lt;OFF_par&gt; &lt;res_hgt&gt; &lt;res_data&gt;
+  [nr] [naz] [azps_res] [loff] [nlines]
+  &lt;report_file&gt;</tt></b><br>
+  &nbsp;</p>
+
+  <table border cellpadding="7">
+    <tr>
+      <td>&lt;hgt&gt;</td>
+
+      <td>(input) height file in slant range geometry</td>
+    </tr>
+
+    <tr>
+      <td>&lt;gr&gt;</td>
+
+      <td>(input) ground range file in slant range geometry</td>
+    </tr>
+
+    <tr>
+      <td>&lt;data&gt;</td>
+
+      <td>(input) data file in slant range geometry (float)
+      (intensity *.pwr or correlation *.cc)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) ISP parameter file of reference SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;OFF_par/par&gt;</td>
+
+      <td>(input) offset/interferogram processing parameters</td>
+    </tr>
+
+    <tr>
+      <td>&lt;res_hgt&gt;</td>
+
+      <td>(output) resampled height file in ground range
+      geometry</td>
+    </tr>
+
+    <tr>
+      <td>&lt;res_data&gt;</td>
+
+      <td>(output) resampled data file in ground range
+      geometry</td>
+    </tr>
+
+    <tr>
+      <td>[nr]</td>
+
+      <td>range samples for L.S. estimate (default = <b>7</b>, must
+      be odd)</td>
+    </tr>
+
+    <tr>
+      <td>[naz]</td>
+
+      <td>azimuth samples for L.S. estimate (default = <b>7</b>,
+      must be odd)</td>
+    </tr>
+
+    <tr>
+      <td>[azps_res]</td>
+
+      <td>azimuth output map sample spacing in meters
+      (default=azimuth spacing)</td>
+    </tr>
+
+    <tr>
+      <td>[lof]</td>
+
+      <td>offset to starting line to begin height calculations
+      (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to calculate (default=0, to end of
+      file)</td>
+    </tr>
+  </table>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>res_map 1352_1610.hgt 1352_1610.gr 1352_1610.pwr1 1352.par
+  1352_1610.off 1352_1610.rhgt 1352_1610.rpwr1 9 9</tt></p>
+
+  <p><b>DESCRIPTION</b><br>
+  Uses the interferometrically derived terrain heights (in slant
+  range geometry) and true ground ranges (in slant range geometry)
+  to derive a rectified height map in TCN coordinates, with the
+  cross-track (C) coordinate following the WGS-84 ellipsoid. The
+  rectification of the height data requires resampling in both
+  azimuth and cross-track directions.</p>
+
+  <p>One of the backscatter intensities or the interferometric
+  correlation may be projected into the TCN coordinates and
+  combined with the height information. The resulting image
+  (containing the terrain height and the SAR image intensity) is
+  written into the output file. The display and generation of hard
+  copies of the resampled height map (in rectified coordinates)
+  together with the image intensities is supported by a number of
+  display programs.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ISP_display.html">rashgt</a>, <a href=
+  "ISP_display.html">dishgt</a>, <a href=
+  "ISP_display.html">rasshd</a>, <a href=
+  "ISP_display.html">rashgt_shd</a>.<br></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Aug-2004.</p>
+</body>
+</html>

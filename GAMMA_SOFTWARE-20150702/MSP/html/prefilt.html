@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: prefilt</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>prefilt</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "..src/prefilt.c">prefilt.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>prefilt</em> - Prefilter and
+  decimate range compressed SAR data</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>prefilt &lt;SAR_param&gt;
+  &lt;PROC_param&gt; &lt;rc_data&gt; &lt;pre_data&gt; [prefilt_dec]
+  [filt_lm]</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>SAR sensor parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>MSP Processing Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rc_data&gt;</td>
+
+      <td>input range compressed data file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pre_data&gt;</td>
+
+      <td>prefiltered/decimated range compressed data</td>
+    </tr>
+
+    <tr>
+      <td>[prefilt_dec]</td>
+
+      <td>prefilter decimation factor (default from
+      PROC_param)</td>
+    </tr>
+
+    <tr>
+      <td>[filt_lm]</td>
+
+      <td>filter length multiplier (default FIR_lm=8) FIR_length =
+      FIR_lm *prefilt_dec + 1</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE<br></strong><samp>prefilt ERS1_ESA.par
+  p8560.slc.par 8560.rc 8560.prc</samp></p>
+
+  <p><strong>DESCRIPTION<br></strong><em>prefilt</em> is used to
+  filter and decimate range compressed data. This may be done to
+  obtain a survey image product suitable for quicklook images or
+  interferograms. Survey processing of a scene after range
+  compression where the range compressed data are decimated by a
+  factor of 5 to 10 acheives roughly square output samples on the
+  ground after detection and multi-looking for ERS-1. Calculation
+  of the azimuth filter coefficients requires knowledge of the
+  Doppler centroid for each slant range. The filter coefficients
+  are determined based on the desired decimation factor of the raw
+  data, and the range dependent Doppler centroid. If a decimation
+  factor of N is chosen, then the bandwidth of the filter is
+  1/N*pulse repetition frequency of the radar (PRF). Since the
+  prefilter/decimation occurs after range compression, large
+  variations in the Doppler centroid accross the swath do not cause
+  difficulties. This program may also be used to generate images
+  from different segments of the azimuth spectrum to measure
+  angular coherence between SAR image looks.</p>
+
+  <p><strong>OPTIONS:</strong><br clear="all">
+  Do not use this program if the data have already been decimated
+  by one of the range compression programs <a href=
+  "pre_rc.html">pre_rc.c</a>, <a href=
+  "pre_rc_JERS.html">pre_rc_JERS.c</a>, and <a href=
+  "pre_rc_RSAT.html">pre_rc_RSAT.c</a></p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "pre_rc.html">pre_rc.c</a>, <a href=
+  "pre_rc_JERS.html">pre_rc_JERS.c</a>, <a href=
+  "pre_rc_RSAT.html">pre_rc_RSAT.c</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 4-Feb-2000.
+</body>
+</html>

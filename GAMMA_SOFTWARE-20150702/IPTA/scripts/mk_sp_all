@@ -1,0 +1,160 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+
+$pwr_min = 0.0;
+$cc_min = .4;
+$msr_min = 1.2;
+$rlks = 4;
+$azlks = 4;
+$cc_ext = "sp_cc";
+$msr_ext = "sp_msr";
+$pt_ext = "sp_pt";
+$r_ovr = 1;
+ 
+if (($#ARGV + 1) < 2){die <<EOS ;}
+
+*** IPTA script: $0
+*** Copyright 2014, Gamma Remote Sensing, v1.9 11-Aug-2014 clw ***
+*** Generate sets of spectral CC and MSR images and average these files for point target identification ***
+
+usage: $0 <SLC_tab> <sp_dir> [rlks] [azlks] [PWR_min] [CC_min] [MSR_min] [r_ovr]
+    SLC_tab   (input) two column list of slc filenames and slc parameter filenames (including paths) (ascii)
+    sp_dir    directory to contain sp_stat generated msr, cc, and point lists
+    rlks      number of range spectral looks (default -: $rlks)
+    azlks     number of azimuth spectral looks (default -: $azlks)
+    PWR_min   intensity minimum threshold to accept a point (default: $pwr_min, enter 0 to ignore)
+    CC_min    spectral correlation minimum threshold to accept a point (default: $cc_min, enter 0 to ignore)
+    MSR_min   mean/sigma ratio minimum threshold (relative to spatial average) to accept a point (default: $msr_min, enter 0 to ignore)
+    r_ovr     SLC range oversampling factor (default: 1)
+
+    Note: The current directory is denoted using . 
+           
+EOS
+
+$sp_dir = $ARGV[1];
+if($#ARGV >= 2){$rlks    = $ARGV[2];}
+if($#ARGV >= 3){$azlks   = $ARGV[3];}
+if($#ARGV >= 4){$pwr_min = $ARGV[4];}
+if($#ARGV >= 5){$cc_min = $ARGV[5];}
+if($#ARGV >= 6){$msr_min = $ARGV[6];}
+if($#ARGV >= 7){$r_ovr = $ARGV[7];}
+
+$time = localtime;
+$ncc = 0;			#counter of cc and msr files
+
+print "PROCESSING START: $time\n";
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table SLC images and parameter filesdoes not exist: $ARGV[0]\n\n";
+print "SLC_tab list of SLC image and parameter files: $ARGV[0]\n"; 
+
+unless (-d $sp_dir) {
+  $exit = system("mkdir $sp_dir");
+  $exit == 0 or die "ERROR execute: non-zero exit status: mkdir $sp_dir\n"
+}
+print "output data directory: $sp_dir\n";
+
+$rlks =~ /\d+$/ && $rlks > 0 or die "ERROR $0: invalid number of range spectral looks: $rlks\n";
+$azlks =~ /\d+$/ && $azlks > 0 or die "ERROR $0: invalid number of azimuth spectral looks: $azlks\n";
+$r_ovr =~ /\d+$/ && $rlks > 0 or die "ERROR $0: invalid range oversampling factor: $rlks\n";
+
+$log = "$sp_dir/mk_sp_all.log";	#mk_sp_all log file 
+system("rm -f $log");
+print "log file: $log \n";
+
+open(LOG,">$log") or die "ERROR $0: cannot create log file: $log\n";
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "PROCESSING START: $time\n";
+print LOG "spectral diversity range looks: $rlks  azimuth looks: $azlks\n";
+print LOG "range oversampling factor: $r_ovr\n";
+print "spectral diversity range looks: $rlks  azimuth looks: $azlks\n";
+print "range oversampling factor: $r_ovr\n";
+close LOG;
+
+LINE: while (<SLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  
+  $slc = $fields[0];
+  $slc_par = $fields[1];
+  my ($s1, $dir1, $ext1) = fileparse($slc, qr/\.[^.]*/); #extension is the last bit after the last period  
+
+  @width = extract_param($slc_par,"range_samples:");
+  @format = extract_param($slc_par,"image_format:");   #determine image format
+  if ($format[1] eq "FCOMPLEX"){
+   $type = 0;
+  }
+  elsif ($format[1] eq "SCOMPLEX"){
+    $type = 1;
+  }  
+  else{ 
+    die "ERROR $0: input SLC is not fcomplex or scomplex format: $format[1]\n";
+  }
+
+  $cc = "$sp_dir/$s1.$cc_ext";
+  $msr = "$sp_dir/$s1.$msr_ext";
+  $pt = "$sp_dir/$s1.$pt_ext";
+  $pt_list = $pt_list."\n".$pt;		#create a list of all the sp_pt files
+  $ncc += 1;
+  
+  $time = localtime;
+  print "\n*** SLC: $slc  width: $width[1]  start time: $time ***\n";  
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  print LOG "\n*** SLC: $slc  width: $width[1]  start time: $time ***\n";
+  close LOG;
+  execute("sp_stat $slc - $cc $msr $pt $width[1] $pwr_min $cc_min $msr_min $rlks $azlks - - - - - - $type $r_ovr", $log);	
+}
+
+print "\n*** calculate average *.$cc_ext and *.$msr_ext files\n";
+$cc_ave = "$sp_dir/ave.$cc_ext";
+$msr_ave = "$sp_dir/ave.$msr_ext";
+
+system("rm -f $cc_ave $msr_ave");
+print "average of $cc_ext files: $cc_ave\n";
+$cc_list =  "$sp_dir/cc_list";
+system("/bin/ls -1 $sp_dir/*.$cc_ext \> $cc_list");
+execute("ave_image $cc_list $width[1] $cc_ave",$log);
+execute("ras_linear $cc_ave $width[1] 1 0 1 1 0. 1.",$log);
+
+if($msr_min > 0.0){
+  print "average of $msr_ext files: $msr_ave\n"; 
+  $msr_list = "$sp_dir/msr_list";
+  system("/bin/ls -1 $sp_dir/*.$msr_ext \> $msr_list");
+  execute("ave_image $msr_list $width[1] $msr_ave",$log);
+  execute("ras_linear $msr_ave $width[1] 1 0 1 1 0. 5.",$log);
+}
+
+print "\nPROCESSING END: $time\n";
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "\nPROCESSING END: $time\n";
+close LOG;
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;
+  if (-e $log){
+    open(LOG,">>$log") or die "ERROR $0: cannot open existing log file: $log\n";
+  }
+  else {
+    open(LOG,">$log") or die "ERROR : cannot open new log file: $log\n";
+  }   
+  print "$command\n";
+  print LOG ("${command}\n");
+  close LOG;  
+  $exit = system("$command 1 >> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+}
+
+sub extract_param{
+  my ($infile, $keyword) = @_;
+  open(PAR_IN, $infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

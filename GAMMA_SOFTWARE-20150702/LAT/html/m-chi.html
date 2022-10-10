@@ -1,0 +1,262 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: m-chi</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>m-chi</h2>
+
+  <p><i>ANSI-C program: <a title="m-chi" href=
+  "../src/m-chi.c">m-chi.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  m-chi - Calculate m-chi decomposition using information derived
+  from the Stokes parameters&nbsp;</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>m-chi &lt;s0&gt; &lt;m&gt; &lt;s2chi&gt; &lt;S_par&gt;
+  &lt;c1&gt; &lt;c2 &lt;c3&gt;</b></code></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;s0&gt;</td>
+
+        <td>&nbsp;Stokes parameter for the total power in the H and
+        V polarizations <span style=
+        "font-style: italic;">&lt;|E_h|**2 +
+        |E_v|**2&gt;</span></td>
+      </tr>
+
+      <tr>
+        <td>&lt;m&gt;</td>
+
+        <td>degree of polarization: <span style=
+        "font-style: italic;">sqrt(s<sub>1</sub>**2 +
+        s<sub>2</sub>**2 + s<sub>3</sub>**2)/s<sub>0</sub></span>
+        (float)<br></td>
+      </tr>
+
+      <tr>
+        <td style="width: 106px;">&lt;s2chi&gt;</td>
+
+        <td style="width: 595px;">(input) <span style=
+        "font-style: italic;">sin(2*chi) = -s3/(m*s0)</span>,
+        <span style="font-style: italic;">2*chi</span>: latitude of
+        the Stokes vector on the Poincare sphere:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="font-style: italic;">sin(2*chi) &gt;
+        0</span>&nbsp; measured field is LCP<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span style="font-style: italic;">sin(2*chi) &lt;
+        0&nbsp;</span> measured field is RCP</td>
+      </tr>
+
+      <tr>
+        <td>&lt;S_par&gt;</td>
+
+        <td>(input) MLI image parameter file associated with the
+        Stokes parameter data files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;c1&gt;</td>
+
+        <td>(output) <span style=
+        "font-style: italic;">s<sub>0</sub>*m*(1 +
+        sin(2*chi))/2</span> (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;c2&gt;</td>
+
+        <td>(output) <span style=
+        "font-style: italic;">s<sub>0</sub>*(1 - m)</span>
+        depolarized component (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;c3&gt;</td>
+
+        <td>(output) <span style=
+        "font-style: italic;">s<sub>0</sub>*m*(1 -
+        sin(2*chi))/2</span> (float)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>m-chi 20080409_RCP.m 20080409_RCP.s2chi
+  20080409_RCP.mli.par 20080409_RCP.c1 20080409_RCP.c2
+  20080409_RCP.c3<br></samp></p>
+
+  <p style="text-align: left;">calculates the three components of
+  the <span style="font-style: italic;">m-chi</span> decomposition
+  that are proportional to the single-bounce, random, and
+  double-bounce components of the backscatter</p>
+
+  <p><strong>DESCRIPTION<br></strong></p>
+
+  <p style="text-align: justify;">The <span style=
+  "font-style: italic;">m-chi</span> decomposition was developed
+  for use with the Stokes parameters from the field scattered when
+  the illuminating field is circularly polarized. Circular
+  polarization has the property that it is rotationally invariant,
+  and that the sense of the circularity flips when the number of
+  bounces is odd and remains unchanged for an even number of
+  bounces. Differentiation of single or double-bounce scattering is
+  considered an important parameter that can be derived using
+  polarimetry. Urban&nbsp; regions are often characterized by a
+  large fraction of double-bounce reflections, while open fields or
+  water exhibit single-bounce scattering.</p>
+
+  <p style="text-align: justify;">Raney [1] [2] has proposed the
+  use of the <span style="font-style: italic;">m-chi</span>
+  decomposition for use with compact polarization (CP) radars. In a
+  SAR instrument using CP, a single polarization is transmitted and
+  2 orthogonal channels are received. Selection of circular
+  polarization for the transmitted signal has the advantage of
+  rotational invariance. In this case polarization signatures are
+  robust with respect to Faraday rotation caused by the ionosphere
+  and the rotational orientation of the target. The Indian RISAT-1
+  satellite as well as the planned Radarsat constellation use
+  circular polarized transmit and horizontal (H) and vertical (V)
+  polarized receive channels.&nbsp; It is also possible to
+  synthesize compact polarization data (circular transmit, H,V
+  linear receive) from quad-polarized (HH, HV, VH, VV) data with
+  the Gamma software, see <a href="quad2cp.html">quad2cp</a>.</p>
+
+  <p style="text-align: justify;">The m-chi decomposition uses the
+  Stokes parameters of the scattered field to evaluate the fraction
+  of power that is randomly scattered, and the relative ratio of
+  the single and double-bounce components of the coherent field.
+  The scattered field is modeled as consisting of the sum of a
+  randomly polarized component and a coherently polarized
+  component.</p>
+
+  <p style="text-align: justify;">The Stokes parameters (see the
+  documentation on <a href="stokes.html">stokes</a>) are derived
+  from local second-order statistics of the SLC images of the two
+  receive channels. The s<sub>0</sub> Stokes parameter is the total
+  energy of the scattered field and is the sum of the polarized and
+  unpolarized field components. The Stokes parameters <span style=
+  "font-style: italic;">s<sub>1</sub>, s<sub>2</sub>,</span>&nbsp;
+  and <span style="font-style: italic;">s<sub>3</sub></span>
+  represent a vector in 3 dimensions on the Poincar&eacute; sphere,
+  see <a href=
+  "http://en.wikipedia.org/wiki/Polarization_%28waves%29">http://en.wikipedia.org/wiki/Polarization_(waves)</a>
+  and <a href=
+  "http://spie.org/x32375.xml">http://spie.org/x32375.xml</a>. Each
+  point on the sphere characterizes a particular polarization
+  state. The Stokes parameter s<sub>3</sub> describes the
+  circularity of the scattered field and is assigned to the z-axis
+  coordinate, while the s<sub>1</sub> and s<sub>2</sub> parameters
+  represent components of the field that are linear (H,V) or linear
+  (45, 135) degrees. The north pole of the sphere represents a Left
+  Circularly Polarized (LCP) wave, while the south pole represents
+  Right Circularly Polarized (RCP) wave.</p>
+
+  <p style="text-align: justify;">Specifically, when circular
+  polarization is used to illuminate the scene, then the the
+  s<sub>3</sub> Stokes parameter combined with the degree of
+  polarization <span style="font-style: italic;">m</span> and the
+  total power s<sub>0</sub> can be used to differentiate if the
+  backscatter is predominantly single or double-bounce. The
+  parameter <span style=
+  "font-style: italic;">-s<sub>3</sub>/(m*s0)</span> is
+  proportional to <span style=
+  "font-style: italic;">sin(2*chi)</span> where <span style=
+  "font-style: italic;">chi</span> is the ellipticity angle of the
+  polarization ellipse and <span style=
+  "font-style: italic;">2*chi</span> is the latitude of the Stokes
+  vector on the Poincar&eacute; sphere.&nbsp; The degree of
+  polarization <span style="font-style: italic;">m</span> is the
+  ratio of the polarized component of the field to the total
+  scattered power.</p>
+
+  <p>m = (s<sub>1</sub><sup>2</sup> + s<sub>2</sub><sup>2</sup> +
+  s<sub>3</sub><sup>2</sup>)<sup>1</sup><sup>/2</sup> /
+  s<sub>0</sub></p>
+
+  <p style="text-align: justify;">Hence <span style=
+  "font-style: italic;">m*s0</span> is the coherent scattered field
+  component power. The <span style=
+  "font-style: italic;">m-chi</span> decomposition considers 3
+  components:</p>
+
+  <p style="text-align: justify;">c<sub>1</sub> = s<sub>0</sub> * m
+  * (1 + sin(2*chi))/2</p>
+
+  <p style="text-align: justify;">c<sub>2</sub> = s<sub>0</sub> *
+  (1.0 - m) depolarized component&nbsp;</p>
+
+  <p style="text-align: justify;">c3 = s<sub>0</sub> * m * (1 -
+  sin(2*chi))/2</p>
+
+  <p style="text-align: justify;">Since <span style=
+  "font-style: italic;">sin(2*chi)</span> is positive for LCP
+  waves, if the illumination is RCP then c<sub>1</sub> will be
+  larger than 1 for single-bounce, and less than 1 for
+  double-bounce reflections. Conversely, if the illumination is
+  LCP, c<sub>1</sub> will be larger than 1 for double-bounce and
+  less than 1 for single-bounce reflections. The quantities
+  <span style="font-style: italic;">m</span>, and <span style=
+  "font-style: italic;">sin(2*chi)</span> are calculated from the
+  Stokes parameters using the program <a href=
+  "file:///home/gpri2/gamma_software/LAT/html/stokes_qm.html">stokes_qm</a>.</p>
+
+  <p style="text-align: justify;">For display purposes using an RGB
+  or HSI composite image the usual color assignments are that
+  double-bounce is the red channel, single-bounce is the blue
+  channel, and random scattering to the green channel. Generating
+  the 3-channel composite image can either be done using the
+  program <a href=
+  "../../DISP/html/DISP_reference_manual.html">ras3pwr</a> or
+  generating 3 dB gray-scale images using <a href=
+  "../../DISP/html/ras_dB.html">ras_dB</a> from the 3 components
+  c<sub>1</sub>, c<sub>2</sub>, and c<sub>3</sub> and combining
+  them using the programs <a href="ras_to_hsi.html">ras_to_hsi</a>
+  or <a title="ras_to_rgb" href=
+  "ras_to_rgb.html">ras_to_rgb</a>.</p>
+
+  <p style="text-align: justify;">[1] Raney, R. K. et al., "The
+  <span style="font-style: italic;">m-chi</span> decomposition of
+  hybrid dual-polarimetric radar data with application to lunar
+  craters," Journal of Geophysical Research, vol 117, doi:
+  10.1029/2011JE003986, May, 2012.</p>
+
+  <p style="text-align: justify;">[2] Raney, R. K. et al. (2011),
+  "The lunar Mini-RF Radars: Hybrid polarimetric architecture and
+  initial results," Proc. IEEE, 99(5), 808-823, doi:
+  10.1109/JPROC.2010.2084970.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "file:///home/gpri2/gamma_software/LAT/html/ras_to_hsi.html">ras_to_hsi</a>,&nbsp;
+  <a title="ras_to_rgb" href=
+  "file:///home/gpri2/gamma_software/LAT/html/ras_to_rgb.html">ras_to_rgb</a>,
+  <a href=
+  "file:///home/gpri2/gamma_software/DISP/html/ras_dB.html">ras_dB</a>,
+  <a href="stokes_qm.html">stokes_qm</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change 3-Jul-2013
+</body>
+</html>

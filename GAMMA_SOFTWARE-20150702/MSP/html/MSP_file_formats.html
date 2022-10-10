@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: MSP_file_formats</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>MSP_file_formats</h2>It It is recommended that the data file
+  names are tied to the date of acquisition. For example
+  19990421.slc is an image acquired on 21 April 1999. The reason
+  for this is that it is easier to sort data&nbsp; in chronological
+  order<br>
+  <br>
+
+  <p><strong>SAR raw data (&lt;YYYYMMDD&gt;.raw)</strong><br>
+  Raw data (eg. 20120304.raw) are supplied as complex samples as
+  bytes, ether as a single real byte per sample (offset video
+  format), or in IQ format as complex byte pairs, one byte real,
+  the other imaginary. Each record of the raw data usually has a
+  header of fixed size determined by the station doing the
+  transcription. The raw data file itself may have a header at the
+  beginning of the file that describes the file contents. In
+  addition, each radar echo may be padded with zeroes to achieve a
+  particular fixed length. These parameters are described in the
+  <a href="sar_par.html">SAR sensor parameter file</a>
+  documentation.</p>
+
+  <p><strong>Range compressed data
+  (&lt;</strong><strong>YYYYMMDD</strong><strong>&gt;.rc)</strong><br>
+
+  The range compressed data are in complex floating point
+  representation, each complex sample consists of two 4 byte
+  floating point numbers, real and imaginary part. There is no file
+  header, or zero padding of the data. Each record corresponds to a
+  single range compressed echo. The number of samples/line is
+  entered in the processing parameter file <a href=
+  "proc_par.html">MSP processing parameter file</a> or can be
+  modified on the command line of the range compression programs
+  <a href="pre_rc.html">pre_rc</a>, <a href=
+  "pre_rc_JERS.html">pre_rc_JERS</a>, <a href=
+  "pre_rc_RSAT.html">pre_rc_RSAT</a>, <a href=
+  "rc_real.html">rc_real</a>. The the number of complex samples in
+  each range compressed line is stored in the MSP processing
+  parameter file in the <em>range_pixels</em> parameter.</p>
+
+  <p><strong>Single-look complex SAR data
+  (&lt;</strong><strong>YYYYMMDD</strong><strong>&gt;.slc)</strong><br>
+
+  The SLC data are in complex floating point representation, each
+  complex sample consists of two 4 byte floating point numbers,
+  real and imaginary part. There is no file header, or zero padding
+  of the data. Each record corresponds to a single range line. The
+  number of samples/line is the range width of the final SLC as
+  determined by the range width after range-compression.</p>
+
+  <p><strong>Multi-look intensity SAR data
+  (&lt;</strong><strong>YYYYMMDD</strong><strong>&gt;.mli)</strong><br>
+
+  The Multilook intensity images (MLI) consist of 4-byte floating
+  point numbers with the image width and height determined by the
+  number of range and azimuth looks selected either on the command
+  line calling the program <a href="multi_SLC.html">multi_SLC</a>.
+  Image width and height are written to the MSP processing
+  parameter file.</p>
+
+  <p><strong>Azimuth power spectrum
+  (&lt;</strong><strong>YYYYMMDD</strong><strong>&gt;.azsp)</strong><br>
+
+  The &lt;<strong>YYYYMMDD</strong>&gt;.azsp file contains three
+  columns of values (ASCII format) corresponding to:</p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>1</td>
+
+        <td>Fraction of normalized PRF (0,1)</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+
+        <td>Normalized azimuth power spectrum</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+
+        <td>Ratio (power of lower half of spectrum)/(power of upper
+        half of spectrum), is used to determine Doppler
+        centroid</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>Doppler centroid as function of range
+  (&lt;</strong><strong>YYYYMMDD</strong><strong>&gt;.dop)</strong><br>
+
+  The &lt;<strong>YYYYMMDD</strong>&gt;.dop file contains five
+  columns of values (ASCII format) corresponding to:</p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>1</td>
+
+        <td>Slant range [km] to center of raw data swath</td>
+      </tr>
+
+      <tr>
+        <td>2</td>
+
+        <td>Measured Doppler centroid centroid [Hz]</td>
+      </tr>
+
+      <tr>
+        <td>3</td>
+
+        <td>Polynomial fit to the range dependent Doppler
+        centroid</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>Power spectral density
+  (&lt;</strong><strong>YYYYMMDD</strong><strong>&gt;.psd)</strong><br>
+
+  The &lt;orbit&gt;.psd file is a binary file containing power
+  spectra used for radio interference (RFI) suppression in
+  processing of JERS data (done in program <a href=
+  "rspec_JERS.html">rspec_JERS</a>). The first record of the file
+  contains a binary header that defines the number and size of the
+  range spectra used to detect RFI. RFI_filters.dat contains the
+  power spectral density of the range chirps used to compress the
+  JERS data. These chirps are modified to suppress RFI.</p>
+
+  <p><a href="extract_psd.html">extract_psd</a> reads the
+  &lt;orbit&gt;.psd file or RFI_filters.dat files and prints out a
+  selected spectrum as columns of a table (ASCII format) that can
+  be plotted using gnuplot.<samp><br></samp></p>
+
+  <p>The average level of the PSD is normalized with the median of
+  the PSD values.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Jun-2012.
+</body>
+</html>

@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+$sc = 0.9;
+$exp = 0.35;
+
+if (($#ARGV + 1) < 2){die <<EOS ;}
+*** Generate raster images of MLI image files ***
+*** Copyright 2012, Gamma Remote Sensing, v1.2 27-Nov-2012 clw ***
+
+usage: $0 <MLI_tab> <width> [scale] [exp]
+
+    MLI_tab   (input) list of mli intensity images (float)
+    width     image width of input data files
+    scale     image display scale factor (enter - for default, default: $sc)
+    exp       image display exponent (default: $exp)
+EOS
+
+$mli_tab =  $ARGV[0];
+open(MLI_TAB, "<$ARGV[0]") or die "\nERROR $0: table of displacement or unwrapped phase files does not exist: $ARGV[0]\n\n";
+print "MLI_tab: $ARGV[0]\n";
+
+$width = $ARGV[1];
+if($#ARGV >= 2){$sc =  $ARGV[2]};
+if($#ARGV >= 3){$exp   = $ARGV[3]};
+
+($sc > 0.0) or die "\nERROR $0: display scale factor <= 0.0 : $sc\n";
+($exp > 0.0) or die "\nERROR $0: display exponent <= 0.0 : $exp\n";
+
+print "MLI_tab: $mli_tab\n";
+print "image width (samples): $width\n";
+print "display intensity scale factor: $sc\n";
+print "display exponent: $exp\n\n";
+
+LINE: while (<MLI_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+
+  $mli = $fields[0];
+  $cmd = "raspwr $mli $width 1 0 1 1 $sc $exp";
+  printf "%s\n", $cmd;
+  $exit = system "$cmd";
+  printf "\n";
+}
+
+exit(0);

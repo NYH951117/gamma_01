@@ -1,0 +1,63 @@
+#!/usr/bin/perl
+#4-Dec-2008
+
+if (($#ARGV + 1) < 7){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2013, Gamma Remote Sensing, v1.1 21-May-2013 clw ***
+*** Extract data from a set of files at specified points and store in an IPTA data stack ***
+
+usage: $0 <DATA_tab> <pt> <width> <type> <rlks> <azlks> <pdata>
+
+    DATA_tab (input) list of data files
+    pt       (input) IPTA point list of coordinates to sample
+    width    data file image width
+    type     data type of input files:
+               0:FCOMPLEX
+               1:SCOMPLEX
+               2:FLOAT
+               3:INT
+               4:SHORT
+               5:BYTE
+               6:SUN/BMP raster
+    rlks     range looks of input data relative to the point list coordinates
+    azlks    azimuth looks of input data relative to point list coordinates
+    pdata    (output) IPTA point data stack
+
+EOS
+
+$data_tab =  $ARGV[0];
+open(DATA_TAB, "<$ARGV[0]") or die "\nERROR $0: table of displacement or unwrapped phase files does not exist: $ARGV[0]\n\n";
+print "DATA_tab: $ARGV[0]\n"; 
+
+$pt = $ARGV[1];
+$width = $ARGV[2];
+$type = $ARGV[3];
+$rlks =   $ARGV[4];
+$azlks =  $ARGV[5];
+$pdata =  $ARGV[6];
+
+($rlks >= 1) or die "\nERROR $0: range looks < 1 : $rlks\n";
+($azlks >= 1) or die "\nERROR $0: azimuth looks < 1 : $azlks\n";
+
+print "DATA_tab: $data_tab\n";
+print "point list: $pt\n";
+print "image width (samples): $width\n";
+print "data type: $type\n";
+print "range looks: $rlks\n";
+print "azimuth looks: $azlks\n";
+print "point data file: $pdata\n";
+
+$rn = 1;
+LINE: while (<DATA_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+ 
+  $data = $fields[0];
+  $cmd = "d2pt $data $width $pt $rlks $azlks $pdata $rn $type";
+  printf "%s\n\n", $cmd;
+  $exit = system "$cmd";
+  $rn++;
+}
+exit(0);

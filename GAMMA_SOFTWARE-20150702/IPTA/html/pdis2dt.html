@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pdis2dt, pdis2dt_map</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>pdis2dt, pdis2dt_map</h2>
+
+  <p><i>csh-shell scripts: <a href=
+  "../scripts/pdis2dt">pdis2dt</a>, <a href=
+  "../scripts/pdis2dt_map">pdis2dt_map</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  pdis2dt - alternating display of two point data sets (float,
+  using color cycle)<br>
+  pdis2dt_map - alternating display of two point data sets (float,
+  using color cycle) in map geometry</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>pdis2dt &lt;plist&gt; &lt;pmask&gt; &lt;SLC_par&gt;
+  &lt;pdata1&gt; &lt;rec_num1&gt; &lt;pdata2&gt; &lt;rec_num2&gt;
+  &lt;par_out&gt; &lt;cycle&gt; [radius]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(input) point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar,
+      pmask[i]=0 excludes point i, enter - if not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) SLC parameter file of point list coordinates</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata1&gt;</td>
+
+      <td>(input) 1. point data stack (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num1&gt;</td>
+
+      <td>1. record number to process</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata2&gt;</td>
+
+      <td>(input) 2. point data stack (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num2&gt;</td>
+
+      <td>2. record number to process</td>
+    </tr>
+
+    <tr>
+      <td>&lt;par_out&gt;</td>
+
+      <td>(input) SLC/MLI parameter file of 2-D output image data
+      file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cycle&gt;</td>
+
+      <td>data value per color cycle</td>
+    </tr>
+
+    <tr>
+      <td>[radius]</td>
+
+      <td>interpolation window radius used default: 4.00)</td>
+    </tr>
+  </table>
+
+  <p><code><b>pdis2dt_map &lt;plist_map&gt; &lt;pmask&gt;
+  &lt;DEM_par&gt; &lt;pdata1&gt; &lt;rec_num1&gt; &lt;pdata2&gt;
+  &lt;rec_num2&gt; &lt;cycle&gt; [radius]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist_map&gt;</td>
+
+      <td>(input) point list containing map coordinates (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar,
+      pmask[i]=0 excludes point i, enter - if not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_par&gt;</td>
+
+      <td>(input) DIFF/GEO DEM parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata1&gt;</td>
+
+      <td>(input) 1. point data stack (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num1&gt;</td>
+
+      <td>1. record number to process</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata2&gt;</td>
+
+      <td>(input) 2. point data stack (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num2&gt;</td>
+
+      <td>2. record number to process</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cycle&gt;</td>
+
+      <td>data value per color cycle</td>
+    </tr>
+
+    <tr>
+      <td>[radius]</td>
+
+      <td>interpolation window radius used default: 4.00)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>pdis2dt testsite.plist testsite.pmask 08256.rslc.par
+  testsite.pdef1 1 testsite.pdef2 1 08256.rmli.par 0.01
+  3</samp></p>
+
+  <p>Alternating display of two real valued point data sets
+  (deformation rates in m/year) with the color cycle corresponding
+  to 1 cm/year for both deformation images.</p>
+
+  <p><samp>pdis2dt testsite.plist testsite.pmask 08256.rslc.par
+  testsite.pdh1 1 testsite.pdh2 1 08256.rmli.par 5.0 3</samp></p>
+
+  <p>Alternating display of two real valued point data sets (height
+  correction values in m) with the color cycle corresponding to 5 m
+  for both images.</p>
+
+  <p><samp>pdis2dt testsite.plist testsite.pmask 08256.rslc.par
+  testsite.pres 11 testsite.pres 13 08256.rmli.par 12.56.
+  3</samp></p>
+
+  <p>Alternating displays of records 11 vand 13 of the point data
+  stack of residual phases (in radian) with a color cycle
+  corresponding to 4PI for the unwrapped phases.</p>
+
+  <p><samp>pdis2dt_map testsite.plist_map testsite.pmask
+  testsite.dem_par testsite.pdef1 1 testsite.pdef2 1 0.01
+  3</samp></p>
+
+  <p>Alternating display of two real valued point data sets
+  (deformation rates in m/year) in map geoemtry with the color
+  cycle corresponding to 1 cm/year for both deformation images.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  pdis2dt and pdis2dt_map are csh scripts in ./IPTA/scripts.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  pdis2dt supports the display of real valued point data (stack of
+  single or multiple records) in color.</p>
+
+  <p>In a first step the point data are transformed to a 2
+  dimensional image (using the program pt2data) which is
+  subsequently displayed using the DISP program dis2hgt.</p>
+
+  <p>Clicking the right mouse button (or clicking to the button in
+  the corresponding window) permits to change between the display
+  of the first and second image displayed.</p>
+
+  <p>In the display a zoom window is included and the values of
+  both images (float) at the cursor location (float) are
+  displayed.</p>
+
+  <p>The (multi-look) geometry used for the display is the one
+  defined in the SLC/MLI parameter file.</p>
+
+  <p>pdis2dt_map supports the display of real valued point data
+  (stack of single or multiple records) in color in map geometry.
+  The functionality corresponds to the one of pdis2dt with the
+  exception that the point list indicated contains the map
+  coordinates (pixel numbers), as obtained using the program
+  <a href="pt2geo.html">pt2geo</a> and the DEM/MAP parameter file
+  is indicated instead of the SLC/MLI parameter files. The actual
+  point data stack is the same as used by pdis2dt.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Additional characteristics of the resampling to 2D and the
+  display can be modified by editing the shell script.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="pt2data.html">pt2data</a>, <a href="pt2d.html">pt2d</a>,
+  <a href="pt2geo.html">pt2geo</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 5-Apr-2004.</p>
+</body>
+</html>

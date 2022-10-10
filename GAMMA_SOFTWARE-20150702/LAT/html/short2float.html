@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: float2short, float2uchar,
+  short2float, uchar2float</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>float2short, float2uchar, short2float, uchar2float</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/float2short.c">float2short.c</a>, <a href=
+  "../src/float2uchar.c">float2uchar.c</a>, <a href=
+  "../src/short2float.c">short2float.c</a>, <a href=
+  "../src/uchar2float.c">uchar2float.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  float2short - Convert file of type float to file of type short
+  integer.<br>
+  float2uchar - Convert file of type float to file of type unsigned
+  char.<br>
+  short2float - Convert file of type short integer to file of type
+  float.<br>
+  uchar2float - Convert file of type unsigned char to file of type
+  float.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>float2short &lt;infile&gt; &lt;outfile&gt; [a]
+  [b]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;infile&gt;</td>
+
+      <td>input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;outfile&gt;</td>
+
+      <td>output data file (short integer)</td>
+    </tr>
+
+    <tr>
+      <td>[a]</td>
+
+      <td>scaling factor (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[b]</td>
+
+      <td>scaling exponent (default=1.0)</td>
+    </tr>
+  </table>
+
+  <p><code><b>float2uchar &lt;infile&gt; &lt;outfile&gt; [a]
+  [b]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;infile&gt;</td>
+
+      <td>input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;outfile&gt;</td>
+
+      <td>output data file (unsigned char)</td>
+    </tr>
+
+    <tr>
+      <td>[a]</td>
+
+      <td>scaling factor (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[b]</td>
+
+      <td>scaling exponent (default=1.0)</td>
+    </tr>
+  </table>
+
+  <p><code><b>short2float &lt;infile&gt; &lt;outfile&gt; [a]
+  [b]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;infile&gt;</td>
+
+      <td>input data file (short integer)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;outfile&gt;</td>
+
+      <td>output data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>[a]</td>
+
+      <td>scaling factor (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[b]</td>
+
+      <td>scaling exponent (default=1.0)</td>
+    </tr>
+  </table>
+
+  <p><code><b>uchar2float &lt;infile&gt; &lt;outfile&gt; [scale]
+  [exp [offset]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;infile&gt;</td>
+
+      <td>input data file (unsigned char)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;outfile&gt;</td>
+
+      <td>output data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>[scale]</td>
+
+      <td>scaling factor (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[exp]</td>
+
+      <td>exponent (default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[offset]</td>
+
+      <td>offset (default=0.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>short2float short_integer_dem float_dem 0.1 1.0</samp><br>
+  (converts the input file of type short integer to floating point
+  and multiplies each value with the scale factor
+  0.1)</p><samp>float2short 8056.mli 8056.mli_short 1e03
+  0.5</samp><br>
+  (converts the input multi-look intensity image (float) to short
+  integer format. For the scaling of the values the function
+  1e03*(input value)^0.5 is used, i.e. the square root of the input
+  values is multiplied with 1000).<samp>short2float 8056.mli_short
+  8056.mli 1e-06 2.0</samp><br>
+  (converts the input multi-look intensity image (short integer) to
+  float format. For the scaling of the values the function
+  1e-06*(input value)^2.0 is used, i.e. the square of the input
+  values is multiplied with 1e-06).<samp>float2char 8056_8560.cc
+  8056_8560.cc_char 255. 1.0</samp><br>
+  (converts the input coherence image (float) to unsigned char
+  format. For the scaling of the values the input values are
+  multiplied with 255.0).
+
+  <p><strong>DESCRIPTION</strong><br>
+  float2short, float2uchar, short2float, uchar2float convert image
+  data between 4-byte float, short integer (2-byte), and unsigned
+  char (byte) formats. the uchar2float program also has the option
+  to subtract a floating point number from the data prior to
+  scaling, i.e. the ouput values are scale * (data_in -
+  offset)**exp</p>
+
+  <p>The programs read the input data, apply the user defined
+  scaling function of the type out = a*in^b and write out the
+  scaled value in the output format.</p>
+
+  <p>Notice the valid ranges of the short integer and unsigned char
+  formats:</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>format</td>
+
+      <td>value range</td>
+    </tr>
+
+    <tr>
+      <td>short integer</td>
+
+      <td>-32768 ... 32767</td>
+    </tr>
+
+    <tr>
+      <td>unsigned char</td>
+
+      <td>0 ... 255</td>
+    </tr>
+  </table>
+
+  <p>Values which are outside the valid range after application of
+  the scaling function are set to the nearest valid value.</p>
+
+  <p>The programs float2short and float2uchar allow to reduce the
+  volume of image data by factors of 2 and 4, respectively.</p>
+
+  <p><strong>Compression of SAR backscatter coefficients (files
+  such as *.mli, *.pwr)</strong><br>
+  To reduce the data volume of SAR backscattering coefficients to 2
+  byte per value we recommend to use float2short with a=1e03 and
+  b=0.5. short2float with a=1e-06 and b=2.0 allows to convert such
+  compressed short integer format data back to float format.</p>
+
+  <p>To reduce the data volume of SAR backscattering coefficients
+  to 1 byte per value we recommend to use float2uchar with a=177.8
+  and b=0.25. uchar2float with a=1e-09 and b=4.0 allows to convert
+  back such compressed unsigned char format data back to float
+  format.</p>
+
+  <p><strong>Compression of coherence data (files such as *.cc,
+  *.cc_ad)</strong><br>
+  To reduce the data volume of coherence data to 1 byte per value
+  we recommend to use float2uchar with a=255.0 and b=1.0.
+  uchar2float with a=0.00392 and b=1.0 allows to convert such
+  compressed unsigned char format data back to float format.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  ESA processed SLC and PRI data can be converted from short
+  integer to float format using short2float.</p>
+
+  <p><strong>Decompression of ESA processed SLC data</strong><br>
+  To decompress ESA processed SLC data short2float with b=1.0 may
+  be used. In addition the scale factor a can be used to achieve an
+  approximate radiometric calibration of the data.</p>
+
+  <p><strong>Decompression of ESA processed PRI data</strong><br>
+  To decompress ESA processed PRI data short2float with b=2.0 may
+  be used (Notice that ESA PRI values are proportional to the
+  square root of the backscatter intensity. The values of the MSP
+  and ISP *.mli and *.pwr files, on the other hand, are
+  proportional to the backscatter intensity).</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="LAT_file_formats.html">LAT_file_formats</a></p>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Mar-2008.</p>
+</body>
+</html>

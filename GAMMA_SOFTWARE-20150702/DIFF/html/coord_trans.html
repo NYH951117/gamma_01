@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw020924 -->
+
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: coord_trans</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>coord_trans</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/coord_trans.c">coord_trans.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  coord_trans - Coordinate transformation between map projections
+  for single coordinate.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>coord_trans</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>no input parameters; interactive program</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>coord_trans</samp></p>
+
+  <p>Starts coordinate transformation between map projections for
+  single coordinate. (interactive)</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">coord_trans</span> transforms a
+  single coordinate from the input map projection to the output map
+  projection.</p>
+
+  <p>The definition of the input and output projections is
+  interactive. The supported map projections are listed in a table
+  below.</p>
+
+  <p>The map projection definition is supported with the projection
+  information available in the lists <a href=
+  "datums.h.html">datums.h</a>, <a href=
+  "ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>. Apart from
+  the selection of predefined values out of these lists the user
+  has the option to define each of the parameters.</p>
+
+  <p>In a first step the input map has to be defined. This
+  definition includes:<br>
+  - the ellipsoid used<br>
+  - the Datum shift of this ellipsoid relative to WGS84<br>
+  - the map projection type<br>
+  - the parameters required to specify the map projection<br>
+  - the definition of the selected DEM/map section (corner
+  coordinates, spacing, DEM/map dimension)</p>
+
+  <p>Then the input coordinates, i.e. nothing and easting (or
+  longitude and latitude) are indicated.</p>
+
+  <p>Next the output map has to be defined. This definition
+  includes again:<br>
+  - the ellipsoid used<br>
+  - the Datum shift of this ellipsoid relative to WGS84<br>
+  - the map projection type<br>
+  - the parameters required to specify the map projection<br>
+  - the definition of the selected DEM/map section (corner
+  coordinates, spacing, DEM/map dimension)</p>
+
+  <p>Now, with the required information available, coord_trans
+  converts the specified input coordinates to the output map
+  coordinates.</p>
+
+  <p>coord_trans tries to combine high flexibility with strong user
+  support. On one hand the user has the option to define each of
+  the required parameters. On the other hand often used ellipsoids,
+  Datum shifts, and projection parameter sets are proposed to the
+  user. This allows the user, for example, to specify the national
+  coordinates used by a specific country without having to search
+  for the detailed parameter values, elsewhere.</p>
+
+  <p>The different DEM/map coordinate systems which are supported
+  are:</p>
+
+  <table style="width: 1067px; height: 450px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Projection</strong></td>
+      </tr>
+
+      <tr>
+        <td>EQA</td>
+
+        <td>Equiangular</td>
+      </tr>
+
+      <tr>
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>OMCH</td>
+
+        <td>Oblique Mercator (Switzerland)</td>
+      </tr>
+
+      <tr>
+        <td>LCC</td>
+
+        <td>Lambert Conformal Conic (France)</td>
+      </tr>
+
+      <tr>
+        <td>TM</td>
+
+        <td>Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>PS</td>
+
+        <td>Polar Stereographic</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">LCC2<br></td>
+
+        <td style="vertical-align: top;">Lambert Conformal Conic of
+        Belgium, Madagaskar<br></td>
+      </tr>
+
+      <tr>
+        <td>PC</td>
+
+        <td>Polyconic Projection</td>
+      </tr>
+
+      <tr>
+        <td>AEAC</td>
+
+        <td>Albers Equal Area Conic</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">SCH<br></td>
+
+        <td style="vertical-align: top;">Spherical geometry map
+        projection<br>
+        (see "Zebker et. al, "Geodetically Accurate INSAR Data
+        Processor", <span style="font-style: italic;">Trans.
+        Geoscience and Remote Sensing,</span> pp.4309-4321, vol.
+        49, no. 12, Dec., 2010)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The DEM/map geometry definition is done as follows:</p>
+
+  <p>First the user is asked to select one of the above mentioned
+  DEM/map coordinate systems. Then a country name such as <i>United
+  Kingdom</i>, <i>USA</i>, <i>Germany</i>, or <i>other</i> allows
+  to search the lists for specific parameter sets for the selected
+  countries. If the desired parameters are not found in the lists
+  the user may want to select <i>other</i> to define the
+  parameters.</p>
+
+  <p>Based on the indicated country name a list of Datums and
+  Ellipsoids are offered (containing at least WGS84). The user can
+  select one of the Datum/Ellipsoid sets by indicating the
+  corresponding row number.</p>
+
+  <p>Next the projection parameters are specified. Again the user
+  may enter a country name (typically the same as specified before)
+  or <i>other</i> to either select a projection parameter set out
+  of a list proposed for the selected country or to specify these
+  parameters without such a list.</p>
+
+  <p>After the specification of the ellipsoid, Datum, and
+  projection parameters the remaining parameters including the
+  DEM/map name, the DEM data format, the DEM height offset, the DEM
+  height scale factor, the DEM/map width and number of lines, the
+  corner coordinates (easting/northing resp. longitude/latitude),
+  and the pixel spacing in the two directions.</p>
+
+  <p>In addition, the output (transformed) coordinates lat/lon for
+  EQA resp. nothing/easting for the other projections are written
+  to standard output.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="datums.h.html">datums.h</a>, <a href=
+  "ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Mar-2013.</p>
+</body>
+</html>

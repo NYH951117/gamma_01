@@ -1,0 +1,243 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2013 Gamma Remote Sensing -->
+
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DISP Reference Manual: float_math</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr>
+
+  <h2>float_math</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/float_math.c">float_math.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  float_math -&nbsp; Perform math operations on raster data files
+  (float format)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>float_math &lt;d1&gt; &lt;d2&gt; &lt;d_out&gt;
+  &lt;width&gt; &lt;mode&gt; [roff] [loff] [nr] [nl] [c0]
+  [zflg]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;d1&gt;</td>
+
+        <td>(input) data file 1 (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;d2&gt;</td>
+
+        <td>(input) data file 2 (float) (enter - for none)<br>
+        NOTE: if no input file is provided, d2 values are set to
+        value specified by c0 parameter</td>
+      </tr>
+
+      <tr>
+        <td>&lt;d_out&gt;</td>
+
+        <td>(output) output of math operation on d1 and d2
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mode&gt;</td>
+
+        <td>math operation:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0:&nbsp; addition, d1 + d2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1:&nbsp; subtraction, d1 - d2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 2:&nbsp; multiplication, d1 *
+        d2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 3:&nbsp; division, d1/d2<br>
+        &nbsp; &nbsp;&nbsp; 4:&nbsp; 10 * log10(d1), evaluate dB
+        value<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 5:&nbsp; d1*d1<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 6:&nbsp; sqrt(d1)</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>range pixel offset to center of the reference region
+        (enter - for default: no reference correction)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>line offset to center of the reference region (enter -
+        for default: no reference correction)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to average in the reference
+        region (enter - for default: 13)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines average in the reference region (enter
+        - for default: 13)</td>
+      </tr>
+
+      <tr>
+        <td>[c0]</td>
+
+        <td>constant value (enter - for default: 1.18e-38 for
+        addition and subtraction, 1.0 for multiplication and
+        division)</td>
+      </tr>
+
+      <tr>
+        <td>[zflg]</td>
+
+        <td>zero data flag:<br>
+        &nbsp; 0: values of 0.0 in d1 or d2 are considered as
+        no-data and the output is set to 0.0 (default)<br>
+        &nbsp; 1: values of 0.0 are considered as valid data</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p><samp>float_math hector_1.pix
+  hector_2.pix diff.pix 2456 1 - - - - 1</samp><br>
+  <br>
+  Evaluate the difference between the files <span style=
+  "font-style: italic;">hector_1.pix</span> and <span style=
+  "font-style: italic;">hector_2.pix</span> and store the result in
+  the file <span style="font-style: italic;">diff.pix</span>. The
+  width of the each line is 2456 samples. Values of 0.0 in
+  <span style="font-style: italic;">hector_1.pix</span> or
+  <span style="font-style: italic;">hector_2.pix</span> are
+  considered as valid data.<br>
+  <br>
+  <code>float_math s1.diff s2.diff s3.diff 600 0 425 270</code><br>
+  <br>
+  add the data files <span style=
+  "font-style: italic;">s1.diff</span> and <span style=
+  "font-style: italic;">s2.diff</span> and place the sum in
+  <span style="font-style: italic;">s3.diff.</span> Each line of s1
+  and s2 is 600 samples wide.&nbsp; The reference area is centered
+  on sample 425 in range and line 270. The region that is averaged
+  is 16 samples wide and has 16 lines.&nbsp; The average value of
+  the reference are in s1 is subtracted from s1 and similarly for
+  s2.
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p><span style="font-style: italic;">float_math</span> evaluates
+  arithmetic operations between data files of type float
+  (32-bits/sample). The input data files <span style=
+  "font-style: italic;">d1</span> and <span style=
+  "font-style: italic;">d2</span> must have the same line width
+  specified by the <span style="font-style: italic;">width</span>
+  command line parameter. The operations of addition, subtraction,
+  multiplication, and division are supported.</p>
+
+  <p>The user can specify a reference region for the two images to
+  perform normalization of the data. The average of the data in the
+  reference region is evaluated for each scene and used to remove a
+  bias or normalize the data. This is particularly useful for
+  removal of a interferogram phase offset at a particular position
+  in the image chosen as the phase reference location. &nbsp;</p>
+
+  <p>For the addition or subtraction modes the average of
+  <span style="font-style: italic;">d1</span> in the reference area
+  is subtracted from <span style="font-style: italic;">d1</span>
+  and the average of <span style="font-style: italic;">d2</span> in
+  the reference area is subtracted from <span style=
+  "font-style: italic;">d2</span>.&nbsp; In the case of
+  multiplication or division, the data files <span style=
+  "font-style: italic;">d1</span> and <span style=
+  "font-style: italic;">d2</span> are divided by the averages of
+  their respective reference regions.</p>
+
+  <p style="text-align: left;">The <span style=
+  "font-style: italic;">zflg</span> command line parameter
+  determines how values of 0.0 in the data are handled. If
+  <span style="font-style: italic;">zflg</span> is the default
+  value of 0, then if either of the input files has a value of 0.0,
+  the output pixel value is 0.0 (<span style=
+  "font-style: italic;">no-data</span>). Also when zflg = 0 for the
+  case where the operations of addition or subtraction lead to a
+  value that is exactly 0.0, then the output value is replaced with
+  the smallest floating point value (1.18e-38) to avoid the pixel
+  being considered as <span style=
+  "font-style: italic;">no-data</span>.&nbsp;</p>
+
+  <p style="text-align: left;">If <span style=
+  "font-style: italic;">zflg</span> is 1, then 0.0 is considered
+  valid data. For the special case of division when <span style=
+  "font-style: italic;">zflg</span> = 1,&nbsp; and the value of
+  <span style="font-style: italic;">d2</span> is 0.0,&nbsp; the
+  output pixel value is set to 0.0 (<span style=
+  "font-style: italic;">no-data</span>) and not <span style=
+  "font-style: italic;">NaN</span>.&nbsp;</p>
+
+  <p style="text-align: left;">Instead of reading a file for the
+  values <span style="font-style: italic;">d2</span>, it is
+  possible to enter&nbsp; -.&nbsp; In this case, the <span style=
+  "font-style: italic;">d2</span> values are set to the constant
+  value <span style="font-style: italic;">c0</span> specified on
+  the command line. In the case where - or no value is given for
+  the constant, a default value of 1.18e-38 for addition and
+  subtraction or 1.0 for multiplication and division is set.</p>
+
+  <p style="text-align: left;">mode 4 is for conversion of
+  intensity data to dB values. If the input is&nbsp; equal to 0.0,
+  the output is set to 0.0, otherwise the dB conversion is
+  performed on the absolute value of the data value.</p>
+
+  <p style="text-align: left;">mode 5 generates the square of input
+  file d1.</p>
+
+  <p style="text-align: left;">mode 6 calculates the square root of
+  the absolute value of d1.&nbsp;</p>
+
+  <p style="text-align: left;">NOTE: when specifying a reference
+  region with roff, loff, nr, nl parameters:</p>
+
+  <p style="text-align: left;">modes 0, 1:&nbsp; The reference
+  region average value for for d1 is subtracted from d1 and the
+  average in the reference region is subtracted from d2.</p>
+
+  <p style="text-align: left;">modes 2, 3: &nbsp;&nbsp; d1 and d2
+  data are divided by the average in the reference region in each
+  of the data sets</p>
+
+  <p style="text-align: left;">modes 4,5,6:&nbsp; data values in d1
+  are divided by the average value in the reference region prior to
+  the operation</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 4-Nov-2014.
+</body>
+</html>

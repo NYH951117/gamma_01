@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: RSAT_lks</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>RSAT_lks</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/RSAT_lks.c">RSAT_lks.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  RSAT_lks - Generates multi-look intensity image from complex SAR
+  SLC image for Radarsat Standard Beam StripMap mode following the
+  algorithm as specified by RSI specifications</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>RSAT_lks
+  &lt;SLC_PROC_param&gt; &lt;MLI_PROC_param&gt; &lt;SLC_image&gt;
+  &lt;ML_image&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SLC PROC_param&gt;</td>
+
+      <td>SLC processing parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI PROC_param&gt;</td>
+
+      <td>output MLI processing parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_image&gt;</td>
+
+      <td>SLC image file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_image&gt;</td>
+
+      <td>output MLI image</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE</strong><samp><br>
+  RSAT_lks pBogota.slc.par pBogota.mli.par Bogota.slc
+  Bogota.mli</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This program is used to take looks in in the azimuth frequency
+  domain rather than the spatial domain as is usually done. This
+  program meets RSI specs for multilook images from Standard beams.
+  Each of the 4 looks has a bandwidth of 293 Hz with a 39 percent
+  overlap with adjacent looks. Each look is weighted with a
+  Kaiser-Bessel window function with window generation parameter of
+  2.9. The SLC data are read in blocks of 2048 lines. These data
+  are Fourier transformed in azimuth, filtered and then inverse
+  transformed. The individual looks are then detected and summed
+  with the other looks for that block and written out to disk.
+  There is an overlap between the blocks to account for the finite
+  length of the impulse response of the bandpass filters used to
+  generate the looks. The update of the processing parameter files
+  is identical to <a href="multi_SLC.html">multi_SLC</a>.</p>
+
+  <p>The complex input data may be displayed using <a href=
+  "MSP_display.html">disSLC</a>, the (real) output multi-look image
+  using <a href="MSP_display.html">dispwr</a>. Alternately, the
+  intensity image can be scaled and stored as a SUN raster file or
+  BMP format image using <a href="MSP_display.html">raspwr</a>.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "multi_SLC.html">multi_SLC</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_display.html">dispwr</a>, <a href=
+  "MSP_display.html">raspwr</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Feb-2000.
+</body>
+</html>

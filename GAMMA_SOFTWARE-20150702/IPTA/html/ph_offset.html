@@ -1,0 +1,147 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: ph_offset</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>ph_offset</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ph_offset.c">ph_offset.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ph_offset - determine phase bias of an interferogram by averaging
+  a rectangular region and subtract (float or fcomplex format)</p>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  usage: ph_offset &lt;f1&gt; &lt;f2&gt; &lt;width&gt;
+  &lt;dtype&gt; &lt;roff&gt; &lt;loff&gt; [nr] [nl]
+  [offset]</b><b><br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;f1&gt;</td>
+
+        <td><code>(input) input data file (float or fcomplex
+        format)</code></td>
+      </tr>
+
+      <tr>
+        <td>&lt;f2&gt;</td>
+
+        <td><code>(output) average of input data files (float or
+        fcomplex format)</code></td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td><code>number of samples/line</code></td>
+      </tr>
+
+      <tr>
+        <td>&lt;dtype&gt;</td>
+
+        <td><code>data type (0:fcomplex&nbsp;&nbsp;
+        2:float(unwrapped)</code></td>
+      </tr>
+
+      <tr>
+        <td>&lt;roff&gt;</td>
+
+        <td><code>range pixel offset to center of reference region
+        (enter - for none)</code></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;loff&gt;<br></td>
+
+        <td style="vertical-align: top;"><code>line offset to
+        center of reference region (enter - for none)</code></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;nr&gt; &nbsp;<br></td>
+
+        <td style="vertical-align: top;"><code>number of range
+        pixels to average in the reference region (default =
+        16)</code></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;nl&gt;<br></td>
+
+        <td style="vertical-align: top;"><code>number of lines
+        average in the reference region (default= 16)</code></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;offset&gt;<br></td>
+
+        <td style="vertical-align: top;"><code>additional phase
+        offset (radians, default = 0.0)</code></td>
+      </tr>
+    </tbody>
+  </table>&lt;&gt;<strong>EXAMPLE</strong><br>
+  <samp style="font-family: monospace;">ph_offset</samp>
+  <span style="font-family: monospace;">f1 f2 2456 0 1000 1500 32
+  32&nbsp;</span> <samp><br></samp><br>
+  Evalate average of complex interferogram at location 1000,1500
+  with a 32x32 rectangle. Subtract the phase of this average from
+  the<br>
+  complex interferogram f1 to produce f2.<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code ph_offset.c in ./IPTA/src, executable version
+  ph_offset&nbsp; in&nbsp; ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  ph_offset&nbsp; is a program program that is used to estimate and
+  subtract a phase offset for an interferogram. The average phase
+  value is estimated from samples within a rectangular window with
+  center specified by command line parameters roff and loff. The
+  size of the window is specified to nr pixels wide and nl lines
+  centered about (roff,loff). The phase of this average is
+  subtracted from the entire image. In the case of float data, the
+  image values are assumed to be unwrapped phase, while for
+  fcomplex, data the phase is obtained by taking atan(imag,
+  real).<br></p>
+
+  <p>This program is used to create a common phase reference for a
+  stack of differential interferograms. The program is run with the
+  same reference point location for each interferogram in the
+  stack. In this way the processed interferograms will have a
+  common reference point and zero reference phase.<br></p>
+
+  <p>The user can also specify a constant phase offset on the
+  command line for the entire image.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  &nbsp;<a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Apr-2004.</p>
+</body>
+</html>

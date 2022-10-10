@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: ORRM_vec</title>
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+  <!-- cw/uw970710 -->
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>ORRM_vec</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ORRM_vec.c"><i>ORRM_vec.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  ORRM_vec - extracts ERS state vectors from orbit data provided by
+  ESA in the ORRM (preliminary restituted orbit) files and places
+  these vectors in the SLC parameter file. The ORRM format files
+  are obsolete and have been replaced with the Precision Orbit
+  format *.PRC.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ORRM_vec &lt;SLC_par&gt; &lt;ORRM&gt;
+  [nstate]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;<a href="SLC_par.html">SLC_par</a>&gt;</td>
+
+      <td>parameter file for SLC</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ORRM&gt;</td>
+
+      <td>ORRM state vector file</td>
+    </tr>
+
+    <tr>
+      <td>[nstate]</td>
+
+      <td>number of state vectors (default=5, maximum=9)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ORRM_vec 1352.par 1352.orrm 5</samp></p>
+
+  <p><strong>NOTES</strong><br>
+  ORRM_vec reads the ISP SLC/MLI image parameter file and extracts
+  the specified number of state vectors from the ORRM state vector
+  file. This program is used with processed image data sets that do
+  not have adequate state vector data. The default number of state
+  vectors is 5 and is adequate unless multiple frame images are
+  processed with the ISP. ORRM orbit data were distributed by ESA
+  for ERS-1 data spanning 1991-1994. These data are still generated
+  but not distributed except by special agreement. This product has
+  now been replaced by the Precision Orbit data set (PRC) for both
+  ERS-1 and ERS-2. These orbit data are available from an FTP
+  server in Germany with a delay of about 1 month after data
+  acquisition by ERS. Apply to the ESA HelpDesk at ESA ESRIN to get
+  an account to access these data. Use the program <a href=
+  "PRC_vec.html">PRC_vec</a> to state vectors from the PRC data
+  files.</p>
+
+  <p>The state vectors in the SLC parameter file are used for the
+  removal of the average phase trend in the interferogram and for
+  the derivation of the interferometric baseline.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a> , PRC</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-Jan-2000.</p>
+</body>
+</html>

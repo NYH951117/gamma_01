@@ -1,0 +1,141 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>LAT Reference Manual: multi_mosaic</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_mosaic</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/multi_mosaic.c"><i>multi_mosaic.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  multi_mosaic - Mosaic geocoded images with same format, map
+  projection, and pixel spacing parameters</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  mosaic &lt;data_tab&gt; &lt;data_out&gt; &lt;DEM_par_out&gt;
+  &lt;mosaic_flag&gt; &lt;format_flag&gt;</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_tab&gt;</td>
+
+        <td>(input) list of data to mosaic (2 columns), one line
+        for each input data file (text format):<br>
+        each line of the data_tab has the entries:<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        &nbsp;&nbsp; data&nbsp; &nbsp; &nbsp;&nbsp;
+        DEM_par<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>output data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM_par_out&gt;</td>
+
+        <td>output DEM parameter file.<br>
+        <br>
+        NOTE: If this file exists, then the bounds of the mosaic
+        are read from the parameter file,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        otherwise bounds including all input data will be computed
+        and written to the parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;mode_flag&gt;</td>
+
+        <td>mosaic mode:<br>
+        &nbsp;&nbsp;&nbsp; 0: value of prior image preferred in the
+        case of multiple valid input values<br>
+        &nbsp;&nbsp;&nbsp; 1: average of multiple valid input
+        values calculated<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;format_flag&gt;</td>
+
+        <td>input and output data format flag:<br>
+        &nbsp; 0:&nbsp; float (REAL*4)<br>
+        &nbsp; 1:&nbsp; fcomplex<br>
+        &nbsp; 2:&nbsp; int (INTEGER*4)<br>
+        &nbsp; 3:&nbsp; short (INTEGER*2)<br>
+        &nbsp; 4:&nbsp; unsigned char<br>
+        &nbsp; 5:&nbsp; SUN raster or BMP image files (8 or 24
+        bit)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+  <strong>EXAMPLE</strong><samp><br></samp></p><samp><big>multi_mosaic
+  lv.tab lv_mosaic.gtc lv_mosaic.dem_par 0 0</big></samp><br>
+  <br>
+  lv.tab:<br>
+  <br>
+  <big><samp>lv1.gtc lv1.dem_par<br>
+  lv2.gtc lv2.dem_par</samp></big><br>
+
+  <p>Mosaics 2 scenes of floating point terrain corrected data
+  lv1.gtc and lv2.gtc The projection parameters for the input
+  scenes are stored in the DEM parameter files lv1.dem_par and
+  lv2.dem_par. The output mosaic image is stored in lv_mosaic.gtc
+  with the associated parameter file lv_mosaic.dem_par. Overlapping
+  regions of the mosaic default to the data from the first file
+  encountered that covers a region.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This program supports creation of image mosaics from a set of
+  georeferenced images each with its own DEM parameter file
+  describing the coverage area. All of the images must have the
+  same posting and projection. Since no interpolation is performed,
+  the map grids must overlay such that there is only an integer
+  number of samples offset between the different images comprising
+  the mosaic. This condition can be assured by proper selection of
+  the DEM parameters at the time when the terrain corrected image
+  swaths are produced.<br>
+  <br>
+  The dimensions of the output map can be determined either by
+  examining all the input maps and letting the program
+  automatically generate a DEM parameter file that covers all
+  inputs, or giving as input a DEM parameter with user determined
+  bounds. The user has the option of selecting either averaging of
+  pixel values that overlay, or to have the first image written to
+  a location in the output map as the mosaic value.</p>
+
+  <p>Mosaics of data in numerous formats is supported including
+  float (4-bytes/sample), floating point complex (8-bytes/sample),
+  unsigned bytes, and 2 and 4 byte integers. There is also support
+  for mosaicking of SUN raster and BMP format image files.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="mosaic.html">mosaic</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "display.h.html">display.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  clw, last change 12-Mar-2014.<br>
+  <br>
+</body>
+</html>

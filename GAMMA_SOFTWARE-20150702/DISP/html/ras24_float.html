@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: ras24_float</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ras24_float</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ras24_float.c">ras24_float.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>ras24_float</i> - Converts three real valued input data files
+  (float) to one (24-bit) output SUN raster or BMP format image
+  using user specified scaling and color models.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>ras24_float &lt;f1&gt; &lt;f2&gt; &lt;f3&gt;
+  &lt;width&gt; &lt;rasf&gt; [color_model] [h0] [hrange] [imin]
+  [imax] [sat_min] [sat_max] [sc1] [A1] [B1] [cyclic1] [sc2] [A2]
+  [B2] [sc3] [A3] [B3] [start_f1] [start_f2] [start_f3] [nlines]
+  [pixavr] [pixavaz] [LR]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tr>
+      <td>&lt;f1&gt;</td>
+
+      <td>input file 1 (float, red,hue, enter - if not
+      available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;f2&gt;</td>
+
+      <td>input file 2 (float, green,brightness, enter - if not
+      available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;f3&gt;</td>
+
+      <td>input file 3 (float, blue,saturation, enter - if not
+      available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>samples per row of f1 and f2</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rasf&gt;</td>
+
+      <td>(output) 24-bit rasterfile (*.ras: SUN raster format,
+      *.bmp: BMP format)</td>
+    </tr>
+
+    <tr>
+      <td>[color_model]</td>
+
+      <td>color model selection flag: (default=1)<br>
+      0: RGB color model<br>
+      1: HLS (double hexagon color model)<br>
+      2: HSV (single hexagon color model)</td>
+    </tr>
+
+    <tr>
+      <td>[h0]</td>
+
+      <td>starting hue (color for starting value, default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[hrange]</td>
+
+      <td>range of hue values in degrees (-360. ... 360.,
+      default=360.)</td>
+    </tr>
+
+    <tr>
+      <td>[imin]</td>
+
+      <td>minimum brightness value (0.0 ... 1.0, default=0.15)</td>
+    </tr>
+
+    <tr>
+      <td>[imax]</td>
+
+      <td>maximum brightness value (0.0 ... 1.0, default=0.85)</td>
+    </tr>
+
+    <tr>
+      <td>[sat_min]</td>
+
+      <td>minimum color saturation value (0.0 ... 1.0,
+      default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[sat_max]</td>
+
+      <td>maximum color saturation value (0.0 ... 1.0,
+      default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[sc1]</td>
+
+      <td>Scaling model flag (default=0: lin, 1: log, 2:
+      power-law)</td>
+    </tr>
+
+    <tr>
+      <td>[A1]</td>
+
+      <td>Scaling parameter A (minimum or scale; default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[B1]</td>
+
+      <td>Scaling parameter B (maximum or exponent;
+      default=6.2832)</td>
+    </tr>
+
+    <tr>
+      <td>[cyclic1]</td>
+
+      <td>Cyclic scaling model (default=1; 0: no 1: yes)</td>
+    </tr>
+
+    <tr>
+      <td>[sc2]</td>
+
+      <td>Scaling model flag (default=2: lin, 1: log, 2:
+      power-law)</td>
+    </tr>
+
+    <tr>
+      <td>[A2]</td>
+
+      <td>Scaling parameter A (minimum or scale; default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[B2]</td>
+
+      <td>Scaling parameter B (maximum or exponent;
+      default=0.35)</td>
+    </tr>
+
+    <tr>
+      <td>[sc3]</td>
+
+      <td>Scaling model flag (default=0: lin, 1: log, 2:
+      power-law)</td>
+    </tr>
+
+    <tr>
+      <td>[A3]</td>
+
+      <td>Scaling parameter A (minimum or scale; default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[B3]</td>
+
+      <td>Scaling parameter B (maximum or exponent;
+      default=6.2832)</td>
+    </tr>
+
+    <tr>
+      <td>[start_f1]</td>
+
+      <td>starting line of f1 (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[start_f2]</td>
+
+      <td>starting line of f2 (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[start_f3]</td>
+
+      <td>starting line of f3 (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to process (default=0: to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[pixavr]</td>
+
+      <td>number of pixels to average in range (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[pixavaz]</td>
+
+      <td>number of pixels to average in azimuth (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping flag, (default=1: normal, -1: mirror
+      image)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>ras24_float 8059_8560.unw 8059_8560.pwr1 8059_8560.cc 750
+  8059_8560.unw.ras 1 0. 360. 0.15 0.85 0.2 0.8 0 0.0 12.566 1 2 1.
+  0.35 0 0.0 1.0</tt></p>
+
+  <p>Generates a (24-bit) SUN raster of the unwrapped
+  interferometric phase (color) using the backscatter intensity as
+  image brightness (power-law scaling) and the coherence as color
+  saturation (linear scaling). The HLS (double hexagon) color model
+  with hues between 0. and 360., lightness values between 0.15 and
+  0.85, and saturation values between 0.2 and 0.8 are used. For the
+  unwrapped phase linear scaling between 0. and 4xPI (cyclic) is
+  used.</p><tt>ras24_float dv.pwr1 dv.pwr2 dv.pwr3 750 dv.rgb.ras 0
+  - - - - - - 1 -22. 3.5 0 2 1 -22. 3.5 1 -22. 3.5</tt><br>
+  <br>
+
+  <p>Generates a (24-bit) SUN raster of the unwrapped
+  interferometric phase (color). The RGB color model with red
+  corresponding to the first input image intensity (logarithmic dB
+  scaling between -22.0 and 3.5), green corresponding to the second
+  input image intensity (logarithmic dB scaling between -22.0 and
+  3.5), and blue corresponding to the third input image intensity
+  (logarithmic dB scaling between -22.0 and 3.5).</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>ras24_float</i> generates a 24-bit SUN raster or BMP format
+  file from one, two, or 3 real valued input data files (float).
+  Color model and scaling parameters for the input data are user
+  specified to offer a wide functionality for image data
+  display.</p>
+
+  <p>The following color models can be selected:</p>
+
+  <table border="0" cellspacing="12" cellpadding="0">
+    <tr>
+      <td>RGB:</td>
+
+      <td>red-green-blue color model</td>
+    </tr>
+
+    <tr>
+      <td>HLS:</td>
+
+      <td>Double hexagon cone</td>
+    </tr>
+
+    <tr>
+      <td>HSV:</td>
+
+      <td>Single hexagon cone</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p>Each color model is further specified by the color model
+  parameters: starting hue value (h0), hue range (hrange), minimum
+  brightness (imin), maximum brightness (imax), minimum saturation
+  (sat_min), and maximum saturation (sat_max). In the case of the
+  RGB color model the color model parameters are ignored.</p>
+
+  <p>One or more input data files can be avoided by indicating "-"
+  instead of a valid file name. In such a case the corresponding
+  data is replaced by the mean value of the indicated value range
+  of the corresponding channel. Avoiding input image 3, for
+  example, sets the saturation values to (sat_min+sat_max)/2.</p>
+
+  <p>For each input file 255 different values are distinguished. 0
+  (NULL) is reserved to indicate missing data, respectivly NULL
+  values (0.0) in the input data.</p>
+
+  <p>The full color circle corresponds to a hue range of 360.0
+  degrees. Therefore, a hue range of 360.0 degrees is usually used
+  when working with a cyclic scaling for input image 1. In the case
+  of non-cyclic scaling a reduced hue range (300. degrees or
+  smaller) might be preferred for the better discrimination between
+  very low and very high image 1 values.</p>
+
+  <p>Indicating negative hue range values allows to invert the
+  rotation sense on the color circle.</p>
+
+  <p>The selected starting hue value determines where on the color
+  cycle the color scale starts. Especially for non-cyclic scaling a
+  change in the starting hue value has a very significant effect on
+  the result.</p>
+
+  <p>The following table contains a summery of the hue - color
+  relationship for the HLS and HSV color models:</p>
+
+  <table border="0" cellspacing="12" cellpadding="0">
+    <tr>
+      <td>hue value:<br>
+      [deg.]</td>
+
+      <td>HLS</td>
+
+      <td>HSV</td>
+    </tr>
+
+    <tr>
+      <td>0.0</td>
+
+      <td>red</td>
+
+      <td>red</td>
+    </tr>
+
+    <tr>
+      <td>60.0</td>
+
+      <td>yellow</td>
+
+      <td>yellow</td>
+    </tr>
+
+    <tr>
+      <td>120.0</td>
+
+      <td>green</td>
+
+      <td>green</td>
+    </tr>
+
+    <tr>
+      <td>180.0</td>
+
+      <td>cyan</td>
+
+      <td>cyan</td>
+    </tr>
+
+    <tr>
+      <td>240.0</td>
+
+      <td>blue</td>
+
+      <td>blue</td>
+    </tr>
+
+    <tr>
+      <td>300.0</td>
+
+      <td>magenta</td>
+
+      <td>magenta</td>
+    </tr>
+
+    <tr>
+      <td>360.0</td>
+
+      <td>red</td>
+
+      <td>red</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p>The RGB model ignors the indicated color model parameters (h0,
+  hrange, imin, imax, sat_min, and sat_max).</p>
+
+  <p>The scaling of the real valued input data file(s) can be
+  specified on the command line. Linear, logarithmic (dB scale),
+  and power-law scaling are supported. For the linear and
+  logarithmic scaling the indicated minimum and maximum values
+  define the scaling. For the power-law scaling a scale factor and
+  the exponent can be indicated.</p>
+
+  <p>Cyclic and non-cyclic scaling is supported for the first input
+  data file. In the case of linear scaling between 100.0 and 500.0,
+  an input value of 600.0 will be displayed in the same color as
+  500.0 in the case on non-cyclic scaling and with the same color
+  as 200.0 in the case of cyclic scaling.</p>
+
+  <p>The NULL value of the input data files is 0.0. This value is
+  not interpereted but considered as missing data. Non-zero values
+  smaller than or equal to the minimum value are treated
+  differently than the NULL value 0.0.</p>
+
+  <p>The program ras8_color_scale allows to generate a small
+  rasterfile containing a color scale corresponding to an 8-bit
+  color rasterfile. Such a color scale can also be used for the
+  24-bit rasterfile, when using the HLS or HSV color models.</p>
+
+  <p><b>OPTIONS</b><br>
+  Multi-looking and the selection of a reduced number of lines may
+  be applied. Left/right flipping of the output rasterfile may be
+  applied.</p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>SEE ALSO</b><br>
+  ras8_color_scale, <a href="ras8_float.html">ras8_float</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2001.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 27-Mar-2001.
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: polyras</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>poly_math</h2>
+
+  <p><i>C program: <a href=
+  "../src/poly_math.c">poly_math.c</a></i><a href=
+  "../src/poly_math.c">&nbsp;</a></p>
+
+  <p><strong>NAME</strong><br>
+  poly_math - apply arithmetic operations to data within polygonal
+  regions</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <samp>poly_math &lt;data_in&gt; &lt;data_out&gt; &lt;width&gt;
+  &lt;polygon&gt; [offset_scale] [mode] [offset] [scale]
+  &lt;</samp></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>input data file (4-byte float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>output data file (4-byte float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width &gt;</td>
+
+        <td>data line width in samples</td>
+      </tr>
+
+      <tr>
+        <td>&lt;polygon &gt;</td>
+
+        <td>text file containing polygon vertices</td>
+      </tr>
+
+      <tr>
+        <td>[offset_scale]</td>
+
+        <td>text file containing offset and scale factors for data
+        in each polygon,<br>
+        enter - to read offset and scale from the command line</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>data mode (0:copy all data, 1:copy data only within
+        polygons, background set to 0.0)</td>
+      </tr>
+
+      <tr>
+        <td>[offset]</td>
+
+        <td>constant offset applied for all data within polygons,
+        (default=0.0)</td>
+      </tr>
+
+      <tr>
+        <td>[scale]</td>
+
+        <td>scale factor for all output polygon (default=1.0)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>poly_math landers.unw landers_update.unw 4912 polygons.dat
+  offset_scale.dat</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code <em>poly_math.c</em> in <em>src</em> directory.
+  Executable version <em>../bin/poly_math.c</em></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>poly_math</em> is used to modify values of binary floatinging
+  point values within a polygonal region by adding an offset and
+  scaling. This program is especially useful for correcting phase
+  unwrapping errors in polygonal regions by adding multiples of
+  2&para;. It can also be used to extract regions from a file and
+  copy them to the output file for display of data classes. The
+  vertices of the polygons are stored in an text file generated
+  using program <a href="polyras.html">polyras</a>.</p>
+
+  <p>Data values within each polygon are offset by a constant and
+  scaled using values in the <em>offset_scale</em> file. This file
+  has a line entry for each polygon with each line consisting of 3
+  values separated by spaces. The first column is the integer
+  polygon number, and the second and third values are the offset
+  and scale factors respectively. There must be an entry line in
+  the offset_scale file for each polygon. If the offset_scale file
+  is ommitted using a - as the entry, then the offset and scale
+  values from the command line are applied. Default values for
+  these parameters are 0.0 and 1.0 respectively.</p>
+
+  <p>Typically the polygons are selected using program <a href=
+  "polyras.html">polyras.c</a> though the vertices may also be
+  entered using a text editor. To see the format run the program
+  poly_ras and examine the output. Each group of vertices is
+  separated by a blank line. The vertices have the x and y
+  coordinate and the vertex number, all as integers.</p>
+
+  <p>If the data mode on the command line is set to 0, the output
+  file has a copy of the input data with the modified data values
+  replacing the input data. For mode=1, the background is set to
+  0.0, so only the data within polygons and on the edges appear in
+  the ouput. This mode is useful for displaying data sets used for
+  classification.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The offset and scale values entered on the command line are
+  applied to all polygons if - is entered for the offset_scale file
+  name.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="polyx.html">polyx.c</a>, <a href=
+  "histogram.html">histogram.c</a>, <a href=
+  "polyras.html">polyras.c</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jun-2006.</p>
+</body>
+</html>

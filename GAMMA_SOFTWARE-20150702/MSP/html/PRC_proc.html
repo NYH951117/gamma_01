@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: PRC_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>PRC_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/PRC_proc.c">PRC_proc.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>PRC_proc</em> - extract state
+  vectors from ERS and Envisat&nbsp; precision orbit state vector
+  files and store in an MSP processing parameter file</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>PRC_proc &lt;proc_par&gt;
+  &lt;PRC &gt; [nstate]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>MSP processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PRC&gt;</td>
+
+        <td>PRC state vector file</td>
+      </tr>
+
+      <tr>
+        <td>[nstate]</td>
+
+        <td>number of state vectors to extract&nbsp;
+        (default=5)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>PRC_proc p4180.slc.par PRC_920429_04123_rev2
+  9<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  PRC_proc reads ERS-1, ERS-2, and Envisat&nbsp; precision state
+  vector files and extracts a specified number of state vectors
+  that bracket the raw data set. The state vectors are written into
+  the MSP processing parameter file along with the start time and
+  time interval between state vectors. The PRC files consist of 130
+  byte text records containing the Julian date and time of the
+  state vector data, the position, velocity and attitude of the ERS
+  sensor, and data quality information. State vectors are given on
+  30 second intervals. The default number of state vectors is 5
+  spaced at 30 second intervals is adequate unless multiple frames
+  are processed. Up to 64 state vectors can be extracted. Format of
+  the PRC data file records is described in an ESA document
+  available from the ESA ESRIN website and is defined in the
+  <a href="typedef_MSP.h.html">typedef_MSP.h</a> file.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP processing parameter file</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-Nov-2004.
+</body>
+</html>

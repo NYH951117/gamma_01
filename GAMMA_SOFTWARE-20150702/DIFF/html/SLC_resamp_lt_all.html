@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>SLC co-registration and resampling using a lookup
+  table</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO Software: Reference Manual</h1>
+
+  <h2>SLC co-registration and resampling using a lookup table
+  (SLC_resamp_lt_all)</h2><i>Perl script:&nbsp; <a href=
+  "../scripts/SLC_resamp_lt_all">SLC_resamp_lt_all</a><br></i>
+
+  <h3>Description</h3>This is&nbsp; a Quickstart guide on how to
+  use the script <span style=
+  "color: blue;">SLC_resamp_lt_all</span> to resample a set of SLC
+  images to a common reference SLC scene using a lookup table. The
+  lookup table is derived using a DEM in the radar geometry.<br>
+  The SLC_resamp_lt_all script helps guide you through the
+  different processing steps. As input data the following inputs
+  are required:<br>
+  <br>
+  1. SLC image data with the ISP image parameter files<br>
+  2. A table of the SLC images to be resampled and the reference
+  scene in the form of an SLC_tab. The SLC tab has two columns, one
+  line per SLC. In the first column is the SLC file name including
+  the absolute or relative<br>
+  path to the SLC. In the second column is the SLC parameter file
+  name including the absolute or relative path to the SLC parameter
+  file<br>
+  <br>
+  An example SLC_tab is shown below for 2 SLC images with relative
+  paths:<br>
+  <br>
+  <span style=
+  "font-family: monospace;">slc/19990915.slc&nbsp;&nbsp;&nbsp;
+  slc/19990915.slc.par</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">slc/19991020.slc&nbsp;&nbsp;&nbsp;
+  slc/19991020.slc.par<br>
+  <br></span>This can be created using the <span style=
+  "font-style: italic;">mk_tab</span> script:<span style=
+  "font-family: monospace;"><br>
+  <br></span> <code>*** Copyright 2011, Gamma Remote Sensing, v1.1
+  13-Apr-2011 clw ***<br>
+  *** Generate SLC_tab, MLI_tab, or RAW_list for processing&nbsp;
+  ***<br>
+  <br>
+  usage: mk_tab &lt;dir&gt; &lt;ext-1&gt; &lt;ext-2&gt;
+  &lt;tab&gt;<br>
+  &nbsp;&nbsp;&nbsp; dir&nbsp;&nbsp; (input) directory including
+  paths that contain the data files<br>
+  &nbsp;&nbsp;&nbsp; ext-1 (input) pattern to select data files
+  (examples: slc, raw...)<br>
+  &nbsp;&nbsp;&nbsp; ext-2 (input) pattern to select parameter
+  files that match the data (examples: slc.par, raw_par,
+  raw.par)<br>
+  &nbsp;&nbsp;&nbsp; tab&nbsp;&nbsp; (output) two column list of
+  data filenames and data parameter filenames (including paths)
+  (text)<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; NOTE: The current directory is denoted using
+  .<br>
+  <br>
+  mk_tab slc slc slc.par SLC_tab<br></code><br>
+  3. A multi-look intensity MLI image of the scene and the
+  associated ISP image parameter file<br>
+  4. A DEM in range-Doppler coordinates with the same pixel spacing
+  as the MLI &nbsp;image<br>
+  <br>
+  Either include $DIFF_HOME/scripts in the PATH environment
+  variable or Copy the <span style=
+  "font-style: italic;">SLC_resamp_lt_all</span> script to the
+  directory above where the SLCs are located.&nbsp; The SLC images
+  should all be in one directory. Next, run the script without
+  arguments to see the command line arguments:<br>
+  <span style="font-family: monospace;"><br>
+  *** ./SLC_resamp_lt_all<br>
+  *** Copyright 2011, Gamma Remote Sensing, v4.3 28-Apr-2011 clw
+  ***<br>
+  *** Resample a set of SLCs to a common reference SLC using a
+  lookup table and DEM ***<br>
+  <br>
+  usage: ./SLC_resamp_lt_all &lt;SLC_tab&gt; &lt;ref_SLC&gt;
+  &lt;ref_SLC_par&gt; &lt;ref_MLI_par&gt; &lt;DEM_rdc&gt;
+  &lt;MLI_dir&gt; &lt;RSLC_dir&gt; &lt;RSLC_tab&gt; &lt;mode&gt;
+  [rflag] [rlks] [azlks] [rpos] [azpos]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; SLC_tab&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  two column list of SLC filenames and SLC parameter filenames
+  (including paths) (ascii)<br>
+  &nbsp;&nbsp;&nbsp; ref_SLC&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  reference SLC (including path)<br>
+  &nbsp;&nbsp;&nbsp; ref_SLC_par&nbsp; (input) ISP image parameter
+  file of the reference SLC (including path)<br>
+  &nbsp;&nbsp;&nbsp; ref_MLI_par&nbsp; (input) ISP image parameter
+  file of the reference MLI (including path)<br>
+  &nbsp;&nbsp;&nbsp; DEM_rdc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  DEM in Range-Doppler Coordinates with width and height as
+  described in the MLI_par<br>
+  &nbsp;&nbsp;&nbsp; MLI_dir&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (input)
+  directory containing MLI parameter files, same the same width and
+  height as DEM_rdc.<br>
+  &nbsp;&nbsp;&nbsp; RSLC_dir&nbsp;&nbsp;&nbsp;&nbsp; directory to
+  contain the resampled SLCs, lookup tables, ISP image parameter
+  files, and log files&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp;&nbsp;&nbsp;&nbsp; (output)
+  RSLC_tab file for the resampled SLC files&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;
+  mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; processing
+  modes:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: generate lookup table and resample MLI-1 image into the
+  geometry of MLI-2<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: refine lookup table based on measured offsets between MLI-1
+  resampled to the geometry of MLI-2<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: resample SLC-2 to the geometry of the reference SLC using
+  lookup table&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: create offset parameter files for SLC resampling refinement,
+  measure offsets, and calculate the SLC offset fit polynomials<br>
+  &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4:
+  resample SLC images using lookup table offsets determined in mode
+  3 and generate RSLC_tab<br>
+  &nbsp;&nbsp;&nbsp;
+  rflag&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; flag for
+  interative refinement of the resampled SLC:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: resample and measure residual range and azimuth offsets&nbsp;
+  (no interation, default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; 1: interatively improve range and
+  azimuth offset polynomials then measure residual offsets<br>
+  &nbsp;&nbsp;&nbsp;
+  rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  range looks for initial offset estimation&nbsp; (enter - for
+  default: 1)<br>
+  &nbsp;&nbsp;&nbsp;
+  azlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of azimuth
+  looks for initial offset estimation&nbsp; (enter - for default:
+  1)<br>
+  &nbsp;&nbsp;&nbsp;
+  rpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center of
+  patch for initial offset estimation in range (samples) (enter -
+  for default: image center)<br>
+  &nbsp;&nbsp;&nbsp;
+  azpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center of patch
+  for initial offset estimation in azimuth (lines) (enter - for
+  default: image center)<br></span><span style=
+  "font-family: monospace;"><br>
+  <br></span> The different modes represent steps in the processing
+  that must be performed sequentially. <span style=
+  "font-family: monospace;"><br>
+  <br></span>
+
+  <h3 style="font-weight: normal;"><span style=
+  "font-weight: bold;">Mode 0:</span> <span style=
+  "font-family: monospace; font-weight: bold;">generate lookup
+  table and resample MLI-1 image into the geometry of
+  MLI-2</span><code><small><span style=
+  "color: rgb(0, 0, 153);"><br></span></small></code></h3>In this
+  step a lookup table is generated that maps one SLC into the
+  reference SLCimage. The sample spacing of the lookup table is the
+  same as the MLI reference image. The table entries are
+  interpolated&nbsp; to resample the SLC data. The DIFF/GEO program
+  <span style="font-style: italic;">rdc_trans</span> is used to
+  generate the lookup table and the&nbsp; ISP program <span style=
+  "font-style: italic;">SLC_resamp_lt</span> is used to&nbsp;
+  perform the resampling .<br>
+  <br>
+  <code><span style="color: rgb(51, 51, 153);">SLC_resamp_lt_all
+  SLC_tab1 slc/19960421.slc slc/19960421.slc.par
+  mli_1_5/19960421.mli.par geo/lan_dem.rdc&nbsp; mli_1_5 rslc_lt
+  RSLC_lt_tab 0 0</span><br>
+  <br></code> generates the following commands:<br>
+
+  <h3 style="font-weight: normal;"><code><small><span style=
+  "color: rgb(0, 0, 153);">rdc_trans mli_1_5/19960421.mli.par
+  geo/lan_dem.rdc mli_1_5/19960422.mli.par
+  rslc_lt/19960421_19960422.lt0</span><br style=
+  "color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">geocode
+  rslc_lt/19960421_19960422.lt0 mli_1_5//19960421.mli 2296
+  rslc_lt/19960421_lt0.mli 2296 1176 2 0 - - 4</span><br style=
+  "color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">raspwr
+  rslc_lt/19960421_lt0.mli 2296 1 0 1 1 0.6
+  0.4</span></small></code></h3>The output lookup table has
+  dimensions of the reference MLI image determined from the MLI
+  parameter file of the reference scene, in this case 2296
+  samples<br>
+
+  <h3>Mode 1: <small style="font-family: monospace;">refine lookup
+  table based on measured offsets between MLI-1 resampled to the
+  geometry of MLI-2</small></h3>In this step, the offsets between
+  MLI-2 the reference MLI resampled into the geometry of MLI-2.
+  Range and azimuth offset polynomials derived<br>
+  from these offsets are used to correct the entries of the lookup
+  table for orbit and timing errors.<br>
+  <br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code><span style="color: rgb(51, 51, 153);">SLC_resamp_lt_all
+  SLC_tab1 slc/19960421.slc slc/19960421.slc.par
+  mli_1_5/19960421.mli.par geo/lan_dem.rdc&nbsp; mli_1_5 rslc_lt
+  RSLC_lt_tab 1 0</span></code><br>
+  <br>
+  This generates the following commands to measure the MLI offsets,
+  calculate the polynomials, and correct the lookup table<br>
+  <br>
+  <code><span style="color: rgb(51, 0, 153);">create_diff_par
+  mli_1_5/19960422.mli.par - rslc_lt/19960421_19960422_lt0.diff_par
+  1 &lt; .in<br>
+  init_offsetm rslc_lt/19960421_lt0.mli mli_1_5/19960422.mli
+  rslc_lt/19960421_19960422_lt0.diff_par 1 1 1148 588<br>
+  offset_pwrm rslc_lt/19960421_lt0.mli mli_1_5/19960422.mli
+  rslc_lt/19960421_19960422_lt0.diff_par
+  rslc_lt/19960421_19960422_lt0.offs
+  rslc_lt/19960421_19960422_lt0.snr<br>
+  offset_fitm rslc_lt/19960421_19960422_lt0.offs
+  rslc_lt/19960421_19960422_lt0.snr
+  rslc_lt/19960421_19960422_lt0.diff_par
+  rslc_lt/19960421_19960422_lt0.coffs -&nbsp; 3<br>
+  gc_map_fine rslc_lt/19960421_19960422.lt0 2296
+  rslc_lt/19960421_19960422_lt0.diff_par
+  rslc_lt/19960421_19960422.lt1<br></span><br></code> The inputs to
+  <span style="font-style: italic;">create_diff_par</span> are
+  determined from the image dimensions and the range and azimuth
+  patch size (256x256).<code><br></code>
+
+  <h3>Mode 2: <span style="font-family: monospace;">resample SLC-2
+  to the geometry of the reference SLC using lookup table including
+  the initial refinement<br></span></h3>This step resamples SLC-2
+  into the geometry of the reference SLC.
+  (SLC-1).<code><br></code><br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code style="color: rgb(0, 0, 153);">SLC_resamp_lt_all SLC_tab1
+  slc/19960421.slc slc/19960421.slc.par mli_1_5/19960421.mli.par
+  geo/lan_dem.rdc&nbsp; mli_1_5 rslc_lt RSLC_lt_tab 2 0</code>
+  <code><br style="color: rgb(51, 0, 153);">
+  <br></code> This results in the following command:<code><br>
+  <br></code><code style="color: rgb(0, 0, 153);">SLC_interp_lt
+  slc/19960422.slc slc/19960421.slc.par slc/19960422.slc.par
+  rslc_lt/19960421_19960422.lt1 mli_1_5/19960421.mli.par
+  mli_1_5/19960422.mli.par - rslc_lt/19960422.rslc
+  rslc_lt/19960422.rslc.par<br></code>
+
+  <h3>Mode 3: <span style="font-family: monospace;">create offset
+  parameter files for SLC resampling refinement, measure offsets,
+  and calculate the SLC offset fit polynomials</span></h3>In this
+  step, the offsets between the SLC reference and initial resampled
+  SLC are measured over a grid of points.<br>
+  The values of these offsets are then used to estimate offset
+  polynomial that is used as a correction for the offset estimation
+  using the lookup table.<br>
+  <span style="font-weight: bold;"><br>
+  Example:</span><br>
+  <code style="color: rgb(0, 0, 153);">SLC_resamp_lt_all SLC_tab1
+  slc/19960421.slc slc/19960421.slc.par mli_1_5/19960421.mli.par
+  geo/lan_dem.rdc&nbsp; mli_1_5 rslc_lt RSLC_lt_tab 3 0<br>
+  <br></code> This results in the following commands:<br>
+  <br style="color: rgb(51, 0, 153);">
+  <code style="color: rgb(51, 0, 153);">create_offset
+  rslc_lt/19960421.rslc.par rslc_lt/19960422.rslc.par
+  rslc_lt/19960421_19960422.off &lt; create_offset.in<br>
+  offset_pwr rslc_lt/19960421.rslc rslc_lt/19960422.rslc
+  rslc_lt/19960421.rslc.par rslc_lt/19960422.rslc.par
+  rslc_lt/19960421_19960422.off rslc_lt/19960421_19960422.offs
+  rslc_lt/19960421_19960422.snr<br>
+  offset_fit rslc_lt/19960421_19960422.offs
+  rslc_lt/19960421_19960422.snr rslc_lt/19960421_19960422.off
+  rslc_lt/19960421_19960422.coffs - - 3<span style=
+  "font-weight: bold;"><br></span></code>
+
+  <h3>Mode 4: <span style="font-family: monospace;">resample SLC
+  using offset polynomials from SLC refinement, repeat SLC offset
+  polynomial estimation, resample SLC and measure residual
+  offsets<br></span></h3>The SLC is resampled to the reference and
+  the range and azimuth offsets of the SLC to the reference scene
+  is measured. If the <span style=
+  "font-style: italic;">rflag</span> command line parameter is set
+  to 1 (offset refinement) the residual polymials are added to the
+  offset polynomials and the SLC is resampled using the updated
+  offset polynomial correction. The offsets of the resampled SLC
+  with respect to the reference SLC are&nbsp; measured again and
+  range and azimuth offset polynomials from these new offsets are
+  determined.&nbsp; Iteration of the offset model reduces the
+  residual offsets<br>
+  <br>
+  <span style="font-weight: bold;">Example:<br></span> Resampling
+  using the SLC offset correction&nbsp; polynomials.<br>
+  <br>
+  <code style="color: rgb(0, 0, 153);">SLC_resamp_lt_all SLC_tab1
+  slc/19960421.slc slc/19960421.slc.par mli_1_5/19960421.mli.par
+  geo/lan_dem.rdc&nbsp; mli_1_5 rslc_lt RSLC_lt_tab 4
+  0</code><code><span style="color: rgb(51, 0, 153);"><br>
+  <br></span></code> This results in the following commands, first
+  to resample the SLC using the offset polynomial
+  corrections:<br style="color: rgb(51, 0, 153);">
+  <code> <span style="color: rgb(51, 0, 153);">SLC_interp_lt
+  slc/19960422.slc rslc_lt/19960421.rslc.par slc/19960422.slc.par
+  rslc_lt/19960421_19960422.lt1 mli_1_5/19960421.mli.par
+  mli_1_5/19960422.mli.par rslc_lt/19960421_19960422.off
+  rslc_lt/19960422.rslc rslc_lt/19960422.rslc.par<br>
+  <br></span></code> Then measure the residual offsets of the
+  resampled SLC<br>
+  <code><span style="color: rgb(51, 0, 153);"><br>
+  offset_pwr rslc_lt/19960421.rslc rslc_lt/19960422.rslc
+  rslc_lt/19960421.rslc.par rslc_lt/19960422.rslc.par
+  rslc_lt/19960421_19960422_2.off rslc_lt/19960421_19960422_2.offs
+  rslc_lt/19960421_19960422_2.snr<br>
+  offset_fit rslc_lt/19960421_19960422_2.offs
+  rslc_lt/19960421_19960422_2.snr rslc_lt/19960421_19960422_2.off
+  rslc_lt/19960421_19960422_2.coffs - - 3<br>
+  <br>
+  range_offset_polynomial: 0.00259 -3.0636e-06 1.2147e-07
+  0.0000e+00 0.0000e+00 0.0000e+00<br>
+  azimuth_offset_polynomial: -0.00852 3.9308e-06 -9.8217e-08
+  0.0000e+00 0.0000e+00 0.0000e+00<br></span></code><span style=
+  "color: rgb(14, 0, 43);"><br style="font-family: monospace;">
+  In the case where <span style="font-style: italic;">rflag =
+  0</span>, the script ends at this point.&nbsp; In the case where
+  <span style="font-style: italic;">rflag = 1</span> these&nbsp;
+  polynomial models of the residual offsets are added to the&nbsp;
+  original SLC offset polyomials for range and azimuth and then
+  replaced in the offset parameter file</span> <code><span style=
+  "color: rgb(51, 0, 153);">rslc_lt/19960421_19960422_2.off:</span></code><br>
+
+  <code><span style="color: rgb(51, 0, 153);"><br>
+  set_value rslc_lt/19960421_19960422.off
+  rslc_lt/19960421_19960422.off "range_offset_polynomial"&nbsp;
+  "0.02641 -2.90396e-05&nbsp; 9.12520e-07&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00"<br>
+  set_value rslc_lt/19960421_19960422.off
+  rslc_lt/19960421_19960422.off "azimuth_offset_polynomial"
+  "-0.23748&nbsp; 1.09871e-04&nbsp; 6.01638e-06&nbsp;
+  0.00000e+00&nbsp; 0.00000e+00&nbsp;
+  0.00000e+00"<br></span></code><code><br></code> Followed by the
+  final resampling of the SLC data and measurement of the residual
+  offsets:<code><br>
+  <span style="color: rgb(51, 0, 153);">SLC_interp_lt
+  slc/19960422.slc slc/19960421.slc.par slc/19960422.slc.par
+  rslc_lt/19960421_19960422.lt1 mli_1_5/19960421.mli.par
+  mli_1_5/19960422.mli.par rslc_lt/19960421_19960422.off
+  rslc_lt/19960422.rslc rslc_lt/19960422.rslc.par<br>
+  offset_pwr rslc_lt/19960421.rslc rslc_lt/19960422.rslc
+  rslc_lt/19960421.rslc.par rslc_lt/19960422.rslc.par
+  rslc_lt/19960421_19960422_2.off rslc_lt/19960421_19960422_2.offs
+  rslc_lt/19960421_19960422_2.snr<br>
+  offset_fit rslc_lt/19960421_19960422_2.offs
+  rslc_lt/19960421_19960422_2.snr rslc_lt/19960421_19960422_2.off
+  rslc_lt/19960421_19960422_2.coffs - - 3<br></span></code><br>
+  These are the final residual polynomials for the range and
+  azimuth offsets:<code><br></code><code><span style=
+  "color: rgb(51, 0, 153);">range_offset_polynomial: 0.00031
+  -3.8896e-07 2.2640e-08 0.0000e+00 0.0000e+00 0.0000e+00<br>
+  azimuth_offset_polynomial: -0.00061 2.8074e-07 -2.0560e-08
+  0.0000e+00 0.0000e+00 0.0000e+00<br></span></code>
+
+  <h3>Offset Error Estimation:</h3>It is essential to have
+  estimates of the residual error in the resampling for each of the
+  SLCs. A log file is created for each SLC pair and stored in the
+  resampled SLC directory. The commands and &nbsp;complete output
+  of each of the programs &nbsp;is recorded in the log file. In
+  this particular example there is only one log file since only a
+  single pair has been co-registered. In this example the SLC data
+  were resampled 3 times and the residual offsets measured.&nbsp;
+  The values of the standard deviation of the measurements relative
+  to the model&nbsp; can be extracted from the log file using the
+  Linux/Unix grep utility as follows:<br>
+  <code><br>
+  <span style="color: rgb(51, 51, 153);">grep "final model fit std.
+  dev."&nbsp; rslc_lt/19960421_19960422_resamp_lt.log<br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0419&nbsp; azimuth:&nbsp;&nbsp; 0.0088&nbsp; #MLI image offset
+  estimation<br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0046&nbsp; azimuth:&nbsp;&nbsp; 0.0074<br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0044&nbsp; azimuth:&nbsp;&nbsp; 0.0066<br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0044&nbsp; azimuth:&nbsp;&nbsp;
+  0.0066<br></span></code><code><span style=
+  "color: rgb(51, 0, 153);">&nbsp;</span></code><br>
+  This indicates that the standard deviation of the offsets in
+  range and azimuth were improved after the second resampling. The
+  values of the offset polynomials in range and azimuth&nbsp; can
+  also be extracted using grep :<br>
+  <br>
+  <code><span style="color: rgb(51, 51, 153);">grep "final range
+  offset poly. coeff.:"&nbsp;
+  rslc_lt/19960421_19960422_resamp_lt.log<br>
+  final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.45454&nbsp;&nbsp; 3.96654e-05&nbsp;&nbsp; 2.84578e-05&nbsp;
+  -2.60329e-08&nbsp; #MLI offset from offset_fitm<br>
+  final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.02382&nbsp; -2.59757e-05&nbsp;&nbsp; 7.91047e-07&nbsp;&nbsp;
+  #SLC range offset polynomials<br>
+  final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00259&nbsp; -3.06361e-06&nbsp;&nbsp; 1.21473e-07<br>
+  final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00031&nbsp; -3.88958e-07&nbsp;&nbsp;
+  2.26396e-08</span></code><span style=
+  "color: rgb(51, 51, 153);"><br>
+  <br></span><code><span style="color: rgb(51, 51, 153);">$ grep
+  "final azimuth offset poly. coeff.:"&nbsp;
+  rslc_lt/19960421_19960422_resamp_lt.log<br>
+  final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.01594&nbsp; -1.32865e-05&nbsp;&nbsp; 1.18202e-06&nbsp;
+  -1.43720e-09&nbsp; #MLI offset from offset_fitm<br>
+  final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.22896&nbsp;&nbsp; 1.05937e-04&nbsp;&nbsp; 6.11460e-06&nbsp;
+  #SLC azimuth offset polynomials<br>
+  final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.00852&nbsp;&nbsp; 3.93078e-06&nbsp; -9.82174e-08<br>
+  final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.00061&nbsp;&nbsp; 2.80742e-07&nbsp;
+  -2.05605e-08<br></span></code><br>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  &nbsp;<a href="charles_werner.html">CW</a>, <a href=
+  "urs_wegmuller.html">UW</a>,&nbsp;<a href=
+  "tazio_strozzi.html">TS</a> last change 7-Jun-2011.
+</body>
+</html>

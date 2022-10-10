@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: JERS_proc_all</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>Create MSP Processing Parameter file for JERS-1 data</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/JERS_proc.c">JERS_proc.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>JERS_proc</em> - creates MSP
+  Processing Parameter File using header/leader files in CEOS
+  format as provided with JERS raw data by NASDA.</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>JERS_proc &lt;CEOS_SAR_leader&gt;
+  &lt;PROC_param&gt;</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>CEOS_SAR_leader</td>
+
+        <td>CEOS SAR leader file (.ldr)</td>
+      </tr>
+
+      <tr>
+        <td>PROC_par</td>
+
+        <td>MSP processing parameter file, (example<br>
+        p&lt;YYYYMMDD&gt;.slc.par)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE<br></strong><samp>JERS_proc 1352.ldr
+  p1352.slc.par</samp></p>
+
+  <p><strong>DESCRIPTION<br></strong><em>JERS_proc</em> reads
+  leader file, searches for information needed for processing the
+  and creates the MSP Processing Parameter File. State vectors in
+  the CEOS leader file are interpolated to create those used for
+  processing using a polynomial interpolation scheme. The user is
+  asked about the segment of the raw data for processing, and about
+  processing options. These parameters include the starting echo
+  and number of echoes, the starting range sample and the FFT size
+  for range processing. Selection of the defaults will result in
+  processing the full scene.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 12-Jun-2006.
+</body>
+</html>

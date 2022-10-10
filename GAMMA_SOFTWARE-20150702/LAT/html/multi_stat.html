@@ -1,0 +1,156 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: multi_stat</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_stat</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/multi_stat.c">multi_stat.c</a></i></p>
+
+  <p><strong>NAME<br></strong><br>
+  Sort MLI image values in a stack and support selection of output
+  image based on average, rank, or percentile<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>multi_stat &lt;im_list&gt; &lt;width&gt; &lt;im_out&gt;
+  &lt;mode&gt; &lt;rank&gt; [nmin]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;im_list&gt;</td>
+
+        <td>(input) text file with names of co-registered float
+        format images including path</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line</td>
+      </tr>
+
+      <tr>
+        <td>&lt;im_out&gt;</td>
+
+        <td>(output) output filtered image (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mode&gt;</td>
+
+        <td>data&nbsp; selection mode:<br>
+        &nbsp;&nbsp; 0: average<br>
+        &nbsp;&nbsp; 1: median<br>
+        &nbsp;&nbsp; 2: rank relative to minimum, rank=1 for
+        minimum<br>
+        &nbsp;&nbsp; 3: rank relative to maximum, rank=1 for
+        maximum<br>
+        &nbsp;&nbsp; 4: percentile, 0 (minimum) --&gt; 100
+        (maximum)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;rank&gt;<br></td>
+
+        <td>rank value in modes 2 and 3, percentile in mode 4
+        (0--&gt;100), ignored for average or median<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nmin]<br></td>
+
+        <td style="vertical-align: top;">minimum number of valid
+        image values required to sort (default: nfiles/2)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><samp><br></samp></p>
+
+  <p><samp>multi_stat lost_hills.tab 600 lh.ave 0</samp></p>
+
+  <p>For the files listed in lost_hills.tab, calculate the temporal
+  average and write the output to lh.ave</p>
+
+  <p><samp>multi_stat lost_hills.tab 600 lh.median 1</samp></p>
+
+  <p>For the files listed in lost_hills.tab, use a temporal median
+  filter and write the output to lh.median</p>
+
+  <p><samp>multi_stat lost_hills.tab 600 lh.rank12 2 12</samp></p>
+
+  <p>of the files listed in lost_hills.tab,&nbsp; rank the values
+  at each location for all the images in the stack. Select the 12th
+  largest value<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">multi_stat</span> is a temporal
+  filter for all the images listed in an input table called the
+  <span style="font-style: italic;">im_list</span>. Each line of
+  the im_list is name of an float format image file. All the images
+  in the stack listed in the i<span style=
+  "font-style: italic;">m_list</span> have the same image width as
+  specified by the <span style="font-style: italic;">width</span>
+  command-line parameter.&nbsp; The mode parameter used to specify
+  the type of filter according to the value:</p>
+
+  <p><code>data selection mode:<br>
+  &nbsp; 0: average<br>
+  &nbsp; 1: median<br>
+  &nbsp; 2: rank relative to minimum, rank=1 for minimum<br>
+  &nbsp; 3: rank relative to maximum, rank=1 for maximum<br>
+  &nbsp; 4: percentile, 0 (minimum) --&gt; 100 (maximum)</code></p>
+
+  <p>The <span style="font-style: italic;">rank</span> parameter is
+  used to specify the desired rank of the output pixel if the
+  <span style="font-style: italic;">mode</span>is set to 2 or
+  3.&nbsp; If the input file has a value of 0.0 for a pixel, it is
+  not considered in the value ranking or in calculating an average.
+  In mode 2 the rank is relative to the minimum, hence rank = 1 is
+  the smallest. In mode 3 the rank is relative to the largest,
+  hence 1 is the largest of the set.if the number of available
+  image values at one point is less than the specified rank number,
+  depending on the mode, either the miximum of minimum value is
+  written to the outpu file.&nbsp;<br></p>
+
+  <p>In the case of mode 4 the rank is determined by the percentile
+  value that lies in the range 0 to 100. In this mode, the rank for
+  each pixel to select is based on the number of samples available
+  for that particular location in the image. The rank is given
+  by<br></p>
+
+  <p><big><code>rank = nearest_int(pcnt/100.*(N-1)) +
+  1,</code></big><br></p>
+
+  <p>where N is the number of valid image values for that point in
+  the scene.<br></p>
+
+  <p>The user can specify that minimum number of valid images
+  required to perform the ranking or average operation for points
+  in the images.&nbsp; Median filtering an an image stack is robust
+  in the presense of non-gaussian noise statistics.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <span style="text-decoration: underline;"><a href=
+  "temp_filt.html">temp_filt</a></span><br>
+  <a href="enh_lee.html"></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="charles_werner.html">CW</a>, last change 30-Oct-2012.
+</body>
+</html>

@@ -1,0 +1,208 @@
+#!/usr/bin/perl
+use FileHandle;
+
+$dop_alg = 2;		#default Doppler ambiguity resolution algorithm selected for dop_ambig
+$az_off = 12000;	#default azimuth line offset for Doppler ambiguity resolution
+$dop_alg = 1;		#default doppler a
+
+if (($#ARGV + 1) < 4){die <<EOS;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.7 10-Feb-2014 clw ***
+*** ALOS PALSAR raw data pre-processing and parameter setup ***
+
+usage: $0 <CEOS_list> <PALSAR_ANT> <out_dir> <log> <proc_list> <mode> [dop_alg] [az_off] [keyword] [value]
+    CEOS_list	(input) parameter file with 4 entries/line 
+                   1. PALSAR CEOS leader file (included path as necessary)   
+                   2. PALSAR CEOS raw SAR data file (included path as necessary)
+                   3. unique scene identifier (date format: 20060610)
+                   4. Polarization (HH, HV, VH, VV)
+    PALSAR_ANT  PALSAR antenna pattern file provided by JAXA (e.g. palsar_ant_20061024.dat)
+    out_dir     directory for output raw data files, MSP processing parameter and sensor parameter files. 
+    log         (output) processing log file  
+    proc_list   (output) (processing list for use by PALSAR_proc_all)
+    mode        processing mode:
+                  1: create MSP processing parameter files and reformat raw data 
+                  2: Doppler ambiguity estimation from raw data (optional)
+                  3: estimate Doppler centroid
+                  4: set value in the processing parameter files for a keyword:value pair
+                  5: generate processing list for use by PALSAR_proc_all
+    dop_alg     method to estimate doppler centroid
+                  1: constant Doppler centroid (azsp_IQ) (default)
+                  2: range dependent Doppler centroid (doppler) 
+    az_off      azimuth line offset for estimation of the Doppler ambiguity (enter - for default: $az_off)
+    keyword 	keyword in the MSP processing parameter file (example: doppler_polynomial)
+    value		new value delimited by double quotes (example: "317.0 0. 0. 0.")
+       
+EOS
+
+open(SLIST, "<$ARGV[0]") or die "ERROR $0: CEOS list does not exist: $ARGV[0]\n";
+
+$PALSAR_ANT = $ARGV[1];
+(-e $PALSAR_ANT) or die "ERROR $0: PALSAR antenna pattern data file does not exist: $PALSAR_ANT";
+
+$out_dir = $ARGV[2];
+unless (-d $out_dir) {
+  print "creating output directory for fixed raw data and MSP processing parameter files: $out_dir\n";
+  $exit = system("mkdir $out_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $out_dir\n"
+}
+
+$log = "$ARGV[3]";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "$0 @ARGV\n\n";
+print "log file: $log\n";
+
+$mode = $ARGV[5];
+if(($mode != 1) && ($mode != 2) && ($mode != 3) && ($mode != 4) && ($mode != 5)){
+  die "ERROR $0: invalid PALSAR_pre_proc processing mode: $mode\n";
+}
+
+if(($mode == 3) && (($#ARGV + 1) >= 7)){
+  if ($ARGV[6] ne "-" ){
+    $dop_alg = $ARGV[6];  
+    $dop_alg =~ /\d+$/ && $dop_alg >= 1 &&  $dop_alg <= 2 or die "ERROR $0: invalid doppler algorithm: $dop_alg\n";
+  }
+}
+
+if(($mode == 2) && (($#ARGV + 1) >= 8)){
+  if ($ARGV[7] ne "-" ){
+    $az_off = $ARGV[7];  
+    $az_off =~ /\d+$/ && $az_off >= 0 or die "ERROR $0: invalid azimuth line offset for Doppler ambiguity estimation: $az_off\n";
+  }
+}
+$time = localtime;
+print "PROCESSING START: $time\n";
+print "CEOS list: $ARGV[0]\n";
+print "antenna pattern data file: $PALSAR_ANT\n";;
+print "output directory: $out_dir\n";
+printf "azimuth line offset for estimation of the Doppler ambiguity number: %d\n\n", $az_off;
+print LOG "PROCESSING START: $time\n";
+print LOG "CEOS list: $ARGV[0]\n";
+print LOG "antenna pattern data file: $PALSAR_ANT\n";;
+print LOG "output directory: $out_dir\n";
+printf LOG "azimuth line offset for estimation of the Doppler ambiguity number: %d\n\n", $az_off;
+close LOG;
+
+if($mode == 4){
+  if (($#ARGV + 1) != 10){die "ERROR $0: mode 4 keyword value pair are missing from the command line\n";}
+  $key =  $ARGV[8];
+  $value = $ARGV[9];
+  print "updating value in the MSP processing parameter files\n";
+  print "keyword: $key   new value: $value\n";
+} 
+
+if($mode == 5){
+  $proc_list = $ARGV[4];
+  print "output processing list file: $proc_list\n";
+  open(PROCF,">$proc_list") or die "ERROR $0: cannot open output processing list file: $proc_list\n";
+}
+
+LINE: while (<SLIST>) {		#read list of directories with unreformated raw data
+  chomp $_;
+  next LINE if /^$/; 		#skip blank lines in input list
+  next LINE if /^#/; 		#skip comments in the input list
+  @fields = split;		#extract the identifier
+  $ceos = $fields[0];
+  $dat1 = $fields[1];
+  $id = $fields[2];
+  $pol = $fields[3];
+  print "polarization value: $pol\n";
+  $pol =~ /HH|HV|VH|VV/ or die "ERROR: invalid polarization value: $pol in $_ , must be HH, HV VH, VV\n";	#check if polarization valid
+  @pols = split //, $pol;
+  $ext = $id."_".$pol;		#file name includes id+polarization
+  $ext_HH = $id."_HH";
+  $tx_pol = $pols[0];
+  $rx_pol = $pols[1];
+
+  if($tx_pol eq "H"){
+    $tx_pol = 0;
+  }
+  else{
+    $tx_pol = 1;
+  }
+  
+  if($rx_pol eq "H"){
+    $rx_pol = 0;
+  }
+  else{
+    $rx_pol = 1;
+  }
+   
+  $ant_pat = "$out_dir"."\/PALSAR_".$id."_".$pol.".antpat";
+  $proc_par = "$out_dir"."\/p".$ext.".slc.par";
+  $sensor = "$out_dir"."\/".$ext.".sar_par";
+  $raw = "$out_dir"."\/".$ext.".raw";
+  print "MSP Processing parameter file: $proc_par\n";
+  print "MSP Sensor parameter file: $sensor\n";
+  print "transmit pol.: $tx_pol   receive pol.: $rx_pol\n\n";
+
+  if($mode == 1){
+    print "CEOS leader: $ceos   input CEOS raw data file: $dat1\n";
+    print "PROC_par: $proc_par  SAR_par: $sensor\n";
+    print "antenna pattern: $ant_pat\n"; 
+    execute("PALSAR_proc $ceos $sensor $proc_par $dat1 $raw $tx_pol $rx_pol", $log);
+    execute("PALSAR_antpat $sensor $proc_par $PALSAR_ANT $ant_pat - $tx_pol $rx_pol", $log);
+#    execute("cp $ant_pat $out_dir",$log);
+  }
+    
+  if($mode == 2){
+    print "CEOS leader: $ceos   PROC_par: $proc_par\n";
+    execute("dop_ambig $sensor $proc_par $raw $dop_alg $az_off", $log);
+  } 
+
+  if($mode == 3){		#use HH polarizaton only such that all beams use the same Doppler trend!!
+    print "CEOS leader: $ceos   PROC_par: $proc_par\n";
+    if($dop_alg == 2){
+      $dop = "$out_dir/$ext_HH.dop";
+      execute("doppler $sensor $proc_par $raw $dop", $log);
+    }
+    else{
+      $azsp ="$out_dir/$ext_HH.azsp";
+      execute("azsp_IQ $sensor $proc_par $raw $azsp $az_off", $log);
+    }
+  }    
+
+  if($mode == 4){
+    print "PROC_par: $proc_par\n";
+    (-e $proc_par) or die"ERROR $0: processing parameter file does not exist: $proc_par\n"; 
+    execute("set_value $proc_par $proc_par $key \"$value\"", $log); 
+  }
+ 
+  if($mode == 5){
+    @dpoly = extract_param($proc_par, "doppler_polynomial:");
+    $fd = $dpoly[1];
+    $fdrate = $dpoly[2];
+    printf PROCF  "$id $pol - - - - %8.1f %12.4e 0.9\n", $fd, $fdrate;
+    printf "$id $pol - - - - %8.1f %12.4e 0.9\n", $fd, $fdrate;
+  }  
+} 
+
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+$time = localtime;
+print "\nPALSAR PRE-PROCESSING  mode $mode end: $time\n";
+print LOG "\nPALSAR PRE-PROCESSING mode $mode end: $time\n";
+exit 0;
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";} 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}

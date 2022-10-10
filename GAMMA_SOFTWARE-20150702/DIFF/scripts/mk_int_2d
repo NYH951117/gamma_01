@@ -1,0 +1,320 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$rsf = 0;
+$azsf = 0;
+$ccw = 3;
+$ccw_min = 3;	#min and max window sizes for cc_ad()
+$ccw_max = 9;
+$scale = .7;
+$exp = 0.35;
+$ext = ".diff";
+$ccflg = 0;	#use cc_wave() to estimate correlation by default
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$scale, 'm' => \$use_mli2, 'c' => \$ccflg);
+
+if (($#ARGV + 1) < 8){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v2.7 10-Apr-2015 clw ***
+*** Calculate 2D interferograms without subtraction of simulated phase ***
+
+usage: $0 <RSLC_tab> <itab> <mli> <mli_dir> <int_dir> <rlks> <azlks> <cc_win> [rsflg] [azflg] [ext] [scale] [exp]
+
+    RSLC_tab  (input) two column list of resampled SLC filenames and SLC parameter filenames (including paths) (text)
+                1. SLC filename  (includes path)
+                2. SLC parameter filename (includes path)
+    itab      (input) table associating interferogram stack records with pairs of SLC stack records (text)
+                1. row number in SLC_tab of the reference SLC 
+                2. row number in SLC_tab of SLC-2 of the interferogram
+                3. line number in the itab
+                4. flag used to indicate if this interferogram is used for IPTA processing (0:not used  1:used)
+    mli       (input) reference MLI image with the same rlks and azlks as the interferogram
+    mli_dir   directory containing MLI images of the coregistered SLCs                      
+    int_dir   interferogram directory 
+    rlks      range looks for interferogram generation
+    azlks     azimuth looks for interferogram generation
+    cc_win    correlation estimation window size in pixels with linear weighting (default: $ccw)
+    rsflg     range spectral shift filtering flag:
+                0: off (default)
+		1: on
+    azflg     azimuth common-band filtering flag:
+                0: off (default)
+		1: on
+    -s scale  (option) set image display scale factor (default: $scale)   
+    -e exp    (option) set image display exponent (default: $exp)
+    -m        (option) use MLI2 as the background image rather than rmli image on the command line
+    -c        (option) use cc_ad to estimate correlation rather than cc_wave
+
+EOS
+
+$itab     = $ARGV[1];
+$mli      = $ARGV[2];
+$mli_dir  = $ARGV[3];
+$diff_dir = $ARGV[4];
+$rlks     = $ARGV[5];
+$azlks    = $ARGV[6];
+
+($rlks >= 1 && $rlks <= 32) or die "\nERROR $0: number of range looks is greater than limit: $rlks  max: 32\n";
+($azlks >= 1 && $azlks <= 32) or die "\nERROR $0: number of azimuth looks is greater than limit: $azlks  max: 32\n";
+
+if($#ARGV >= 7){$ccw = $ARGV[7];}
+($ccw >= 1 && $ccw <= 15) or  die "\nERROR $0: invalid value for corrrelation window parameter: $ccw\n"; 
+
+if($#ARGV >= 8){$rsf = $ARGV[8];}
+($rsf <= 1 && $rsf >=0) or  die "\nERROR $0: invalid value for range spectral shift flag: $rsf\n"; 
+
+if($#ARGV >= 9){$azf = $ARGV[9];}
+($azf <= 1 && $azsf >=0) or  die "\nERROR $0: invalid value for azimuth spectral shift flag: $azsf\n"; 
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of resampled SLC images and parameter files does not exist: $ARGV[0]\n\n";
+print "table of resampled SLC images and parameter files: $ARGV[0]\n"; 
+
+open(ITAB, "<$itab") or die "ERROR $0: cannot open itab file: $itab\n";
+-e $mli or die "ERROR $0: mli reference image file does not exist: $mli\n";
+-d $mli_dir or die "ERROR $0: directory containing mli images does not exist: $mli_dir\n";
+
+unless (-d $diff_dir) {
+  print "creating diff directory: $diff_dir\n";
+  (mkdir $diff_dir) or die "ERROR $0: non-zero exit status, could not create differential interferogram directory $diff_dir\n";
+}
+
+$diff_par_in = "$diff_dir/diff_par.in";
+$off_par_in = "$diff_dir/off_par.in";
+$log = "$diff_dir/mk_diff_2d.log"; 
+ 
+print "$0 log file: $log\n";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush; 
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+ 
+$rlks =~ /\d+$/ && $rlks > 0 or die "ERROR $0: invalid number of range looks: $rlks\n";
+$azlks =~ /\d+$/ && $azlks > 0 or die "ERROR $0: invalid number of azimuth looks: $azlks\n";
+
+$time = localtime;
+print "start: $time  log file: $log\n\n";
+print "itab:                     $itab\n";
+print "diff. directory:          $diff_dir\n";
+print "interf. looks range: $rlks  azimuth: $azlks\n";
+print "correlation window size: $ccw\n";
+print "display scale factor: $scale  exponent: $exp\n";
+
+if ($rsf == 1){print "NOTE: applying range spectral shift filtering\n";}
+else {print "NOTE: not applying range spectral shift filtering\n";}
+
+if ($azf == 1){print "NOTE: applying azimuth common band filtering\n";}
+else {print "NOTE: not applying azimuth common band filtering\n";}
+print "\n";
+
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n";
+print LOG "itab:                   $itab\n";
+print LOG "diff. directory:        $diff_dir\n";
+print LOG "interf. looks range: $rlks  azimuth: $azlks\n";
+print LOG "correlation window size: $ccw\n";
+print LOG "display scale factor: $scale  exponent: $exp\n";
+if($rsf == 1){print LOG "NOTE: applying range spectral shift filtering\n";}
+else {print LOG "NOTE: not applying range spectral shift filtering\n";}
+
+if ($azf == 1){print LOG  "NOTE: applying azimuth common band filtering\n";}
+else {print LOG "NOTE: not applying azimuth common band filtering\n";}
+print LOG "\n";
+
+$i = 1;
+LINE: while (<SLC_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^\s*$/; 	#skip blank lines or white space in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $slc[$i] = $fields[0];
+  $slc_par[$i] = $fields[1];
+  -e $slc[$i] or die "ERROR $0: slc image file does not exist: $slc[$i]\n";     
+  -e $slc_par[$i] or die "ERROR $0: ISP image parameter file does not exist: $slc2_par[$i]\n";
+  printf "%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  printf LOG "%2d  $slc[$i]  $slc_par[$i]\n",$i;
+  $i++;
+} 
+
+$n = 1;
+close LOG;
+
+LINE: while (<ITAB>) {		#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^\s*$/; 	#skip blank lines or whitespace in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  next LINE if ($fields[3] == 0);  #skip if the itab column flag = 0
+  $slc1 = $slc[$fields[0]];
+  $slc1_par = $slc_par[$fields[0]];
+  my ($s1, $dir1, $ext1) = fileparse($slc1, qr/\.[^.]*/); #extension is the last bit after the last period   
+
+  $slc2 = $slc[$fields[1]];
+  $slc2_par = $slc_par[$fields[1]];
+  my ($s2, $dir2, $ext2) = fileparse($slc2, qr/\.[^.]*/); #extension is the last bit after the last period   
+ 
+  $fn = $diff_dir."/".$s1."_".$s2;
+  $int = $fn.$ext;
+  $off2 = $1.$s1."_".$s2.".off";	#offset parameter file from either coregistration, or lookup table refinement
+  $off = $fn.".off";		
+  
+  unless(-e $off){ 
+    if(-e $off2){
+      execute("cp $off2 $off", $log);	#copy to interferometry offset file
+    }
+    else{
+      printf "NOTE: $off from SLC resampling does not exist, creating new ISP offset parameter file\n";
+      $off = $fn.".off";
+      open(MPAR, ">$off_par_in") or die "ERROR $0: cannot create file with inputs to create_diff_par: $off_par_in\n\n";
+      print MPAR "$s1 $s2\n\n\n\n\n\n\n";
+      close MPAR;  
+      execute("create_offset $slc1_par $slc2_par $off < $off_par_in", $log);
+      print "\n";
+    }
+  }  
+  
+  $diff_par = $fn.".diff_par";
+  $mli1 = $mli_dir."/".$s1.".rmli";
+  $mli2 = $mli_dir."/".$s2.".rmli";
+  unless (-e $mli1){
+    $mli1 = $mli_dir."/".$s1.".mli";
+    $mli2 = $mli_dir."/".$s2.".mli";
+    -e $mli1 or die "MLI-1 does not exist: $mli1\n";
+    -e $mli2 or die "MLI-2 does not exist: $mli2\n";
+  }
+
+  $cc = $fn.".cc";
+  printf "\n*** %d  SLC1: $slc1  SLC2: $slc2  OFF: $off ***\n",$n;
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+  printf LOG "\n*** %d  SLC1: $slc1  SLC2: $slc2  OFF: $off ***\n",$n;
+  close LOG;
+ 
+  @slc1_date = extract_param($slc1_par, "date:");
+  @slc2_date = extract_param($slc2_par, "date:");
+  $jd1 = julday($slc1_date[1], $slc1_date[2], $slc1_date[3]);
+  $jd2 = julday($slc2_date[1], $slc2_date[2], $slc2_date[3]);
+  print "SLC-1 date: @slc1_date   julian day: $jd1\n";
+  print "SLC-2 date: @slc2_date   julian day: $jd2\n";
+  $delta_t = $jd2 - $jd1;
+  print "interferogram delta_t (days): $delta_t\n";
+  @slc1_freq = extract_param($slc1_par, "radar_frequency:");
+  @slc2_freq = extract_param($slc2_par, "radar_frequency:");
+  print "SLC-1 radar frequency: $slc1_freq[1]\n";
+  print "SLC-2 radar frequency: $slc2_freq[1]\n\n";
+  $f2flg = 0;
+  
+  if($slc1_freq[1] != $slc2_freq[1]){
+    printf "SLC scenes have different radar carrier frequencies!\n"; 
+    $f2flg = 1
+  }
+  execute("SLC_intf $slc1 $slc2 $slc1_par $slc2_par $off $int $rlks $azlks 0 - $rsf $azsf",$log);
+   
+#create diff_par, simulate interferogram from DEM in RDC and subtract
+  unless (-e $diff_par){
+    open(MPAR, "> $diff_par_in") or die "ERROR $0: cannot create file with inputs to create_diff_par: $diff_par_in\n\n";
+    print MPAR "$s1 $s2\n\n\n\n\n";
+    close MPAR;  
+    execute("create_diff_par $off - $diff_par < $diff_par_in",$log);
+    print "\n\n";
+  }
+
+  @width = extract_param($off, "interferogram_width:");
+#  @lines = extract_param($off, "interferogram_azimuth_lines:");
+  $mli = $mli2 if $use_mli2;
+# generate raster file of the differential interferogram and correlation map, use mli2 as the background intensity
+  execute("rasmph_pwr $int $mli $width[1] 1 1 0 1 1 $scale $exp",$log);
+  if ($ccflg == 0){  
+    execute("cc_wave $int $mli1 $mli2 $cc $width[1] $ccw $ccw 1", $log);
+  } 
+  else {
+    execute("cc_ad $int $mli1 $mli2 - - $cc $width[1] $ccw_min $ccw_max 0", $log);
+  }
+  execute("rascc $cc $mli $width[1] 1 1 0  1 1 .1 .9 $scale $exp", $log);
+  $n++;
+}
+
+$time = localtime;
+print "\n $0 processing end: $time\n";
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "\n $0 processing end: $time\n";
+close LOG;
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log  command: $command\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log  command: $command\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub julday {
+##################################
+# Julian Day from Gregorian Date #
+##################################
+
+use integer;
+my ( $y, $m, $d) = @_;
+#print "y,m,d: $y $m $d\n";
+my $jd = (1461 * ($y + 4800 + 
+($m - 14) / 12)) / 4 + (367 * 
+($m - 2 - 12 * (($m - 14) / 12))) 
+/ 12 - (3 * (($y + 4900 + ($m - 14)
+/ 12) / 100)) / 4 + $d - 32075;
+return $jd;
+};
+
+sub caldat {
+##################################
+# Gregorian Date from Julian Day #
+##################################
+
+use integer;
+my ($d,$i,$j,$jd,$l,$m,$n,$y);
+$jd = shift;
+$l = $jd + 68569;
+$n = ( 4 * $l ) / 146097;
+$l = $l - ( 146097 * $n + 3 ) / 4;
+$i = ( 4000 * ( $l + 1 ) ) / 1461001;
+$l = $l - ( 1461 * $i ) / 4 + 31;
+$j = ( 80 * $l ) / 2447;
+$d = $l - ( 2447 * $j ) / 80;
+$l = $j / 11;
+$m = $j + 2 - ( 12 * $l );
+$y = 100 * ( $n - 49 ) + $i + $l;
+return ($y,$m,$d);
+};
+
+=pod
+
+Algorithms taken from Peter Meyer's web site
+hermetic.magnet.ch/cal_stud/cal_art.htm
+
+Test numbers: 
+Given $y = 1; $m = 1; $d = 1;   $jd == 1721426;
+Given $y = -4713; $m = 11; $d = 24;  $jd == 0;
+Given $y = 1858; $m = 11; $d = 16;   $jd == 2400000;
+
+$jd = julday(1858,11,16);
+printf "julian day 16-Nov-1858: %d\n", $jd;
+printf "date of julian day %d: %d %d %d\n\n",$jd, caldat($jd);
+
+=cut

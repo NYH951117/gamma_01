@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: ras_majority</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ras_majority</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ras_majority.c"><i>ras_majority.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>ras_majority</em> - Majority filtering of SUN raster or BMP
+  format class map files.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_majority &lt;file_in&gt; &lt;file_out&gt;
+  &lt;pwr_out&gt; [filter_width] [LR]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;file_in&gt;</td>
+
+      <td>input (8-bit) SUN raster or BMP image file (SUN raster:
+      *.ras, BMP image format: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;file_out&gt;</td>
+
+      <td>output (8-bit) SUN raster or BMP image file (SUN raster:
+      *.ras, BMP image format: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>[filter_width]</td>
+
+      <td>filter width (select from 3,5,7 default = 3)</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping: default=1:normal, -1:mirror
+      image</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ras_majority 1352_1610.landuse.ras
+  1352_1610.landuse_maj7.ras 7</samp></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code <em>ras_majority.c</em> in $LAT_HOME/src. For
+  compilation adjust and use Makefile: Executable version
+  <em>ras_majority</em> in $LAT_HOME/bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>ras_majority</em> carries out a majority filtering on the
+  input image file in either SUN raster of BMP format. Around each
+  pixel a window with size defined by the user is selected. The
+  value occurring most often in the window area is associated to
+  the output pixel value. Only odd numbers (3,5,7,9, ...) may be
+  selected for the window size. Majority filtering is appropriate
+  to improve classification results, i.e. to supress small areas
+  belonging to a different class. Useful only in classification
+  maps with a relatively small number of differerent classes.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The output image may be left/right flipped relative to the input
+  image.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

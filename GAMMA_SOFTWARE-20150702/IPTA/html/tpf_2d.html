@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>IPTA Reference Manual: tpf_2d</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>tpf_2d</h2>
+
+  <p><i>ANSI-C program: <a title="tpf_2d" href=
+  "../src/tpf_2d.c">tpf_2d.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">tpf_2d</span> - Temporal
+  filtering of displacement or other time-series data (fcomplex,
+  scomplex format or float format)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>tpf_2d &lt;TS_tab&gt; &lt;MLI_tab&gt; &lt;itab_ts&gt;
+  &lt;TS_out&gt; &lt;TS_tab_out&gt; [dtype] [dtmax] [mode] [np_max]
+  [sigma]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;TS_tab&gt;</td>
+
+        <td>(input) list of time-series data files (fcomplex,
+        scomplex, or float (default)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_tab&gt;</td>
+
+        <td>(input) list MLI images and parameter files that are
+        associated with the entries of the TS_tab<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        NOTE: the number of range and azimuth looks must match
+        files in TS_tab</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab_ts&gt;</td>
+
+        <td>(input) single-reference itab describing files in the
+        TS_tab time-series stack</td>
+      </tr>
+
+      <tr>
+        <td>&lt;TS_out&gt;</td>
+
+        <td>root file name of temporally filtered time-series data
+        files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;TS_tab_out&gt;</td>
+
+        <td>output TS_tab file containing a list of the filtered
+        time-series data files</td>
+      </tr>
+
+      <tr>
+        <td>[dtype]</td>
+
+        <td>data type (enter - for default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: fcomplex<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: scomplex<br>
+        &nbsp;&nbsp; &nbsp; 2: float (default)</td>
+      </tr>
+
+      <tr>
+        <td>[dtmax]</td>
+
+        <td>maximum time interval considered (t - dtmax, t + dtmax)
+        (days) (-1: all records, default:&nbsp; 70.00000)</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>temporal filter mode<br>
+        &nbsp;&nbsp;&nbsp; 0: uniform average (default for fcomplex
+        and scomplex)<br>
+        &nbsp;&nbsp;&nbsp; 1: triangular weighted average<br>
+        &nbsp;&nbsp;&nbsp; 2: linear least-squares (default for
+        float))</td>
+      </tr>
+
+      <tr>
+        <td>[np_max]</td>
+
+        <td>maximum number of temporal neighbors (enter - for
+        default: all scenes)</td>
+      </tr>
+
+      <tr>
+        <td>[sigma]</td>
+
+        <td>(input) phase sigma for interferogram in the TS_tab
+        (text)(enter - for all equal)<br>
+        format: line_number&nbsp;&nbsp; phase_sigma</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <br>
+  <code><samp>tpf_2d TS_tab RMLI_tab itab_ts diff_ts_tpf TS_tab_tpf
+  2 70 2<br></samp></code></p>
+
+  <p>Conducts a temporal filtering of the stack of data listed in
+  the <span style="font-style: italic;">TS_tab</span> and described
+  by <span style="font-style: italic;">itab_ts</span> and
+  <span style="font-style: italic;">RMLI_tab</span>. Records which
+  are at most +/-70 days away from the current record are included
+  in the filter window. Linear least-squares filtering has been
+  selected.</p>
+
+  <p><span style="font-style: italic;">TS_tab</span> is a list of
+  the time series data and the file <span style=
+  "font-style: italic;">itab_ts</span> is the itab with information
+  which entries in the <span style=
+  "font-style: italic;">RMLI_tab</span> apply to the entries in the
+  <span style="font-style: italic;">TS_tab</span>.&nbsp;
+  <span style="font-style: italic;">diff2_ts_tpf</span> is the root
+  file name of the output data files and these are listed in the
+  <span style="font-style: italic;">TS_tab_tpf</span> file. The
+  root file name can also contain a full path and directory names,
+  as long as these already exist.&nbsp;<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">tpf_2d</span> supports the
+  temporal filtering of stacks of single reference interferograms.
+  The records to be considered in the filtering can be indicated
+  through the maximum difference in record time and maximum number
+  of records considered, or just one of the two criteria by
+  selecting all records in the other criteria.The <span style=
+  "font-style: italic;">itab_ts</span> is required to associate the
+  interferograms with pairs of MLI parameter files.</p>
+
+  <p>Several options are available for performing the filtering.
+  Filter modes modes 0 and 1 produce output values that are
+  weighted sums of the input data that are within the local
+  temporal window specified by the <span style=
+  "font-style: italic;">dtmax</span> parameter. Either constant or
+  triangular weighting can be selected.&nbsp;<br></p>
+
+  <p>For data that are floating point, filtering using linear
+  least-squares&nbsp; (LS) estimation is an option. A linear
+  regression of the values with the temporal window is performed.
+  This mode has the advantage of&nbsp; reducing errors at the
+  beginning and end of the time series and where there is sparse
+  unevenly sampled data. The bias is reduced by predicting the
+  estimate at the desired time using the linear trend. In the case
+  of NULL values in the input point data stack,&nbsp; the records
+  considered are not redefined. The temporal filtering is correctly
+  done for these fewer points (i.e. considering the missing values
+  in the normalization).</p>
+
+  <p>The "delta-time" considered for a record is the time
+  difference (in days) between the slave and master SLC (as listed
+  in the <span style="font-style: italic;">itab</span> file. In the
+  case of a stack with all records having the same SLC reference
+  this corresponds to a temporal filtering considering the time of
+  the slave SLC.<br></p>There is the option to provide a text file
+  containing the standard deviation of the phase values in each
+  layer. The variation on the phase of each layer can be attributed
+  to atmospheric noise. When these phase values are provided for
+  float data (unwrapped phase), the standard deviation for each
+  layer&nbsp; is used to weight the data in the least-squares
+  smoothing. In this way layers with large atmospheric variation
+  have less influence relative to layers with lower levels of
+  atmospheric noise.<br>
+  <br>
+  The standard deviation of each layer can be calculated by the
+  program <a href="stat_pt.html">stat_pt</a>. The text file output
+  by stat_pt has 3 entries on each line, the first is the layer
+  number followed by the mean and the standard deviation of the
+  point data in that layer.
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>,&nbsp;<a href=
+  "stat_pt.html">stat_pt</a>, <a href="tpf_pt.html">tpf_pt</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 4-Jul-2013.
+</body>
+</html>

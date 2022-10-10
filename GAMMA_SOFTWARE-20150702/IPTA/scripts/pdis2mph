@@ -1,0 +1,64 @@
+#! /bin/csh -f
+
+##################################################################
+#
+# uw 2-Jul-2003
+# Script to display 2 point data sets such as deformation rates
+#
+##################################################################
+
+if ($#argv < 8)then
+  echo " " 
+  echo "usage: pdis2mph <plist> <pmask> <SLC_par> <pdata1> <rec_num1> <pdata2> <rec_num2> <par_out> [radius]" 
+  echo " " 
+  echo "       plist      (input) point list (int)"  
+  echo "       pmask      (input) point data stack of mask values (uchar, pmask[i]=0 excludes point i, enter - if not available)"  
+  echo "       SLC_par    (input) SLC parameter file of point list coordinates"  
+  echo "       pdata1     (input) 1. point data stack (fcomplex)"  
+  echo "       rec_num1   1. record number to process"  
+  echo "       pdata2     (input) 2. point data stack (fcomplex)"  
+  echo "       rec_num2   2. record number to process"  
+  echo "       par_out    (input) SLC/MLI parameter file of 2-D output image data file"  
+  echo "       radius     interpolation window radius used default:   4.00)"  
+  echo " " 
+  exit
+endif
+
+set plist   = $1
+set pmask   = $2
+set SLC_par = $3
+set pdata1   = $4
+set rec_num1 = $5
+set pdata2   = $6
+set rec_num2 = $7
+set par_out = $8
+set radius = "4"
+if ($#argv >= 9)then
+  set radius = $9
+endif
+
+set width = `awk '$1 == "range_samples:" {printf("%s",$2)}' $par_out `
+
+set tmp1 = tmp1.pdis2mph
+if (-e $tmp1)then
+  /bin/rm $tmp1
+endif
+set tmp2 = tmp2.pdis2mph
+if (-e $tmp2)then
+  /bin/rm $tmp2
+endif
+
+set npt    = `npt $plist | awk '$1 == "total_number_of_points:" {printf("%d",$2)}'`
+set nbytes = `ls -l $pdata | awk '{printf("%d",$5)}'`
+set nrec   = `echo $nbytes $npt 8|awk '{print ($1/$2/$3)}'`
+
+if (1) then
+  pt2data $plist $pmask $SLC_par $pdata1 $rec_num1 $tmp1 $par_out 0 3 $radius 1
+  pt2data $plist $pmask $SLC_par $pdata2 $rec_num2 $tmp2 $par_out 0 3 $radius 1
+  dis2mph $tmp1 $tmp2 $width $width 1 0 0 0 1. .35
+endif
+
+if (1) then
+  /bin/rm $tmp1
+  /bin/rm $tmp2
+endif

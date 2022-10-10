@@ -1,0 +1,457 @@
+#!/usr/bin/perl
+use FileHandle;
+#uncomment on Windows
+#$MSP_HOME ="C:\/msys\/1.0/home\/cw\/gamma_software\/MSP";
+$MSP_HOME = $ENV{'MSP_HOME'};
+
+if (($#ARGV + 1) < 6){die <<EOS;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v4.0 7-Jun-2014 clw ***
+*** ERS raw data pre-processing ***
+
+usage: $0 <CEOS_list> <path_to_DELFT> <out_dir> <log> <proc_list> <mode> [keyword] [value]
+
+    CEOS_list	(input) parameter file with 1 column entry/record
+		  1. directory (including path) containing CEOS data set from ERS
+    DELFT_path  path to DELFT orbits (example: /usr/local/data/DELFT)
+    out_dir     directory for output fixed raw data files and processing parameter files
+    log         (output) ERS_pre_proc processing log file
+    proc_list   (output) processing list for use by ERS_proc_par and ERS_proc_all
+    mode        processing mode:
+		  1: create processing parameter files from CEOS leaders
+		  2: fix raw data files (read and scan for missing lines)
+		  3: extract and interpolate DELFT state vectors and update MSP processing parameter files
+		  4: estimate Doppler ambiguity and centroid
+    		  5: set value in the processing parameter files for a keyword:value pair
+		  6: generate processing list for use by ERS_proc_all
+		  7: gzip fixed raw data files
+    keyword 	(mode 5) keyword in the MSP processing parameter file (example: doppler_polynomial)
+    value	(mode 5) new value delimited by double quotes (example: "317.0 0. 0. 0.")
+
+EOS
+
+$mode = $ARGV[5];
+$out_dir = $ARGV[2];
+unless (-d $out_dir) {
+  print "creating output directory for fixed raw data and MSP processing parameter files: $out_dir\n";
+  $exit = system("mkdir $out_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $out_dir\n"
+}
+$log = "$out_dir"."\/$ARGV[3]";
+print "log file: $log\n";
+open(LOGF,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOGF->autoflush;		#set filehandle special variable to flush output immediately
+print LOGF "$0 @ARGV\n\n";	#print command line that was used
+$time = localtime;
+print "\nPROCESSING START: $time  mode: $mode\n";
+print LOGF "\nPROCESSING START: $time  mode: $mode\n";close LOG;
+close LOGF;
+
+open(SLIST, "<$ARGV[0]") or die "ERROR $0: CEOS list does not exist: $ARGV[0]\n";
+print "CEOS list: $ARGV[0]\n";
+
+$delft_path = $ARGV[1];
+(-d $delft_path) or die "ERROR: directory for Delft orbit data does not exist\n";
+print "MSP_HOME: $MSP_HOME\n";
+(-d "$MSP_HOME\/sensors") or die  <<EOS;
+
+ERROR: directory for MSP sensor parameter files does not exist
+The default location for the ERS sensor parameters is \$MSP_HOME/sensors. Please set the
+correct value for the $MSP_HOME environment variable
+EOS
+
+$exit = system("cp $MSP_HOME\/sensors\/ERS1* $out_dir");
+$exit = system("cp $MSP_HOME\/sensors\/ERS2* $out_dir");
+
+if($mode == 5){
+  if (($#ARGV + 1) != 8){die "ERROR $0: keyword value pair are missing\n";}
+  $key =  $ARGV[6];
+  $value = $ARGV[7];
+  print STDOUT "updating value in the MSP processing parameter files\n";
+  print STDOUT "keyword: $key   value: $value\n";
+}
+
+if($mode == 6){
+  $proc_list = $ARGV[4];
+  print STDOUT "processing list file: $proc_list\n";
+  open(PROCF,">$proc_list") or die "ERROR $0: cannot open output processing list file: $proc_list\n";
+}
+
+$proc_par_in = "$out_dir/proc_par.in";
+
+LINE: while (<SLIST>) {		#read list of directories with raw data
+  chomp $_;
+  next LINE if /^$/; 		#skip blank lines in input list
+  next LINE if /^#/; 		#skip comments in the input list
+  @fields = split;		#extract the identifier
+  $path = $fields[0];
+  print "path to raw data: $path\n";
+  $ceos = "$path\/LEA_01.001";	#CEOS data are in a further subdirectory!
+
+  if($mode == 1){		#file to contain inputs to ERS_proc_* programs
+    open(MPAR, "> $proc_par_in") or die "ERROR $0: cannot create file with inputs to ERS_proc_*: $proc_par_in\n\n";
+  }
+
+  unless (-e $ceos){
+    $ceos = "$path\/lea_01.001";
+    (-e $ceos) or die "ERROR: cannot open CEOS leader file either $path/LEA_01.001 or $path/lea_01.001\n";
+  }
+
+  $use_delft = 1;
+  my @ceos_params=lea_parse("$ceos");
+  $process = $ceos_params[0];
+  $id = $ceos_params[2];
+  print "\nCEOS parameters $path:@ceos_params\n";
+
+  $PROC_par = "$out_dir"."\/p".$id.".slc.par";
+  $raw = "$path/DAT_01.001";
+
+  if($mode == 2){
+    unless (-e $raw){
+      $raw = "$path\/dat_01.001";
+      (-e $raw) or die "ERROR: cannot open SAR data file either $path/DAT_01.001 or $path/dat_01.001\n";
+    }
+  }
+
+  $fix = "$out_dir/$id.fix";
+  $gz = "$out_dir/$id.fix.gz";
+  $azsp = "$out_dir/$id.azsp";
+
+  if($ceos_params[1] eq "ERS1"){
+    if($ceos_params[2] <= 19960707){
+#      $delft_dir = "$delft_path"."\/ers1\/dgm-e04";
+      $delft_dir = "$delft_path"."\/ers1\/eigen_gl04s";
+    }
+    elsif ($ceos_params[2] >= 19990618){
+      $delft_dir = "$delft_path"."\/ers1\/dgm-e04.fd";
+    }
+    else{
+      print "WARNING: ERS1 data between 7-Jul-1996 and 18-Jun-1999 where there are no Delft orbits\n";
+      $use_delft = 0;
+    }
+  }
+
+#setup Delft orbit paths
+  if($ceos_params[1] eq "ERS2"){
+    if($ceos_params[2] <= 20110707){
+      $delft_dir = "$delft_path"."\/ers2\/eigen_gl04s";
+    }
+    else {
+      print "WARNING: ERS2 state vectors not available after 20110707\n";
+      $use_delft = 0;
+    }
+#    if($ceos_params[2] <= 20020101){
+#      $delft_dir = "$delft_path"."\/ers2\/dgm-e04";
+#    }
+#    else {
+#      $delft_dir = "$delft_path"."\/ers2\/eigen-grace01s";
+#    }
+  }
+
+# generate processing parameter file
+  if(substr($process,0,4) eq "BERS"){
+    print "DEBUG ceos_params[5]: $ceos_params[5]\n";
+    if($ceos_params[5] eq "VMP     "){
+      $PAF="ESA/ESRIN";
+    }
+    else{
+      print "\nWARNING: BERS processor NOT VMP: $ceos_params[5]!\n";
+      $PAF = "DPAF";   #set PAF to DPAF
+
+    }
+    printf "PAF: $PAF  software version: $ceos_params[5]\n\n";
+    if($ceos_params[1] eq "ERS1"){
+      $ERS_sensor = "ERS1_ESA.par";
+    }
+    else {$ERS_sensor = "ERS2_ESA.par";}
+
+    if($mode == 1){
+      $title = "$id"." $ERS_sensor orbit:$ceos_params[3] frame:$ceos_params[4]";
+      print MPAR "$title\n\n\n\n\n\n\n\n\n\n";
+      close MPAR;
+      execute("ERS_proc_ESA $ceos $PROC_par < $proc_par_in",$log);
+    }
+  }
+  elsif (substr($process,0,3) eq "ACE"){
+    $PAF = "CCRS";
+    printf "PAF: $PAF\n\n";
+    if($ceos_params[1] eq "ERS1"){
+      $ERS_sensor = "ERS1_CCRS.par";
+    }
+    else {$ERS_sensor = "ERS2_CCRS.par";}
+
+    if($mode == 1){
+      $title = "$id"." $ERS_sensor orbit:$ceos_params[3] frame:$ceos_params[4]";
+      print MPAR "$title\n\n\n\n";
+      close MPAR;
+      if($ceos_params[5] eq "GTS-ERS"){
+        execute("ERS_proc_CCRS $ceos $PROC_par 1 < $proc_par_in", $log);
+      }
+      else {
+        execute("ERS_proc_CCRS $ceos $PROC_par 0 < $proc_par_in", $log);
+      }
+    }
+  }
+  elsif (substr($process,0,3) eq "AE1"){
+    $PAF = "DPAF";
+    printf "PAF: $PAF\n\n";
+    if($ceos_params[1] eq "ERS1"){
+      $ERS_sensor = "ERS1_ESA.par";
+    }
+    else {$ERS_sensor = "ERS2_ESA.par";}
+
+    if($mode == 1){
+      $title = "$id"." $ERS_sensor orbit:$ceos_params[3] frame:$ceos_params[4]";
+      die "ERROR: pre 1995 ERS-1 data from D-PAF not supported in ERS_pre_proc mode 1\n";
+    }
+  }
+  elsif (substr($process,0,6) eq "BE-SAR"){
+    $PAF = "Beijing-PAF";
+    printf "PAF: $PAF\n\n";
+    if($ceos_params[1] eq "ERS1"){
+      $ERS_sensor = "ERS1_ESA.par";
+    }
+    else {$ERS_sensor = "ERS2_ESA.par";}
+
+    if($mode == 1){
+      $title = "$id"." $ERS_sensor orbit:$ceos_params[3] frame:$ceos_params[4]";
+      printf "Beijing PAF\n";
+      print MPAR "$title\n\n\n\n\n\n\n\n\n\n";
+      close MPAR;
+      execute("ERS_proc_CRISP $ceos $PROC_par < $proc_par_in", $log);
+    }
+  }
+  elsif(substr($process,0,5) eq "BASAR"){
+    if($ceos_params[5] eq "PGS-ERS "){
+      $PAF="ESA/ESRIN";
+    }
+    printf "PAF: $PAF  software version: $ceos_params[5]\n\n";
+    if($ceos_params[1] eq "ERS1"){
+      $ERS_sensor = "ERS1_ESA.par";
+    }
+    else {$ERS_sensor = "ERS2_ESA.par";}
+
+    if($mode == 1){
+      $title = "$id"." $ERS_sensor orbit:$ceos_params[3] frame:$ceos_params[4]";
+      print MPAR "$title\n\n\n\n\n\n\n\n\n\n";
+      close MPAR;
+      execute("ERS_proc_ESA $ceos $PROC_par < $proc_par_in",$log);
+    }
+  }
+  elsif(substr($process,0,4) eq "ASKY"){
+    $PAF = "ASF"; 
+    printf "PAF: $PAF  software version: $ceos_params[5]\n\n";
+    if($ceos_params[1] eq "ERS1"){
+      $ERS_sensor = "ERS1_ESA.par";
+    }
+    else {
+      $ERS_sensor = "ERS2_ESA.par";
+    }
+
+    if($mode == 1){
+      $title = "$id"." $ERS_sensor orbit:$ceos_params[3] frame:$ceos_params[4]";
+      print MPAR "$title\n\n\n\n\n\n\n\n\n\n";
+      close MPAR;
+      execute("ERS_proc_ASF_2000 $ceos $PROC_par < $proc_par_in",$log);
+    }
+  }
+  else{
+    die "\nERROR: PAF could not be determined from processing facility value in CEOS leader: $process\n";
+  }
+
+  if($mode == 2){
+    $ERS_sensor = "$out_dir"."\/$ERS_sensor";
+    if($PAF ne "Beijing-PAF" and $PAF ne "BASAR" and $PAF ne "ASF"){
+      execute("ERS_fix $PAF $ERS_sensor $PROC_par 0 $raw $fix", $log);
+    }
+    else{
+      execute("ERS_fix ESA/ESRIN $ERS_sensor $PROC_par 0 $raw $fix", $log);
+    }
+    $exit == 0 or next;
+  }
+
+  if($mode == 3){
+    if($use_delft == 1){
+        execute("DELFT_proc2 $PROC_par $delft_dir", $log);
+    }
+  }
+
+  if($mode == 4){
+    $ERS_sensor = "$out_dir"."\/$ERS_sensor";
+#   execute("dop_ambig $ERS_sensor $PROC_par $fix 2", $log);	#Doppler ambiguity resolution
+    execute("azsp_IQ $ERS_sensor $PROC_par $fix $azsp - - - 1 - 1", $log);
+    print "azimuth spectrum plot: $azsp.png\n";
+    print LOGF "azimuth spectrum plot: $azsp.png\n";
+  }
+
+  if($mode == 5){
+    execute("set_value $PROC_par $PROC_par \"$key\" \"$value\" 0", $log);
+  }
+
+  if($mode == 6){
+    @date = extract_param($PROC_par, "doppler_polynomial:");
+    $fd = $date[1];
+    printf PROCF  "$id $ERS_sensor - - - - %8.1f 0.0 0.8\n", $fd;
+    printf LOGF   "$id $ERS_sensor - - - - %8.1f 0.0 0.8\n", $fd;
+    printf STDOUT "$id $ERS_sensor - - - - %8.1f 0.0 0.8\n", $fd;
+  }
+
+  if($mode == 7){
+    printf LOGF "gzip --fast --stdout $fix > $gz >> $log\n";
+    printf STDOUT "gzip --fast --stdout $fix > $gz >> $log\n";
+    -e $fix or die "ERROR: fixed data file does not exist: $fix\n";
+    system ("gzip --fast --stdout $fix > $gz");
+  }
+}
+
+$time = localtime;
+print "\nPROCESSING END: $time  mode: $mode\n";
+
+open(LOGF,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOGF "\nPROCESSING END: $time mode: $mode\n";
+close LOGF;
+exit 0;
+
+#parse the CEOS leader to extract image and sensor parameters
+
+sub lea_parse {
+my ($infile)=@_;		# Get passed parameters
+%months = ("JAN","01","FEB","02","MAR","03","APR","04","MAY","05","JUN","06",
+           "JUL","07","AUG","08","SEP","09","OCT","10","NOV","11","DEC","12");
+
+# Open the input CEOS leader file
+open (INPUT, "$infile") or die "ERROR: opening CEOS leader file: $infile\n";
+binmode INPUT;
+
+my ($process, $satellite, $orbit, $frame, $date,$swv);
+my ($buf, @cols_1, @cols_2, @parms);
+read (INPUT, $buf, 4096);
+
+$process = substr($buf, 31, 6);			#ERS CEOS format generator from particular PAF
+
+#determine processing facility
+
+if (substr($process,0,4) eq "BERS") {		#ESA/ESRIN
+  $satellite = substr($buf, 48, 4);
+  $date = substr($buf,788, 8);
+# Split up the ORBIT= and FRAME= columns
+  @cols_1 = split /-/, substr($buf,756, 22);
+  @cols_2 = split /=/, $cols_1[0];
+  $orbit = $cols_2[1];
+  @cols_2 = split/=/, $cols_1[1];
+  $frame = $cols_2[1];
+  $swv = substr($buf, 1782, 8);
+  print "date: $date\n";
+  print "orbit:$orbit  frame:$frame\n";
+  print "software version: $swv\n";
+}
+elsif (substr($process,0,3) eq "ACE") {		#CCRS
+  if(substr($buf, 48, 5) eq "ERS-1"){$satellite = "ERS1";}
+  else {$satellite = "ERS2";}
+  $date = substr($buf, 788, 8);
+  $orbit = "-";					#no orbit and frame information in the CEOS leader
+  $frame = "-";
+  $swv = substr($buf, 1782, 7);
+  print "software version: $swv\n";
+  print "satellite: $satellite\n";
+}
+elsif (substr($process,0,3) eq "AE1") {		#D-PAF
+  $satellite = substr($buf, 48, 4);
+  $frame = substr($buf, 754, 6);
+  $orbit = substr($buf, 1163, 6);
+  @cols_1 = split /-/, substr($buf, 788, 11);
+  $mon = $months{$cols_1[1]}; 			#convert month label to number
+  $date = $cols_1[2].$mon.$cols_1[0];
+  $swv = substr($buf, 1782, 7);
+  print "date: $date\n";
+  print "orbit:$orbit  frame:$frame\n";
+  print "software version: $swv\n";
+}
+elsif (substr($process,0,6) eq "BE-SAR") {	#Beijing PAF
+  $satellite = substr($buf, 48, 4);
+  @cols_1 = split /-/, substr($buf,756, 22);	# Split up the ORBIT= and FRAME= columns
+  @cols_2 = split /=/, $cols_1[0];
+  $orbit = $cols_2[1];
+  @cols_2 = split/=/, $cols_1[1];
+  $frame = $cols_2[1];
+  @cols_1 = split /-/, substr($buf, 788, 11);
+  $mon = $months{$cols_1[1]}; 			#convert month label to number
+  $date = $cols_1[2].$mon.$cols_1[0];
+  $swv = substr($buf, 1782, 6);			#ACS
+  print "date: $date\n";
+  print "orbit:$orbit  frame:$frame\n";
+  print "software version: $swv\n";
+}
+elsif (substr($process,0,5) eq "BASAR") {	#ESRIN/ESA PGS processor
+  $satellite = substr($buf, 48, 4);
+  $date = substr($buf,788, 8);
+# Split up the ORBIT= and FRAME= columns
+  @cols_1 = split /-/, substr($buf,756, 22);
+  @cols_2 = split /=/, $cols_1[0];
+  $orbit = $cols_2[1];
+  @cols_2 = split/=/, $cols_1[1];
+  $frame = $cols_2[1];
+  $swv = substr($buf, 1782, 8);
+  print "date: $date\n";
+  print "orbit:$orbit  frame:$frame\n";
+  print "software version: $swv\n";
+}
+elsif (substr($process,0,4) eq "ASKY") {	#ESRIN/ESA PGS processor
+  $satellite = substr($buf, 48, 4);
+  $date = substr($buf,788, 8);
+# Split up the ORBIT= and FRAME= columns
+  @cols_1 = split /-/, substr($buf,756, 22);
+  @cols_2 = split /=/, $cols_1[0];
+  $orbit = $cols_2[1];
+  @cols_2 = split/=/, $cols_1[1];
+  $frame = $cols_2[1];
+  $swv = substr($buf, 1782, 13);
+  print "date: $date\n";
+  print "orbit:$orbit  frame:$frame\n";
+  print "software version: $swv\n";
+}
+else{
+  die "\nERROR: unreconized CEOS processor: $process in CEOS leader file: $infile\n";
+}
+
+close (INPUT);
+@parms=("$process", "$satellite", "$date", "$orbit", "$frame", "$swv");
+return @parms;
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+
+sub execute{
+  my ($command, $log) = @_;
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";}
+  LOG->autoflush;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log 2>&1");
+  $exit == 0 or die "ERROR $0: non-zero exit status $exit: $command\n"
+}
+
+sub execute_with_status{
+  my ($command, $log, $exit) = @_;
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR : cannot open log file: $log\n";}
+  LOG->autoflush;
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;
+  $exit = system("$command 1>> $log 2>&1");
+  return $exit;
+}

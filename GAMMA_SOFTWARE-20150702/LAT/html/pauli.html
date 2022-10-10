@@ -1,0 +1,124 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <title>LAT Reference Manual: pauli</title>
+  </head>
+  <body>
+    <h1>Gamma LAT: Reference Manual</h1>
+    <hr>
+    <h2>pauli</h2>
+    <p><i>ANSI-C program: <a title="pauli" href="../src/pauli.c">pauli.c</a></i></p>
+    <p><strong>NAME</strong> pauli - Calculate Pauli decomposition from HH, VV,
+      and HV SLC images</p>
+    <p><strong>SYNOPSIS</strong></p>
+    <p> <code><b>pauli &lt;SLC_HH&gt; &lt;SLC_VV&gt; &lt;SLC_HV&gt;
+          &lt;SLC_HH_par&gt; &lt;SLC_VV_par&gt; &lt;SLC_HV_par&gt; &lt;P&gt; <br>
+        </b></code></p>
+    <table border="1" cellpadding="7">
+      <tbody>
+        <tr>
+          <td>&lt;SLC-HH&gt;</td>
+          <td>(input) HH single-look complex image (scomplex or fcomplex format)</td>
+        </tr>
+        <tr>
+          <td>&lt;SLC-VV&gt;</td>
+          <td>(input) VV single-look complex image (scomplex or fcomplex format)<br>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;SLC-HV&gt; </td>
+          <td>(input) HV single-look complex image coregistered with SLC-1
+            (scomplex or fcomplex format)</td>
+        </tr>
+        <tr>
+          <td>&lt;SLC_HH_par&gt;</td>
+          <td>(input) HH SLC image parameter file </td>
+        </tr>
+        <tr>
+          <td>&lt;SLC_VV_par&gt;</td>
+          <td>(input) VV SLC image parameter file of SLC-2 coregistered with
+            SLC-1</td>
+        </tr>
+        <tr>
+          <td>&lt;SLC_HV_par&gt;</td>
+          <td>(input) HV SLC image parameter file&nbsp; of SLC-3 coregistered
+            with SLC-1</td>
+        </tr>
+        <tr>
+          <td>&lt;P&gt;</td>
+          <td>(output) root file name of Pauli decomposition images:
+            P_alpha.slc, P_beta.slc, P_gamma.slc (fcomplex format)<br>
+            &nbsp;&nbsp;&nbsp; alpha: (S_HH + S_VV)/sqrt(2.0)<br>
+            &nbsp;&nbsp;&nbsp; beta: &nbsp; (S_HH - S_VV)/sqrt(2.0)<br>
+            &nbsp;&nbsp;&nbsp; gamma: sqrt(2.0)*S_HV<br>
+            <br>
+            Note: SLC image parameter files are generated: P_alpha.slc.par,
+            P_beta.slc.par, P_gamma.slc.par</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3><strong>EXAMPLE</strong></h3>
+    <code>pauli 20080409_HH.slc 20080409_VV.slc 20080409_HV.slc
+      20080409_HH.slc.par 20080409_VV.slc.par 20080409_HV.slc.par
+      20080409_HH_VV_HV </code><br>
+    <br>
+    This calculates the Pauli decomposition and stores the 3 output components
+    of decomposition in the files<span style="font-family: monospace;"><span style="font-weight: bold;">
+      </span></span><code>20080409_HH_VV_HV_alpha.slc, </code><code>20080409_HH_VV_HV_beta.slc,
+      </code><code>20080409_HH_VV_HV_gamma.slc. </code>The associated SLC
+    parameter files are<code> </code><code>20080409_HH_VV_HV_alpha.slc.par, </code><code>20080409_HH_VV_HV_beta.slc.par,
+      </code><code>20080409_HH_VV_HV_gamma.slc.par.</code>
+    <h3><strong>DESCRIPTION <br>
+      </strong></h3>
+    <p>Coherent polarimetric decompositions have the objective of describing the
+      scattering matrix S as the sum of basis matrices corresponding to
+      canonical scattering mechanisms [1][2]. The Pauli polarimetric
+      decomposition for monostatic radar data is defined for each sample in a
+      quad-pol SLC data set where HH, VV, and HV are the complex values of the
+      different SLCs with the specified linear transmit and receive
+      polarizations.</p>
+    <p><span style="font-style: italic; font-weight: bold;">k</span> = 1/sqrt(2)
+      [HH+VV, &nbsp; HH-VV,&nbsp; 2 HV]<sup>T </sup></p>
+    <p> For example HV specifies the channel with horizontal transmit
+      polarization and V, vertical receive polarization.&nbsp;&nbsp; <span style="font-weight: bold; font-style: italic;">k</span>
+      is call the <span style="font-style: italic;">3D Pauli feature vector</span>.&nbsp;
+      By reciprocity, HV is equal to VH for monostatic data acquisitions,
+      therefore only 3 terms are required.&nbsp; Each of the terms of the Pauli
+      decomposition has an associated elementary scattering mechanism. The three
+      terms are defined as:</p>
+    <math><mstyle displaystyle="true" fontfamily="" mathcolor="" mathsize=""><mi>&#945;</mi><mo>
+          =</mo></mstyle></math>(HH + VV)/sqrt(2)<br>
+    <br>
+    <math><mstyle displaystyle="true" fontfamily="" mathcolor="" mathsize=""><mi>&#946;</mi><mo></mo></mstyle></math>
+    = (HH - VV)/sqrt(2)<br>
+    <br>
+    <math><mstyle displaystyle="true" fontfamily="" mathcolor="" mathsize=""><mi>&#947;
+        </mi><mo></mo></mstyle></math>= sqrt(2)HV <br>
+    <br>
+    The term <span style="font-style: italic;"></span><math><mstyle displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#945;</mi></mstyle></math>
+    is associated with single-bounce scattering from a plane surface.&nbsp; The
+    second and third terms,
+    <math><mstyle displaystyle="true" fontfamily="" mathcolor="" mathsize=""><mi>&#946;</mi></mstyle></math>
+    and
+    <math><mstyle displaystyle="true" fontfamily="" mathcolor="" mathsize=""><mi>&#947;</mi></mstyle></math>,
+    are from diplane scattering with the diplane oriented at&nbsp; 0 and 45
+    degrees respectively. <br>
+    <br>
+    [1] Lee, J. S., Eric Pottier, "Polarimetric Radar Imaging: from Basics to
+    Applications," Chapter 3, CRC Press, Boca Raton, 2008<br>
+    [2] Lee, J. S., Eric Pottier, "Polarimetric Radar Imaging: from Basics to
+    Applications," Chapter 6, CRC Press, Boca Raton, 2008<br>
+    <span style="text-decoration: underline;"></span>
+    <p><strong>SEE ALSO </strong><br>
+      <a href="polcoh.html">polcoh</a></p>
+    <hr><a href="copyright.html">©</a> Copyrights for <a href="LAT_documentation.html">Documentation</a>,
+    <a href="LAT_users_guide.html">Users Guide</a> and <a href="LAT_reference_manual.html">Reference
+      Manual</a> by <a href="gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+    <a href="urs_wegmuller.html">UW</a>, <a href="charles_werner.html">CW</a>,<a>
+      MS</a> last change 6-Jul-2013
+  </body>
+</html>

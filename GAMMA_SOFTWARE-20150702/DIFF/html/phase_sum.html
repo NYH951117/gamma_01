@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: ave_image</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>phase_sum</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/phase_sum.c">ave_image.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  phase_sum -&nbsp; Calculate sum of input 2-D (float) phase files
+  such as a stack of unwrapped interferograms (a-b, b-c,
+  c-d...)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>phase_sum &lt;im_list&gt; &lt;width&gt; [start] [nlines]
+  [pixav_x] [pixav_y] [zero_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>im_list</td>
+
+        <td>(input) text file containing list of names of
+        co-registered data sets&nbsp; in column 1 (float)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;sum&gt;</td>
+
+        <td>(output) sum of input data files (float)</td>
+      </tr>
+
+      <tr>
+        <td>[start]</td>
+
+        <td>starting line (default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nlines]<br></td>
+
+        <td style="vertical-align: top;">number of lines to process
+        (enter - &nbsp;for default:&nbsp;entire file))<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pixav_x]<br></td>
+
+        <td style="vertical-align: top;">number of pixels to
+        average in width (default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pixav_y]<br></td>
+
+        <td style="vertical-align: top;">number of pixels to
+        average in height (default:1)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[zero_flag]<br></td>
+
+        <td style="vertical-align: top;">zero flag:<br>
+        &nbsp; 0: interpret 0.0 as missing data value (default)
+        NOTE: output pixels are set to 0.0 if any of the
+        corresponding input pixels has 0.0<br>
+        &nbsp; 1: interpret 0.0 as valid data<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nmin]<br></td>
+
+        <td style="vertical-align: top;">minimum number of images
+        required to calculate the average (enter - for default:
+        all) (default: 3*nfiles/4)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>phase_sum im_list sum 1750 1<br></samp></p>
+
+  <p>sums &nbsp;images in float format listed in the&nbsp; data_tab
+  file.&nbsp; Each line of these files is 1750 pixels wide</p>
+
+  <p><strong>DESCRIPTION</strong><code><br>
+  <span style="font-weight: bold;">phase_sum</span></code> is used
+  to sum a stack of 2D data files in float format (32-bit floating
+  point). It also has the capability to sum the data sets&nbsp; in
+  x and y dimensions as specified by the <span style=
+  "font-weight: bold;">pixave_x</span> and <span style=
+  "font-weight: bold;">pixav_y</span> parameters on the command
+  line. A subset of the input image can be specified by the
+  <span style="font-weight: bold;">start</span> and <span style=
+  "font-weight: bold;">nlines</span> parameters. Finally, input
+  data values that are 0.0 can either be interpreted as missing
+  data or as a valid value using the <span style=
+  "font-weight: bold;">zero_flag</span> parameter. If any data in
+  the input stack are missing, the output pixel is set to 0.0 by
+  default. If <span style=
+  "font-weight: bold;">&nbsp;zero_flag</span> is set to 1, then 0.0
+  is interpreted as a valid data value.<br></p>
+
+  <p>The files (including path) are listed in the <span style=
+  "font-weight: bold;">im_list</span> text file, one line entry for
+  each file.&nbsp; Lines containing a # in column 1 and blank lines
+  are ignored. This program is useful for computing the phase sum
+  of a sequence of unwrapped interferograms.</p>
+
+  <p><strong>SEE ALSO</strong><br></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  awi, last change 22-Jan-2012</p>
+</body>
+</html>

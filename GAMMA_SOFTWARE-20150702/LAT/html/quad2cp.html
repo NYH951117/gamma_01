@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>LAT Reference Manual: quad2cp</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>quad2cp</h2>
+
+  <p><i>ANSI-C program: <a title="pauli" href=
+  "../src/quad2cp">quad2cp.c</a></i></p>
+
+  <p><strong>NAME</strong> quad2cp -Synthesize Compact Polarization
+  Data from quad-pol HH, VV, HV, VH SLC data</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>quad2cp &lt;SLC_HH&gt;&nbsp; &lt;SLC_HV&gt;
+  &lt;SLC_VH&gt; &lt;SLC_VV&gt; &lt;SLC_HH_par&gt;
+  &lt;SLC_HV_par&gt; &lt;SLC_VH_par&gt; &lt;SLC_VV_par&gt;
+  &lt;CP&gt; &lt;TX_pol&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_HH&gt;</td>
+
+        <td>(input) HH single-look complex image coregistered with
+        SLC_HH (scomplex or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_HV&gt;</td>
+
+        <td>(input) HV single-look complex imagecoregistered with
+        SLC_HH (scomplex or fcomplex format)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_VH&gt;</td>
+
+        <td>(input) VH single-look complex image coregistered with
+        SLC_HH (scomplex or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_VV&gt;</td>
+
+        <td>(input) VV single-look complex image coregistered with
+        SLC_HH (scomplex or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_HH_par&gt;</td>
+
+        <td>(input) SLC_HH image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_HV_par&gt;</td>
+
+        <td>(input) SLC_HV image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_VH_par&gt;</td>
+
+        <td>(input) SLC_VH image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_VV_par&gt;</td>
+
+        <td>(input) SLC_VV image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CP&gt;</td>
+
+        <td>(output) root file name of the 2 linearly polarized
+        images (H,V): (fcomplex format)<br>
+        &nbsp; &nbsp; &nbsp; RCP transmit: *_RH: 1/(sqrt(2) (S_HH -
+        iS_HV)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        *_RV: 1/(sqrt(2) (S_VH - iS_VV)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LCP transmit: *_LH:
+        1/(sqrt(2) (S_HH + iS_HV)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        *_LV: 1/(sqrt(2) (S_VH + iS_VV)<br>
+        Note: SLC parameter files are created from the CP SLC name
+        + .par</td>
+      </tr>
+
+      <tr>
+        <td>&lt;TX_pol&gt;</td>
+
+        <td>transmit polarization of synthesized compact mode
+        data:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0: RCP Right Circular
+        Polarziation<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1: LCP Left&nbsp; Circular
+        Polarziation</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3><strong>EXAMPLE</strong></h3><code>quad2cp 20080409_HH.slc
+  20080409_HV.slc 20080409_VH.slc 20080409_VV.slc
+  20080409_HH.slc.par 20080409_HV.slc.par 20080409_VH.slc.par
+  20080409_VV.slc.par CP/20080409</code> 1<br>
+  <br>
+  Synthesizes compact polarization data with left circular
+  polarized (LCP) illumination and linear H and V receive
+  polarization. Input data are the 4 channels of a fully
+  polarimetric data set. The output files are stored in the
+  directory CP with SLC names 20080409_LH.slc and 20080409_LV.slc.
+
+  <h3><strong>DESCRIPTION<br></strong></h3>
+
+  <p>Compact polarization data can be synthesized from quad-pol
+  data sets [1].&nbsp; Out of the different possible compact
+  polarization configurations, circular polarized transmit with
+  linear receive has been implemented on the Indian RISAT-1
+  satellite and will be used in the future Canadian Radarsat
+  constellation.</p>
+
+  <p>Compact polarization has the advantage that single and
+  double-bounce scattering mechanisms can be differentiated with
+  just 2 polarization channels instead of the usual 4. <span style=
+  "font-style: italic;">quad2cp</span> synthesizes data that would
+  be received with circular polarization illumination illumination.
+  The user can select the rotation sense of the illumination. With
+  RCP transmit the output file names have _RH or _RV appended to
+  the root file name. If LCP is selected then the extensions are
+  _LH and LV respectively.</p>
+
+  <p>With RCP illumination calculation of the RH and RV are as
+  follows:</p>
+
+  <p>RH: 1/sqrt(2) (S_HH - iS_HV)<br>
+  RV:&nbsp; 1/sqrt(2) (S_VH - iS_VV)</p>
+
+  <p>For LCP illumination:</p>
+
+  <p>LH: 1/sqrt(2) (S_HH + iS_HV)<br>
+  LV:&nbsp; 1/sqrt(2) (S_VH + iS_VV)</p>where S_* are the
+  components of the complex valued scattering matrix for each
+  sample.<br>
+  <br>
+  [1] Cloude, S. R., D.G. Goodenough, H. Chen, "Compact
+  Decomposition Theory," <span style="font-style: italic;">IEEE
+  Geoscience and Remote Sensing Letters</span>, Vol 9, No. 1, pp
+  28-32, January, 2012.<br>
+
+  <p><strong>SEE ALSO</strong> <a href="stokes.html"><br></a></p>
+
+  <p><a href="stokes.html">stokes</a>, <a href=
+  "stokes_qm.html">stokes_qm</a>, <a href=
+  "m-chi.html">m-chi<br></a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change 6-Jul-2013
+</body>
+</html>

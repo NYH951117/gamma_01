@@ -1,0 +1,163 @@
+#! /bin/tcsh -fe
+if ($#argv < 4)then
+  echo " "
+  echo "INTF_SLC: calculate interferogram, co-registered SLC, intensity images, and correlation 16-Jul-2007 clw/uw"
+  echo " "
+  echo "usage: INTF_SLC <pass1> <pass2> <rlks> <azlks> [algorithm] [cc_win] [r_pos] [az_pos]"
+  echo "       pass1       pass 1 identifier (example: pass number) reference"
+  echo "       pass2       pass 2 identifier (example: pass number)"
+  echo "       rlks        number of range looks"
+  echo "       azlks       number of azimuth looks"
+  echo "       algorithm   algorithm used to determine offsets:"
+  echo "                   1=intensity image cross correlation (default)"
+  echo "                   2=fringe visibility"
+  echo "       cc_win      window used for estimation of the correlation coefficient (default=3)"
+  echo "       r_pos       range position of center of image patch for initial offset"
+  echo "       az_pos      azimuth position of center of image patch for initial offset"
+  echo ""
+  exit(1)
+endif
+
+set CC_WIN = 3  ### default correction estimation window size
+set CC_WGT = 1	### coherence estimation weighting: 0: uniform, 1: linear, 2: gaussian
+set RLKS = $3
+set AZLKS = $4
+
+set ALGORITHM = 1
+if ($#argv >= 5) then
+  set ALGORITHM = $5
+endif
+
+# tests if required input files exist:
+if(1) then
+  echo "test if required input files exist"
+  if (-e "$1.slc.par" == 0 ) then 
+    echo "ERROR: SLC parameter file ($1.slc.par) does not exist"
+    exit(-1)
+  endif 
+  if (-e "$2.slc.par" == 0 ) then 
+    echo "ERROR: SLC parameter file ($2.slc.par) does not exist"
+    exit(-1)
+  endif 
+  if (-e "$1.slc" == 0 ) then 
+    echo "ERROR: SLC data file ($1.slc) does not exist"
+    exit(-1)
+  endif 
+  if (-e "$2.slc" == 0 ) then 
+    echo "ERROR: SLC data file ($2.slc) does not exist"
+    exit(-1)
+  endif 
+  if (-e "$1_$2.off" == 1 ) then 
+    echo "ERROR: ISP/offset parameter file ($1_$2.off) does already exist"
+    echo "Delete or rename the existing ISP/offset parameter file ($1_$2.off)"
+    echo "Script requires creation of a new ISP/offset parameter file"
+    exit(-1)
+  endif 
+  echo "required input/output files and directories exist"
+endif
+
+switch($ALGORITHM)
+case "1":
+  echo "OFFSET ALGORITHM: intensity image cross correlation"
+  breaksw
+case "2":
+  echo "OFFSET ALGORITHM: fringe visibility"
+  breaksw
+default:
+  echo ""
+  echo "ERROR: invalid offset algorithm selected"
+  echo ""
+  exit(-1)
+endsw 
+
+if ($#argv >= 6) then
+  set CC_WIN = $6
+endif
+set R_POS = " "
+if ($#argv >= 7) then
+  set R_POS = $7
+endif
+set AZ_POS = " "
+if ($#argv >= 8) then
+  set AZ_POS = $8
+endif
+
+echo "number of range looks:   $RLKS"
+echo "number of azimuth looks: $AZLKS"
+echo "window size for correlation estimate: $CC_WIN"
+
+if ($ALGORITHM == "1") then
+  echo " "
+  echo "create_offset $1.slc.par $2.slc.par $1_$2.off $ALGORITHM" 
+  echo 'INTERF_SLC_1\n 0 0\n 24 24\n 128 128\n 7.0\n\n\n' > create_offset.in
+  create_offset $1.slc.par $2.slc.par $1_$2.off $ALGORITHM < create_offset.in
+else
+  echo " "
+  echo "create_offset $1.slc.par $2.slc.par $1_$2.off $ALGORITHM"
+  echo 'INTERF_SLC_2\n 0 0\n 24 24\n 8 16\n 3.0\n\n\n' > create_offset.in
+  create_offset $1.slc.par $2.slc.par $1_$2.off $ALGORITHM < create_offset.in
+endif
+
+echo ""
+echo "init_offset $1.slc  $2.slc $1.slc.par $2.slc.par $1_$2.off 1 1 $R_POS $AZ_POS >> init_offset.out"
+init_offset $1.slc $2.slc $1.slc.par $2.slc.par $1_$2.off 1 1 $R_POS $AZ_POS >> init_offset.out
+
+if ($ALGORITHM == "1") then
+  echo ""
+  echo "offset_pwr $1.slc  $2.slc $1.slc.par $2.slc.par $1_$2.off $1_$2.offs $1_$2.snr > offset_pwr.out"
+  offset_pwr $1.slc $2.slc $1.slc.par $2.slc.par $1_$2.off $1_$2.offs $1_$2.snr > offset_pwr.out
+else
+  echo ""
+  echo "offset_SLC $1.slc  $2.slc $1.slc.par $2.slc.par $1_$2.off $1_$2.offs $1_$2.snr > offset_SLC.out"
+  offset_SLC $1.slc $2.slc $1.slc.par $2.slc.par $1_$2.off $1_$2.offs $1_$2.snr > offset_SLC.out
+endif
+
+echo ""
+echo "offset_fit $1_$2.offs $1_$2.snr  $1_$2.off $1_$2.coffs $1_$2.coffsets > offset_fit.out"
+offset_fit $1_$2.offs $1_$2.snr  $1_$2.off $1_$2.coffs $1_$2.coffsets > offset_fit.out
+
+echo ""
+echo "SLC_interp $2.slc $1.slc.par $2.slc.par $1_$2.off $2.rslc $2.rslc.par > SLC_interp.out"  
+SLC_interp $2.slc $1.slc.par $2.slc.par $1_$2.off $2.rslc $2.rslc.par > SLC_interp.out
+
+echo ""
+echo "SLC_intf $1.slc $2.rslc $1.slc.par $2.rslc.par $1_$2.off $1_$2.int $RLKS $AZLKS > SLC_intf.out"
+SLC_intf $1.slc $2.rslc $1.slc.par $2.rslc.par $1_$2.off $1_$2.int $RLKS $AZLKS > SLC_intf.out 
+
+echo ""
+echo "multi_look $1.slc $1.slc.par $1.mli $1.mli.par $RLKS $AZLKS > multi_look.out1"
+multi_look $1.slc $1.slc.par $1.mli $1.mli.par $RLKS $AZLKS > multi_look.out1
+
+echo ""
+echo "ln -s $1.mli $1_$2.pwr1"
+ln -s $1.mli $1_$2.pwr1
+ 
+echo ""
+echo "multi_look $2.rslc $2.rslc.par $2.rmli $2.rmli.par $RLKS $AZLKS > multi_look.out2"
+multi_look $2.rslc $2.rslc.par $2.rmli $2.rmli.par $RLKS $AZLKS > multi_look.out2
+
+echo ""
+echo "ln -s $2.rmli $1_$2.pwr2"
+ln -s $2.rmli $1_$2.pwr2
+
+echo ""
+echo "base_init $1.slc.par $2.slc.par $1_$2.off $1_$2.int $1_$2.base 2 > base_init.out" 
+base_init $1.slc.par $2.slc.par $1_$2.off $1_$2.int $1_$2.base 2 > base_init.out
+
+echo ""
+echo "ph_slope_base $1_$2.int $1.slc.par $1_$2.off $1_$2.base $1_$2.flt"  
+ph_slope_base $1_$2.int $1.slc.par $1_$2.off $1_$2.base $1_$2.flt
+
+set width =  `awk '$1 == "interferogram_width:" {print $2}' $1_$2.off`
+set nl =  `awk '$1 == "interferogram_azimuth_lines:" {print $2}' $1_$2.off`
+
+echo ""
+echo "interferogram width, lines: $width $nl"
+
+echo cc_wave $1_$2.flt $1_$2.pwr1 $1_$2.pwr2 $1_$2.cc $width $CC_WIN $CC_WIN $CC_WGT 
+cc_wave $1_$2.flt $1_$2.pwr1 $1_$2.pwr2 $1_$2.cc $width $CC_WIN $CC_WIN $CC_WGT 
+
+echo ""
+exit(0)
+
+

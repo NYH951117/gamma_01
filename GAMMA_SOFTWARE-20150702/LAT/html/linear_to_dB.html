@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: linear_to_dB</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>linear_to_dB</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/linear_to_dB.c">linear_to_dB.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  linear_to_dB - Convert image from linear scale to dB and vise
+  versa.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>linear_to_dB &lt;pwr_in&gt; &lt;pwr_out&gt;
+  &lt;width&gt; [inverse_flag] [null_value]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;pwr_in&gt;</td>
+
+      <td>input image (format: floating point)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pwr_out&gt;</td>
+
+      <td>output image (format: floating point)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/line</td>
+    </tr>
+
+    <tr>
+      <td>[inverse_flag]</td>
+
+      <td>flag indicating direction of conversion (default=0)<br>
+      (default: 0=converts linear scale (input) to dB scale
+      (output)<br>
+      1=converts dB values (input) to linear scale (output))</td>
+    </tr>
+
+    <tr>
+      <td>[null_value]</td>
+
+      <td>null value appointed to values &lt;=0 in linear scale,
+      (default=0.0)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>linear_to_dB 1352_1610.pwr1 1352_1610.pwr1_dB 2500 0
+  -999.0</samp></p>Converts the input backscatter intensity file to
+  dB scale. A value of -999.0 in the output file is appointed to
+  values &lt;= 0.0 of the input file.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code linear_to_dB.c in ./src. For compilation adjust and
+  use Makefile: Executable version linear_to_dB in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  linear_to_dB converts the real valued input data file of type
+  float to dB scale and vice versa.</p>
+
+  <p>The forward transformation linear scale (value) to dB scale
+  (value_in_dB) is defined by</p>
+
+  <table>
+    <tr>
+      <td>value &gt; 0.0:</td>
+
+      <td><code><em>value_in_dB</em> =
+      <em>10.0</em>*<em>log10(value)</em></code></td>
+    </tr>
+
+    <tr>
+      <td>value &lt;= 0.0:</td>
+
+      <td><code><em>value_in_dB</em> = <em>NULL
+      value</em></code></td>
+    </tr>
+  </table>The inverse transformation dB scale (value_in_dB) to
+  linear scale (value) is defined by
+
+  <table>
+    <tr>
+      <td>value_in_dB != NULL value:</td>
+
+      <td><code><em>value</em> =
+      <em>10.0^(value_in_dB/10.0)</em></code></td>
+    </tr>
+
+    <tr>
+      <td>value_in_dB = NULL value:</td>
+
+      <td><code><em>value</em> = <em>0.0</em></code></td>
+    </tr>
+  </table>
+
+  <p><strong>OPTIONS</strong><br>
+  Forward or backward transformation may be selected.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2001.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 23-Jan-2001.</p>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: zero_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>zero_pt</h2>
+
+  <p><i>ANSI-C program:&nbsp;<a href=
+  "../src/zero_pt.c">zero_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  zero_pt - &nbsp;zero data values as specified in an interferogram
+  table and point mask</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>zero_pt &lt;plist&gt; &lt;pmask&gt; &lt;pdata1&gt;
+  &lt;itab&gt; &lt;pdata2&gt; &lt;type&gt;<br>
+  <br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list 1 (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, enter -
+        for none)<br>
+        &nbsp;0:set data to 0.0&nbsp; 1: save data value</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata1&gt;</td>
+
+        <td>(input) point data stack 1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input)&nbsp;table associating interferogram stack
+        records with pairs of SLC stack records (ascii)<br>
+        layers where data values can be set to zero have the layer
+        flag column 4 set to 0</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata2&gt;</td>
+
+        <td>(output) point data stack with values set to 0 in
+        layers</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;type&gt;<br></td>
+
+        <td style="vertical-align: top;">data stack type
+        (0:fcomplex&nbsp; 1:scomplex&nbsp; 2:float&nbsp;
+        3:int&nbsp; 4:short&nbsp; 5:byte)<br></td>
+      </tr>
+    </tbody>
+  </table><strong>EXAMPLE</strong><br>
+  <samp>zero_pt pt1 pmsk3 ptot_def3s_los itab_msk
+  ptot_def3s_los_msk 2<br></samp><br>
+  set data values in ptot_def3s_los_msk to 0 in those layers where
+  the itab layer mask is 0 and pmsk3 is 0<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code zero_pt.c in ./IPTA/src, executable version zero_pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">zero_pt</span> is a program that
+  sets the values in a data file for selected points and layers.
+  For the data value for a point in a particular layer to be set to
+  0, the layer mask in the itab file for that layer and the value
+  of the point mask must also be 0. &nbsp;This program is use for
+  setting specific point data values to 0, for only a specfied
+  time. the time window is specified by editing a copy of the itab
+  used for processing the IPTA data. Points in a certain region can
+  be set to 0 by generating a 2d raster mask that is 0 only in the
+  region to be masked out. This raster file is then read
+  by&nbsp;<a href="msk_pt.html">mask_pt</a> &nbsp;to create a point
+  list mask that is 0 for all points in that region. This point
+  list mask can than used as input to <span style=
+  "font-weight: bold;">zero_pt</span>.&nbsp;</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="msk_pt.html">&nbsp;mask_pt</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 23-May-2005
+</body>
+</html>

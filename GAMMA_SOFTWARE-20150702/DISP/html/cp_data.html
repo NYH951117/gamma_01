@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DISP Reference Manual: cp_data</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>cp_data</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/cp_data.c">cp_data.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  cp_data - Extraction of a segment from a 2D data set</p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>cp_data &lt;infile&gt;
+  &lt;outfile&gt; &lt;lbytes&gt; [start] [nlines] [offset]
+  [file_ldr] [offb] [nbyte]</code></p>
+
+  <table cellpadding="7" cellspacing="2" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;infile&gt;</td>
+
+        <td>input data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;outfile&gt;</td>
+
+        <td>output data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lbytes&gt;</td>
+
+        <td>length of each line in bytes</td>
+      </tr>
+
+      <tr>
+        <td>[start]</td>
+
+        <td>starting line (default: 1)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to copy (default:0 entire file)</td>
+      </tr>
+
+      <tr>
+        <td>[offset]</td>
+
+        <td>offset (bytes) to skip from the start of the file
+        (default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[file_ldr]</td>
+
+        <td>size of file leader(bytes) to copy after a skipping
+        [offset] bytes (default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[offb]</td>
+
+        <td>offset in bytes for each record to start copy (default:
+        0)</td>
+      </tr>
+
+      <tr>
+        <td>[nbyte]</td>
+
+        <td>number of bytes to copy from each record
+        (default:&nbsp; lbytes - offb)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong> <samp>cp_data 1352_1610.flt
+  1352_1610.section 20000 1000 700 0 0 4000 6400</samp> (extracts
+  700 lines of 800 range pixels (complex float i.e. 8 byte per
+  pixel) starting at line 1000 and range pixel 500)</p>
+
+  <p><strong>DESCRIPTION<br></strong> <em>cp_data</em> reads the
+  input data in any format and then extracts the user defined image
+  section to the output file. The <em>file_ldr</em> parameter
+  permits inclusion of a leader record at the start of the data
+  with a different length than the data records themselves. Such is
+  the case with CEOS format image and raw data sets.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Jun-2015.
+</body>
+</html>

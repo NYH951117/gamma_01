@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: adapt_filt</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>adapt_filt</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/adapt_filt.c"><i>adapt_filt.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  adapt_filt - Adaptive filtering (adaptive to the local slope,
+  respectively fringe rate) of the interferometric phase.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>adapt_filt &lt;int&gt; &lt;sm&gt; &lt;width&gt;
+  [low_SNR_thr] [filt_width] [xmin] [xmax] [ymin]
+  [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;int&gt;</td>
+
+      <td>complex interferogram image filename (phase trend
+      removed)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;sm&gt;</td>
+
+      <td>smoothed interferogram filename (for filtered data
+      output)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[low_SNR_thr]</td>
+
+      <td>low SNR threshold (default = <b>0.25</b></td>
+    </tr>
+
+    <tr>
+      <td>[filt_width]</td>
+
+      <td>filter width in pixels (default = <b>4.0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmin]</td>
+
+      <td>offset to starting range pixel (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmax]</td>
+
+      <td>offset last range pixel (default = <b>width-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>offset to starting azimuth row (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>offset to last azimuth row (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>adapt_filt 1352_1610.flt 1352_1610.sm 2500 0.25
+  4.0</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  adapt_filt reads the complex interferogram (for ERS-1 usually
+  with the phase trend removed), computes locally the slope, and
+  averages the interferometric phase along the local slope. The
+  goal of the adaptive filtering step is to reduce phase noise and
+  reduce the number of residues (problematic location for phase
+  unwrapping). The filtering window size is determined by the user
+  input. The value approximates the size of the smoothing window. A
+  Kaiser window function is used to improve the averaging filter
+  frequency and spatial response. The smoothed (respectively)
+  filtered interferometric phase is written out to a file. The
+  dimensions of the smoothed interferogram file is identical to
+  that of the interferogram file. Therefore, the same programs to
+  generate SUN rasterfiles and display programs may be used with
+  identical parameters.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jul-2005.</p>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: lin_comb_pt</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing --><!-- uw 20-Feb-2003 -->
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>lin_comb_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/lin_comb_pt.c">lin_comb_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  lin_comb_pt - calculate linear combination of records in point
+  data stacks</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>lin_comb_pt &lt;plist&gt; &lt;pmask&gt; &lt;pdata1&gt;
+  &lt;rec_num1&gt; &lt;pdata2&gt; &lt;rec_num2&gt; &lt;pdata3&gt;
+  &lt;rec_num3&gt; &lt;constant&gt; &lt;factor1&gt; &lt;factor2&gt;
+  &lt;type&gt; [pmask] [pt_num]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata1&gt;</td>
+
+        <td>(input) point data stack 1 (various formats
+        supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num1&gt;</td>
+
+        <td>record number in pdata1&nbsp; (starting with 1, enter
+        -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata2&gt;</td>
+
+        <td>(input) point data stack 2 (same format as pdata1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num2&gt;</td>
+
+        <td>record number in pdata2&nbsp; (starting with 1, enter
+        -: same as rec_num1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata3&gt;</td>
+
+        <td>(output) point data stack (same format as pdata1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num3&gt;</td>
+
+        <td>record number in pdata3 (starting with 1, enter -: same
+        as rec_num1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;constant&gt;</td>
+
+        <td>constant value to add to output record elements</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor1&gt;</td>
+
+        <td>factor to multiply elements of rec_num1 of pdata1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;factor2&gt;</td>
+
+        <td>factor to multiply elements of rec_num2 of pdata2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>data type (0:fcomplex 1:scomplex 2:float 3:int 4:short
+        5:byte)</td>
+      </tr>
+
+      <tr>
+        <td>[zero_flag]</td>
+
+        <td>zero flag (default=0: 0.0 is interpreted as NULL, 1:
+        0.0 is interpreted as valid value)</td>
+      </tr>
+
+      <tr>
+        <td>[pt_num]</td>
+
+        <td>&nbsp;index of pdata2 point value to use, rather than
+        using all points</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <samp>lin_comb_pt site.plist site.pmask site.phgt1
+  1 site.pdh 1 site.phgt2 1 0.0 1.0 1.0 2 0</samp></p>
+
+  <p>Adds the point height values testsite.phgt1 ( one record,
+  --&gt; record number 1) and the point height corrections
+  testsite.pdh (one record, --&gt; record number 1) and writes the
+  result to the output point data stack as record 1.</p>
+
+  <p><samp>lin_comb_pt site.plist site.pmask site.unw 5 site.unw 8
+  site.unw 12 0.0 1.0 -3.83 2 0</samp></p>
+
+  <p>Subtracts the scaled unwrapped phases (factor -3.83) in record
+  8 of the point data stack from the unwrapped phases in record 5
+  and writes the result to record 12, all of the same
+  stack.<br></p>
+
+  <p style="font-family: monospace;">lin_comb_pt site.plist
+  site.pmask site.pint - site.psim - site.pdiff - 0.0 1.0 -1.0
+  0<br></p>
+
+  <p style="font-family: monospace;"><big><small><span style=
+  "font-family: helvetica,arial,sans-serif;">subtract simulated
+  interferograms from interferograms generated from the SLC data to
+  calculate the differential interferograms. This is</span>
+  <span style="font-family: helvetica,arial,sans-serif;">performed
+  for corresponding data point sets in each of the stacks, e.g.
+  (stack 1, record 1) with (stack 2, record
+  1),&nbsp;</span></small></big> <big><small><span style=
+  "font-family: helvetica,arial,sans-serif;">(stack 1, record 2)
+  with (stack 2, record 2)</span></small></big>
+  <big><small><span style=
+  "font-family: helvetica,arial,sans-serif;">...<br></span></small></big></p>
+
+  <p style="font-family: monospace;">lin_comb_pt site.plist
+  site.pmask site.diff - site.patm 8 site.pdiff2 - 0.0 1.0 1.0
+  0<br></p>
+
+  <p style="font-family: monospace;"><big><small><span style=
+  "font-family: helvetica,arial,sans-serif;">adds</span>
+  <span style="font-family: monospace;">site.patm</span>
+  <span style="font-family: helvetica,arial,sans-serif;">record 8
+  to every record in</span> <span style=
+  "font-family: monospace;">site.pdiff.</span></small></big><br></p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code lin_comb_pt.c in ./IPTA/src, executable version
+  lin_comb_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  lin_comb_pt supports the calculation of linear combinations of
+  two records of point data stacks and writes the result to a
+  record of the output point data stack. The indicated point data
+  stacks for the input and output records may be identical which
+  permits operations using different records of the same data
+  stack.&nbsp; It is also possible to operate on all the records of
+  data1 by entering a - for parameter rec_num1.&nbsp; If rec_num2
+  is also a - then&nbsp; the linear combination will be carried out
+  using the same values for rec_num1 and rec_num2.<br></p>
+
+  <p>Different formats are supported. The format (type) needs to be
+  the same for all the data records (2 input records, output
+  record).</p>
+
+  <p>Zero (0.0) values can either be interpreted as NULL
+  (zero_flag=0) or as valid data points (zero_flag=1). The result
+  of a linear combination in which one input value is NULL is set
+  to NULL.</p>
+
+  <p>Only valid points, i.e. points with a non-zero value in the
+  mask are considered. For points with a zero in the mask the
+  output is set to the NULL value.</p>
+
+  <p>If a point index is specified [pt_num] on the command line,
+  then only the value of that point in pdata2 is used rather than
+  the entire point list. In this way the value at the reference
+  point can be subtracted from each layer.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  To calculate linear combinations of more than two records
+  lin_comb_pt can be applied multiple times.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>, <a href=
+  "sub_phase_pt.html">sub_phase_pt</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 26-Oct-2005.
+</body>
+</html>

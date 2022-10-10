@@ -1,0 +1,11 @@
+#!/bin/sh
+ls -1 */LED* > tmp_LED
+ls -1 */IMG*HH* > tmp_HH
+ls -1 */IMG*HV* > tmp_HV
+ls -1 */*.L > tmp_L
+ls -1 */*.D > tmp_D
+paste -d" " tmp_D tmp_L > $1
+paste -d" " tmp_HH tmp_LED >> $1
+cat tmp_HV | cut -d"/" -f1 | while read line; do ls -1 */LED* | grep $line; done > tmp_LED_HV
+paste -d" " tmp_HV tmp_LED_HV >> $1
+rm -f tmp_LED tmp_HH tmp_L tmp_D tmp_HV tmp_LED_HV

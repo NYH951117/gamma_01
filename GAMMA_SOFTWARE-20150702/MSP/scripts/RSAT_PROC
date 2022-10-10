@@ -1,0 +1,172 @@
+#! /bin/csh -fe
+
+echo "RSAT_PROC: Process RADARSAT Strip-Map Mode Raw Data v3.2 14-Feb-2003 clw/uw"
+if ($#argv < 4)then
+  echo "usage: RSAT_PROC <sensor> <scene> <RLK> <AZLK> [RAW_dir] [RC_dir] [SLC_dir] [AZ_PATCH] [DOP_AMBIG]"
+  echo "       sensor      sensor parameter file"
+  echo "       scene       scene number"
+  echo "       RLK         range looks in the multilook intensity (MLI) image"
+  echo "       AZLK        azimuth looks in the multilook intensity (MLI) image"
+  echo "       RAW_dir     SAR raw data file directory"
+  echo "       RC_dir      range compressed data file directory"
+  echo "       SLC_dir     single look complex image file directory"
+  echo "       AZ_PATCH    azimuth patch size: 2048, 4096, 8192 (default=4096)"
+  echo "       DOP_AMBIG   ambiguity resolution mode (default=0:MLBF  1:MLCC)\n"
+  exit
+endif
+
+set RAW = "."
+if ($#argv >= 5) set RAW = $5
+
+set RC = "."
+if ($#argv >= 6) set RC = $6
+
+set SLC = "."
+if ($#argv >= 7) set SLC = $7
+
+set AZ_PATCH = 4096
+if ($#argv >= 8) set AZ_PATCH = $8
+
+set DOP_AMBIG = 1
+if ($#argv >= 9) set DOP_AMBIG = $9
+
+set logfile = $2.log
+set MSP_SLC_PAR = p$2.slc.par
+set MSP_MLI_PAR = p$2.mli.par
+set ISP_SLC_PAR = $2.slc.par
+set ISP_MLI_PAR = $2.mli.par
+set RC_FILE = $RC/$2.rc
+set SLC_FILE = $SLC/$2.slc
+set MLI_FILE = $SLC/$2.mli
+set MLI_RASTER = $MLI_FILE.ras
+
+# tests if required input files exist:
+if(1) then
+  if (-e "$1" == 0 ) then 
+    echo "ERROR: sensor parameter file ($1) does not exist"
+    exit(-1)
+  endif 
+  if ((-e "$MSP_SLC_PAR" == 0 )) then 
+    echo "ERROR: MSP processing parameter file ($MSP_SLC_PAR) does not exist"
+    exit(-1)
+  endif 
+  if (($#argv >= 5) && (-e "$5" == 0 )) then 
+    echo "ERROR: RAW_dir ($5) does not exist"
+    exit(-1)
+  endif 
+  if ((-e "$RAW/$2.raw" == 0 ) && (-e "$RAW/$2.fix" == 0 )) then 
+    echo "ERROR: Raw data file ($RAW/$2.raw or $RAW/$2.fix) does not exist"
+    exit(-1)
+  endif 
+  if( ($#argv >= 6) && (-e "$6" == 0 ) ) then
+    echo "ERROR: RC_dir ($6) does not exist"
+    exit(-1)
+  endif 
+  if( ($#argv >= 7) && (-e "$7" == 0 ) ) then 
+    echo "ERROR: SLC_dir ($7) does not exist"
+    exit(-1)
+  endif 
+endif
+
+set SENSOR = $1
+set RLK = $3
+set AZLK = $4
+
+set DECIM = 1
+set DOP_ALGOR = 2
+set AMB_FLAG = 1
+set NSUB = 12
+set AUTOF_SNR_MIN = 1.5
+
+set AZ_PROC = az_proc
+set R_COMP = pre_rc_RSAT
+set ANTENNA = `awk '$1 == "antenna_pattern_filename:" {print $2}' $1`
+
+set CAL_FACT = 0.0
+set SLC_FORMAT = 0 		#SLC format = 0:FCOMPLEX   1:SCOMPLEX
+
+#set CAL_FACT = 40.0		#adjust scaling for scomplex output 
+#set SLC_FORMAT = 1
+
+# check if fixed raw data file exists (missing lines, range gate etc.)
+set RAW_DATA = $RAW/$2.fix
+
+if (! -e $RAW_DATA) then
+  echo "range aligned and reformated raw data file $RAW_DATA missing\n"; exit(-1)
+endif
+
+rm -f $logfile
+echo "\nMSP_PROCESSING LOG FILE: $logfile"
+echo "MSP PROCESSING START: `date`\n" 
+echo "MSP PROCESSING START: `date`" > $logfile
+
+echo "\nraw data decimation factor: $DECIM" > $logfile
+echo "number of range looks:      $RLK" > $logfile
+echo "number of azimuth looks:    $AZLK" > $logfile
+echo "minimum autofocus SNR:      $AUTOF_SNR_MIN" > $logfile
+echo "azimuth patch size:         $AZ_PATCH" > $logfile
+echo "range compression program:  $R_COMP" > $logfile
+echo "azimuth processing program: $AZ_PROC" > $logfile
+echo "antenna pattern filename:   $ANTENNA" > $logfile
+echo "raw data file:              $RAW_DATA" > $logfile
+echo "range compressed data:      $RC_FILE" > $logfile
+echo "SLC image data:             $SLC_FILE" > $logfile
+echo "log file:                   $logfile" > $logfile
+echo "Multi-Look Intensity:       $MLI_FILE" > $logfile
+echo "Multi-Look Intensity Raster Image: $MLI_RASTER\n"> $logfile
+
+switch ($DOP_AMBIG)
+case 0:
+  rm -f $2.mlbf 
+  echo "dop_ambig $SENSOR $MSP_SLC_PAR $RAW_DATA $DOP_ALGOR - $2.mlbf" 
+  dop_ambig $SENSOR $MSP_SLC_PAR $RAW_DATA $DOP_ALGOR - $2.mlbf >> $logfile
+breaksw
+case 1:
+  rm -f $2.mlcc
+  echo "dop_mlcc $SENSOR $MSP_SLC_PAR $RAW_DATA $2.mlcc" 
+  dop_mlcc $SENSOR $MSP_SLC_PAR $RAW_DATA $2.mlcc >> $logfile
+  breaksw
+default:
+  echo "ERROR: unsupported Doppler ambiguity mode resolution: $DOP_AMBIG"; exit(-1)
+endsw
+
+echo "\ndoppler $SENSOR $MSP_SLC_PAR $RAW_DATA $2.dop - $NSUB $AMB_FLAG" 
+doppler $SENSOR $MSP_SLC_PAR $RAW_DATA $2.dop - $NSUB $AMB_FLAG >> $logfile
+
+echo "rspec_IQ $SENSOR $MSP_SLC_PAR $RAW_DATA $2.rspec" 
+rspec_IQ $SENSOR $MSP_SLC_PAR $RAW_DATA $2.rspec >> $logfile
+
+echo "$R_COMP $SENSOR $MSP_SLC_PAR $RAW_DATA $RC_FILE $DECIM" >> $logfile
+$R_COMP $SENSOR $MSP_SLC_PAR $RAW_DATA $RC_FILE $DECIM >> $logfile
+
+echo "autof $SENSOR $MSP_SLC_PAR $RC_FILE $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1"
+autof $SENSOR $MSP_SLC_PAR $RC_FILE $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1 >> $logfile 
+
+echo "autof $SENSOR $MSP_SLC_PAR $RC_FILE $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1"
+autof $SENSOR $MSP_SLC_PAR $RC_FILE $2.autof $AUTOF_SNR_MIN $DECIM 2048 0 2048 1 >> $logfile 
+
+echo "$AZ_PROC $SENSOR $MSP_SLC_PAR $RC_FILE $SLC_FILE $AZ_PATCH $SLC_FORMAT $CAL_FACT" 
+$AZ_PROC $SENSOR $MSP_SLC_PAR $RC_FILE $SLC_FILE $AZ_PATCH 0 $CAL_FACT >> $logfile
+
+echo "multi_SLC  $MSP_SLC_PAR $MSP_MLI_PAR $SLC_FILE $MLI_FILE $RLK $AZLK" 
+multi_SLC $MSP_SLC_PAR $MSP_MLI_PAR $SLC_FILE $MLI_FILE $RLK $AZLK >> $logfile
+
+#create ISP image parameter file 
+echo "par_MSP $SENSOR $MSP_SLC_PAR  $ISP_SLC_PAR" 
+par_MSP $SENSOR $MSP_SLC_PAR $ISP_SLC_PAR >> $logfile
+echo "par_MSP $SENSOR $MSP_MLI_PAR $ISP_MLI_PAR" 
+par_MSP $SENSOR $MSP_MLI_PAR $ISP_MLI_PAR >> $logfile
+
+/bin/rm -f $RC/$2.rc
+
+set WIDTH =  `awk '$1 == "range_pixels:" {print $2}' $MSP_MLI_PAR`
+set NL =  `awk '$1 == "azimuth_pixels:" {print $2}' $MSP_MLI_PAR`
+
+echo "raspwr $MLI_FILE $WIDTH " 
+raspwr $MLI_FILE $WIDTH >> $logfile 
+echo "disras $MLI_RASTER &"
+disras $MLI_RASTER &
+date >> $logfile
+date
+
+

@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing --><!-- uw961216 -->
+
+  <title>LAT Reference Manual: diplane_helix</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>diplane_helix</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/diplane_helix.c">diplane_helix.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  diplane_helix - Calculation of diplane and helix decomposition
+  terms from the circular components.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>diplane_helix &lt;LL&gt; &lt;RR&gt; &lt;SLC_par&gt;
+  &lt;diplane&gt; &lt;helix&gt; &lt;MLI_par&gt; [rlks] [azlks]
+  [loff] [nlines] [scale]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;LL&gt;</td>
+
+        <td>(input) SLC image with LL circular component
+        (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;RR&gt;</td>
+
+        <td>(input) SLC image with RR circular component
+        (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;diplane&gt;</td>
+
+        <td>(output) multi-look intensity image with diplane
+        component (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;helix&gt;</td>
+
+        <td>(output) multi-look intensity image with helix
+        component (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(output) MLI ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>number of range looks</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>number of azimuth looks</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting range (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (default=entire
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>[scale]</td>
+
+        <td>scale factor for output MLI (default = 1.0)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>diplane_helix 20090501.ll 20090501.rr 20090501.slc.par
+  20090501.diplane 20090501.helix 20090501.mli.par 2 4 0 -
+  1.0</samp></p>
+
+  <p>The program returns the diplane and helix components of the
+  Krogager target decomposition starting from the left and right
+  circular components of the scattering matrix. In this example
+  multi-look factors of 2 and 4 have been used to obtain roughly
+  square pixels on the ground.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  diplane_helix computes the diplane and helix components of the
+  Krogager decomposition (Krogager, 1990) starting from the left
+  and right circularly polarized images of the original scattering
+  matrix. The polarization basis from the original HV to the LR
+  geometry can be performed with <a href=
+  "lin_comb_cpx.html">lin_comb_cpx</a>.<br>
+  <br>
+  The input binary files of type FCOMPLEX. The output binary files
+  are of type FLOAT</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2009.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change
+  27-Nov-2009.</p>
+</body>
+</html>

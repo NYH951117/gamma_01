@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: GRD_to_SR</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>GRD_to_SR</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/GRD_to_SR.c"><i>GRD_to_SR.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  GRD_to_SR - Ground range (GRD) to slant range (SR) image
+  transformation.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  GRD_to_SR &lt;GRD_par&gt; &lt;SLC_par&gt; &lt;off/int_par&gt;
+  &lt;in_file&gt; &lt;out_file&gt; [rlks] [azlks] [interp_mode]
+  [grd_rsp] [grd_azsp]</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;GRD_par&gt;</td>
+
+      <td>(input) SLC parameter file of input ground range
+      image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input/output) SLC parameter file of output slant range
+      image</td>
+    </tr>
+
+    <tr>
+      <td>&lt;off/int_par&gt;</td>
+
+      <td>(input/output) ISP offset/interferogram parameter file of
+      output image<br>
+      (or - for output image in SLC/MLI geometry)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;in_file&gt;</td>
+
+      <td>(input) ground range image (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;out_file&gt;</td>
+
+      <td>(output) slant range image (float)</td>
+    </tr>
+
+    <tr>
+      <td>[rlks]</td>
+
+      <td>multi-looking in range (prior to resampling,
+      default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[azlks]</td>
+
+      <td>multi-looking in azimuth (prior to resampling,
+      default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[interp_mode]</td>
+
+      <td>interpolation mode (default=0:nearest neighbor, 1:spline,
+      2:spline log)</td>
+    </tr>
+
+    <tr>
+      <td>[sr_rsp]</td>
+
+      <td>output image slant range sample spacing (m) (default =
+      c/(2*adc_sampling_rate)</td>
+    </tr>
+
+    <tr>
+      <td>[grd_azsp]</td>
+
+      <td>output image azimuth sample spacing (m) (default = (input
+      image azimuth spacing) * azlks)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br></p>
+
+  <p><samp>GRD_to_SR 8560.grd.par 8560.mli.par - 8560.mli_grd
+  8560.mli 1 1 1 8.0 20.0</samp> Converts the multi-look intensity
+  image 8560.mli_grd from ground-range to slant-range with a 8m
+  pixel spacing in slant range and 20 m in azimuth (using spline
+  interpolation).</p>
+
+  <p><samp>GRD_to_SR 8560.grd.par 8560.slc.par 8560_8059.off
+  8560.grd 8560.mli 1 1 2</samp> Assuming 8560.slc.par
+  8560_8059.off are existing GRD_to_SR converts the multi-look
+  intensity image 8560.grd from ground-range to the slant range
+  geometry defined by parameter files 8560.slc.par and
+  8560_8059.off. Logarithmic spline interpolation is used.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This program resamples real valued images from ground-range to
+  slant-range. The input and output image data are of type float.
+  Typical examples to be converted are PRI products or images
+  (backscatter, coherence, etc.) previously transformed to
+  ground-range geometry using <a href=
+  "SR_to_GRD.html">GRD_to_SR</a>. The input image geometry is
+  specified by the SLC parameter file of the ground range image
+  (*.grd.par). For a multi-look intensity image generated with the
+  program <a href="multi_look.html">multi_look</a> only the SLC/MLI
+  parameter file is required. In this case - is indicated on the
+  command line instead of the ISP/offset parameter file name.</p>
+
+  <p>The output image geometry is specified by the SLC parameter
+  file (*.slc.par) and the ISP/offset parameter file (*.off). If a
+  new parameter file is created for the output image no ISP/offset
+  parameter file (*.off) is required. In this case - is indicated
+  on the command line instead of the ISP/offset parameter file
+  name.</p>
+
+  <p>In the case that the indicated SLC parameter file (*.slc.par
+  or *.mli.par) of the output slant range image is not existing a
+  new MLI parameter file (*.mli.par) is created. The selected
+  output image near range slant range value corresponds to the near
+  range ground range position of the input image. Either the
+  indicated output slant range and azimuth pixel spacings are used,
+  or if nothing is indicated the output pixel spacings are
+  calculated as sr_rsp = c/(2*adc_sampling_rate) with c the speed
+  of light and the output image azimuth pixel spacing equal to the
+  input image azimuth spacing multiplied with the indicated azimuth
+  multi-looking factor. The output image starting time corresponds
+  to the input image starting time. Offsets indicated in the *.off
+  file are accounted for. The ouput image geometric parameters are
+  determined such that the ouput image covers the entire input
+  image.</p>
+
+  <p>In the case an already existing SLC parameter file for an
+  output MLI image (*.mli.par) or that existing SLC parameter file
+  and an existing ISP/offset parameter file are provided no new
+  parameter files for the output slant range geometry are created.
+  Near range slant range, image starting time, slant range and
+  azimuth pixel spacing, number of slant range samples and number
+  of azimuth lines indicated in the provided parameter files are
+  used (without consideration of sample spacing values indicated on
+  the command line). This concept allows to transform only the
+  sub-section of the input image which corresponds to the output
+  slant range geometry defined in the MLI parameter file. To define
+  such a sub-section the output parameter file needs to be edited.
+  You may, for example first transform the entire image to slant
+  range. Then edit the MLI parameter file to select a subsection
+  and then transform only the data for the selcted sub-section.
+  This concept is particularly useful when transforming back data
+  from ground to slant range which was previously transformed from
+  slant ro ground range with the program <a href=
+  "SR_to_GRD.html">GRD_to_SR</a>.</p>
+
+  <p>In the case the SLC parameter file of the input ground range
+  image contains slant range polynomial coefficients (as provided
+  for ENVISAT ASAR ground range images) this polynomial is used for
+  the transformation, otherwise the slant range to ground range
+  conversion is calculated asuming a local spherical earth
+  model.</p>
+
+  <p>The number of looks selected in range and azimuth should
+  roughly correspond to the desired image spacing to achieve the
+  best radiometric and geometric fidelity. The ground range is
+  determined by making a best spherical fit to the earth curvature
+  across track, perpendicular to the heading. In the case no slant
+  range polynomials are provided the distance from the satellite
+  ground track to the start of the image swath in ground range is
+  stored as the near range in the parameter file. OIn the case a
+  polynomial is provided this near range is usually equal to 0.0,
+  unless a sub-section of the ground range image was selected.</p>
+
+  <p>For the resampling nearest neighbor, two dimensional quadratic
+  spline interpolation and two dimensional quadratic spline
+  interpolation of the input image in logarithmic scale (dB values)
+  can be selected. The real valued input and output image data may
+  be displayed using <a href="ISP_display.html">dispwr</a>, Notice
+  that the image width changed during the transformation.
+  Alternately, the intensity image can be scaled and stored as a
+  SUN rasterfile image using <a href=
+  "ISP_display.html">raspwr</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="multi_look.html">multi_look</a>, <a href=
+  "ISP_display.html">dispwr</a>, <a href=
+  "ISP_display.html">raspwr</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2002.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Nov-2002.</p>
+</body>
+</html>

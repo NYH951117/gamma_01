@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF/GEO Reference Manual: par_JERS_geo</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate ISP and DIFF/GEO parameter files and extract data
+  from CEOS Level 2.1 JERS products</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_JERS_geo.c">par_JERS_geo.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_JERS_geo - Create ISP image parameter file and DIFF/GEO DEM
+  parameter file for an ellipsoid geocoded JERS SAR image
+  (processing level 2.1)</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_JERS_geo &lt;CEOS_leader&gt; &lt;CEOS_data&gt;
+  &lt;MLI_par&gt; &lt;DEM_par&gt; [MLI]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;CEOS_leader&gt;</td>
+
+      <td>(input) CEOS leader file provided for Level 2.1 JERS
+      geocoded data (SARL*)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;CEOS_data&gt;</td>
+
+      <td>(input) JAXA CEOS format Level 2.1 geocoded image data
+      (IMOP*)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;MLI_par&gt;</td>
+
+      <td>(output) ISP image parameter file (example:
+      yyyymmdd_map.mli.par)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_par&gt;</td>
+
+      <td>(output) DIFF/GEO DEM parameter file (example:
+      yyyymmdd_map.dem_par)</td>
+    </tr>
+
+    <tr>
+      <td>[MLI]</td>
+
+      <td>(output) reformatted JERS geocoded MLI image (example:
+      yyyymmdd_map.mli, enter - for none)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_JERS_geo SARL_01.DAT IMOP_01.DAT 19970506_map.mli.par
+  19970506_map.dem_par 19970506_map.mli</samp><br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <strong>par_JERS_geo</strong> reads a level 2.1 CEOS format
+  geocoded JERS image produced by JAXA EORC. It generates both an
+  ISP image parameter file and DIFF/GEO DEM parameter file. The ISP
+  image parameter file contains the data, polarization, date, and
+  state vector information. The DEM parameter file contains the
+  image dimensions, sample spacing and map projection
+  parameters.</p>
+
+  <p>The default map projection for these products is either
+  Universal Transverse Mercator (UTM) or Polar Stereographic (PS).
+  The projection parameters and sample spacing are extracted from
+  the CEOS leader file. Images are projected onto the ellipsoid
+  with 0 m height. Mismatches occurr when the terrain height is
+  above mean sea level or the topography is not flat.
+  Co-registration to an already geocoded image is suggested for
+  futher usage of the image.</p>
+
+  <p>The terrain geocoded data are delivered in the form of 16-bit
+  magnitude. The data are converted to 32-bit floating point
+  intensity data. A default calibration factor of -83.6 dB is
+  applied to produce radiometrically calibrated image data. It is
+  possible to generate a SUN raster image of the intensity data
+  using <strong>raspwr</strong> or <strong>ras_dB</strong> and then
+  display with geographic information using the
+  <strong>disras_dem_par</strong> program in the DISP</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DEM_par.html">DEM parameter file</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 14-Apr-2008.<br>
+</body>
+</html>

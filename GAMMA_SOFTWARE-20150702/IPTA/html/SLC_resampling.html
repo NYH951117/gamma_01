@@ -1,0 +1,507 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>SLC co-registration and resampling using a lookup
+  table</title>
+</head>
+
+<body>
+  <h1>SLC co-registration and resampling using offset polynomials
+  (SLC_resamp_all)</h1>This is&nbsp; a&nbsp; guide on how to use
+  the script SLC_resamp_all to resample a set of SLC images to a
+  common reference SLC scene using a lookup table. The resampling
+  is determined using range and azimuth offset polynomial that are
+  stored in the ISP offset/interferogram parameter file
+  (OFF_par).&nbsp; As input data the following inputs are
+  required:<br>
+  <br>
+  1. SLC image data with the ISP image parameter files<br>
+  2. A table of the SLC images to be resampled and the reference
+  scene in the form of an SLC_tab. The SLC tab has two columns, one
+  line per SLC. In the first column is the SLC file name including
+  the absolute or relative<br>
+  path to the SLC. In the second column is the SLC parameter file
+  name including the absolute or relative path to the SLC parameter
+  file<br>
+  <br>
+  An example SLC_tab is shown below for 2 SLC images with relative
+  paths:<br>
+  <br>
+  <span style=
+  "font-family: monospace;">slc/19990915.slc&nbsp;&nbsp;&nbsp;
+  slc/19990915.slc.par</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">slc/19991020.slc&nbsp;&nbsp;&nbsp;
+  slc/19991020.slc.par</span><br>
+  <br>
+  3. A multi-look intensity MLI image of the scene and the
+  associated ISP image parameter file<br>
+  <br>
+  Copy the SLC_resamp_all script to the directory above where the
+  SLCs are located. Run the script without arguments to see the
+  command line arguments:<br>
+  <span style="font-family: monospace;"><br>
+  *** ./SLC_resamp_all<br>
+  *** Copyright 2011, Gamma Remote Sensing, v3.9 18-Apr-2011 clw
+  ***<br>
+  *** Resample a set of SLCs to a common reference SLC ***<br>
+  <br>
+  usage: ./SLC_resamp_all &lt;SLC_tab&gt; &lt;ref_SLC&gt;
+  &lt;ref_par&gt; &lt;rslc_dir&gt; &lt;RSLC_tab&gt; &lt;mode&gt;
+  [rflag] [rlks] [azlks] [rpos] [azpos] [npoly]<br>
+  <br>
+  &nbsp;&nbsp;&nbsp; SLC_tab&nbsp;&nbsp; (input) two column list of
+  SLC filenames and SLC parameter filenames (including paths)
+  (ascii)<br>
+  &nbsp;&nbsp;&nbsp; ref_SLC&nbsp;&nbsp; (input) reference SLC
+  (including path)<br>
+  &nbsp;&nbsp;&nbsp; ref_par&nbsp;&nbsp; (input) ISP image
+  parameter file of the reference SLC (including path)<br>
+  &nbsp;&nbsp;&nbsp; rslc_dir&nbsp; directory to receive the
+  resampled SLCs and ISP image parameter files&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp; RSLC_tab&nbsp; (output) RSLC_tab file for the
+  resampled SLC files<br>
+  &nbsp;&nbsp;&nbsp; mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; processing
+  mode:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: create offset parameter files&nbsp;&nbsp;&nbsp;<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1: estimate initial range and azimuth offsets using orbit state
+  vectors<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: measure initial range and azimuth offsets using SLC images<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  3: estimate range and azimuth offset models using correlation of
+  image intensities<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 4:
+  resample SLC images using range and azimuth offset model<br>
+  &nbsp;&nbsp;&nbsp; rflag&nbsp;&nbsp;&nbsp;&nbsp; flag for
+  interative refinement of the resampled SLC:<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0: resample and measure residual range and azimuth offsets&nbsp;
+  (default)<br>
+  &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp; 1: interatively improve range and azimuth
+  offset polynomials and then measure residual offsets<br>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2: no checking of residual offsets<br>
+  &nbsp;&nbsp;&nbsp; rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of
+  range looks for initial offset estimation&nbsp; (enter - for
+  default)<br>
+  &nbsp;&nbsp;&nbsp; azlks&nbsp;&nbsp;&nbsp;&nbsp; number of
+  azimuth looks for initial offset estimation&nbsp; (enter - for
+  default)<br>
+  &nbsp;&nbsp;&nbsp; rpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center of
+  patch in range (samples) (enter - for default: image center)<br>
+  &nbsp;&nbsp;&nbsp; azpos&nbsp;&nbsp;&nbsp;&nbsp; center of patch
+  in azimuth (lines) (enter - for default: image center)<br>
+  &nbsp;&nbsp;&nbsp; npoly&nbsp;&nbsp;&nbsp;&nbsp; fit polynomial
+  order (1,3,4,6, default: 3)<br></span><span style=
+  "font-family: monospace;"><br>
+  <br>
+  <br>
+  The different modes represent steps in the processing that must
+  be performed sequentially.</span> <code><span style=
+  "color: rgb(51, 0, 153);"><br></span></code>
+
+  <h3>Mode 0:&nbsp;<span style="font-family: monospace;">create
+  offset parameter files for estimation of the
+  offsets</span></h3>The first step in the co-registration and
+  resampling process is creating an offset parameter file.
+  &nbsp;The offset parameter files contain the parameters specifies
+  the locations where offsets are measured and the range and
+  azimuth offset polynomials for resampling the SLC.<br>
+  <br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code style="color: rgb(51, 0, 153);">SLC_resamp_lt_all SLC_tab
+  rslc/19990915.rslc rslc/19990915.rslc.par geo/hm_dem.rdc mli rslc
+  RSLC_tab 1</code><br>
+  <br>
+  This generates the following command of create_offset to be
+  performed<br>
+  <br>
+  <code><span style="color: rgb(51, 0, 153);">create_offset
+  rslc/19960421.rslc.par slc/19960422.slc.par
+  rslc/19960421_19960422.off &lt; create_offset.in</span><br>
+  <br></code> The inputs to create_offset are derived from the SLC
+  are the default values as shown below. Here is an example of the
+  offset and interferogram parameter file after all processing
+  steps have been completed:<br>
+  <span style="font-family: monospace;">Gamma Interferometric SAR
+  Processor (ISP)</span><br style="font-family: monospace;">
+  <span style="font-family: monospace;">Interferogram and Image
+  Offset Parameter File</span><br style="font-family: monospace;">
+  <br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">title:&nbsp;&nbsp;&nbsp;&nbsp; offset
+  parameters</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">initial_range_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  6</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">initial_azimuth_offset:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  228</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">slc1_starting_range_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">number_of_slc_range_pixels:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2296</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_starting_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  48</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_ending_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2248</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_range_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  32</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_range_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  70</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_starting_azimuth:&nbsp;&nbsp;&nbsp;&nbsp;
+  48</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_ending_azimuth:&nbsp;&nbsp;&nbsp;&nbsp;
+  5698</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_azimuth_samples:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  32</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_azimuth_spacing:&nbsp;&nbsp;&nbsp;&nbsp;
+  182</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_window_width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  64</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_window_height:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  128</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">offset_estimation_threshhold:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  7.00</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">range_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.51269&nbsp;&nbsp; 2.9014e-04&nbsp;&nbsp; 3.2657e-06&nbsp;&nbsp;
+  0.0000e+00</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">azimuth_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;
+  228.46385&nbsp; -6.3313e-05&nbsp;&nbsp; 6.3504e-06&nbsp;&nbsp;
+  0.0000e+00</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">slc1_starting_azimuth_line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">interferogram_azimuth_lines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  574</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">interferogram_width:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1148</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">first_nonzero_range_pixel:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">number_of_nonzero_range_pixels:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  1148</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">interferogram_range_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  2</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">interferogram_azimuth_looks:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  10</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">interferogram_range_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  15.809780&nbsp;&nbsp; m</span><br style=
+  "font-family: monospace;">
+  <span style=
+  "font-family: monospace;">interferogram_azimuth_pixel_spacing:&nbsp;&nbsp;&nbsp;
+  39.907180&nbsp;&nbsp; m</span><br style=
+  "font-family: monospace;">
+  <span style=
+  "font-family: monospace;">resampled_range_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000000&nbsp;&nbsp; m</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">resampled_azimuth_pixel_spacing:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000000&nbsp;&nbsp; m</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">resampled_starting_ground_range:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00000&nbsp;&nbsp; m</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">resampled_pixels_per_line:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</span><br style="font-family: monospace;">
+  <span style=
+  "font-family: monospace;">resampled_number_of_lines:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0</span><br>
+
+  <h3>Mode 1:&nbsp;<span style="font-family: monospace;">measure
+  initial range and azimuth offsets using orbit
+  information</span></h3>The most robust way to estimate the
+  initial offsets between the images is to use the orbit state
+  vector and SLC timing information. The ISP program
+  init_offset_orbit determines the time of closest approach of the
+  two tracks to determine an estimate of the range and azimuth
+  offsets between the images<br>
+  <br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code><span style="color: rgb(51, 0, 153);">SLC_resamp_all
+  SLC_tab slc/19960421.slc slc/19960421.slc.par rslc RSLC_tab 0 1 1
+  1</span><br style="color: rgb(51, 0, 153);">
+  <br></code> This results in the following command being
+  run:<code><br>
+  <br>
+  <span style="color: rgb(51, 0, 153);">init_offset_orbit
+  rslc/19960421.rslc.par slc/19960422.slc.par
+  rslc/19960421_19960422.off<br>
+  <br></span></code> with the result:<br>
+  <span style=
+  "color: rgb(0, 0, 153); font-family: monospace;">initial offset
+  range (samples): 6&nbsp;&nbsp; azimuth (lines): 229</span>
+
+  <h3>Mode 2:&nbsp;<span style="font-family: monospace;">measure
+  initial range and azimuth offsets using the
+  images</span></h3>Instead of or in addition to using the orbits,
+  the initial offset of the images can be determined using the ISP
+  program init_offset. This step measures the initial offset
+  between the reference SLC and SLC-2 using an image patch
+  specified by the user.. The location &nbsp;for the initial
+  estimate is nominally in the image center. If another location
+  with more topography is desired, the location can be specified on
+  the command line using the &nbsp;following parameters that can be
+  entered on the SLC_resamp_all command line:<br>
+  <br style="color: rgb(51, 51, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(51, 51, 153);">&nbsp;&nbsp;&nbsp;
+  rlks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; number of range looks for
+  initial offset estimation&nbsp; (enter - for
+  default)</span><br style=
+  "font-family: monospace; color: rgb(51, 51, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(51, 51, 153);">&nbsp;&nbsp;&nbsp;
+  azlks&nbsp;&nbsp;&nbsp;&nbsp; number of azimuth looks for initial
+  offset estimation&nbsp; (enter - for default)</span><br style=
+  "font-family: monospace; color: rgb(51, 51, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(51, 51, 153);">&nbsp;&nbsp;&nbsp;
+  rpos&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; center of patch for initial
+  offset estimation in range (samples) (enter - for default: image
+  center)</span><br style=
+  "font-family: monospace; color: rgb(51, 51, 153);">
+  <span style="font-family: monospace;"><span style=
+  "color: rgb(51, 51, 153);">&nbsp;&nbsp;&nbsp;
+  azpos&nbsp;&nbsp;&nbsp;&nbsp; center of patch for initial offset
+  estimation in azimuth (lines) (enter - for default: image
+  center</span>)<br></span><br>
+  <span style="font-weight: bold;">Example:</span><br>
+  <code><span style="color: rgb(51, 0, 153);">SLC_resamp_all
+  SLC_tab slc/19960421.slc slc/19960421.slc.par rslc RSLC_tab 2 1 1
+  1</span><br style="color: rgb(51, 0, 153);">
+  <br></code> This results in the following command being
+  run:<code><br>
+  <br>
+  <span style="color: rgb(51, 0, 153);">init_offset
+  rslc/19960421.rslc slc/19960422.slc rslc/19960421.rslc.par
+  slc/19960422.slc.par rslc/19960421_19960422.off 1 1 1148 2873<br>
+  <br></span></code> with the result:<br>
+  <br>
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">offset estimate
+  (range,azimuth):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.900&nbsp;&nbsp;&nbsp;&nbsp; 228.353</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">correlation
+  SNR:&nbsp;&nbsp;&nbsp; 117.219</span><br style=
+  "font-family: monospace; color: rgb(0, 0, 153);">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">output DIFF/GEO
+  parameter file: rslc/19960421.rslc.par</span><br>
+
+  <h3>Mode 3:&nbsp;<span style="font-family: monospace;">estimate
+  range and azimuth offset models using correlation of image
+  intensities</span></h3>In this step, the offsets between the SLC
+  reference and initial resampled SLC are measured over a grid of
+  points taking into account the initial offset deterimined in the
+  previous steps.<br>
+  The values of these offsets are then used to estimate range and
+  azimuth offset polynomials to resample the SLC.<br>
+  <span style="font-weight: bold;"><br>
+  Example:</span><br>
+  <code><span style="color: rgb(51, 0, 153);">SLC_resamp_all
+  SLC_tab slc/19960421.slc slc/19960421.slc.par rslc RSLC_tab 3 1 1
+  1</span><br>
+  <br></code> This results in the following commands and
+  result:<br>
+  <br>
+  <code style="color: rgb(0, 0, 153);"><span style=
+  "font-family: monospace;">offset_pwr rslc/19960421.rslc
+  slc/19960422.slc rslc/19960421.rslc.par slc/19960422.slc.par
+  rslc/19960421_19960422.off rslc/19960421_19960422.offs
+  rslc/19960421_19960422.snr</span></code><br>
+  <br>
+  In the output log file &nbsp;<span style=
+  "color: rgb(0, 0, 0);">rslc/19960421_19960422_resamp.log is
+  listed the output from offset_pwr</span><br>
+  <br>
+  <code style="color: rgb(0, 0, 153);">number of offsets above SNR
+  threshold: 914 of 1024</code><br>
+  <br>
+  The range and azimuth offsets as well as the signal to noise
+  values for the offsets (SNR values) are then used as inputs to
+  the offset_fit program:<br style="color: rgb(0, 0, 153);">
+  <code style="color: rgb(0, 0, 153);">offset_fit
+  rslc/19960421_19960422.offs rslc/19960421_19960422.snr
+  rslc/19960421_19960422.off rslc/19960421_19960422.coffs - -
+  3</code><br style="color: rgb(0, 0, 153);">
+  <br>
+  with output:<br>
+  <code style="color: rgb(51, 0, 153);"><br></code>
+  <code><span style="color: rgb(0, 0, 153);"><span style=
+  "font-family: monospace;">range_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  5.51269&nbsp;&nbsp; 2.9014e-04&nbsp;&nbsp; 3.2657e-06&nbsp;&nbsp;
+  0.0000e+00</span></span></code><code><br style=
+  "font-family: monospace;">
+  <span style=
+  "font-family: monospace; color: rgb(0, 0, 153);">azimuth_offset_polynomial:&nbsp;&nbsp;&nbsp;&nbsp;
+  228.46385&nbsp; -6.3313e-05&nbsp;&nbsp; 6.3504e-06&nbsp;&nbsp;
+  0.0000e+00</span></code><br>
+
+  <h3>Mode 4:&nbsp;<span style="font-family: monospace;">resample
+  SLC images using lookup table offsets determined in mode 3 and
+  generate RSLC_tab</span></h3>The offset parameter file now
+  contains the range and azimuth offset polynomials. See the
+  documentation on offset_fit to understand the different terms in
+  the polynomials.&nbsp;&nbsp;If the <code style=
+  "color: rgb(0, 0, 153);">rflag</code> command line parameter is
+  set to 1 (offset confirmation) the residual offsets from this
+  second resampling are measured and a further correction to the
+  offset model is determined.&nbsp;<br>
+  <br>
+  <span style="font-weight: bold;">Example:<br></span> Resampling
+  using the initial&nbsp; offset correction&nbsp; polynomial:<br>
+  <code><span style="color: rgb(51, 0, 153);">SLC_resamp_all
+  SLC_tab slc/19960421.slc slc/19960421.slc.par rslc RSLC_tab 4 1 1
+  1<br>
+  <br></span></code> <span style="color: rgb(0, 0, 0);">generates
+  the following command:</span><code><span style=
+  "color: rgb(51, 0, 153);"><br style=
+  "color: rgb(51, 0, 153);"></span><br>
+  <span style="color: rgb(0, 0, 153);">SLC_interp slc/19960422.slc
+  rslc/19960421.rslc.par slc/19960422.slc.par
+  rslc/19960421_19960422.off rslc/19960422.rslc
+  rslc/19960422.rslc.par</span></code><code><br></code><br>
+  If the rflag parameter has been set, the offsets are remeasured
+  and a further improvement of the offset polynomials is carried
+  out:<br>
+  <br>
+  <code><span style="color: rgb(0, 0, 153);">create_offset
+  rslc/19960421.rslc.par rslc/19960422.rslc.par
+  rslc/19960421_19960422_2.off &lt;
+  create_offset.in</span><br style="color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">offset_pwr
+  rslc/19960421.rslc rslc/19960422.rslc rslc/19960421.rslc.par
+  rslc/19960422.rslc.par rslc/19960421_19960422_2.off
+  rslc/19960421_19960422_2.offs \
+  rslc/19960421_19960422_2.snr</span><br style=
+  "color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">offset_fit
+  rslc/19960421_19960422_2.offs rslc/19960421_19960422_2.snr
+  rslc/19960421_19960422_2.off rslc/19960421_19960422_2.coffs - -
+  3</span><br>
+  <br></code> With these results for the residual offset between
+  the resampled SLC and the reference from offset_fit:<code><br>
+  <span style="color: rgb(0, 0, 153);">final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.00347&nbsp;&nbsp; 3.15927e-06&nbsp;&nbsp;
+  2.47865e-07</span><br style="color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">final range offset poly.
+  coeff. errors:&nbsp;&nbsp; 3.39985e-05&nbsp;&nbsp;
+  1.70438e-08&nbsp;&nbsp; 8.12911e-09</span><br style=
+  "color: rgb(0, 0, 153);">
+  <br style="color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00160&nbsp; -3.66268e-06&nbsp;&nbsp;
+  3.13187e-07</span><br style="color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">final azimuth offset poly.
+  coeff. errors:&nbsp;&nbsp; 3.81452e-05&nbsp;&nbsp;
+  1.91226e-08&nbsp;&nbsp; 9.12061e-09</span><br style=
+  "color: rgb(0, 0, 153);">
+  <br style="color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">final model fit std. dev.
+  (samples) range:&nbsp;&nbsp; 0.0132&nbsp; azimuth:&nbsp;&nbsp;
+  0.0148</span><br style="color: rgb(0, 0, 153);"></code><br>
+  Next update the offset polynomial with the residual
+  correction:<code><br>
+  <span style="color: rgb(0, 0, 153);">set_value
+  rslc/19960421_19960422.off rslc/19960421_19960422.off
+  "range_offset_polynomial"&nbsp; " 5.5126900e+00&nbsp;
+  2.90139e-04&nbsp; 3.26567e-06&nbsp; 0.00000e+00"</span><br style=
+  "color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">set_value
+  rslc/19960421_19960422.off rslc/19960421_19960422.off
+  "azimuth_offset_polynomial" " 2.2846385e+02 -6.33127e-05&nbsp;
+  6.35039e-06&nbsp; 0.00000e+00"</span><br style=
+  "color: rgb(0, 0, 153);">
+  <br></code> Followed by the final resampling of the SLC data and
+  measurement of the residual offsets:<br>
+  <code><span style="color: rgb(0, 0, 153);">SLC_interp
+  slc/19960422.slc rslc/19960421.rslc.par slc/19960422.slc.par
+  rslc/19960421_19960422.off rslc/19960422.rslc
+  rslc/19960422.rslc.par</span><br style="color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">offset_pwr
+  rslc/19960421.rslc rslc/19960422.rslc rslc/19960421.rslc.par
+  rslc/19960422.rslc.par rslc/19960421_19960422_2.off
+  rslc/19960421_19960422_2.offs
+  rslc/19960421_19960422_2.snr</span><br style=
+  "color: rgb(0, 0, 153);">
+  <span style="color: rgb(0, 0, 153);">offset_fit
+  rslc/19960421_19960422_2.offs rslc/19960421_19960422_2.snr
+  rslc/19960421_19960422_2.off rslc/19960421_19960422_2.coffs - -
+  3</span><br style="color: rgb(0, 0, 153);"></code><br>
+  These are the final residual polynomials for the range and
+  azimuth offsets:<br>
+  <code style="color: rgb(0, 0, 153);">final range offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  -0.00061&nbsp;&nbsp; 5.07065e-07&nbsp;&nbsp; 4.24556e-08<br>
+  final azimuth offset poly.
+  coeff.:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.00034&nbsp; -5.37996e-07&nbsp;&nbsp; 3.41833e-08</code><br>
+
+  <h3>Offset Error Estimation:</h3>It is essential to have
+  estimates of the residual error in the resampling for each of the
+  SLCs. A log file is created for each SLC pair and stored in the
+  resampled SLC directory. The commands and &nbsp;complete output
+  of each of the programs &nbsp;is recorded in the log file. In
+  this particular example there is only one log file since only a
+  single pair has been co-registered. In this example the SLC data
+  were resampled 3 times and the residual offsets measured.&nbsp;
+  The values of the standard deviation of the measurements relative
+  to the model&nbsp; can be extracted from the log file using the
+  Linux/Unix grep utility as follows:<br>
+  <br>
+  <code><span style="color: rgb(51, 51, 153);">grep "final model
+  fit std. dev."&nbsp; 19990915_19991020_resamp.log<br>
+  <br></span> final model fit std. dev. (samples)
+  range:&nbsp;&nbsp; 0.0205&nbsp; azimuth:&nbsp;&nbsp; 0.0164<br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0132&nbsp; azimuth:&nbsp;&nbsp; 0.0148<br>
+  final model fit std. dev. (samples) range:&nbsp;&nbsp;
+  0.0132&nbsp; azimuth:&nbsp;&nbsp; 0.0149</code><br>
+  <br>
+  This indicates that the standard deviation of the offsets in
+  range and azimuth were improved after the second resampling.<br>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  &nbsp;<a href="charles_werner.html">CW</a>, <a href=
+  "urs_wegmuller.html">UW</a>,&nbsp;<a href=
+  "tazio_strozzi.html">TS</a> last change 28-Apr-2011.
+</body>
+</html>

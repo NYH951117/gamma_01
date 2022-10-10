@@ -1,0 +1,120 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+
+if (($#ARGV + 1) < 9){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v1.2 9-Apr-2015 clw ***
+*** Extract a specified region from a stack of float or fcomplex format data files ***
+
+usage: $0 <data_tab> <cp_dir> <dtype> <xoff> <nx> <yoff> <ny> <dtab_out>
+    dtab     (input) single column list of input data files (including paths)
+              NOTE: all data files must have the same number of samples/line
+    cp_dir    directory for the output data
+    width     number of samples/line of the input data
+    dtype     data type:
+                0: FLOAT
+                1: FCOMPLEX
+    xoff      offset to starting sample (samples) (enter - for default: 0)
+    nx        number of range samples to copy (enter - for default: to end of line)
+    yoff      offset to starting line (lines) (enter - for default: 0)
+    ny        number of lines to copy (enter - for default: to end of file)
+    dtab_out  (output) list of the output data files with cp_dir in the path
+       
+    NOTE: current directory is denoted using .
+    
+EOS
+
+open(DATA_TAB, "<$ARGV[0]") or die "\nERROR $0: data file: $ARGV[0]\n\n";
+print "data_tab list of input data: $ARGV[0]\n";
+
+$cpd_dir = $ARGV[1];
+$width   = $ARGV[2];
+$dtype   = $ARGV[3];
+$xoff    = $ARGV[4];
+$nx      = $ARGV[5];
+$yoff    = $ARGV[6];
+$ny      = $ARGV[7];
+$dtab    = $ARGV[8];
+
+unless (-d $cpd_dir) {
+  (mkdir $cpd_dir) or die "ERROR $0: non-zero exit status, could not create output directory $cpd_dir\n"
+}
+
+open(DTAB,">$dtab") or die "ERROR $0: cannot create list of output data files: $dtab\n\n";
+
+print "output directory: $cpd_dir\n";
+print "output list of copied data: $dtab\n";
+print "offset line:   $yoff   lines:   $ny\n";
+print "offset sample: $xoff   samples: $nx\n";
+
+$width =~ /\d+$/ && $width > 0 or die "ERROR $0: width must be a valid integer > 0: $width\n";
+$dtype =~ /0|1/ or die "ERROR $0: data type must be 0  or 1: $dtype\n";
+(($yoff =~ /\d+$/ && $yoff >= 0 ) or ($yoff eq "-")) or die "ERROR $0: invalid offset to first line: $yoff\n";
+(($ny =~ /\d+$/ && $ny > 0) or ($ny eq "-")) or die "ERROR $0: invalid number of lines: $ny\n";
+(($xoff =~ /\d+$/ && $xoff >= 0) or ($xoff eq "-")) or die "ERROR $0: invalid offset to first pixel: $xoff\n";
+(($nx =~ /\d+$/ && $nx > 0) or ($nx eq "-")) or die "ERROR $0: invalid number of pixels: $nx\n";
+
+$time = localtime;
+print "\nprocessing start: $time\n";  
+$log = "$cpd_dir/mk_cpd_all.log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n\n";
+LOG->autoflush;
+
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "\nprocessing start: $time\n";  
+print LOG "output data directory: $cpd_dir\n";
+print LOG "offset line:   $yoff   lines:  $ny\n";
+print LOG "offset sample: $xoff   samples: $nx\n";
+close LOG;
+ 
+LINE: while (<DATA_TAB>) {	#read lines of processing list file into $_
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+   
+  $dat = $fields[0];
+  if ($#fields + 1 > 1) {
+    $delta = $fields[1];
+    $tstr = $fields[2];
+  }
+  
+  -e $dat or die "ERROR $0: input data file does not exist: $dat\n";    
+  my ($s1, $dir1, $ext1) = fileparse($dat, qr/\.[^.]*/); #extension is the last bit after the last period 
+ 
+  $ext2 = substr $ext1,1;	#delete period at the start of the extension
+  $dat2 = "$cpd_dir/$s1.$ext2";
+  
+  if ($#fields+1 == 1) {
+    print DTAB "$dat2\n";
+  }
+  else {
+    print DTAB "$dat2  $delta   $tstr\n";
+  }
+     
+  $time = localtime;
+  print"\ninput data: $dat  output data: $dat2   start time: $time\n";  
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+  print LOG "\ninput data: $dat  output data: $dat2  start time: $time\n";
+  close LOG;
+  execute("cpd $dat $dat2 $width $dtype $xoff $nx $yoff $ny",$log);
+}
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open existing log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open new log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}

@@ -1,0 +1,256 @@
+#!/usr/bin/perl
+use FileHandle;
+
+$sfactor = .9;
+$expon = .35;
+
+if (($#ARGV + 1) < 15){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2005, Gamma Remote Sensing, v1.7 20-May-2005 clw ***
+*** generate 2-D images of point data using pt2d and a DEM parameter file  ***
+
+usage: $0 <plist> <pmask> <itab> <DEM_par> <pdata> <srec> <nrec> <type> <imode> <radius> <np_min> <out_dir> <ref_im> <cycle> <sflag> [scale] [exponent] [SLC_par]
+
+    plist    (input) point list in DEM coordinates (int)
+    pmask    (input) point list mask values (uchar, pmask[i]=0 excludes point i, enter - if not available)
+    itab     (input) table relating interferogram stack records with pairs of SLC stack records
+    DEM_par  (input) DIFF/GEO DEM parameter file
+    pdata    (input) point data stack (various types supported)
+    srec     starting record number in input point data stack (starting with 1)
+    nrec     number of data records to process (enter - for all);
+    type     data type (0:fcomplex  2:float)
+    imode    interpolation mode (0:none  1:3-pt_bilinear  2:6-pt_bilinear 3:convol 4:nn_convol, default -: 6-pt_bilinear)
+    radius   window radius used (only used for imodes (3,4), nominal = 1.2)
+    np_min   minimum number of points required for search region (only used for imodes (3,4), default: 3)
+    out_dir  directory for output images
+    ref_im   (input) reference MLI 2D image in map coordinates for display of point data (float)
+    cycle    data value per color cycle (applies only for float data, enter - or 0 for fcomplex data)
+    sflag    save data 2-D interpolated data files (0:no 1:yes)
+    scale    image display scale factor (default: $sfactor)
+    exp      image display exponent (default $expon)
+    SLC_par  (input) SLC parameter stack (binary)
+
+    NOTE:  use . to denote the current directory
+EOS
+
+$plist   = $ARGV[0];
+$pmask   = $ARGV[1];
+$itab    = $ARGV[2];
+$DEM_par = $ARGV[3];
+$pdata   = $ARGV[4];
+$srec    = $ARGV[5];
+$nrec    = $ARGV[6];
+$type    = $ARGV[7];
+$imode   = $ARGV[8];
+$radius  = $ARGV[9];
+$np_min  = $ARGV[10];
+$out_dir = $ARGV[11];
+$ref_im  = $ARGV[12];
+$cycle   = $ARGV[13];
+$sflag   = $ARGV[14];
+if($#ARGV >= 15){$sfactor = $ARGV[15];}
+if($#ARGV >= 16){$expon = $ARGV[16];}
+
+-e $plist or die "ERROR $0: point list does not exist: $plist\n";
+(-e $pmask || $pmask =~ /-/) or die "ERROR $0: point mask does not exist: $pmask\n";
+-e $itab or die "ERROR $0: itab file does not exist: $itab\n";
+-e $pdata or die "ERROR $0: point data stack does not exist: $pdata\n";
+$srec =~ /\d+$/ && $srec > 0 or die "ERROR $0: invalid starting record: $srec\n";
+($nrec =~ /\d+$/ && $nrec > 0) || $nrec =~ /-/ or die "ERROR $0: invalid number of records: $nrec\n";
+-e $DEM_par or die "ERROR $0: DEM parameter file does not exist: $DEM_par\n";
+-e $ref_im or die "ERROR $0: reference mli image in map coordinates does not exist: $ref_im\n";
+
+$type == 0 || $type == 2 or die "ERROR $0: only float and fcomplex data are supported : $type\n";
+$imode >= 0 && $imode <= 6 or die "ERROR $0: invalid imode value: $imode\n";
+$radius > 0 or die "ERROR $0: radius must be > 0: $radius\n";
+$np_min > 0 or die "ERROR $0: np_min must be > 0 : $np_min\n";
+
+unless (-d $out_dir) {
+  $exit = system("mkdir $out_dir");
+  $exit == 0 or die "ERROR $0: execute: non-zero exit status: mkdir $out_dir\n"
+}
+
+$sflag == 0 || $sflag == 1 or die "\nERROR $0: invalid value for save flag (or or 1)`: $sflag\n";
+
+$log = "$out_dir/mk_2d_im_geo.log";
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush; 
+open(ITAB,"<$itab") or die "ERROR $0: cannot open itab file: $itab\n";
+
+$time = localtime;
+@width = extract_param($DEM_par,"width:");
+@nlines = extract_param($DEM_par,"nlines:");
+@proj = extract_param($DEM_par,"DEM_projection:");
+
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n\n";
+print "$0   $time    log file: $log\n\n";
+print "plist:   $plist\n";
+print "pmask:   $pmask\n";
+print "itab:    $itab\n";
+print "pdata:   $pdata\n"; 
+print "image display scale factor: $sfactor  $#ARGV\n";
+print "image display exponent: $expon\n";
+
+if ($#ARGV+1 > 17){
+  $pSLC_par = $ARGV[17];
+-e $pSLC_par or die "ERROR $0: SLC parameter stack does not exist: $pSLC_par\n";
+  printf "SLC parameter stack: $pSLC_par\n";
+}
+
+print "\nDEM_par: $DEM_par\n";
+print "DEM width: @width[1]  DEM lines: @nlines[1]\n";
+print "DEM projection: @proj[1]\n";
+if (@proj[1] =~ m/EQA/){
+  @epost = extract_param($DEM_par,"post_lon:");
+  @npost = extract_param($DEM_par,"post_lat:");
+  print "easting post spacing (deg): @epost[1]  northing post spacing (deg): @npost[1]\n\n";
+}
+else{
+  @epost = extract_param($DEM_par,"post_east:");
+  @npost = extract_param($DEM_par,"post_north:");
+  print "easting post spacing (m): @epost[1]  northing post spacing (m): @npost[1]\n\n";
+}
+print "starting record: $srec  number of records: $nrec\n";
+$esp = abs(@epost[1]);
+$nsp = abs(@npost[1]);
+
+$dtype = ("fcomplex","scomplex","float", "short","byte")[$type];
+print "data type: $type  $dtype\n";
+$interp_mode = ("none","3-pt_bilinear","6-pt_bilinear","convol","nn_convol")[$imode];
+
+if($imode == 3 || $imode == 4){
+  print "search radius (pixels): $radius\n";
+  print "minimum number of points in the search region: $np_min\n"; 
+}
+print "output directory for the 2-D output images: $out_dir\n";
+print "reference rmli image: $ref_im\n";
+if($type == 2){
+  print "data range/color cycle: $cycle\n";
+} 
+
+if($sflag == 0){
+  print "save data flag: $sflag deleting 2-D raster data files\n";
+}  
+else {
+  print "save data flag: $sflag saving 2-D raster data files\n";
+}
+
+print LOG "interpolation mode: $imode $interp_mode\n";
+print LOG "plist:   $plist\n";
+print LOG "pmask:   $pmask\n";
+print LOG "itab:    $itab\n";
+print LOG "pdata:   $pdata\n"; 
+if ($#ARGV+1 > 17){
+  printf LOG "SLC parameter stack: $pSLC_par\n";
+}
+print LOG "\nDEM_par: $SLC_par\n";
+print LOG "DEM width: @width[1]  DEM lines: @nlines[1]\n";
+print LOG "easting post spacing (m): @epost[1]  northing post spacing (m): @npost[1]\n\n";
+print LOG "starting record: $srec  number of records: $nrec\n";
+print LOG "data type: $type  $dtype\n";
+print LOG "interpolation mode: $imode $interp_mode\n";
+if($imode == 3 || $imode == 4){
+  print LOG "search radius (pixels): $radius\n";
+  print LOG "minimum number of points in the search region: $np_min\n";    
+}
+print LOG "output directory for the 2-D output raster images: $out_dir\n";
+print LOG "reference rmli image: $ref_im\n";
+if($type == 2){
+  print LOG "data range/color cycle: $cycle\n";
+} 
+if($sflag == 0){
+  print LOG "save data flag: $sflag deleting 2-D raster  data files\n";
+}  
+else {
+  print LOG "save data flag: $sflag saving 2-D raster data files\n";
+}
+close LOG;
+
+$rn = 0;
+LINE: while(<ITAB>) {
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in itab
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $#fields >= 3 or die "ERROR: insuffient fields in the ITAB record: @fields\n";
+  $refn = @fields[0];		#itab record fields
+  $slcn = @fields[1];
+  $intn = @fields[2];
+  $flg = @fields[3];
+  $rn = $rn + 1;
+  next LINE if ((($flg != 1) && ($nrec != 1)) || ($rn < $srec));	#if itab flag 0 or not yet at starting record
+  @pdata1 = split /\//, $pdata;	#split on backslashes 
+
+  if($#ARGV + 1 != 17){
+    $rns = sprintf("%03d",$rn);
+  }
+  else{
+    -e $pSLC_par or die "ERROR $0: SLC parameter stack does not exist: $pSLC_par\n";
+    $p1 = `SLC_par_pt - $pSLC_par $slcn 0`;
+    print LOG "SLC_par_pt - $pSLC_par $slcn 0\n";
+    print "test SLC_par_pt - $pSLC_par $slcn 0\n";
+    @lin = split /^/m, $p1;	#split SLC_par output into lines
+
+    foreach $l1 (@lin) {	#examine each line
+      print $l1;
+      chomp $l1;
+      @tok = split /:/, $l1;	#break line on colon
+      if (@tok[0] =~ m/date/) {
+        $d2 = @tok[1];
+        @date = split /\s+/,$d2;
+        print "date: 0:@date[0] 1:@date[1] 2:@date[2] 3:@date[3]\n";
+        $rns = sprintf "%d%02d%02d",@date[1],@date[2],@date[3];
+        printf "SLC: %3d  date: $rns\n",$slcn,$rns; 
+        last;			#found the date and exist search
+      }
+    }
+    $i++; 
+  }    
+  
+  $f_out = $out_dir."/".@pdata1[$#pdata1]."_".$rns;
+  print "\npdata: $pdata  record: $rns  output file: $f_out\n";
+  
+  execute("pt2d $plist $pmask $pdata $intn $f_out @width[1] @nlines[1] $esp $nsp  1 1 $type $imode $radius $np_min",$log);
+
+  if ($dtype eq "fcomplex"){
+    execute("rasmph_pwr24 $f_out $ref_im @width[1] 1 1 0 1 1 $sfactor $expon", $log);
+  }
+  if ($dtype eq "float"){
+    execute("rasdt_pwr24 $f_out $ref_im @width[1] 1 1 0 1 1 $cycle $sfactor $expon", $log);
+  }
+  if($sflag == 0){execute("rm -f $f_out",$log);}
+  last LINE if ($rn == $srec + $nrec - 1); 
+}   
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "\n$0  @ARGV\n";
+print LOG "processing completed: $time \n";
+print "\n$0 processing completed: $time \n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}
+

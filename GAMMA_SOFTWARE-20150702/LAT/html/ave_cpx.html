@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: ave_cpx</title>
+</head>
+
+<body>
+  <h1>GAMMA Land Application Tools (LAT): Reference Manual</h1>
+  <hr>
+
+  <h2>ave_cpx</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ave_cpx.c">ave_cpx.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ave_cpx -&nbsp; &nbsp;Calculate average of input 2D data files in
+  fcomplex format</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ave_cpx &lt;cpx_list&gt; &lt;width&gt; &lt;ave&gt;
+  [start] [nlines] [zflag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>cpx_list</td>
+
+        <td>(input)&nbsp;text file with names of co-registered
+        images in column 1 (fcomplex)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/line<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;ave&gt;</td>
+
+        <td>(output) average of input images (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>[start]</td>
+
+        <td>starting line (default : 1)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[nlines]<br></td>
+
+        <td style="vertical-align: top;">number of lines to process
+        (enter - for default: entire file)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[zero_flag]<br></td>
+
+        <td style="vertical-align: top;">zero flag:<br>
+        &nbsp; 0: interpret 0.0 as missing data value (default)<br>
+        &nbsp; 1: interpret 0.0 as valid data<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ave_cpx cpx_list ave_cpx.out 1750 1<br></samp></p>
+
+  <p>average complex&nbsp; images in fcomplex format listed in
+  the&nbsp;cpx_list file&nbsp; Each of these files has a width of
+  1750 samples</p>
+
+  <p><strong>DESCRIPTION</strong><code><br>
+  <span style="font-weight: bold;">ave_cpx</span></code> is used to
+  average a stack of 2D data files in fcomplex format (pairs of
+  32-bit floating point numbers). A subset of the input image can
+  be specified by the <span style="font-weight: bold;">start</span>
+  and <span style="font-weight: bold;">nlines</span> parameters.
+  Finally, input data values that are 0.0 can either be interpreted
+  as missing data or as a valid value using the <span style=
+  "font-weight: bold;">zero_flag</span> parameter. If any data in
+  the input stack missing (0.0 valiue), the output pixel is set to
+  0.0 by default. If <span style=
+  "font-weight: bold;">&nbsp;zero_flag</span> is set to 1, then 0.0
+  is interpreted as a valid data value.<br></p>
+
+  <p>The files (including path) are listed in the <span style=
+  "font-weight: bold;">cpx_tab</span> text file, one line entry for
+  each file.&nbsp; Lines containing a # in column 1 and blank lines
+  are ignored.&nbsp;<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ave_image.html">ave_image</a><br></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 11-Apr-2006</p>
+</body>
+</html>

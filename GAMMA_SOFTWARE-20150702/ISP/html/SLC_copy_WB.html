@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>ISP Reference Manual: SLC_copy_WB</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_copy_WB</h2>
+
+  <p><i>Perl script:</i> <a href=
+  "../scripts/SLC_copy_WB"><i>SLC_copy_WB</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_copy_WB -&nbsp; Create a new set of SLCs for all beams in a
+  PALSAR WB ScanSAR image<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_copy_WB &lt;SLC_tab&gt;
+  &lt;SLC2_dir&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) two column list of input SLC files and SLC ISP
+        image parameter files (including<br>
+        paths) (text)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_dir&gt;</td>
+
+        <td>directory to contain copied segments of the input SLC
+        data and the associated parameter<br>
+        files<br>
+        <br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <code style="color: fuchsia;"><samp>SLC_copy_WB
+  SLC_WBs_20071020_tab slc_WBs2</samp></code></p>
+
+  <p><code><samp>where:<br></samp></code></p>
+
+  <p><code>Table of SLC images and parameter files:
+  SLC_WBs_20071020_tab<br>
+  Output resampled SLC directory: slc_WBs2<br></code></p>
+
+  <p><strong>DESCRIPTION<br></strong></p>
+
+  <p><span style="font-weight: normal;">The next step in processing
+  the SCANSAR data to generate a mosaic of the single beam images
+  is to extract a section of each SLC the lies on a common grid of
+  the multi-look image pixels. The starting range and azimuth time
+  of the multi-look (MLI) images produced from the SLCs must be on
+  this grid to avoid the need to perform resampling the data using
+  spline or SINC interpolation. A ISP script <span style=
+  "color: blue;">SLC_copy_WB</span> determines the offset
+  parameters required to call the ISP program <a href=
+  "SLC_copy.html">SLC_copy</a> that extracts the section&nbsp; of
+  the SLC from each beam that falls on the common muli-look pixel
+  grid.&nbsp;&nbsp;<br></span></p>
+
+  <p><span style="font-weight: normal;">Required input to
+  <span style="color: blue;">SLC_copy_WB</span> is a 2 column list
+  of the SLC images and parameter files produced generated using
+  the <span style="font-style: italic;">mk_tab</span> script
+  located in the DIFF/scripts directory. mk_tab uses as input the
+  directory containing the image and parameter files, and the
+  extentions of the files, in this case SLC and SLC parameter
+  file.<br></span></p>
+
+  <p><code><span style="font-weight: normal;">$ <span style=
+  "color: fuchsia;">mk_tab</span><br>
+  *** Copyright 2011, Gamma Remote Sensing, v1.2 29-Apr-2011 clw
+  ***<br>
+  *** Generate SLC_tab, MLI_tab, or RAW_list for processing
+  ***</span></code></p>
+
+  <p><code><span style="font-weight: normal;">usage:
+  /home/cw/GPRI2/trunk/software/mk_tab &lt;dir&gt; &lt;ext-1&gt;
+  &lt;ext-2&gt; &lt;tab&gt;<br>
+  <br>
+  (input) directory including paths that contain the data files<br>
+  ext-1 (input) pattern to select data files (examples: slc,
+  raw...)<br>
+  ext-2 (input) pattern to select parameter files that match the
+  data (enter - for none, examples:<br>
+  slc.par, raw_par, raw.par)<br></span></code></p>
+
+  <p><span style="font-weight: normal;">Use</span> <a href=
+  "../../DIFF/html/mk_tab.html">mk_tab</a> <span style=
+  "font-weight: normal;">to generate the SLC_tab files required by
+  <span style="color: blue;">SLC_copy_WB.&nbsp;</span> The
+  extension parameters ext-1 and ext-2 can including globbing
+  characters such as<br>
+  ? and *&nbsp; to select specific files, see <a href=
+  "http://en.wikipedia.org/wiki/Glob_%28programming%29">http://en.wikipedia.org/wiki/Glob_(programming)</a>
+  for details.</span> <span style="font-weight: normal;"><br>
+  </span></p>
+
+  <p><span style="font-weight: normal;">To generate the associated
+  <span style="color: blue;">SLC_tab</span> files for each set of
+  single-beam SLC images:<br>
+  <br></span> <code style="color: fuchsia;"><span style=
+  "font-weight: normal;">mk_tab slc_WBs 20071020_?.slc
+  20071020_?.slc.par</span></code> <code style=
+  "color: fuchsia;"><span style=
+  "font-weight: normal;">SLC_WBs_20071020_tab</span></code>
+  <code style="color: fuchsia;"><span style=
+  "font-weight: normal;"><br>
+  <br>
+  mk_tab slc_WBs 20101028_?.slc</span></code> <code style=
+  "color: fuchsia;"><span style=
+  "font-weight: normal;">20101028_?.slc.par</span></code>
+  <code style="color: fuchsia;"><span style=
+  "font-weight: normal;">SLC_WBs_20101028_tab</span></code></p>
+
+  <p><code><span style="font-weight: normal;">#Now extract sections
+  of each beam so that mosaic is possible with integer offsets
+  using <span style=
+  "color: blue;">SLC_copy_WB</span><br></span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">SLC_copy_WB SLC_WBs_20071020_tab
+  slc_WBs2</span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">SLC_copy_WB SLC_WBs_20101028_tab
+  slc_WBs2<br></span></code></p>
+
+  <p><span style="font-weight: normal;">Example screen output for
+  20071020 data:</span><code><span style=
+  "font-weight: normal;"><br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">SLC_tab table of SLC
+  images and parameter files: SLC_WBs_20071020_tab<br>
+  output resampled SLC directory: slc_WBs2<br>
+  processing start: Sat Apr 9 20:59:37 2011</span></code></p>
+
+  <p><code><span style="font-weight: normal;">SLC: 1
+  slc_WBs/20071020_1.slc slc_WBs/20071020_1.slc.par<br>
+  SLC start_time (s): 79428.200226 r0 (m): 743400.155 r2 (m):
+  789483.875 nr: 4920<br>
+  SLC range pixel spacing (m): 9.368514 azimuth line time (s):
+  4.650000e-04<br>
+  naz: 114526</span></code></p>
+
+  <p><code><span style="font-weight: normal;">SLC: 2
+  slc_WBs/20071020_2.slc slc_WBs/20071020_2.slc.par naz: 114231<br>
+  SLC start_time (s): 79428.418776 r0 (m): 783273.151 r2 (m):
+  826958.532 nr: 4664<br>
+  SLC range pixel spacing (m): 9.368514 azimuth line time (s):
+  4.650000e-04<br>
+  &nbsp;<br>
+  SLC: 3 slc_WBs/20071020_3.slc slc_WBs/20071020_3.slc.par naz:
+  113879<br>
+  SLC start_time (s): 79428.659181 r0 (m): 820447.116 r2 (m):
+  870428.139 nr: 5336<br>
+  SLC range pixel spacing (m): 9.368514 azimuth line time (s):
+  4.650000e-04<br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">SLC: 4
+  slc_WBs/20071020_4.slc slc_WBs/20071020_4.slc.par naz: 113609<br>
+  SLC start_time (s): 79428.082581 r0 (m): 863167.092 r2 (m):
+  904454.133 nr: 4408<br>
+  SLC range pixel spacing (m): 9.368514 azimuth line time (s):
+  4.650000e-04<br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">SLC: 5
+  slc_WBs/20071020_5.slc slc_WBs/20071020_5.slc.par naz: 113346<br>
+  SLC start_time (s): 79428.313686 r0 (m): 893596.176 r2 (m):
+  937281.557 nr: 4664&nbsp;<br>
+  SLC range pixel spacing (m): 9.368514 azimuth line time (s):
+  4.650000e-04<br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">maximum start time:
+  79428.659181 SLC: 3<br>
+  beam: 1 time offset: 1.13460e-01 line offset: 987<br>
+  near slant range (m): 743400.155 difference to near range beam
+  (m): 0.000<br>
+  range offset (samples) to start of output SLC: 0<br>
+  range samples: 0</span></code></p>
+
+  <p><code><span style="font-weight: normal;">beam: 2 time offset:
+  1.13460e-01 line offset: 517 range samples: 4256<br>
+  near slant range (m): 783273.151 difference to near range beam
+  (m): 39872.997<br>
+  range offset (samples) to start of output SLC:
+  4<br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">beam: 3 time offset:
+  1.13460e-01 line offset: 0 range samples: 8224<br>
+  near slant range (m): 820447.116 difference to near range beam
+  (m): 77046.961<br>
+  range offset (samples) to start of output SLC:
+  8<br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">beam: 4 time offset:
+  1.13460e-01 line offset: 1240 range samples: 12783<br>
+  near slant range (m): 863167.092 difference to near range beam
+  (m): 119766.937<br>
+  range offset (samples) to start of output SLC:
+  8<br></span></code></p>
+
+  <p><code><span style="font-weight: normal;">beam: 5 time offset:
+  1.13460e-01 line offset: 743 range samples: 16032<br>
+  near slant range (m): 893596.176 difference to near range beam
+  (m): 150196.022<br>
+  range offset (samples) to start of output SLC: 12<br>
+  <br>
+  <span style="color: fuchsia;">SLC_copy slc_WBs/20071020_1.slc
+  slc_WBs/20071020_1.slc.par
+  slc_WBs2/20071020_1.slc</span><br style="color: fuchsia;">
+  <span style="color: fuchsia;">slc_WBs2/20071020_1.slc.par 1 - 0 -
+  987 113346</span></span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">SLC_copy slc_WBs/20071020_2.slc
+  slc_WBs/20071020_2.slc.par slc_WBs2/20071020_2.slc<br>
+  slc_WBs2/20071020_2.slc.par 1 - 4 - 517 113346</span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">SLC_copy slc_WBs/20071020_3.slc
+  slc_WBs/20071020_3.slc.par slc_WBs2/20071020_3.slc<br>
+  slc_WBs2/20071020_3.slc.par 1 - 8 - 0 113346</span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">SLC_copy slc_WBs/20071020_4.slc
+  slc_WBs/20071020_4.slc.par slc_WBs2/20071020_4.slc<br>
+  slc_WBs2/20071020_4.slc.par 1 - 8 - 1240 113346</span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">SLC_copy slc_WBs/20071020_5.slc
+  slc_WBs/20071020_5.slc.par slc_WBs2/20071020_5.slc<br>
+  slc_WBs2/20071020_5.slc.par 1 - 12 - 743 113346</span></code></p>
+
+  <p><code><span style="font-weight: normal;">*** ./SLC_copy_WB
+  processing end: Sat Apr 9 21:12:54 2011 ***</span></code><br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="../../DIFF/html/mk_tab.html">mk_tab</a>, <a href=
+  "mosaic_WB.html">mosaic_WB</a> , <a href=
+  "SLC_copy.html">SLC_copy</a></p>
+  <hr>
+  <a href="SLC_copy.html"></a><a href="copyright.html">&copy;</a>
+  Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Jul-2011.
+</body>
+</html>

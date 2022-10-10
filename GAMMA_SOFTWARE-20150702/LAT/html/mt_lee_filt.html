@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>LAT Reference Manual: mt_lee_filt</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>mt_lee_filt</h2>
+
+  <p><i>ANSI-C program: <a href="../src/mt_lee_filt.c"><span style=
+  "text-decoration: underline;">mt_lee_filt.c</span></a></i></p>
+
+  <p><strong>NAME</strong><br>
+  mt_lee_filt: Multi-temporal Lee directional adaptive speckle
+  filter<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mt_lee_filt &lt;im_list&gt; &lt;ref_image&gt;
+  &lt;width&gt; &lt;winsz&gt; &lt;L_ref&gt; &lt;L&gt;
+  &lt;cthres&gt; &lt;out_list&gt; [ref_out] [b_coeff] [filt_num]
+  [msr] [ctr]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;im_list&gt;</td>
+
+        <td>(input) text file with names of co-registered float
+        format images including path (enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;ref_image&gt;<br></td>
+
+        <td style="vertical-align: top;">(input) reference image
+        used to generate the filter weights&nbsp;<br>
+        NOTE: the reference scene should have the same dimensions
+        as the data files in the im_list\n");<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples in each line<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;winsz&gt;<br></td>
+
+        <td style="vertical-align: top;">size of the Lee filter
+        window (valid values: 7, 13, 19)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;L_ref&gt;</td>
+
+        <td>effective number of looks (ENL) in the reference image
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;L&gt;<br></td>
+
+        <td style="vertical-align: top;">ENL of the images in the
+        im_list used for local determination of the the MMSE weight
+        for each image in the im_list (float)<br>
+        NOTE: enter - to use the MMSE filter weight derived from
+        the reference image for all images in the im_list<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;cthres&gt;</td>
+
+        <td>directional contrast threshold to determine if the
+        directional filter should be applied (0-&gt;4)(enter - for
+        default: 1.500)<br>
+        NOTE: setting cthres=0.0, forces the directional filter to
+        be used at all times, setting cthres=4.0 blocks all
+        directional filtering</td>
+      </tr>
+
+      <tr>
+        <td>&lt;out_list&gt;</td>
+
+        <td>list of filtered output data files, number of entries
+        in the im_list and out_list must match, (enter - for
+        none)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[ref_out]<br></td>
+
+        <td style="vertical-align: top;">(output) filtered
+        reference image (float) (enter -&nbsp; for none)<br></td>
+      </tr>
+
+      <tr>
+        <td>[b_coeff]</td>
+
+        <td>(output) MMSE weighting coefficient calculated from the
+        mean to sigma ratio and L for each sample (float) (enter -
+        for none)<br></td>
+      </tr>
+
+      <tr>
+        <td>[filt_num]<br></td>
+
+        <td>(output) selected structural filter number (0--&gt;7)
+        (byte) (enter - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[msr]<br></td>
+
+        <td style="vertical-align: top;">(output) mean/sigma ratio
+        where the mean is the local mean and sigma the local
+        standard deviation of the intensity image in the
+        filter&nbsp; window (enter - for none)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3><strong>Examples:</strong><samp><br></samp></h3>
+
+  <p><samp>mt_lee_filt rmli_list lh_ave.rmli 600 7 100 20 1.5
+  rmli_lee_list lh_ave_lee.rmli lh_ave_lee.bcf lh_ave_lee.fn
+  lh_ave_lee.msr</samp></p>
+
+  <p>Filter the scenes listed in the <span style=
+  "font-style: italic;">rmli_list</span> using filter coefficients
+  and directional filter number derived from the averaged scene
+  <span style="font-style: italic;">lh_ave.rmli.</span> For each
+  file in the input list there is a corresponding output file for
+  the filtered data listed in the <span style=
+  "font-style: italic;">rmli_lee_list</span>. The filtered image of
+  the reference scene is written to the file <span style=
+  "font-style: italic;">lh_ave_lee.rmli</span>. The filter
+  coefficients are written to the file <span style=
+  "font-style: italic;">lh_ave_lee.bcf</span> and the integer
+  valued filter number (0--&gt; 7) is written to the file
+  <span style="font-style: italic;">lh_ave_lee.fn</span>. The
+  mean/sigma ratio for each point in the reference scene is written
+  to the file <span style=
+  "font-style: italic;">lh_ave_lee.msr</span>.</p><samp>mt_lee_filt
+  - lh_ave.rmli 600 7 100 - 1.5 lh_ave_lee.rmli lh_ave_lee.bcf
+  lh_ave_lee.fn lh_ave_lee.msr<br></samp><br>
+  Same as above, but there are no files filtered, other than the
+  reference image itself.&nbsp; The output files are optional.<br>
+
+  <h3>Description</h3><span style=
+  "font-style: italic;">mt_lee_filt</span> is based on an algorithm
+  for speckle reduction described in [1] by J.S. Lee et al. This
+  adaptive filter uses a set of 8 edge aligned window functions to
+  select the homogeneous area associated with a particular pixel.
+  The algorithm determines the window that best describes the
+  region that a particular pixel belongs to. The deviation of
+  center pixel relative to the average value over the selected
+  window is used to determine a filter weighting factor that blends
+  the local signal value with the average calculated using the
+  window function. If the current pixel deviates strongly from the
+  average of any edge aligned window function, very little or no
+  filtering is applied. The algorithm determines both the best edge
+  aligned filter and the weighting function. There are 8 edge
+  aligned filters in 4 groups that are tested. The size of the
+  window is either 7x7, 13x13 or 19x19 samples and the window
+  functions are:<br>
+
+  <ol>
+    <li>top half, bottom half</li>
+
+    <li>left side, right-side</li>
+
+    <li>upper right triangle, lower left triangle</li>
+
+    <li>upper left triangle, lower right triangle</li>
+  </ol>The window function is either 1 or 0. Those samples where
+  the window function is 1, are averaged in the window, while those
+  set to 0 are ignored. The filter output is a linear combination
+  of the local value at position x,y in the reference image and the
+  average over the filter window. The filter has the advantage that
+  it is effective in preserving rapid variations in backscatter,
+  yet strongly filtering speckle noise in homogeneous regions. The
+  user can write out the filtered reference scene, the weighting
+  coefficient beta, the index of the selected filter window, and
+  the mean to sigma ratio as 32-bit float computers.<br>
+  <br>
+  The user can set a threshold for accepting the directional
+  filtering operation based on a contrast threshold. The better the
+  fit of the data to directional filter, the higher the
+  contrast.<br>
+  For regions with directional contrast exceeding the threshold,
+  the directional filtering is applied, otherwise pixels from the
+  entire region are considered. The value of the contrast varies
+  between 0 and 4.0. If cthres is set to 0.0, then the directional
+  filter is always applied. If the value is cthres is set to 4.0,
+  then there will be no directional filtering.&nbsp;<br>
+  <br>
+  An feature of <span style=
+  "font-style: italic;">mt_lee_filt</span> is that the filter
+  weight and index of the selected filter window are used to filter
+  other scenes. Typically the reference scene used to compute the
+  weighting coefficient and filter window is a multi-look sum and
+  is very reliable. The other scenes are stored in a list. If there
+  is a list of input data files, then there must be a list of the
+  output file names provided by the user. The filter coefficients
+  and the edge aligned filter number are then used to filter the
+  entire stack of scenes.&nbsp; The user&nbsp; has the option to
+  save the weighting factor, edge-aligned filter number, and the
+  mean/sigma ratio.<br>
+  <br>
+  An example of a the filter in action, we use a multi-look image
+  of the Lost-Hills oil field in California. The scene pixel sample
+  spacing is about 15 meters in range and azimuth. The reference
+  image is an average of 24 scenes, with each of the 24 scenes
+  containing 5 look pixels. However the images have relatively high
+  interferometric correlation. In this example the effective number
+  of looks parameter L is set to 48 and the window size to 7.&nbsp;
+  In the case of a homogeneous region, the number of samples in the
+  spatial average generated by this filter is approximately 24. The
+  original and filtered images are shown below. Note that the
+  filter preserves resolution while filtering homogeneous
+  regions.<br>
+  <br>
+
+  <div style="text-align: center;">
+    <img style="width: 600px; height: 600px;" alt=
+    "Unfiltered averaged MLI image of Lost-Hills" src=
+    "lh_ave.rmli.jpg"><br>
+  </div><br>
+
+  <div style=
+  "text-align: center; font-family: Helvetica,Arial,sans-serif;">
+    Unfiltered reference image of Lost-Hills Oil Field. 24 images
+    were averaged to produce this multi-look <small><br></small>
+    intensity image<small><br></small>
+  </div><br>
+
+  <div style="text-align: center;">
+    <img style="width: 600px; height: 600px;" alt=
+    "Filtered image of Lost-Hills Oil Field" src=
+    "lh_ave_lee.rmli.jpg"><br>
+  </div><br>
+
+  <div style="text-align: center;">
+    <span style="font-family: Helvetica,Arial,sans-serif;">Filtered
+    reference image of Lost-Hills Oil Field. 24 images were
+    averaged to produce this multi-look</span><br>
+    <span style=
+    "font-family: Helvetica,Arial,sans-serif;">intensity image. A
+    7x7 filter window was used. The effective number of looks
+    parameter L=48.</span><br>
+  </div><br>
+  [1] Lee, J. S.,&nbsp; S. Cloude, K. Papathanasslou, M. Grunes, I.
+  Woodhouse, "Speckle Filtering and Coherence Estimation of
+  Polarimetric SAR Interferometry Data for Forest Applications,"
+  <span style="font-style: italic;">IEEE Transactions Geoscience
+  and Remote Sensing</span>, vol. 41, no. 10,&nbsp; pp 2254-2263,
+  October, 2003.<br>
+  [2] Lee, J. S., Eric Pottier, "Polarimetric Radar Imaging: from
+  Basics to Applications," Chapter 5, CRC Press, Boca Raton,
+  2008<br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <span style="text-decoration: underline;"><a href=
+  "temp_filt.html">temp_filt</a></span>, <a href=
+  "multi_stat.html">multi_stat</a>, <a href=
+  "mt_lee_filt_cpx.html">mt_lee_filt_cpx</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="charles_werner.html">CW</a>, last change 19-Aug-2013.
+</body>
+</html>

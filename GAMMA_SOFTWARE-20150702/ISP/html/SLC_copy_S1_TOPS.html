@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: SLC_copy_S1_TOPS</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_copy_S1_TOPS</h2>
+
+  <p><i>ANSI-C program:</i>&nbsp;<a href=
+  "../src/SLC_copy_S1_TOPS.c">SLC_copy_S1_TOPS.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_copy_S1_TOPS - Copy multiple bursts from a Sentinel-1 TOPS
+  mode SLC</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  &nbsp; <code><b>SLC_copy_S1_TOPS &lt;SLC1_tab&gt;
+  &lt;SLC2_tab&gt; &lt;s1&gt; &lt;bn1&gt; &lt;s2&gt; &lt;bn2&gt;
+  [dtype]<br></b></code></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;SLC1_tab&gt;</td>
+
+        <td>(input) 3 column list of TOPS SLC-1 swaths to be copied
+        in row order IW1, IW2, IW3:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        SLC_tab line entries:&nbsp;&nbsp; SLC&nbsp;&nbsp;&nbsp;
+        SLC_par&nbsp;&nbsp; TOPS_par</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_tab&gt;</td>
+
+        <td>(input) 3 column list of the output copied SLC-1 TOPS
+        swaths in the order IW1, IW2, IW3</td>
+      </tr>
+
+      <tr>
+        <td>&lt;TOPS_par_in&gt;</td>
+
+        <td>index of the swath containing the first burst to copy
+        (1 --&gt; number of swaths in SLC1_tab)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sw1&gt;</td>
+
+        <td>index of the swath containing the first burst to copy
+        (1 --&gt; number of swaths in SLC1_tab)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bn1&gt;</td>
+
+        <td>burst number of the first burst to copy in SLC swath
+        sw1 (1 --&gt; number of bursts in the swath</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sw2&gt;</td>
+
+        <td>index of the swath containing the last burst to copy (1
+        --&gt; number of swaths in SLC1_tab)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bn2&gt;</td>
+
+        <td>burst number of the last burst to copy in SLC swath sw2
+        (1 --&gt; number of bursts in the swath)<br></td>
+      </tr>
+
+      <tr>
+        <td>[dtype]</td>
+
+        <td>output data type (default: same as input data):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: FCOMPLEX<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: SCOMPLEX</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong></p>
+
+  <p>Extract bursts in the multi-swath Sentinel-1 TOPS mode SLC
+  with components listed in <span style=
+  "font-style: italic;">SLC_201409809_tab1</span>. The copy begins
+  with burst 2 in swath 1 and ends with burst 4 in swath 2.</p>
+
+  <p><samp>SLC_copy_S1_TOPS SLC_20140809_tab1 SLC_20140809_tab2 1 2
+  2 4</samp></p>
+
+  <p>Output is written into the files listed in <span style=
+  "font-style: italic;">SLC_20140809_tab2</span>.<br></p>
+
+  <p><strong>DESCRIPTION<br>
+  <br></strong> <em>SLC_copy_S1_TOPS</em> copies a set of SLC
+  bursts from one data set to an output data set. The starting time
+  is specified by start time of burst <span style=
+  "font-style: italic;">bn1</span> in swath <span style=
+  "font-style: italic;">sw1</span>. The last burst to be copied is
+  specified on the command line by sw2 and bn2. No burst is copied
+  that begins after bn2 in sw2.&nbsp; Different TOPS acquisitions
+  by Sentinel-1 may not cover the same bursts. SLC_copy_S1_TOPS can
+  be used to ensure that the different image swaths cover the same
+  bursts so that they can be coregistered.&nbsp; The program
+  functions by scanning the start time of each burst. If the start
+  time lies between the start burst and end burst start
+  times,&nbsp; it is copied. to the output. The user must provide
+  an <span style="font-style: italic;">SLC_tab</span> list that
+  contains the name of the output data files.&nbsp; Calculations
+  are performed using the Modified Julian Date (MJD) of the bursts
+  to allow direct comparison of burst start times.</p>
+
+  <p>The SLC_tab file is a text file with one line for each SLC in
+  the data set. Typically there are 3 images for Sentinel-1
+  Interferometric Wide Mode.&nbsp; The three columns correspond to
+  the SLC data file name, the SLC parameter file name and the
+  TOPS_par file name. The TOPS_par contains information on each
+  burst in the burst SLC.&nbsp; The SLC_tab can contain fewer than
+  3 records, and in the case of Extended Wide mode, it can contain
+  information for the five sub-swaths. The output SLC_tab can be
+  produced simply with a text editor or written with a script.</p>
+
+  <p>Below are examples of the input SLC_tab: <span style=
+  "font-style: italic;">SLC_20140809_tab1</span></p>
+
+  <p><code>slc_TOPS/20140809_iw1_vv.slc&nbsp;
+  slc_TOPS/20140809_iw1_vv.slc.par&nbsp;
+  slc_TOPS/20140809_iw1_vv.tops_par<br>
+  slc_TOPS/20140809_iw2_vv.slc&nbsp;
+  slc_TOPS/20140809_iw2_vv.slc.par&nbsp;
+  slc_TOPS/20140809_iw2_vv.tops_par<br>
+  slc_TOPS/20140809_iw3_vv.slc&nbsp;
+  slc_TOPS/20140809_iw3_vv.slc.par&nbsp;
+  slc_TOPS/20140809_iw3_vv.tops_par</code></p>
+
+  <p>and the output SLC_tab <span style=
+  "font-style: italic;">SLC_201409809_tab2</span>:</p>
+
+  <p><code>slc_TOPS_section/20140809_iw1_vv.slc&nbsp;
+  slc_TOPS_section/20140809_iw1_vv.slc.par&nbsp;
+  slc_TOPS_section/20140809_iw1_vv.tops_par<br>
+  slc_TOPS_section/20140809_iw2_vv.slc&nbsp;
+  slc_TOPS_section/20140809_iw2_vv.slc.par&nbsp;
+  slc_TOPS_section/20140809_iw2_vv.tops_par<br>
+  slc_TOPS_section/20140809_iw3_vv.slc&nbsp;
+  slc_TOPS_section/20140809_iw3_vv.slc.par&nbsp;
+  slc_TOPS_section/20140809_iw3_vv.tops_par</code></p>
+
+  <p>It is very useful to determine which swath has the earliest
+  start time so that the desired bursts can be extracted. The start
+  time of the SLCs is recorded in the SLC parameter files of the
+  individual swaths. To simply view the start times the
+  <span style="font-style: italic;">grep</span> utility is
+  useful:</p>
+
+  <p><code>$ grep start_time slc/*.slc.par<br>
+  slc/20141115t053442_iw2_vv.slc.par:start_time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  20082.147456&nbsp;&nbsp; s<br>
+  slc/20141115t053443_iw3_vv.slc.par:start_time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  20083.088901&nbsp;&nbsp; s<br>
+  slc/20141115t053444_iw1_vv.slc.par:start_time:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  20084.013901&nbsp;&nbsp; s</code></p>
+
+  <p><em>SLC_copy_S1_TOPS</em> can change the data type of the SLC
+  data to be either fcomplex or scomplex by setting the
+  <span style="font-style: italic;">dtype</span> flag for the
+  output data. By default the output data type is the same as the
+  input file.</p>
+
+  <h3>Example:</h3>
+
+  <p>An example of running the program is shown here:</p>
+
+  <p><code>$ SLC_copy_S1_TOPS SLC_20140809_tab1 SLC_20140809_tab2 1
+  2 2 4<br>
+  *** Copy multiple bursts from a Sentinel-1 TOPS mode SLC ***<br>
+  *** Copyright 2014, Gamma Remote Sensing v1.1 26-Nov-2014 ***<br>
+  TOPS SLC1_tab: SLC_20140809_tab1<br>
+  number of SLC swaths in SLC1_tab: 3<br>
+  <br>
+  SLC-1 swath SLC: slc_TOPS/20140809_iw1_vv.slc<br>
+  SLC-1 swath SLC parameter file:
+  slc_TOPS/20140809_iw1_vv.slc.par<br>
+  SLC-1 swath TOPS_PAR burst parameter file:
+  slc_TOPS/20140809_iw1_vv.tops_par<br>
+  r0 (m): 800420.570&nbsp; r2 (m): 849928.422&nbsp; nr: 21253&nbsp;
+  rpix (m):&nbsp; 2.329562&nbsp; t0 (s): 60946.535388&nbsp; t2 (s):
+  60971.946175&nbsp; nlines:&nbsp; 14661&nbsp; time_per_line (s):
+  2.055556e-03<br>
+  <br>
+  SLC-1 swath SLC: slc_TOPS/20140809_iw2_vv.slc<br>
+  SLC-1 swath SLC parameter file:
+  slc_TOPS/20140809_iw2_vv.slc.par<br>
+  SLC-1 swath TOPS_PAR burst parameter file:
+  slc_TOPS/20140809_iw2_vv.tops_par<br>
+  r0 (m): 846820.788&nbsp; r2 (m): 905423.250&nbsp; nr: 25157&nbsp;
+  rpix (m):&nbsp; 2.329562&nbsp; t0 (s): 60947.429555&nbsp; t2 (s):
+  60972.949286&nbsp; nlines:&nbsp; 15174&nbsp; time_per_line (s):
+  2.055556e-03<br>
+  <br>
+  SLC-1 swath SLC: slc_TOPS/20140809_iw3_vv.slc<br>
+  SLC-1 swath SLC parameter file:
+  slc_TOPS/20140809_iw3_vv.slc.par<br>
+  SLC-1 swath TOPS_PAR burst parameter file:
+  slc_TOPS/20140809_iw3_vv.tops_par<br>
+  r0 (m): 902355.220&nbsp; r2 (m): 958989.201&nbsp; nr: 24312&nbsp;
+  rpix (m):&nbsp; 2.329562&nbsp; t0 (s): 60948.368944&nbsp; t2 (s):
+  60973.938009&nbsp; nlines:&nbsp; 15345&nbsp; time_per_line (s):
+  2.055556e-03<br>
+  <br>
+  SLC2_tab file for S1 TOPS burst SLC section (output):
+  SLC_20140809_tab2<br>
+  <br>
+  SLC swath number for the first burst: 1&nbsp; burst number: 2<br>
+  burst 1 start date: 2014-08-09T16:55:49.308333&nbsp;&nbsp;
+  seconds of day: 60949.30833<br>
+  burst 1&nbsp; MJD: 23596.705431809&nbsp; seconds of day:
+  60949.30833<br>
+  <br>
+  SLC swath number for the last burst:&nbsp; 2&nbsp; burst number:
+  4<br>
+  burst 2 start date: 2014-08-09T16:55:55.705225&nbsp;&nbsp;
+  seconds of day: 60955.70522<br>
+  burst 2&nbsp; MJD: 23596.705505848&nbsp; seconds of day:
+  60955.70522<br>
+  maximum number of bursts in an SLC swath: 9<br>
+  <br>
+  ******* SLC swath: 1 *******<br>
+  TOPS SLC-2 swath section (output):&nbsp;&nbsp;&nbsp;
+  slc_TOPS_section/20140809_iw1_vv.slc<br>
+  TOPS SLC-2 section SLC_par (output):&nbsp;
+  slc_TOPS_section/20140809_iw1_vv.slc.par<br>
+  TOPS SLC-2 section TOPS_par (output):
+  slc_TOPS_section/20140809_iw1_vv.tops_par<br>
+  TOPS SLC-1 swath number of records: 14661<br>
+  TOPS SLC-1 swath number of records per burst: 1629<br>
+  TOPS SLC-1 swath number of bursts: 9<br>
+  number of range samples in the SLC-1 swath: 21253<br>
+  total number of records in the SLC-1 swath: 14661<br>
+  number of bytes/burst: 276969096<br>
+  modified Julian date (MJD) first copied burst:&nbsp;
+  23596.70543181<br>
+  modified Julian date (MJD) last copied burst:&nbsp;&nbsp;
+  23596.70550585<br>
+  <br>
+  burst 1&nbsp;&nbsp; 2014-08-09T16:55:46.535387&nbsp;&nbsp; MJD:
+  23596.705399715<br>
+  burst 2&nbsp;&nbsp; 2014-08-09T16:55:49.308333&nbsp;&nbsp; MJD:
+  23596.705431809<br>
+  copying burst to output, byte offset: 0<br>
+  burst 3&nbsp;&nbsp; 2014-08-09T16:55:52.060721&nbsp;&nbsp; MJD:
+  23596.705463666<br>
+  copying burst to output, byte offset: 276969096<br>
+  burst 4&nbsp;&nbsp; 2014-08-09T16:55:54.819277&nbsp;&nbsp; MJD:
+  23596.705495593<br>
+  copying burst to output, byte offset: 553938192<br>
+  burst 5&nbsp;&nbsp; 2014-08-09T16:55:57.577837&nbsp;&nbsp; MJD:
+  23596.705527521<br>
+  burst 6&nbsp;&nbsp; 2014-08-09T16:56:00.336394&nbsp;&nbsp; MJD:
+  23596.705559449<br>
+  burst 7&nbsp;&nbsp; 2014-08-09T16:56:03.094950&nbsp;&nbsp; MJD:
+  23596.705591377<br>
+  burst 8&nbsp;&nbsp; 2014-08-09T16:56:05.853506&nbsp;&nbsp; MJD:
+  23596.705623304<br>
+  burst 9&nbsp;&nbsp; 2014-08-09T16:56:08.599730&nbsp;&nbsp; MJD:
+  23596.705655089<br>
+  number of bursts written to output SLC-2:&nbsp;&nbsp;&nbsp; 3<br>
+  number of lines written to the output SLC-2: 4887<br>
+  <br>
+  ******* SLC swath: 2 *******<br>
+  TOPS SLC-2 swath section (output):&nbsp;&nbsp;&nbsp;
+  slc_TOPS_section/20140809_iw2_vv.slc<br>
+  TOPS SLC-2 section SLC_par (output):&nbsp;
+  slc_TOPS_section/20140809_iw2_vv.slc.par<br>
+  TOPS SLC-2 section TOPS_par (output):
+  slc_TOPS_section/20140809_iw2_vv.tops_par<br>
+  TOPS SLC-1 swath number of records: 15174<br>
+  TOPS SLC-1 swath number of records per burst: 1686<br>
+  TOPS SLC-1 swath number of bursts: 9<br>
+  number of range samples in the SLC-1 swath: 25157<br>
+  total number of records in the SLC-1 swath: 15174<br>
+  number of bytes/burst: 339317616<br>
+  modified Julian date (MJD) first copied burst:&nbsp;
+  23596.70543181<br>
+  modified Julian date (MJD) last copied burst:&nbsp;&nbsp;
+  23596.70550585<br>
+  <br>
+  burst 1&nbsp;&nbsp; 2014-08-09T16:55:47.429554&nbsp;&nbsp; MJD:
+  23596.705410064<br>
+  burst 2&nbsp;&nbsp; 2014-08-09T16:55:50.192221&nbsp;&nbsp; MJD:
+  23596.705442040<br>
+  copying burst to output, byte offset: 0<br>
+  burst 3&nbsp;&nbsp; 2014-08-09T16:55:52.948721&nbsp;&nbsp; MJD:
+  23596.705473944<br>
+  copying burst to output, byte offset: 339317616<br>
+  burst 4&nbsp;&nbsp; 2014-08-09T16:55:55.705225&nbsp;&nbsp; MJD:
+  23596.705505848<br>
+  copying burst to output, byte offset: 678635232<br>
+  burst 5&nbsp;&nbsp; 2014-08-09T16:55:58.463782&nbsp;&nbsp; MJD:
+  23596.705537775<br>
+  burst 6&nbsp;&nbsp; 2014-08-09T16:56:01.226447&nbsp;&nbsp; MJD:
+  23596.705569751<br>
+  burst 7&nbsp;&nbsp; 2014-08-09T16:56:03.997340&nbsp;&nbsp; MJD:
+  23596.705601821<br>
+  burst 8&nbsp;&nbsp; 2014-08-09T16:56:06.751784&nbsp;&nbsp; MJD:
+  23596.705633701<br>
+  burst 9&nbsp;&nbsp; 2014-08-09T16:56:09.485674&nbsp;&nbsp; MJD:
+  23596.705665343<br>
+  number of bursts written to output SLC-2:&nbsp;&nbsp;&nbsp; 3<br>
+  number of lines written to the output SLC-2: 5058<br>
+  <br>
+  ******* SLC swath: 3 *******<br>
+  TOPS SLC-2 swath section (output):&nbsp;&nbsp;&nbsp;
+  slc_TOPS_section/20140809_iw3_vv.slc<br>
+  TOPS SLC-2 section SLC_par (output):&nbsp;
+  slc_TOPS_section/20140809_iw3_vv.slc.par<br>
+  TOPS SLC-2 section TOPS_par (output):
+  slc_TOPS_section/20140809_iw3_vv.tops_par<br>
+  TOPS SLC-1 swath number of records: 15345<br>
+  TOPS SLC-1 swath number of records per burst: 1705<br>
+  TOPS SLC-1 swath number of bursts: 9<br>
+  number of range samples in the SLC-1 swath: 24312<br>
+  total number of records in the SLC-1 swath: 15345<br>
+  number of bytes/burst: 331615680<br>
+  modified Julian date (MJD) first copied burst:&nbsp;
+  23596.70543181<br>
+  modified Julian date (MJD) last copied burst:&nbsp;&nbsp;
+  23596.70550585<br>
+  <br>
+  burst 1&nbsp;&nbsp; 2014-08-09T16:55:48.368942&nbsp;&nbsp; MJD:
+  23596.705420937<br>
+  burst 2&nbsp;&nbsp; 2014-08-09T16:55:51.127499&nbsp;&nbsp; MJD:
+  23596.705452865<br>
+  copying burst to output, byte offset: 0<br>
+  burst 3&nbsp;&nbsp; 2014-08-09T16:55:53.884001&nbsp;&nbsp; MJD:
+  23596.705484769<br>
+  copying burst to output, byte offset: 331615680<br>
+  burst 4&nbsp;&nbsp; 2014-08-09T16:55:56.642557&nbsp;&nbsp; MJD:
+  23596.705516696<br>
+  burst 5&nbsp;&nbsp; 2014-08-09T16:55:59.403170&nbsp;&nbsp; MJD:
+  23596.705548648<br>
+  burst 6&nbsp;&nbsp; 2014-08-09T16:56:02.163782&nbsp;&nbsp; MJD:
+  23596.705580599<br>
+  burst 7&nbsp;&nbsp; 2014-08-09T16:56:04.928503&nbsp;&nbsp; MJD:
+  23596.705612598<br>
+  burst 8&nbsp;&nbsp; 2014-08-09T16:56:07.682951&nbsp;&nbsp; MJD:
+  23596.705644479<br>
+  burst 9&nbsp;&nbsp; 2014-08-09T16:56:10.435339&nbsp;&nbsp; MJD:
+  23596.705676335<br>
+  number of bursts written to output SLC-2:&nbsp;&nbsp;&nbsp; 2<br>
+  number of lines written to the output SLC-2: 3410<br>
+  <br>
+  user time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  0.000<br>
+  system time (s):&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1.930<br>
+  elapsed time (s):&nbsp;&nbsp;&nbsp;&nbsp; 20.110</code></p>
+
+  <p><strong>SEE ALSO</strong></p>
+
+  <p><a href="SLC_par.html">SLC_par</a>,&nbsp; <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "TOPS_par.html">TOPS_par</a></p>
+  <hr>
+  <a href="copyright.html"></a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  last change 29-Jun-2015.
+</body>
+</html>

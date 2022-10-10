@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing -->
+
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: replace_values</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>replace_values</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/replace_values.c">replace_values.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  replace_values - Replace value(s) of input data file with
+  indicated value or values extracted from a second input data
+  file.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>replace_values &lt;f_in&gt; &lt;value&gt;
+  &lt;new_value&gt; &lt;f_out&gt; &lt;width&gt; [rpl_flag]
+  [type]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;f_in&gt;</td>
+
+        <td>input data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;value&gt;</td>
+
+        <td>value to be replaced or threshold</td>
+      </tr>
+
+      <tr>
+        <td>&lt;new_value&gt;</td>
+
+        <td>new value to use or second input data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;f_out&gt;</td>
+
+        <td>output data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>[rpl_flag]</td>
+
+        <td>replacement option flag (default = 0)<br>
+        &nbsp;&nbsp; 0 : replace all points == value with
+        new_value<br>
+        &nbsp;&nbsp; 1 : replace all points &gt;= value with
+        new_value<br>
+        &nbsp;&nbsp; 2 : replace all points &lt;= value with
+        new_value</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type<br>
+        &nbsp;&nbsp; 2: float (default)<br>
+        &nbsp;&nbsp; 4:short integer</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><span style="font-weight: bold;">EXAMPLES</span></p>
+
+  <p><samp>replace_values 1868_1911.hgt 0.0 1911_1954.hgt
+  1868_1911.hgt_out 2500</samp></p>Missing values in the
+  1868_1911.hgt height map (i.e. 0.0 values) are replaced by the
+  value of the height map 1911_1954.hgt_out.
+
+  <p><samp>replace_values sv150194d1_sv180194d1.pwr.coffs.real 20.
+  0.0 sv150194d1_sv180194d1.pwr.coffs.real_out 256
+  1</samp></p>Values larger than 20. in the input file are replaced
+  by missing values (i.e. 0.0).
+
+  <p><samp>replace_values bern.hgt -32768 0 bern2.dem 1201 0
+  4</samp></p>short data values of -32768 are replace by 0 in the
+  file bern.hgt.
+
+  <p><strong>DESCRIPTION</strong><br>
+  replace_values reads a real valued input data file (of type float
+  or short) and generates a new output data file replacing for each
+  pixel equal, larger or smaller than a specified one its value
+  with a new one.</p>
+
+  <p>In the case where value is give as <span style=
+  "font-style: italic;">nan</span> the data points in the input
+  float format file are tested to see if they are not a number
+  (nan) and replaced with the new_value.</p>
+
+  <p>The replacement options flag specifies if values equal, larger
+  or smaller than the specified one are to be replaced.The new
+  values to be used instead of the replaced value can either be the
+  indicated constant value or can be extracted from a second input
+  data file (float) at the identical pixel position.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 21-Mar-2013.
+</body>
+</html>

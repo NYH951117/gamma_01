@@ -1,0 +1,56 @@
+#!/usr/bin/perl
+#program disp2ras generate 24 bit raster files from unwrapped phase/displacement
+#4-Dec-2008 clw
+
+$sc = 1.0;
+$exp = 0.35;
+
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2012, Gamma Remote Sensing, v1.2 23-May-2012 clw ***
+*** Generate raster images of unwrapped phase or displacement for a stack of images (with rasdt_pwr24) ***
+
+usage: $0 <list> <width> <MLI_image> <cycle> [scale] [exp]
+
+    DISP_tab  (input) list of displacement or unwrapped phase files (float)
+    width     image width of input data files
+    MLI_image intensity image for the background, same width as input images in DISP_tab (enter - for none) (float)
+    cycle     units per color cycle
+    scale     image display scale factor (enter - for default, default: 1.0);
+    exp       image display exponent (default: 0.35)
+EOS
+
+$disp_tab =  $ARGV[0];
+open(DISP_TAB, "<$ARGV[0]") or die "\nERROR $0: table of displacement or unwrapped phase files does not exist: $ARGV[0]\n\n";
+print "DISP_tab: $ARGV[0]\n";
+
+$width = $ARGV[1];
+$mli =   $ARGV[2];
+$cycle =  $ARGV[3];
+if($#ARGV >= 4){$sc =  $ARGV[4]};
+if($#ARGV >= 5){$exp   = $ARGV[5]};
+
+($sc > 0.0) or die "\nERROR $0: display scale factor <= 0.0 : $sc\n";
+($exp > 0.0) or die "\nERROR $0: display exponent <= 0.0 : $exp\n";
+
+print "displacement table: $disp_tab\n";
+print "image width (samples): $width\n";
+print "MLI image file: $mli\n";
+print "units/color cycle: $cycle\n";
+print "display intensity scale factor: $sc\n";
+print "display exponent: $exp\n\n";
+
+LINE: while (<DISP_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+
+  $disp = $fields[0];
+  $cmd = "rasdt_pwr24 $disp $mli $width 1 1 0 1 1 $cycle $sc $exp 1";
+  printf "%s\n", $cmd;
+  $exit = system "$cmd";
+  printf "\n";
+}
+
+exit(0);

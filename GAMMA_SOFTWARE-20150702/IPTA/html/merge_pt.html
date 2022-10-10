@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: merge_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>merge_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/merge_pt.c">merge_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  merge_pt - merging of point lists</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>merge_pt &lt;plist_tab&gt; &lt;plist_out&gt;
+  &lt;N_min&gt; &lt;r_tol&gt; &lt;az_tol&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist_tab&gt;</td>
+
+      <td>(input) text file containing names of input point lists
+      and masks<br>
+      (each line contains one point list and optionally one mask
+      name)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;plist_out&gt;</td>
+
+      <td>(output) point list derived from merging input point
+      lists</td>
+    </tr>
+
+    <tr>
+      <td>&lt;N_min&gt;</td>
+
+      <td>occurance number minimum to include a point to the output
+      list</td>
+    </tr>
+
+    <tr>
+      <td>&lt;r_tol&gt;</td>
+
+      <td>range position tolerance for counting occurances</td>
+    </tr>
+
+    <tr>
+      <td>&lt;az_tol&gt;</td>
+
+      <td>azimuth line tolerance for counting occurances</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>merge_pt testsite.plist_tab testsite.plist 1 0 0</samp></p>
+
+  <p>Generates a point list of all the points of all the provided
+  input point lists indicated in the point list table. Masks
+  indicated together with the point lists are considered.</p>
+
+  <p><samp>merge_pt testsite.plist_tab testsite.plist 5 1
+  3</samp></p>
+
+  <p>Generates a point list of coordinates by merging the point
+  lists indicated in the point list table. Masks indicated together
+  with the point lists are considered. Points which appear in at
+  least 5 of the input point lists are written to the output
+  "merged" point list.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code merge_pt.c in ./IPTA/src, executable version merge_pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>merge_pt supports the merging of multiple point lists into a
+  single output point list.</p>
+
+  <p>One use of merge_pt is the combination of complementary point
+  lists. This can be point list covering different areas of an
+  image or point lists with different characteristics, e.g. one
+  list with points corresponding to point targets and one list with
+  points representing a sub-sampling grid for a 2-D differential
+  interferogram.</p>
+
+  <p>Another important use is the merging of multiple point lists
+  which are all indicating candidates for "good points", as for
+  example obtained by applying sp_stat to different co-registered
+  SLC. In such a case there may be for example 8 input lists and
+  points which occur at least 5 times are included to the output
+  list. This permits to include a temporal criteria together with
+  the point target criteria used by sp_stat.</p>
+
+  <p>The input point lists and the corresponding mask files need to
+  be provided in the point list table, an ascii text file which
+  contains on each line one point list filename and optionally the
+  corresponding mask filename.</p>
+
+  <p>Example of a point list table:<br></p>
+
+  <table>
+    <tr>
+      <td>testsite.list1</td>
+
+      <td>testsite.mask1</td>
+    </tr>
+
+    <tr>
+      <td>testsite.list2</td>
+
+      <td></td>
+    </tr>
+
+    <tr>
+      <td>testsite.list3</td>
+
+      <td>testsite.mask3</td>
+    </tr>
+
+    <tr>
+      <td>...</td>
+
+      <td>...</td>
+    </tr>
+
+    <tr>
+      <td>testsite.list8</td>
+
+      <td>testsite.mask8</td>
+    </tr>
+  </table>
+
+  <p>In the occurance counting a tolerance in range and azimuth is
+  taken into account.</p>
+
+  <p>To include all points of all input point lists the minimum
+  occurrance number is set to 1 and the range and azimuth line
+  tolerance values to 0.</p>
+
+  <p>In the output list a certain point (coordinate) occurs at most
+  once.</p>
+
+  <p>Programs to generate new point lists are image2pt, mkgrid,
+  pwr_stat, prox_pt, and sp_stat.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="image2pt.html">image2pt</a>, <a href=
+  "mkgrid.html">mkgrid</a>, <a href="prox_pt.html">prox_pt</a>,
+  <a href="pwr_stat.html">pwr_stat</a>, <a href=
+  "sp_stat.html">sp_stat</a>, <a href="SLC_par.html">SLC_par</a>,
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

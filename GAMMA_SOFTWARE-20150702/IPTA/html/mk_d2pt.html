@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: mk_d2pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>mk_d2pt</h2>
+
+  <p><i>Perl script: <a href=
+  "../scripts/mk_d2pt">mk_d2pt</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  mk_d2pt - raster to vector format conversion for a stack of data
+  files</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>mk_d2pt &lt;DATA_tab&gt; &lt;pt&gt; &lt;width&gt;
+  &lt;type&gt; &lt;rlks&gt; &lt;azlks&gt;
+  &lt;pdata&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><span>&lt;DATA_tab&gt;</span></td>
+
+        <td>(input) list of data files</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list for sampling (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>(input) image width (ignored if input is a raster
+        image)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>data type of input files:<br>
+        &nbsp;&nbsp;&nbsp; 0:FCOMPLEX<br>
+        &nbsp;&nbsp;&nbsp; 1:SCOMPLEX<br>
+        &nbsp;&nbsp;&nbsp; 2:FLOAT<br>
+        &nbsp;&nbsp;&nbsp; 3:INT<br>
+        &nbsp;&nbsp;&nbsp; 4:SHORT<br>
+        &nbsp;&nbsp;&nbsp; 5:BYTE<br>
+        &nbsp;&nbsp;&nbsp; 6:SUN/BMP raster</td>
+      </tr>
+
+      <tr>
+        <td>&lt;&nbsp;rlks&gt;</td>
+
+        <td>(input) range looks of input data relative to point
+        list</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>(input) azimuth looks of input data relative to point
+        list</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata&gt;</td>
+
+        <td>(output) point data stack (same type as f_in)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>mk_d2pt DATA_tab pt 1200 1 1 0 pdiff</samp></p>
+
+  <p style="text-align: justify;">Extracts fcomplex data samples
+  form the set of files listed in the DATA_tab. The locations are
+  located at positions specified in the point list file
+  <span style="font-style: italic;">pt</span>. The data samples are
+  written to the output point data stack <span style=
+  "font-style: italic;">pdata</span>. Samples from each file in
+  <span style="font-style: italic;">Data_tab</span> are written to
+  individual layers of <span style=
+  "font-style: italic;">pdiff</span></p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p style="text-align: justify;">This script runs the program
+  <a style="font-style: italic;" href="d2pt.html">d2pt</a> for each
+  file list in the <span style=
+  "font-style: italic;">DATA_tab</span>. The <span style=
+  "font-style: italic;">DATA_tab</span> can be created using the
+  script <a style="font-style: italic;" href=
+  "../../DIFF/html/mk_tab.html">mk_tab</a>. The use of point data
+  stacks is an important element of the IPTA. Registered data in
+  radar or map coordinates are stored in data stacks with each
+  record corresponding to the values from a single data layer.
+  <a style="font-style: italic;" href="d2pt.html">d2pt</a> is a
+  program that supports sampling input data in natural radar or map
+  coordinates for a number of different data types. The number of
+  looks in range and azimuth refer to a scaling factors between
+  coordinates in the point list <span style=
+  "font-style: italic;">pt</span> and the coordinates of the 2d
+  raster data. The <span style="font-style: italic;">rlks</span>
+  parameter refers to the across direction and the <span style=
+  "font-style: italic;">azlks</span> parameter to the y
+  coordinate.</p>
+
+  <p style="text-align: justify;">The extracted values in binary
+  vector data format are written to the point data stack as
+  successive records. Different data types (fcomplex, scomplex,
+  float, int, short, byte, SUN/BMP raster) are supported. The data
+  type of the input 2-D data and the output point data stack are
+  the same.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="d2pt.html">d2pt</a>, <a href=
+  "../../DIFF/html/mk_tab.html">mk_tab</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="charles_werner.html">CW</a>, last change 21-May-2013.
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>SLC_copy_all</title>
+</head>
+
+<body>
+  <h1>GAMMA DIFF/GEO Software: Reference Manual</h1>
+
+  <h2>Create a new set of SLC data by copying a common segment from
+  an existing set of SLC data&nbsp;<br></h2><i>Perl script:&nbsp;
+  <a href="SLC_copy_all.html"><span style=
+  "text-decoration: underline;">SLC_copy_all</span></a><a href=
+  "../scripts/swap_bytes_all"></a><br>
+  <br></i><strong>NAME</strong>&nbsp;<br>
+  SLC_copy_all&nbsp; - Create a new set of SLC data by copying a
+  common segment from an existing set of SLC data<br>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  SLC_copy_all &lt;SLC_tab&gt; &lt;SLC2_dir&gt; &lt;roff&gt;
+  &lt;nr&gt; &lt;loff&gt; &lt;nl&gt;&nbsp;</b></code><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) two column list of coregistered input SLC files
+        and SLC parameter files (including paths) (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_dir&gt;</td>
+
+        <td>&nbsp;directory to contain copied segments of the input
+        SLC data and the associated parameter files<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;roff&gt;</td>
+
+        <td>offset to starting range sample<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;nr&gt;<br></td>
+
+        <td style="vertical-align: top;">number of range samples
+        (enter -: to end of line)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;loff&gt;<br></td>
+
+        <td style="vertical-align: top;">offset number of lines to
+        start<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;nl&gt;<br></td>
+
+        <td style="vertical-align: top;">number of lines to copy
+        (enter -: to end of file)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4><strong>EXAMPLE</strong></h4><code>SLC_copy_all RSLC_tab
+  RSLC_tab2 2000 3000 5000 6000&nbsp;</code><br>
+  <br>
+  each of the SLC images in the RSLC_tab list a segment of the SLC
+  beginning at line 5000 and range sample 2000 is extracted and
+  stored in SLC file in the directory RSLC2_dir.&nbsp; The
+  parameter file for the SLC is adjusted to match the SLC segment
+  parameters.&nbsp;<br>
+
+  <h4>
+  <strong><strong>DESCRIPTION</strong></strong></h4><span style="font-style: italic;">SLC_copy_all</span>
+  calls the program <a href=
+  "../../ISP/html/SLC_copy.html">SLC_copy</a> for each of the files
+  contained in a two column list of SLC files. That list of SLC
+  files can be created using the script <a href=
+  "mk_tab.html">mk_tab</a>.&nbsp;&nbsp; The output format of the
+  SLC segment has the same data type (scomplex or fcomplex) as the
+  input data file.&nbsp; The user specifies the desired segment of
+  the SLCs by giving the offset to the starting range sample and
+  starting line. The number of samples and lines in the segment can
+  be specified as either a number of the - character. The "-"
+  character means to the end of the file or to the last range
+  sample. The SLC parameters such as the start time and starting
+  slant range are updated by <a href=
+  "../../ISP/html/SLC_copy.html">SLC_copy</a> for the segment. The
+  names of the ouput SLC and SLC parameter files are the same as
+  the input data files. <span style="font-weight: bold;">NOTE: The
+  output directory&nbsp; must be different than the directory were
+  the input SLC data are located.&nbsp;</span><br>
+  <br>
+  The list of SLCs has 2 columns. The first column is the SLC name
+  and the second is the SLC parameter file. The file names should
+  include the full relative or absolute path to the file that
+  applies.&nbsp; For example if the script is run from a directory
+  just above the directory that contains the SLC data, then the
+  entries in the SLC_tab will include the name of the directory
+  containing the SLC data. See the documentation on <a href=
+  "mk_tab.html">mk_tab</a> for further information.<br>
+
+  <h4><strong>SEE ALSO</strong></h4><a href=
+  "../../ISP/html/SLC_copy.html">SLC_copy</a>,&nbsp; <a href=
+  "mk_tab.html">mk_tab</a><br>
+  <a href="par_UAVSAR_geo.html"></a>
+  <hr style="width: 100%; height: 2px;">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="charles_werner.html">CW</a> last change 17-Nov-2012.
+</body>
+</html>

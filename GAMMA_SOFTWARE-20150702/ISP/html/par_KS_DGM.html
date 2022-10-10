@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: par_KS_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Generate SLC parameter file and image file for Kompsat-5 DGM
+  data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_KS_SLC.c">par_KS_DGM.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_KS_DGM - reads Kompsat-5 DGM (Level 1B) data as provided by
+  KARI and creates the ISP image parameter and SLC file in the
+  format used by GAMMA software.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_KS_SLC &lt;HDF5&gt; &lt;trunk&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;HDF5&gt;</td>
+
+        <td>(input) Kompsat-5 DGM product in HDF5 format as
+        provided by KARI</td>
+      </tr>
+
+      <tr>
+        <td>&lt;trunk&gt;</td>
+
+        <td>(output) output file name trunk used for output
+        filenames<br>
+        (example: yyyymmdd -&gt; yyyymmdd_pol_beamid.slc
+        yyyymmdd_pol_beamid.pri.par)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_KS_DGM
+  KMPS5_DGM_B_ST_12_HH_RD_F_20080803063600_20080803063605_20100317153612.h5
+  2008080306</samp></p>
+
+  <p>Reads the Kompsat-5 SCS file
+  KMPS5_DGM_B_ST_12_HH_RD_F_20080803063600_20080803063605_20100317153612.h5
+  and generates:<br>
+  2008080306.pri.par - SLC parameter file<br>
+  200808030.pri - PRI file</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">par_KS_DGM</span> is the
+  interface between Kompsat-5 DGM data in the format provided by
+  KARI and the format used by GAMMA software. DGM means Detected
+  Ground Multilook and correspond to ground range PRI data.
+  Kompsat-5 DGM data are provided in an single file consisting of
+  the image data and a set of annotations. The file is in HDF5
+  format. This program reformats the input file to obtain the PRI
+  image data and to extract the key parameters required by the
+  GAMMA ISP/SLC parameter file.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2014.<br>
+  awi, last change 5-May-2014.
+</body>
+</html>

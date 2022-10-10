@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: ras_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>ras_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ras_pt.c">ras_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ras_pt - draw point list locations on a SUN/BMP raster image</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_pt &lt;plist&gt; &lt;pmask&gt; &lt;ras_in&gt;
+  &lt;ras_out&gt; [rlks] [azlks] [r] [g] [b] [xs] [zflg] [mflg]
+  [np_ref]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_in&gt;</td>
+
+        <td>(input) SUN/BMP raster file (8 or 24 bits/sample, enter
+        - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_out&gt;</td>
+
+        <td>(output) SUN/BMP raster file with marked point list
+        locations</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>range looks of raster image relative to point
+        coordinates (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>azimuth looks of raster image relative to point
+        coordinates (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[r]</td>
+
+        <td>cross color value red (0 --&gt; 255, default: 255)</td>
+      </tr>
+
+      <tr>
+        <td>[g]</td>
+
+        <td>cross color value green (0 --&gt; 255, default:
+        255)</td>
+      </tr>
+
+      <tr>
+        <td>[b]</td>
+
+        <td>cross color value blue (0 --&gt; 255, default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[xs]</td>
+
+        <td>size of cross in pixels, set to 1 for single points
+        (default: 3)</td>
+      </tr>
+
+      <tr>
+        <td>[zflg]</td>
+
+        <td>zero image flag<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: retain image values (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: set all image values to 0 except crosses<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[mflg]<br></td>
+
+        <td style="vertical-align: top;">point mask flag<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: display points only where pmask[i]=1 (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: display points where pmask[i]=0)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: display single point (e.g. reference point) specified as
+        position of np_ref<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">np_ref&nbsp;&nbsp;</td>
+
+        <td style="vertical-align: top;">&nbsp;index of single
+        point to draw<br>
+        <br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <samp>ras_pt plist - hector.mli.ras
+  hector_pt.mli.ras 1 5</samp></p>
+
+  <p>Generates an 8-bit SUN rasterfile which corresponds to the
+  input 8-bit SUN rasterfile testsite.pwr.ras except for yellow
+  crosses added at the coordinates of all points of the point
+  list.</p>
+
+  <p style="font-family: monospace;"><samp>ras_pt</samp> plist -
+  hector_rgb.ras hector_rgb_pt.ras <samp>1 5 255 0 0 5</samp></p>
+
+  <p>Generates an 24-bit SUN raster image which corresponds to the
+  input 24-bit SUN raster iimage hector_rgb.ras except for enlarged
+  red crosses added at the coordinates of all valid points of the
+  point list.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are valid
+  (1) or not valid (0).</p>
+
+  <p>ras_pt supports the generation of a SUN/BMP raster file image
+  which shows the point list locations in the spatial context. As
+  background the input SUN/BMP raster file is used. For the input
+  SUN/BMP raster file (in the "normal" 2-D raster image format) can
+  either be in the SLC geometry used for the point list coordinates
+  or in a multi-looked geometry (relative to the same SLC geometry,
+  without offsets in range and azimuth).</p>
+
+  <p>The input SUN/BMP raster file can be 8-bit or 24-bits per
+  sample. The output SUN/BMP raster file will be of the same type
+  as the input SUN/BMP raster file. In the 8-bit case the color of
+  the crosses is added to the color table if there are additional
+  entries possible (initial color table length is less than 256).
+  In the case the number of existing color table entries is
+  256,&nbsp; pixels belonging to color 255 are moved to color 254
+  and color 255 is used for the color of the crosses.</p>
+
+  <p>For the crosses the color (red, green, blue values in the
+  range of 0 to 255 ) and the size (in pixels) can be entered on
+  the command line. Using a size of 1 will plot a single pixel. Up
+  to a size of 9, the cross is made of lines with single pixel
+  width. For crosses with size greater or equal to 9, the line
+  width is increased to 3 pixels.<br></p>
+
+  <p>Instead of using the input SUN/BMP raster file as background
+  only the crosses can be written to the output raster file if the
+  image&nbsp; zero&nbsp; flag is set to 1. Using this feature with
+  a cross size one results in a rasterfile which can serve as a
+  mask with non-zero values only at the point locations.<br></p>
+
+  <p>Finally it is possible to plot points where the mask values
+  are 0 rather than 1 by setting the mflg command line parameter to
+  1. This is useful to determine if groups of points have been lost
+  possibly due to searching an insufficiently large range of
+  deformation rates or height differences.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================--><a href=
+  "copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 13-Apr-2012.
+</body>
+</html>

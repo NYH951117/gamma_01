@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: SLC parameter file:
+  &lt;orbit&gt;.par</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC parameter file: &lt;orbit&gt;.par</h2>
+
+  <p><i>(ASCII-file)</i></p>
+
+  <p><strong>NAME</strong><br>
+  &lt;orbit&gt;.par - contains parameter values for SLC data used
+  throughout the interferometric data processing.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  non-executable</p>
+
+  <p><strong>EXAMPLE</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>
+        <pre>
+<samp>GAMMA Interferometric SAR Processor - SLC Data Parameter File
+Contains parameters associated with the SLC data
+
+title:     Death Valley orbit 8059 frame 2871 5-mar-93
+date:                      01 29 1993
+start_time:              66469.56260   s
+center_time:             66477.49310   s
+end_time:                66485.42360   s
+line_header_size:                  0
+range_samples:                  4912
+azimuth_lines:                  5329
+center_azimuth_number:        2664.5
+center_range_number:          2456.0
+center_latitude:             36.0000   decimal degrees
+center_longitude:           244.0000   decimal degrees
+heading:                      0.0000   decimal degrees
+range_pixel_spacing:        7.905920   m
+azimuth_pixel_spacing:     19.980220   m
+near_range_slc:       8.30619326e+05   m
+center_range_slc:     8.50028358e+05   m
+far_range_slc:        8.69445296e+05   m
+incidence_angle:             21.5824   degrees
+radar_frequency:         5.30000e+09   Hz
+adc_sampling_rate:       1.89600e+07   Hz
+chirp_bandwidth:         1.55500e+07   Hz
+prf:                     3.35981e+02   Hz
+azimuth_proc_bandwidth:  2.68784e+02   Hz
+doppler_polynomial:      3.14666e+02  0.00000e+00  0.00000e+00  0.00000e+00  Hz Hz/m Hz/m^2 Hz/m^3e
+sar_to_earth_center:           7.16805014e+06   m
+earth_radius_below_sensor:     6.37079484e+06   m
+earth_semi_major_axis:         6.37814400e+06   m
+earth_semi_minor_axis:         6.35675500e+06   m
+number_of_state_vectors:                    5
+time_of_first_state_vector:       66360.00000   s
+state_vector_interval:               60.00000   s
+state_vector_position_1:  -1888150.1000   -4914020.2200    4850506.9400   m   m   m
+state_vector_velocity_1:     -3545.1295      -3950.7641      -5369.0796   m/s m/s m/s
+state_vector_position_2:  -2098057.8200   -5140443.5100    4519078.2900   m   m   m
+state_vector_velocity_2:     -3449.0046      -3594.3659      -5674.9443   m/s m/s m/s
+state_vector_position_3:  -2301698.6000   -5345082.0400    4169957.1800   m   m   m
+state_vector_velocity_3:     -3336.2801      -3224.8649      -5958.6341   m/s m/s m/s
+state_vector_position_4:  -2498085.9700   -5527196.8700    3804508.2000   m   m   m
+state_vector_velocity_4:     -3207.2857      -2843.8439      -6219.0271   m/s m/s m/s
+state_vector_position_5:  -2686255.6000   -5686145.4100    3424160.5300   m   m   m
+state_vector_velocity_5:     -3062.4300      -2452.9294      -6455.0929   m/s m/s m/s
+
+*************** END OF SLC DATA PARAMETERS ******************
+</samp>
+</pre>
+      </td>
+    </tr>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  &lt;orbit&gt;.par - contains parameter values for SLC data used
+  throughout the interferometric data processing. &lt;orbit&gt;.par
+  - is either generated from the SAR SLC leader/header information
+  files (provided by the processing facilities together with the
+  SLC data), <em>par_ESA</em> (for CEOS header format provided by
+  D-PAF or ESRIN), <em>par_ASI</em> (for the header format provided
+  by the Italian PAF), <em>par_ASF</em> (for the header format
+  provided by the Alaska SAR Facility), or <em>par_UK</em> (for the
+  header format provided by the UK-PAF), or it is generated from
+  the MSP processing parameters. The formats used in
+  &lt;orbit&gt;.par are defined in the in ISP type definition file
+  <em>typedef_ISP.h</em>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  If the required SLC leader/header files are missing or have
+  missing values the SLC parameter file &lt;orbit&gt;.par may be
+  edited manually.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "par_ESA.html">par_ESA</a>, <a href="par_ASI.html">par_ASI</a>,
+  <a href="par_ASF.html">par_ASF</a>, <a href=
+  "par_UK.html">par_UK</a>, <a href=
+  "par_CCRS.html">par_CCRS</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  Execution of interf_ESA may take some time.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1996.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Apr-1996.</p>
+</body>
+</html>

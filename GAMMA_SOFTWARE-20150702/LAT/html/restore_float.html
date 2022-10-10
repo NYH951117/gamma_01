@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 2000 Gamma Remote Sensing -->
+<!-- uw961216 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: restore_float</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual:</h1>
+  <hr>
+
+  <h2>restore_float</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/restore_float.c">restore_float.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  restore_float - Interpolation algorithm for file of type
+  float.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>restore_float &lt;input file&gt; &lt;output file&gt;
+  &lt;width&gt; [interpolation_limit]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;input file&gt;</td>
+
+      <td>input data containing 0.0 values (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;output file&gt;</td>
+
+      <td>output data with 0.0 values replaced (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[interpolation_limit]</td>
+
+      <td>max. gap that is interpolated (default=10 pixel)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>restore_float 1352_1610.hgt 1352_1610.hgt_interp 2500
+  32</samp></p>Replaces areas of 0.0 values in input file by
+  interpolation.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code restore_float.c in ./src. For compilation adjust and
+  use Makefile: Executable version restore_float in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  restore_float reads the input data and replaces 0.0 values with
+  values determined by a interpolation.</p>
+
+  <p>The interpolation algorithm is looks for the nearest valid
+  pixels, checking in row, col, and diagonal direction. NULL values
+  are only replaced by interpolated values if the distance between
+  the nearest valid points is less than theindicated interpolation
+  limit. this is necessary to have some control on the quality of
+  the interpolation.</p>
+
+  <p>Selection of a smaller interpolation limit guarantees a better
+  result but leaves more data gaps without interpolated values.</p>
+
+  <p>So far the algorithm was mainly used to interpolate the gaps
+  in interferoemtric height maps resulting for low coherence areas.
+  This type of interpolation turns out to be difficult because the
+  missing values coinside with strong variations of the height in
+  layover areas and other steeply sloped areas of low
+  coherence.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Iterative application of the algorithm with increasing
+  interpolation limits may lead to an improved result.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "line_interp.html">line_interp</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

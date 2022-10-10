@@ -1,0 +1,120 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** $0
+*** Copyright 2015, Gamma Remote Sensing, v2.1 9-Apr-2015 clw ***
+*** Create a new set of SLC data by copying a common segment from an existing set of SLC data ***
+
+usage: $0 <SLC_tab> <SLC2_dir> <roff> <nr> <loff> <nl> 
+    SLC_tab    (input) two column list of coregistered input SLC files and SLC parameter files (including paths) (text)
+    SLC2_dir   directory to contain copied segments of the input SLC data and the associated parameter files
+    roff       offset to starting range sample
+    nr         number of range samples (enter -: to end of line)
+    loff       offset number of lines to start
+    nl         number of lines to copy (enter -: to end of file)
+       
+    NOTE: current directory is denoted using .
+    
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "\nERROR $0: table of slc images and parameter files does not exist: $ARGV[0]\n\n";
+print "SLC_tab table of SLC images and parameter files: $ARGV[0]\n"; 
+
+$rslc2_dir = $ARGV[1];
+$roff      = $ARGV[2];
+$nr        = $ARGV[3];
+$loff      = $ARGV[4];
+$nl        = $ARGV[5];
+
+unless (-d $rslc2_dir) {
+  print "creating directory for output SLC images: $rslc2_dir\n";
+  (mkdir $rslc2_dir) or die "ERROR $0: non-zero exit status, could not create SLC data directory $rslc2_dir\n";
+}
+
+print "output resampled SLC directory: $rslc2_dir\n";
+print "offset line:         $loff   lines:   $nl\n";
+print "offset range sample: $roff   samples: $nr\n";
+
+$loff =~ /\d+$/ && $loff >= 0 or die "ERROR $0: invalid offset to first line: $loff\n";
+(($nl =~ /\d+$/ && $nl >= 0)  or ($nl eq "-")) or die "ERROR $0: invalid number of lines: $nl\n";
+$roff =~ /\d+$/ && $roff >= 0 or die "ERROR $0: invalid offset to first pixel: $roff\n";
+(( $nr =~ /\d+$/ && $nr >= 0) or ($nr eq "-")) or die "ERROR $0: invalid number of pixels: $nr\n";
+
+$time = localtime;
+print "\nprocessing start: $time\n";  
+$log = "$rslc2_dir/SLC_copy_all.log"; 
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n\n";
+LOG->autoflush;  
+print LOG "$0 @ARGV\n\n";	#print command line that was used
+print LOG "output resampled slc directory: $rslc2_dir\n";
+print LOG "\nprocessing start: $time\n";  
+print LOG "offset line:         $loff   lines:  $nl\n";
+close LOG;
+ 
+LINE: while (<SLC_TAB>) {	#read lines of processing list file into $_
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in processing list
+  next LINE if /^#/; 		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+   
+  $rslc = $fields[0]; 
+  $rslc_par = $fields[1];
+  -e $rslc or die "ERROR $0: SLC file does not exist: $rslc\n";    
+  -e $rslc_par or die "ERROR $0: ISP parameter file does not exist for the input SLC: $rslc_par\n";
+  my ($s1, $dir1, $ext1) = fileparse($rslc, qr/\.[^.]*/); #extension is the last bit after the last period 
+ 
+  $ext2 = substr $ext1,1;		#delete period at the start of the extension
+  $rslc2 = "$rslc2_dir/$s1.$ext2";
+  $rslc2_par = "$rslc2.par";
+     
+  $time = localtime;
+  print"\ninput SLC: $rslc  output SLC: $rslc2   start time: $time\n";  
+  open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+  print LOG "\ninput SLC: $rslc  output SLC: $rslc2  start time: $time\n";
+  close LOG; 
+
+  @format = extract_param($rslc_par,"image_format:");	#determine image format
+  if ($format[1] eq "FCOMPLEX"){
+    $fcase = 1;
+  }
+  elsif ($format[1] eq "SCOMPLEX"){
+    $fcase = 4;
+  }  
+  else{ 
+    die "ERROR $0: input SLC is not fcomplex or scomplex data format: $format[1]\n";
+  }
+  execute("SLC_copy $rslc $rslc_par $rslc2 $rslc2_par $fcase - $roff $nr $loff $nl",$log);
+}
+
+$time = localtime;
+open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n\n";
+print LOG "\n*** $0 processing end: $time ***\n";
+print "\n*** $0 processing end: $time ***\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "\nERROR $0: cannot open existing log file: $log\n";}
+  else {open(LOG,">$log") or die "\nERROR $0: cannot open new log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "\nERROR extract_param: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "\nERROR $0: keyword $keyword not found in file: $infile\n";
+}

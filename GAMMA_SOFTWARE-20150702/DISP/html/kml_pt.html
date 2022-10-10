@@ -1,0 +1,304 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: kml_pt</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>kml_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/kml_pt.c">kml_pt.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  <i>kml_pt</i> - Create a kml XML file (to be viewed e.g. in
+  Google Earth) visualizing values from an ascii table. Main
+  purpose is to visualize IPTA deformation results.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <samp><tt>kml_pt &lt;table&gt; &lt;lat_col&gt; &lt;lon_col&gt;
+  &lt;val1_col&gt; &lt;val1_label&gt; &lt;val2_col&gt;
+  &lt;val2_label&gt; &lt;val3_col&gt; &lt;val3_label&gt;
+  &lt;id_col&gt; &lt;kml&gt; [icon_URL] [logo_URL] [legend_URL]
+  [color_model] [h0] [hrange] [imin] [imax] [sat_min] [sat_max]
+  [sc1] [A1] [B1] [cyclic1] [sc2] [A2] [B2] [sc3] [A3]
+  [B3]</tt><br>
+  &nbsp;</samp></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tr>
+      <td>&lt;table&gt;</td>
+
+      <td>(input) ascii file with columns of at least latitude,
+      longitude and value</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lat_col&gt;</td>
+
+      <td>column number containg latitude information (WGS84,
+      decimal)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;lon_col&gt;</td>
+
+      <td>column number containg longitude information (WGS84,
+      decimal)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;val1_col&gt;</td>
+
+      <td>column number containg the value for red/hue (enter - if
+      not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;val1_label&gt;</td>
+
+      <td>label of val1_col (enter - if values shall be omitted in
+      the popup)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;val2_col&gt;</td>
+
+      <td>column number containg the value for red/hue (enter - if
+      not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;val2_label&gt;</td>
+
+      <td>label of val2_col (enter - if values shall be omitted in
+      the popup)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;val3_col&gt;</td>
+
+      <td>column number containg the value for red/hue (enter - if
+      not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;val3_label&gt;</td>
+
+      <td>label of val3_col (enter - if values shall be omitted in
+      the popup)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;id_col&gt;</td>
+
+      <td>column number containg the id values (enter - if no ID
+      values shall be displayed)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;kml&gt;</td>
+
+      <td>(output) kml output file</td>
+    </tr>
+
+    <tr>
+      <td>[icon_URL]</td>
+
+      <td>Uniform Resource Locator to the master icon (- for
+      default:
+      http://www.gamma-rs.ch/media/images/kml/button_master.png)</td>
+    </tr>
+
+    <tr>
+      <td>[logo_URL]</td>
+
+      <td>Uniform Resource Locator to the logo image (- for none,
+      gamma:
+      http://www.gamma-rs.ch/media/images/kml/gamma_logo.png)</td>
+    </tr>
+
+    <tr>
+      <td>[legend_URL]</td>
+
+      <td>Uniform Resource Locator to the legend image (- for
+      none)</td>
+    </tr>
+
+    <tr>
+      <td>[color_model]</td>
+
+      <td>color model selection flag: (default=1)<br>
+      0: RGB color model<br>
+      1: HLS (double hexagon color model)<br>
+      2: HSV (single hexagon color model)</td>
+    </tr>
+
+    <tr>
+      <td>[h0]</td>
+
+      <td>starting hue (color for starting value, default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[hrange]</td>
+
+      <td>range of hue values in degrees (-360. ... 360.,
+      default=360.)</td>
+    </tr>
+
+    <tr>
+      <td>[imin]</td>
+
+      <td>minimum brightness value (0.0 ... 1.0, default=0.15)</td>
+    </tr>
+
+    <tr>
+      <td>[imax]</td>
+
+      <td>maximum brightness value (0.0 ... 1.0, default=0.85)</td>
+    </tr>
+
+    <tr>
+      <td>[sat_min]</td>
+
+      <td>minimum color saturation value (0.0 ... 1.0,
+      default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[sat_max]</td>
+
+      <td>maximum color saturation value (0.0 ... 1.0,
+      default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[sc1]</td>
+
+      <td>Scaling model flag (default=0: lin, 1: log, 2:
+      power-law)</td>
+    </tr>
+
+    <tr>
+      <td>[A1]</td>
+
+      <td>Scaling parameter A (minimum or scale; default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[B1]</td>
+
+      <td>Scaling parameter B (maximum or exponent;
+      default=6.2832)</td>
+    </tr>
+
+    <tr>
+      <td>[cyclic1]</td>
+
+      <td>Cyclic scaling model (default=1; 0: no 1: yes)</td>
+    </tr>
+
+    <tr>
+      <td>[sc2]</td>
+
+      <td>Scaling model flag (default=2: lin, 1: log, 2:
+      power-law)</td>
+    </tr>
+
+    <tr>
+      <td>[A2]</td>
+
+      <td>Scaling parameter A (minimum or scale; default=1.0)</td>
+    </tr>
+
+    <tr>
+      <td>[B2]</td>
+
+      <td>Scaling parameter B (maximum or exponent;
+      default=0.35)</td>
+    </tr>
+
+    <tr>
+      <td>[sc3]</td>
+
+      <td>Scaling model flag (default=0: lin, 1: log, 2:
+      power-law)</td>
+    </tr>
+
+    <tr>
+      <td>[A3]</td>
+
+      <td>Scaling parameter A (minimum or scale; default=0.0)</td>
+    </tr>
+
+    <tr>
+      <td>[B3]</td>
+
+      <td>Scaling parameter B (maximum or exponent;
+      default=6.2832)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>kml_pt disp_tab.txt 5 4 7 "Displacement [mm/y]" 10
+  "Displacement uncertainty [mm/y]" 6 "Height [m]" 1 test.kml -
+  logo.png - 1 0.0 300. 0.5 0.5 0.8 0.8 0 -10.0 5.0 0 1 1 1 0 0.0
+  1.0</tt></p>
+
+  <p>Generates the test.kml kml XML file that can be imported into
+  Google Earth for visualisation. Values for lat/lon are taken from
+  columns 5 and 4 of table disp_tab.txt. The 3 parameters to
+  visualize are in columns 7 (displacement), 10 (displacement
+  error), and 6 (height). The color model used is a double hexagon
+  model ranging from 0 to 300 degrees. A corresponding color scale
+  can be produced with <tt>ras8_color_scale</tt>. The parameters
+  for the color model follow. Please note that in this example a
+  trick was used so that only the deformation contributes to the
+  button color. The other two parameters (error, height) have equal
+  staring/ending ranges. Like that they only show up in the popup
+  that is triggered by clicking on a point. For the colored buttons
+  the default template was used, while the logo is taken from
+  logo.png in the current directory.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>kml_pt</i> creates a kml XML file that can be displayed with
+  Google Earth. Input parameters are an ascii table, the relevant
+  column IDs, and a color model. Its is important to note that
+  Google Earth works in EQA with potentially WGS84 as geoid.<br>
+  The resulting kml file can be edited using any text editor.<br>
+  For the button, logo, and legend images, if the image is in a
+  format supporting transparency (e.g. png) transparency is also
+  used within Google Earth. This allows to use a standard image
+  editor such as gimp to edit the image and add transparency for
+  better visualisation of the image in Google Earth.<br>
+  Google Earth is a product of Google. Check the website for more
+  information and license info. http://earth.google.com/</p>
+
+  <p><b>DIAGNOSTICS</b><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <tt>ras24_pwr</tt>, <tt>ras8_color_scale</tt>, <tt>kml_map</tt>
+  alls part of GAMMA DISP.<br>
+  <a href=
+  "http://code.google.com/apis/kml/documentation/index.html">kml
+  implementation of Google Earth</a></p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  awi, last change 14-Feb-2008.
+</body>
+</html>

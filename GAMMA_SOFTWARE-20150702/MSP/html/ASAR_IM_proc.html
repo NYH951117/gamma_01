@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: ASAR_IM_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ASAR_IM_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ASAR_IM_proc.c">ASAR_IM_proc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ASAR_IM_proc - Generates MSP sensor parameter and processing
+  parameter files from Level 0 (raw) ASAR Image Mode data. This
+  program also reformats the raw SAR signal data to be compatible
+  with the MSP.&nbsp; The entire level 0 data set is converted to
+  8-bit I/Q unsigned binary complex samples.<br></p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>ASAR_IM_proc &lt;L0&gt;
+  &lt;INS&gt; &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;raw&gt;
+  &lt;ant_gain&gt; [loff] [nl]</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>L0</td>
+
+        <td>(input) Level 0 Image Mode ASAR data file
+        (ASA_IM_0P)<br></td>
+      </tr>
+
+      <tr>
+        <td>INS</td>
+
+        <td>(input) ASAR instrument characterization file
+        (ASA_INS_AX)</td>
+      </tr>
+
+      <tr>
+        <td>SAR_par</td>
+
+        <td>(output) MSP SAR sensor parameter file<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">PROC_par<br></td>
+
+        <td style="vertical-align: top;">(output) MSP processing
+        parameter file, (example p19969421.slc.par)<br></td>
+      </tr>
+
+      <tr>
+        <td>raw</td>
+
+        <td>(output) byte aligned 8-bit I/Q raw data</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">ant_gain<br></td>
+
+        <td style="vertical-align: top;">(input) antenna pattern
+        file name (derived using program ASAR_XCA)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">loff<br></td>
+
+        <td style="vertical-align: top;">offset lines to first line
+        to extract (default = 0, enter - for default)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">nl</td>
+
+        <td style="vertical-align: top;">number of lines to extract
+        (default = to end of input, enter - for default)<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp><span style="font-weight: bold;">ASAR_IM_proc</span>
+  ASA_IM__0CNPDK20030507_092426_000000152016_00122_06188_0390.N1
+  ASA_INS_AXVIEC20030424_154116_20030428_000000_20031231_235959
+  20030507.is3.par p20030507.slc.par 20030507.raw
+  is3.ant<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <span style="font-weight: bold;">ASAR_IM_proc</span> reads the
+  ASAR Level 0 data files and generates the MSP processing
+  parameter (p*.slc.par) and sensor parameter files along with
+  reformatting the raw data. Level 0 files have names that begin
+  with <span style="font-weight: bold;">ASA_IM__0</span>.... These
+  files contain both raw data and meta data describing when the
+  data were acquired and the imaging mode&nbsp; (IS1 - IS7).&nbsp;
+  Detailed information on the raw data Level 0 format is contaned
+  in the ASAR Product Handbook available on-line at <a href=
+  "http://envisat.esa.int">http://envisat.esa.int.</a></p>
+
+  <p>The ASAR imaging mode data are stored as records in the file
+  with each record corresponding to an echo.&nbsp; Each echo
+  consists of a header consisting of timing and error information
+  and radar parameters followed by a set of 64-byte&nbsp; packets
+  containing the echo samples. These echo samples are stored using
+  block floating point quantization (FBAQ)&nbsp; that effectively
+  increases the dynamic range of the data to 8 bits from the 4 bits
+  used to encode the data in the Level 0 data.&nbsp; Each packet
+  consists of 63 complex samples (4-bit I/4-bit Q) and a single
+  byte that is an index into a set of lookup tables. These lookup
+  tables map the 4-bit values to the corresponding 8-bit
+  values.<br></p>
+
+  <p>The set of 256 look up tables needed to generate decompressed
+  samples and other ASAR calibration and system parameters are
+  stored in the Instrument Characterization File (<span style=
+  "font-weight: bold;">ASA_INS_AXVIEC...</span>).&nbsp; These files
+  must be downloaded from ESA and the correct file selected for the
+  date that the data were aquired.&nbsp; The ESA website to
+  download both the INS files and the external characterization
+  file (<span style="font-weight: bold;">ASA_XCA...)</span> is
+  <a href=
+  "http://envisat.esa.int/services/auxiliary_data/asar">http://envisat.esa.int/services/auxiliary_data/asar</a><br>
+  </p>
+
+  <p>The external characterization file is required to extract the
+  antenna pattern as measured on the ground and is used to
+  compensate for the antenna gain across the swath in the SAR
+  processing. The program in the ISP called ASAR_XCA and is used to
+  extract the appropriate antenna pattern (the <span style=
+  "font-weight: bold;">ant_gain</span>&nbsp; value on the command
+  line).<br></p>
+
+  <p>The ASAR instrument shifts the echo digitization window
+  approximately every 15 seconds along-track. ASAR_IM_proc
+  initially scans the entire data set to determine the maximum
+  shift from start to finish. and shifts the data in the output
+  such that the starting time for all echoes is the same for the
+  entire raw data set.. No samples are lost in this process because
+  the data are extended to accomodate the range of the shift. Every
+  echo raw data file is decompressed and written to the output
+  <span style="font-weight: bold;">raw</span> file specified on the
+  command line.<br></p>
+
+  <p>You also have the possibility to extract only a subset of the
+  echoes from the raw data set. This is done by specifing the
+  offset number of echoes to the first echo to extract <span style=
+  "font-weight: bold;">loff</span>, and the number of echoes to
+  extract <span style="font-weight: bold;">nl</span>. This
+  capability may be useful in the case of very large raw data
+  sets.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html#file%20a">SAR raw data
+  (&lt;YYYYMMDD&gt;.raw)</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2007.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-May-2007.
+</body>
+</html>

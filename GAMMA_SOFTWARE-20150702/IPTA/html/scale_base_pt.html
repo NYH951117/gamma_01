@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: scale_base_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>scale_base_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/scale_base_pt.c">scale_base_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  scale_base_pt - scale unwrapped phase according to baselines</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>scale_base_pt &lt;plist&gt; &lt;pmask&gt;
+  &lt;pSLC_par&gt; &lt;ppos&gt; &lt;itab&gt; &lt;pbase&gt;
+  &lt;punw_in&gt; &lt;rec_num_in&gt; &lt;punw_out&gt;
+  [ph_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of baseline parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw_in&gt;</td>
+
+        <td>(input) point data stack of unwrapped phase to be
+        scaled (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num_in&gt;</td>
+
+        <td>record number of input unwrapped phase (to be
+        scaled)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw_out&gt;</td>
+
+        <td>(output) point data stack of scaled unwrapped phase
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num_out&gt;</td>
+
+        <td>record number of output scaled unwrapped phase</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>range phase ramp flag (default=0: unflattened, 1:
+        flattened)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>scale_base_pt testsite.plist testsite.pmask testsite.ppar
+  testsite.ppos testsite.itab testsite.pbase testsite.punw1 3
+  testsite.punw2 5 0</samp></p>
+
+  <p>Scales the input unwrapped interferometric phase (record 3 in
+  testsite.punw1) according to the baselines of records 3 and 5,
+  and writes out the scaled unwrapped phase to record 5 of
+  testsite.punw2.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code scale_base_pt.c in ./IPTA/src, executable version
+  scale_base_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  scale_base_pt scales unwrapped phase images according to the
+  related baselines using the proportionality of the topographic
+  phase term with the perpendicular component of the baseline.</p>
+
+  <p>The coordinates of the points considered are defined in the
+  point list. The optional mask file (in point data format)
+  indicates for each point if it is valid (1, i.e. considered) or
+  not valid (0, excluded).</p>
+
+  <p>Information required for the reference SLCs of the indicated
+  interferometric pair(s) is provided in the stack of SLC parameter
+  files.</p>
+
+  <p>Optionally, interpolated point position coordinates can be
+  used instead of the integer coordinates from the point list.</p>
+
+  <p>Interferometric pairs are defined in the itab, an ascii file
+  with a table associating interferogram stack records with pairs
+  of SLC stack records. For each pair (line of itab, record of
+  point data stacks) the stack of baseline parameters contains a
+  record with the related baseline parameters which are the same
+  parameters as used in the baseline parameter file, i.e. initial
+  baseline, precision baseline, and phase constant.</p>
+
+  <p>The input unwrapped phase image is provided as a record of a
+  point data stack.</p>
+
+  <p>Scaled unwrapped interferometric phases are calculated for
+  each valid point of the point list. Valid points are points with
+  a non-zero height value and a non-zero point mask value (if
+  provided). In a first step the local perpendicular and parallel
+  components are determined for a point. If non-zero the precision
+  baseline is used, otherwise the initial baseline. The unwrapped
+  phase is then scaled and the result written out to the indicated
+  record in the output point data stack.</p>
+
+  <p>Input and output stacks may be identical.</p>
+
+  <p>A flag indicates if the unwrapped phases are unflattened (0)
+  or the flattended (1), accordingly the scaling is adjusted.</p>
+
+  <p>To display the simulated interferometric phase images
+  contained in the point data stack the programs pt2data or pt2d
+  can be used to convert the point data to raster data format which
+  can then be displayed using conventional display programs.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  To subtract a scaled phase image from an interferogram in a point
+  data stack the program sub_phase_pt can be used.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="pt2data.html">pt2data</a>, <a href="pt2d.html">pt2d</a>,
+  <a href="sub_phase_pt.html">sub_phase_pt</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

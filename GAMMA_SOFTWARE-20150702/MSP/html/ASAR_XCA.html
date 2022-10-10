@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: ASAR_XCA</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr>
+
+  <h2>Interpretation of ASAR external calibration data file
+  (ASA_XCA)</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/ASAR_XCA.c">ASAR_XCA.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  ASAR_XCA - reads ENVISAT ASAR external calibration data file as
+  provided by ESA, writes calibration factors for the different
+  modes and data products to the screen and generates antenna
+  diagram files in the format used by GAMMA software.</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>ASAR_XCA &lt;ASAR_XCA&gt; &lt;antenna&gt;</b></code>
+  [swath] [pol]</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;ASA_XCA&gt;</td>
+
+      <td>(input) ASAR external calibration data file (binary)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;antenna&gt;</td>
+
+      <td>(output) 1-way antenna gain pattern file or '-' (if not
+      provided)<br>
+      or 'all' to generate all ASAR antenna diagrams</td>
+    </tr>
+
+    <tr>
+      <td>[swath]</td>
+
+      <td>ASAR swath (IS1,IS2,...IS7;SS1,SS2,...SS5)</td>
+    </tr>
+
+    <tr>
+      <td>[pol]</td>
+
+      <td>polarization (HH,VV,HV,VH)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>ASAR_XCA
+  ASA_XCA_AXVIEC20021217_150852_20020413_000000_20031231_000000
+  ASAR_IS2_VV_antenna.gain IS2 VV</samp></p>
+
+  <p>Reads the ASAR external calibration data file and
+  generates:<br>
+  ASAR_IS2_VV_antenna.gain - ASAR antenna diagram swath IS2, VV
+  polarization<br>
+  In addition, calibration scaling factors for all modes/products
+  are written to the screen.</p>
+
+  <p><samp>ASAR_XCA
+  ASA_XCA_AXVIEC20021217_150852_20020413_000000_20031231_000000
+  all</samp></p>
+
+  <p>Reads the ASAR external calibration data file and generates
+  ASAR antenna diagrams for all swaths and polarizations. In
+  addition, calibration scaling factors for all modes/products are
+  written to the screen.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  Antenna diagrams and calibration scale factors of the different
+  ASAR swaths, polarizations, and products are specified in the
+  ASAR external calibration data file which is provided by ESA as a
+  separate product. ASAR_XCA reads ENVISAT ASAR external
+  calibration data file as provided by ESA, writes calibration
+  factors for the different modes and data products to the screen
+  and generates antenna diagram files in the format used by GAMMA
+  software.</p>
+
+  <p>In addition, the reference look angles (i.e. center of antenna
+  diagrams) are specied in the external calibration data file and
+  displayed on the screen by ASAR_XCA.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ASAR_IM_proc.html">ASAR_im_proc</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Apr-2006.</p>
+</body>
+</html>

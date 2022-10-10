@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: dispmap</title>
+</head>
+
+<body>
+  <h1>Gamma IPTA: Reference Manual</h1>
+  <hr>
+
+  <h2>def_trans_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/def_trans_pt.c">def_trans_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  def_trans_pt - Surface displacement map generation from unwrapped
+  differential phase.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>def_trans_pt &lt;plist&gt; &lt;pmask&gt;
+  &lt;pSLC_par&gt; &lt;pdef&gt; &lt;phgt&gt; &lt;pdef2&gt;
+  [mode]</b></code></p>
+
+  <table style="text-align: left;" border="1" cellpadding="2"
+  cellspacing="2">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ISP SLC/MLI parameter file of the reference SLC
+        image (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdef&gt;</td>
+
+        <td>point data stack deformation rate along the line of
+        sight (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;phgt&gt;</td>
+
+        <td>(input) point data stack of terrain heights (float)
+        (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdef2&gt;</td>
+
+        <td>(output) equivelent vertical or horizontal deformation
+        rate (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;mode&gt;</td>
+
+        <td>displacement calculation mode:<br>
+        &nbsp; 0: vertical,&nbsp;&nbsp; &nbsp; &nbsp; +: increasing
+        height (m)<br>
+        &nbsp; 1: horizontal, &nbsp; +: decreasing ground range
+        (m)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>def_trans_pt pt pmsk1 19960421.slc.par pdef phgt pdef_vert
+  1</samp></p>
+
+  <p>Converts the LOS deformation rate to a vertical displacement
+  rate map. The point list is pt and the point&nbsp; mask is
+  pmsk1<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">def_trans_pt</span> converts
+  the deformation rate along the line of sight (LOS) into the
+  equivalent vertical or horizontal deformation rate. The nominal
+  units are meters/year. The basic assumption is all the
+  deformation is either vertical or horizontal. The observed LOS
+  deformation rate is the component of this vertical or horizontal
+  deformation along the LOS. The geometrical reference is chosen to
+  be reference SLC.<br></p>
+
+  <p>To determine the equivalent deformation rate in the vertical
+  direction mode 0 is selected. For horizontal deformation rates,
+  mode 1 is selected. Positive signs corresponding to increasing
+  surface height and negative signs to subsidence, <span style=
+  "font-style: italic;">def_trans_pt</span> mode 0 is selected.
+  Vertical displacement can often be assumed in the case of
+  subsidence.</p>
+
+  <p>To map the equivalent horizontal displacement rate cin the
+  ground range direction with a positive sign&nbsp; corresponding
+  to decreasing ground range, def_trans_pt mode 1 is selected.<br>
+  Note that the mapping of displacement rate along the terrain
+  surface, as required in the mapping of glacier velocity, is not
+  supported by <span style=
+  "font-style: italic;">def_trans_pt</span>.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Terrain heights are required for the conversion of the
+  deformation rate to the equivalent deformation rate in the
+  vertical or horizontal direction. As an option the height point
+  data does not need to be entered and a surface reference height
+  0f 0.0 m is used for the conversion. The effect of the terrain
+  height on the result may in many cases be neglected in comparison
+  to other error sources.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html"></a><a href=
+  "ipta.h.html">ipta.h</a>.<br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 28-Mar-2008.
+</body>
+</html>

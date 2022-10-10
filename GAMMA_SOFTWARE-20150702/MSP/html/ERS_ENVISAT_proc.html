@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: ERS_ENVISAT_proc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ERS_ENVISAT_proc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ERS_ENVISAT_proc.c">ERS_ENVISAT_proc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  ERS_ENVISAT_proc - Updates the MSP sensor parameter and generates the processing
+  parameter files from Level 0 (raw) ERS raw data in ENVISAT format. This
+  program also reformats the raw SAR signal data to be compatible
+  with the MSP.&nbsp; The entire level 0 data set is converted to
+  8-bit I/Q unsigned binary complex samples.<br></p>
+
+  <p><strong>SYNOPSIS<br></strong> <code>ERS_ENVISAT_proc &lt;L0&gt;
+  &lt;SAR_par&gt; &lt;PROC_par&gt; &lt;raw&gt;
+  &lt;ant_gain&gt; [loff] [nl] [swst_flg]</code></p>
+  L0       (input) Level 0 Image Mode ERS data file in Envisat format (SAR_IM__0P*.E*)
+  SAR_par  (input/output) MSP SAR sensor parameter file (ERS*_ESA.par)
+  PROC_par (output) MSP processing parameter file, (example p<orbit>.slc.par)
+  raw      (output) byte aligned 8-bit I/Q raw data
+  loff     number of lines offset from start of raw data file (enter - for default: 0)
+  nl       number of lines to extract (enter - for default: to end of input raw data
+  swst_flg SWST data window position processing flag:
+             0: ignore changes in the data window position (only for corrupted data)
+             1: track changes in the data window position (default)
+
+  <table border="1" cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>L0</td>
+
+        <td>(input) Level 0 Image Mode ERS data file in Envisat format (SAR_IM__0P*.E*)</td>
+      </tr>
+
+
+      <tr>
+        <td>SAR_par</td>
+        <td>(input/output) MSP SAR sensor parameter file (ERS*_ESA.par) that is located in the 
+            MSP sensors directory. Parameters for record length and headers will be adjusted.</td>
+      </tr>
+
+      <tr>
+        <td>PROC_par</td>
+        <td>(output) MSP processing parameter file, (example p<orbit>.slc.par))<br></td>
+      </tr>
+
+      <tr>
+        <td>raw</td>
+        <td>(output) byte aligned 8-bit I/Q raw data</td>
+      </tr>
+
+      <tr>
+        <td>loff<br></td>
+        <td>offset lines to first line to extract (default = 0, enter - for default)<br></td>
+      </tr>
+
+      <tr>
+        <td>nl</td>
+        <td>number of lines to extract (default = to end of input, enter - for default)<br></td>
+      </tr>
+      <tr>
+        <td>swst_flg</td>
+        <td>    SWST data window position processing flag:<br>
+                   0: ignore changes in the data window position (only for corrupted data) <br>
+                   1: track changes in the data window position (default)number of lines to extract (default = to end of input, enter - for default)<br>
+        </td>
+      </tr>     
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp><span style="font-weight: bold;">ERS_ENVISAT_proc</span>
+  ERS_ENVISAT_proc SAR_IM__0PXDLR19960203_130658_00000017G153_00281_23816_6033.E1 ERS1_ENVISAT.par p19960203.slc.par 19960203.raw<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  <span style="font-weight: bold;">ERS_ENVISAT_proc</span> reads the
+  ERS Level 0 data file in Envisat format and generates the MSP processing
+  parameter (p*.slc.par) and updates the sensor parameter file along with
+  reformatting the raw data. Level 0 files have names that begin
+  with <span style="font-weight: bold;">SAR_IM__0</span>.... These
+  files contain both raw data and meta data.&nbsp;
+  Detailed information on the ERS raw data Level 0 in Envisat format is contaned
+  in the Product Specification for ERS Products within ENVISAT Format available on-line at <a href=
+  "http://earth.esa.int">http://earth.esa.int.</a></p>
+  
+  <p>The program now generates both the SAR sensor parameter file and MSP processing parameter file
+  for the specific data set. In versions prior to 1.7, the user was required to enter a template
+  MSP SAR sensor parameter file.</p>
+
+  <p>You also have the possibility to extract only a subset of the
+  echoes from the raw data set. This is done by specifing the
+  offset number of echoes to the first echo to extract <span style=
+  "font-weight: bold;">loff</span>, and the number of echoes to
+  extract <span style="font-weight: bold;">nl</span>. This
+  capability may be useful in the case of very large raw data
+  sets.</p>
+  
+  <p>To eliminate missing lines run ERS_fix with 'ENVISAT' for the ERS_PAF parameter on the raw data.</p>
+  
+  <p>In some extreme case where all the range gate window position (SWST) data are corrupted, it is possible turn off
+  checking and compensation of changes in the range gate (SWST) by setting the swst_flg to 0.</p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">SAR Sensor Parameter File</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "MSP_file_formats.html#file%20a">SAR raw data
+  (&lt;YYYYMMDD&gt;.raw)</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 02-Jun-2010.
+</body>
+</html>

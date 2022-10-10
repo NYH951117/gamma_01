@@ -1,0 +1,121 @@
+#!/usr/bin/perl
+use FileHandle;
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2004, Gamma Remote Sensing, v1.5 28-Oct-2004 clw ***
+*** generate pSLC_par and pSLC point data stacks  ***
+
+usage: $0 <SLC_tab> <plist> <pmask> <pSLC_par> <pSLC> <SLC_rec_num>
+    SLC_tab	 (input) two column list of SLC filenames and SLC parameter filenames (including paths) (ascii)
+    plist	 (input) point list (enter - for none) (int)
+    pmask	 (input) point data stack of mask values (uchar, set to - to accept all points)
+    pSLC_par     (output) stack of SLC/MLI parameters for the resampled SLC data (enter - for none)(binary) 
+    pSLC         (output) point data stack of interpolated SLC values (enter - for none)(fcomplex or scomplex)    
+    SLC_rec_num  record number in the output point data stack (starting with 1, default: - for all)  
+EOS
+
+open(SLC_TAB, "<$ARGV[0]") or die "ERROR $0: SLC_tab of scene SLC files does not exist: $ARGV[0]\n";
+$pt	  = $ARGV[1];
+$pmask    = $ARGV[2];
+
+if ($ARGV[3] ne "-"){      
+  $pSLC_par = $ARGV[3];
+  (-e "$pSLC_par") and system("rm -f $pSLC_par");	#if the SLC parameter stack already exists, erase it
+  $pflg = 1
+}
+
+if ($ARGV[4] ne "-"){
+  $pSLC     = $ARGV[4];
+  (-e "$pSLC") and system("rm -f $pSLC");	#if the SLC data stack already exists, erase it
+  $sflg = 1;
+}    
+
+$rec = $ARGV[5];
+($rec =~ /\d+$/ and ($rec > 0)) or $rec eq "-" or die "ERROR $0: invalid record number: $rec\n";
+
+$log = "SLC2pt.log";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+$time = localtime;
+print "start: $time  log file: $log\n";
+print "SLC_tab: $ARGV[0]\n";
+if ($ARGV[1] ne "-"){print "point list: $ARGV[1]  pmask: $ARGV[2]\n";}
+if ($ARGV[3] ne "-"){print "output SLC parameter stack: $ARGV[3]\n";}
+if ($ARGV[4] ne "-"){print "output SLC stack: $ARGV[4]\n";}
+if ($ARGV[1] ne "-"){
+  if ($pmask ne "-"){system "npt $pt $pmask";}
+  else {system "npt $pt";}
+} 
+
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n";
+print LOG "SLC_tab: $ARGV[0]\n";
+if ($ARGV[1] ne "-"){print LOG "point list: $ARGV[1]  pmask: $ARGV[2]\n";}
+if ($ARGV[3] ne "-"){print LOG "output SLC parameter stack: $ARGV[3]\n";}
+if ($ARGV[4] ne "-"){print LOG "output SLC stack: $ARGV[4]\n";}
+if ($ARGV[1] ne "-"){
+  if ($pmask ne "-"){execute("npt $pt $pmask",$log);}
+  else {execute("npt $pt",$log);}
+} 
+
+$rn = 0;
+LINE: while (<SLC_TAB>) {
+  chomp $_;			#remove new line from record
+  next LINE if /^$/; 		#skip blank lines in orbs list
+  next LINE if /^#/; 		#skip comments in orbs list
+  $time = localtime;
+  $rn++;
+  next LINE if (($rec ne "-") && ($rec != $rn));	#go to next line of specific record number and it does not match 
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $rslc = @fields[0];
+  $rslc_par = @fields[1];
+  print LOG "\n*** $rslc  record: $rn  time: $time ***\n"; 
+  print     "\n*** $rslc  record: $rn  time: $time ***\n"; 
+  @format = extract_param($rslc_par,"image_format:");   #determine image format
+  if (@format[1] eq "FCOMPLEX"){
+   $type = 0;
+  }
+  elsif (@format[1] eq "SCOMPLEX"){
+    $type = 1;
+  }  
+  else{ 
+    die "ERROR $0: input SLC is not fcomplex or scomplex format: @format[1]\n";
+  }
+  if($pflg == 1){
+    execute("SLC_par_pt $rslc_par $pSLC_par $rn 1",$log);
+  }
+  if($sflg == 1){
+    execute("data2pt $rslc $rslc_par $pt $rslc_par $pSLC $rn $type",$log);
+  }  
+}
+
+$time = localtime;
+print "\nprocessing end: $time\n";
+print LOG "\nprocessing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

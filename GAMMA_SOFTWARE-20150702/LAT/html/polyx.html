@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: polyx</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>polyx, polyx_phase</h2>
+
+  <p><i>ANSI-C programs: <a href="../src/polyx.c">polyx.c</a>,
+  <a href="../src/polyx_phase.c">polyx_phase.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">polyx</span> - Calculate mean
+  and standard deviation for test-areas (polygon
+  regions).</p><span style="font-style: italic;">polyx_phase</span>
+  - Calculate mean and standard deviation for test-areas (polygon
+  regions).
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>polyx &lt;data&gt; &lt;width&gt; &lt;polygon&gt;
+  &lt;report&gt; [mode_flag]</b></code></p>
+
+  <table style="width: 452px; height: 386px;" cellpadding="7"
+  border="1">
+    <tbody>
+      <tr>
+        <td>&lt;data&gt;</td>
+
+        <td>input data file (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples/row</td>
+      </tr>
+
+      <tr>
+        <td>&lt;polygon&gt;</td>
+
+        <td>polygon data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;report&gt;/TD&gt;</td>
+
+        <td>ascii text report on region statistics</td>
+      </tr>
+
+      <tr>
+        <td>mode_flag</td>
+
+        <td>report print mode:<br>
+        &nbsp;&nbsp;&nbsp; 0: i, mean, stdev (linear scale)
+        (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: i, mean, stdev (dB scale)<br>
+        &nbsp;&nbsp;&nbsp; 2: i, mean (linear scale)<br>
+        &nbsp;&nbsp;&nbsp; 3: i, mean (dB scale)<br>
+        &nbsp;&nbsp;&nbsp; 4: mean&nbsp;&nbsp;&nbsp; (linear
+        scale)<br>
+        &nbsp;&nbsp;&nbsp; 5: mean&nbsp;&nbsp;&nbsp; (dB scale)<br>
+        &nbsp;&nbsp;&nbsp; 6: stdev&nbsp;&nbsp; (linear scale)<br>
+        &nbsp;&nbsp;&nbsp; 7: stdev&nbsp;&nbsp; (dB scale)<br>
+        &nbsp;&nbsp;&nbsp; 8: i, mean, stdev (linear scale, with
+        exponent)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><code><b>polyx_phase &lt;data&gt; &lt;width&gt;
+  &lt;polygon&gt; &lt;report&gt;<br></b></code></p>
+
+  <table style="width: 456px; height: 230px;" cellpadding="7"
+  border="1">
+    <tbody>
+      <tr>
+        <td>&lt;data&gt;</td>
+
+        <td>(input) input data file (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width&gt;</td>
+
+        <td>number of samples per line</td>
+      </tr>
+
+      <tr>
+        <td>&lt;polygon&gt;</td>
+
+        <td>polygon data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;report&gt;/TD&gt;</td>
+
+        <td>text report on region statistics (text format)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>polyx 1352_1610.cc_ad 2500 1352_1610.poly 0 &gt;
+  1352_1610.cc_ad.poly 1352_1610.cc_ad.rpt 0</samp></p>Extracts
+  coherence values and writes mean and stdev (absolute values) to
+  output file. <samp><br>
+  <br>
+  polyx 1352_1610.pow1 2500 1352_1610.poly 1 &gt;
+  1352_1610.pow1.poly 1352_1610.pow1.rpt 1</samp><br>
+  <br>
+  Extracts backscatter values and writes mean and stdev (using dB
+  scale) to output file.
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">polyx</span> and the other
+  programs to extract signatures for test areas extract image
+  values for pixels located in the polygon areas, calculate mean
+  and standard deviations for each selected parameter, for each
+  polygon region, and write the results to the standard output,
+  respectively to the indicated text file.</p>
+
+  <p>Depending on the program the input files and the format of the
+  output vary.&nbsp; <span style="font-style: italic;">polyx</span>
+  is the most general of the programs, permitting selection
+  of&nbsp; linear or dB output. It also has an option for display
+  of the output mean and/or standard deviation.&nbsp;</p>
+
+  <p><span style="font-style: italic;">polyx_phase</span>
+  calculates mean and standard deviation of the interferometric
+  phase for polygon regions. In addition mean and standard
+  deviation of the 2 backscatter images are calculated. The results
+  are expressed in linear scale. The program may be used to extract
+  averaged phase differences between neighboring areas for example
+  for the quantification of differential phase effects. The
+  selection of the polygon regions is supported with the program
+  <a href="polyras.html">polyras</a>.<br>
+  The output <span style="font-style: italic;">polyx</span> and
+  <span style="font-style: italic;">polyx_phase</span> extract
+  signatures of polygon regions and the statistics to text files
+  that may be imported, displayed using plotting software such as
+  <strong>gnuplot</strong></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "polyras.html">polyras</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 19-Jun-2015.
+</body>
+</html>

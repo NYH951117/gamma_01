@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF/GEO Reference Manual: SLC_ovr_all</title>
+</head>
+
+<body>
+  <h1><font size="5"><u>Gamma DIFF&amp;GEO: Reference
+  Manual</u></font></h1>
+  <hr>
+
+  <h2>SLC_ovr_all</h2>
+
+  <p><i>Perl script: <a href=
+  "../scripts/SLC_ovr_all">SLC_ovr_all</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_ovr_all -Range over-sample RSLC data by an integer factor</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_ovr_all &lt;SLC_tab&gt; &lt;SLC2_dir&gt;
+  &lt;r_ovr&gt;&nbsp;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><span>&lt;SLC_tab&gt;</span></td>
+
+        <td>(input) two column list of input SLC files and SLC_par
+        files (including paths) (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_dir&gt;</td>
+
+        <td>(input)&nbsp;&nbsp; directory to contain oversampled
+        SLC images</td>
+      </tr>
+
+      <tr>
+        <td>&lt;r_ovr&gt;</td>
+
+        <td>(input) range oversampling factor between 2 and 16</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_tab2&gt;</td>
+
+        <td>(output) two column list of oversampled SLC files and
+        SLC_par files (including paths) (text)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC_ovr_all RSLC_tab rslc2 2 RSLC_tab2<br></samp></p>
+
+  <p style="text-align: justify;">Oversample the SLC files listed
+  in <span style="font-style: italic;">RSLC_tab</span> by a factor
+  of 2 and store the files in the directory <span style=
+  "font-style: italic;">rslc2.</span> The input SLC parameter file
+  parameters are calculated and stored in the <span style=
+  "font-style: italic;">rslc2</span> directory.&nbsp; The script
+  also generates the <span style=
+  "font-style: italic;">SLC_tab2</span> file listing the
+  oversampled SLC and SLC parameter files.</p>
+
+  <p><strong>DESCRIPTION</strong></p>This script oversamples the
+  SLC files listed in the <span style=
+  "font-style: italic;">SLC_tab</span> using the program <a href=
+  "../../ISP/html/SLC_ovr.html">SLC_ovr</a>.&nbsp; <span style=
+  "font-style: italic;">SLC_ovr</span> uses FFT interpolation to
+  perform the oversampling operation. The script creates
+  <span style="font-style: italic;">SLC_tab2</span> that contains a
+  two-column list of the oversampled SLCs and associated SLC
+  parameter files<span style="font-weight: bold;">.<br></span>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="d2pt.html"></a><a href="SLC_ovr.html">SLC_ovr</a>,
+  <a href="../../DIFF/html/mk_tab.html">mk_tab</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="charles_werner.html">CW</a>, last change 1-Jul-2015.
+</body>
+</html>

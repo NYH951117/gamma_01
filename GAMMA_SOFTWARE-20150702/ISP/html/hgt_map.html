@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: hgt_map</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>hgt_map</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/hgt_map.c"><i>hgt_map.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  hgt_map - Uses the unwrapped interferometric phase and baseline
+  geometry to generate a height map and ground range map in slant
+  range geometry.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>hgt_map &lt;unw&gt; &lt;SLC_par&gt; &lt;OFF_par&gt;
+  &lt;baseline&gt; &lt;height&gt; &lt;gr&gt; [ph_flag] [loff]
+  [nlines] [SLC2R_par]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;interf_unw&gt;</td>
+
+        <td>(input) unwrapped interferometric phase</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) ISP parameter file for the reference SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP interferogram/offset parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;baseline&gt;</td>
+
+        <td>(input) baseline parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;height&gt;</td>
+
+        <td>(output) height relative to the WGS-84 ellipsoid&nbsp;
+        (in slant range geometry)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;gr&gt;</td>
+
+        <td>(output) cross-track ground range relative to the
+        WGS-84 ellipsoid (in slant range geometry)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>&nbsp;restore range phase ramp (default=0: do not
+        restore&nbsp; 1: restore)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line for height calculations
+        (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to calculate (enter - for default: to
+        end of file)</td>
+      </tr>
+
+      <tr>
+        <td>[SLC2R_par]&nbsp;</td>
+
+        <td>(input) parameter file of resampled SLC, required if
+        SLC-2 frequency differs from SLC-1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>hgt_map 1352_1610.unw 1352.par 1352_1610.off 1352_1610.base
+  1352_1610.hgt 1352_1610.gr</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">hgt_map</span> reads the phase
+  unwrapped interferogram and the baseline geometry and
+  reconstructs the terrain height and cross track position for each
+  pixel and on an ellipsodial (WGS84) Earth model. The unwrapped
+  phase is a measure of the propagation path length difference
+  between the received signals used to generate the interferogram.
+  This is combined with the baseline data for each line in the
+  image to calculate the look vector from the radar to the point on
+  the ground.</p>
+
+  <p>The <span style="font-style: italic;">hgt_map</span> program
+  also requires the SLC parameter file of the reference image and
+  the offset interferogram parameter file to reconstruct the
+  interferometric DEM data. The two resulting images (height,
+  ground range) are written into separate files. Display and
+  generation of images of the resulting height map (in slant range
+  geometry) together with the image intensities is supported by
+  programs <em>rashgt</em> and <em>dishgt</em>.</p>
+
+  <p>In the case where the center radar frequencies differ for the
+  SLCs used to generate the interferogram (e.g. ERS-ENVISAT) then
+  the parameter file of the second SLC must be specified on the
+  command line.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ISP_display.html">rashgt</a>, <a href=
+  "ISP_display.html">dishgt</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Sep-2005.
+</body>
+</html>

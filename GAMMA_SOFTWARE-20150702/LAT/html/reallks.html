@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: reallks</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>reallks</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/reallks.c">reallks.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  reallks - multilooking of real valued image.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>reallks &lt;image&gt; &lt;ML_imageX&gt; &lt;width&gt;
+  [rlks] [azlks] [start] [nlines] [r_start] [nsamp]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;image&gt;</td>
+
+      <td>4-byte/value real input file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ML_imageX&gt;</td>
+
+      <td>4-byte/value real output file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>width of complex image</td>
+    </tr>
+
+    <tr>
+      <td>[rlks]</td>
+
+      <td>number of range looks (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[azlks]</td>
+
+      <td>number of azimuth looks (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[start]</td>
+
+      <td>starting line (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines (default: 0=to end of file)</td>
+    </tr>
+
+    <tr>
+      <td>[r_start]</td>
+
+      <td>starting range (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nsamp]</td>
+
+      <td>number of range samples to extract (default: 0=to end of
+      line)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>reallks 1352_1610.pwr1 1352_1610.pwr1_3 2500 3 3</samp>
+  (generates multilook image (3 looks in range, 3 looks in azimuth)
+  of entire input image)</p><samp>reallks 1352_1610.pwr1
+  1352_1610.section.pwr1 2500 1 1 1000 700 500 800</samp> (extracts
+  700 lines of 800 range pixels (float i.e. 4 byte per pixel)
+  starting at line 1000 and range pixel 500)
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code reallks.c in ./src. For compilation adjust and use
+  Makefile: Executable version reallks in . /bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  reallks generates multilook image of real valued input data
+  file.</p>
+
+  <p>In addition to the multilooking reallks allows to select a
+  sub-section of the input image.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "cpxlks.html">cpxlks</a>.</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="reallksright.html">&amp;reallks;</a> reallksrights
+  for <a href="LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

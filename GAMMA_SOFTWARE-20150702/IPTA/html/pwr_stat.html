@@ -1,0 +1,271 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: pwr_stat</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>pwr_stat</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/pwr_stat.c">pwr_stat.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  pwr_stat - generate point list based on temporal variability of
+  SLC intensity</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>pwr_stat &lt;SLC_tab&gt; &lt;SLC_par&gt; &lt;MSR&gt;
+  &lt;plist&gt; [MSR_min] [PWR_min] [roff] [loff] [nr] [nl]
+  [norm_mode] [type]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) text file containing list of names of
+        corregistered SLCs in column 1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list coordinates
+        (i.e. of reference SLC)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MSR&gt;</td>
+
+        <td>(output) mean/sigma ratio image (float, enter - for
+        none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(output) point list (int, enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>[MSR_min]</td>
+
+        <td>mean/sigma ratio minimum threshold to accept a point
+        (0.0 to ignore, default -:1.5)</td>
+      </tr>
+
+      <tr>
+        <td>[PWR_min]</td>
+
+        <td>intensity minimum threshold (relative to spatial
+        average) to accept a point (0.0 to ignore, default
+        -:1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>offset to starting range of section to analyze (default
+        -: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line of section to analyze (default
+        -: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to analyze (default -: to end of
+        line)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of azimuth lines to analyze (default -: to end
+        of file)</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>SLC type (default=0: fcomplex, 1: scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>[mode]<br></td>
+
+        <td>intensity normalization between SLC scenes
+        (0:none&nbsp; 1:image average&nbsp; default=2:point
+        targets)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[MSR_cal]<br></td>
+
+        <td style="vertical-align: top;">mode 2 mean/sigma ratio
+        for point target selection for relative calibration between
+        scenes:&nbsp;&nbsp;&nbsp; 1.500<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[PWR_cal]</td>
+
+        <td style="vertical-align: top;">mode 2 intensity threshold
+        ratio for point target selection for relative calibration
+        between scenes:&nbsp;&nbsp; 1.000<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>pwr_stat testsite.SLC_tab - testsite.plist 1.5 1.0 - - - -
+  1 1</samp></p>
+
+  <p>Generates a point list of coordinates of points with a low
+  temporal variability of the SLC intensity and an intensity above
+  the spatial average.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code pwr_stat.c in ./IPTA/src, executable version pwr_stat
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the IPTA point lists contain the coordinates (range and
+  azimuth pixel number relative to the reference SLC geometry) of
+  the selected points. Data at these points (SLC values,
+  interferogram values, ...) are stored in point data stacks with
+  each record corresponding to a different SLC or interferogram.
+  The point data stack of mask values contains for each point a
+  flag (0 or 1) which indicates if the data of a point are
+  considered (1) or not considered (0).</p>
+
+  <p>pwr_stat supports the generation of point lists of "point
+  target candidates". pwr_stat identifies "point target candidates"
+  based on a low temporal variability of the SLC intensity (i.e. a
+  mean to temporal standard deviation ration above the indicated
+  threshold) and an SLC intensity above an incidated threshold
+  relative to the spatial average.</p>
+
+  <p>The physical basis for the methodology used is that point
+  targets (i.e. SAR image resolution cells for which the scattering
+  is dominated by a target which is small in size as compared to
+  the size of the resolution cell) do not exhibit the speckle
+  observed for extended targets. For a point target almost the same
+  backscattering intensity is found when observing from slightly
+  different directions. For an extended target the backscattering
+  will strongly fluctuate if the change in direction corresponds to
+  an offset of the order of the critical baseline known in
+  interferometry. For point targets which remain unchanged over
+  time it is expected that the temporal variability is small
+  relative to the temporal average. For extended targets with a
+  fully developped speckle behavior it is expected that the
+  temporal variability is of the order of the temporal average.</p>
+
+  <p>pwr_stat uses the Mean to Standard deviation Ratio (MSR) as
+  the (inverse) measure of the temporal variability. For fully
+  developed speckle the MSR should be 1.0. Lower temporal
+  variability corresponds to higher MSR values, so that 1.5
+  reasonable initial threshold to use.</p>
+
+  <p>As a second (or alternative) criteria an SLC intensity above
+  minimum value can be indicated. As a simplification not an
+  absolute value, but one relative to the spatial average is used.
+  The idea behind this second criteria is to limit the points to
+  dominating points (which need to be above the background level).
+  For very small sets of SLC the intensity criteria may still be
+  useful while the MSR criteria may get more unreliable due to poor
+  statistics.</p>
+
+  <p>To get reliable statistics on the temporal variability it is a
+  suficient number of scenes is required. With fewer than 20 scenes
+  this criteria tends to become less reliable. In any case a 100%
+  reliability cannot be expected, so that a subsequent control of
+  the usefullness of the identified points remains necessary. On
+  the other hand this methodology may also fail to detect useful
+  points.</p>
+
+  <p>Important conditions for a successful use of pwr_stat are the
+  accurate co-registration of the SLC and a good relative
+  radiometric calibration. There are 3 options for relative
+  radiometric calibration by the [mode] parameter.&nbsp; Mode 0
+  applies no relative calibration scaling between scenes and
+  assumes that the relative calibration of the sensor<br>
+  is adequate. Mode 1 uses the average scene intensity to derive
+  normalization factors, and can be used for areas with small
+  temporal variation in backscatter (desert or urban areas).
+  Finally Mode 2 (default)&nbsp; identifies a number of point
+  targets given the initial relative calibration. Because most of
+  these points are point targets, they are assumed to have constant
+  temporal backscatter and can be used for relative calibration
+  between scenes.<br></p>
+
+  <p>To generate a point list which shall be used for an initial
+  analysis it is recommended to set the MSR and intensity
+  thresholds to relatively high values which will result in a
+  relatively short list, but with a high fraction of "good points",
+  i.e. points for which interferometric interpretation of the
+  phases is possible.</p>
+
+  <p>To generate a candidate point list which shall be used to
+  determine the final "long list" it is recommended to set the MSR
+  threshold to a relatively low value and the intensity threshold
+  to a value smaller than 1. (or even 0.0 to ignor this second
+  criteria entireley). This will result in a long short list, but
+  with a much lower fraction of "good points". But more important
+  at this stage is that only very few "good points" are lost.</p>
+
+  <p>Instead of the full area of the SLC a sub-section can be
+  selected using the roff, loff, nr, and nl command line
+  parameters.</p>
+
+  <p>The file names of the co-registered SLC are provided in a text
+  file (ascii) with each line containing one SLC file name. A
+  possibility to generate this text file is to use a command such
+  as: <samp>ls -1 *.rslc &gt; testsite.SLC_tab</samp>.</p>
+
+  <p>Other programs to generate new point lists are image2pt,
+  mkgrid, merge_pt, prox_pt, and sp_stat.</p>
+
+  <p>Programs to validate existing point lists are qc_pt and
+  expand_pt.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="expand_pt.html">expand_pt</a>, <a href=
+  "image2pt.html">image2pt</a>,<a href=
+  "merge_pt.html">merge_pt</a>, <a href="mkgrid.html">mkgrid</a>,
+  <a href="prox_pt.html">prox_pt</a>, <a href=
+  "qc_pt.html">qc_pt</a>, <a href="sp_stat.html">sp_stat</a>,
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 18-Jun-2003.</p>
+</body>
+</html>

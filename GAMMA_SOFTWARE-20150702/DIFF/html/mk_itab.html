@@ -1,0 +1,227 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DIFF Reference Manual: mk_itab</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF Reference Manual: mk_itab</h1>
+  <hr>
+
+  <h2>mk_itab</h2>
+
+  <p><i>Perl Script: <a href=
+  "../scripts/mk_itab">mk_itab</a><br></i></p>
+
+  <p><strong>NAME</strong><br>
+  mk_itab - Generate ITAB file to calculate interferometric
+  deformation time series with either single or sequential
+  reference SLC<br></p>
+
+  <p><strong>SYNOPSIS</strong><code><b><br>
+  mk_itab &lt;itab&gt; &lt;max&gt; &lt;step&gt; &lt;stride&gt;
+  &lt;start&gt;</b></code> -r ref&nbsp;&nbsp; -a<br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(output) ITAB file with 4 columns, text format<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: ref. SLC index from SLC_tab<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: second SLC index of the interferometric pair<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3: ITAB file line counter<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4: Active flag (0: not included&nbsp; 1: included in
+        time-series analysis)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;max &gt;</td>
+
+        <td>(input) number of SLCs in the SLC_tab<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;step&gt;</td>
+
+        <td>difference in SLC index between the reference and
+        second SLC for each interferogram (default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;stride&gt;</td>
+
+        <td>increment of the index of the starting SLC, if stride
+        is 0, then reference will not change, and the index of the
+        second SLC will increase by step<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;start&gt;<br></td>
+
+        <td style="vertical-align: top;">&nbsp;index of the first
+        SLC used in generating the itab,&nbsp; (start &gt;=
+        1)<br></td>
+      </tr>
+
+      <tr>
+        <td>-r ref</td>
+
+        <td>index of the reference SLC when stride is 0, default is
+        the start index</td>
+      </tr>
+
+      <tr>
+        <td>-a</td>
+
+        <td>do not generate itab records where the ref. SLC and
+        second SLC have the same index</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h4><strong>EXAMPLES</strong></h4>In this example there are a set
+  of 12 SLCs in the SLC_tab, each from a different time. This itab
+  will generate a time series of interferograms, with each
+  interferogram generated from adjacent SLCs in the time series<br>
+  <code><span style="font-family: monospace;"><font color=
+  "#FF00FF">$mk_itab itab 8 1 1 1<br>
+  <span style="color: blue;">ITAB file: itab</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+  2&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+  3&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp; 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+  4&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;
+  5&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp;
+  6&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;
+  7&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp; 1</span><br style=
+  "color: blue;">
+  <span style="color: blue;">&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;
+  8&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;
+  1</span><br></font></span></code>
+
+  <p style="color: black;" class="code-western" lang="en-GB">
+  <big><small>In the next example the increment between SLCs has
+  been increasd to 2 and the stride has also been increased to 2.
+  Hence SLCs with index 2, 4, 6, 8, 10 do not appear in the
+  interferogram series.<br></small></big></p><code><span style=
+  "color: blue;"><span style="color: fuchsia;">mk_itab itab_l 12 2
+  2 1</span><br>
+  ITAB file: itab_l<br>
+  &nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+  1&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp;
+  2&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;
+  3&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 9&nbsp;&nbsp;&nbsp;
+  4&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 9&nbsp;&nbsp; 11&nbsp;&nbsp;&nbsp;
+  5&nbsp;&nbsp;&nbsp; 1<span style=
+  "color: black;"><br></span></span></code>
+
+  <h4><strong>DESCRIPTION</strong></h4><span style=
+  "color: blue;">mk_itab</span> is a tool to calculate an&nbsp;
+  ITAB file suited for generating a time-series of&nbsp;
+  differential interferograms. Each line in the ITAB generates a
+  single interferogram when used in conjunction with the <a href=
+  "mk_diff_2d.html">mk_diff_2d</a> script family. The first column
+  of the ITAB refers to the line number in the SLC_tab for the
+  reference SLC (SLC-1). The second column is the second SLC
+  (SLC-2) for the interferometric pair. The third column is an ITAB
+  line counter and the fourth column is a flag that denotes if the
+  interferogram should be included in the time-series analysis (0:
+  excluded 1: included).&nbsp;&nbsp; The <span style=
+  "color: blue;">step</span> parameter refers to the difference
+  between SLC-1 and SLC-2 and the <span style=
+  "color: blue;">stride</span> is the increment in the SLC number
+  of the reference.&nbsp; The start parameter denotes the SLC index
+  of the starting SLC in the interferogram series.&nbsp; The user
+  can specify the index of the reference SLC for single-reference
+  mode (<span style="color: blue;">stride</span> = 0) by using the
+  <span style="color: #3333ff;">-r</span> option as in the
+  following example:<br>
+  <br>
+  <code><span style="color: #cc33cc;">mk_itab itab0 8 1 0 1 -r
+  4</span><br>
+  <span style="color: #3333ff;">ITAB file: itab0<br>
+  reference SLC index: 4<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+  1&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+  2&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+  3&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp;
+  4&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp;
+  5&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 6&nbsp;&nbsp;&nbsp;
+  6&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp;
+  7&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp;
+  8&nbsp;&nbsp;&nbsp; 1</span></code><br>
+  <br>
+  The reference SLC index must be greater than or equal to 1 and
+  refer to an existing record in the SLC_tab.<br>
+  <br>
+  If the -a option is added,&nbsp; then the generated ITAB will
+  be:<br>
+  <br>
+  <code><span style="color: #cc33cc;">mk_itab itab0 8 1 0 1 -r 4
+  -a</span><br>
+  <span style="color: #3333ff;">ITAB file: itab0<br>
+  reference SLC index: 4<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 1&nbsp;&nbsp;&nbsp;
+  1&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 2&nbsp;&nbsp;&nbsp;
+  2&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp;
+  3&nbsp;&nbsp;&nbsp; 1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 5 &nbsp;&nbsp; 4 &nbsp;&nbsp;
+  1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 6 &nbsp;&nbsp; 5 &nbsp;&nbsp;
+  1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 7 &nbsp;&nbsp; 6 &nbsp;&nbsp;
+  1<br>
+  &nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp; 7
+  &nbsp;&nbsp; 1</span></code><br>
+  <br>
+  this avoids generation of an interferogram with 0 phase since the
+  reference and SLC2 are the same file (same index).<br>
+
+  <p><strong>SEE ALSO</strong></p><a href=
+  "mk_diff_2d,html">mk_diff_2d</a>
+  <hr>
+  Copyright for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<br>
+  last change 11-Apr-2015<br>
+  <br>
+</body>
+</html>

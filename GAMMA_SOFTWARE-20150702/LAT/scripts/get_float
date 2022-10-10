@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+if (($#ARGV + 1) < 4){die <<EOS ;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.0 12-Apr-2014 clw ***
+*** Extract a single value from a float format data file ***
+
+usage: $0 <data> <width> <roff> <loff>
+
+    data     (input) float format data file
+    width    number of samples/line
+    roff     offset to range sample 
+    loff     offset to line
+EOS
+
+$data  = $ARGV[0];
+$width = $ARGV[1];
+$roff  = $ARGV[2];
+$loff  = $ARGV[3];
+
+-e $data or die "ERROR $0: input data file does not exist: $data\n";
+open(POSF, ">pos_tmp.dat") or die "\nERROR $0: cannot create file to contain point position: pos_tmp.dat\n\n";
+print POSF "$roff $loff\n\n";
+close POSF;
+$roff_max = $width - 1;
+($roff < $width && $roff >= 0) or die "ERROR: range offset not in the interval 0->$roff_max: $roff\n";
+$command = "takethat $data $width pos_tmp.dat get_float.out 2 1 1 0";
+#print "$command\n";
+$exit = system("$command > /dev/null");
+$exit == 0 or die "ERROR $0: non-zero exit status: $command\n";
+system"rm -f pos_tmp.dat";
+system("cat get_float.out");
+  
+  
+

@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw980702 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: datums.h</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>datums.h</h2>
+
+  <p>List of Ellipsoid Datum Parameter Sets.</p>
+
+  <p>To display the current list contained in datums.h press
+  <a href="../src/datums.h">here.</a></p>
+
+  <p>Used by the programs <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "coord_trans.html">coord_trans</a> to support the Ellipsoid Datum
+  Parameter definition.</p>
+
+  <p>Each line of the list contains the following parameters
+  (corresponding to the structure <code>DATUM</code> defined in
+  <a href="typedef_DIFF.h.html">typedef_DIFF.h</a>:<br></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td><strong>Structure Elements</strong></td>
+
+      <td><strong>Example</strong></td>
+
+      <td><strong>Definition</strong></td>
+    </tr>
+
+    <tr>
+      <td>name[80]</td>
+
+      <td>United Kingdom National</td>
+
+      <td>name of datum</td>
+    </tr>
+
+    <tr>
+      <td>ellips_num</td>
+
+      <td>1</td>
+
+      <td>ellipsoid number (as defined in <a href=
+      "ellipsoids.h.html">ellipsoids.h</a>)</td>
+    </tr>
+
+    <tr>
+      <td>dx,dy,dz</td>
+
+      <td>370.30, -111.06, 431.17</td>
+
+      <td>offset in meters to WGS-84</td>
+    </tr>
+
+    <tr>
+      <td>scale</td>
+
+      <td>0.0</td>
+
+      <td>NOTE: (1+scale) is the datum scaling factor</td>
+    </tr>
+
+    <tr>
+      <td>alpha,beta,gamma</td>
+
+      <td>0.0, 0.0, 0.0</td>
+
+      <td>rotation angles about the x,y,z axis of WGS84 coordinate
+      system relative to local datum (arc-seconds)</td>
+    </tr>
+
+    <tr>
+      <td>country</td>
+
+      <td>United Kingdom, England, Great Britain</td>
+
+      <td>country or countries where it applies</td>
+    </tr>
+
+    <tr>
+      <td>ex,ey,ez</td>
+
+      <td>0.0, 0.0, 0.0</td>
+
+      <td>errors in meters for dx, dy, dz</td>
+    </tr>
+
+    <tr>
+      <td>count</td>
+
+      <td>0</td>
+
+      <td>number of points used to determine error</td>
+    </tr>
+  </table>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_users_guide.html">Users Guide</a>, <a href=
+  "ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "create_dem_par.html">create_dem_par</a>, <a href=
+  "coord_trans.html">coord_trans</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 2-Jul-1998.</p>
+</body>
+</html>

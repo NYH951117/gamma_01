@@ -1,0 +1,149 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 1999 Gamma Remote Sensing --><!-- uw990820 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF Reference Manual: dispmap</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF: Reference Manual</h1>
+  <hr>
+
+  <h2>dispmap</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dispmap.c">dispmap.c</a></i></p>
+
+  <p><strong>NAME<br></strong><br>
+  dispmap - Surface displacement map generation form unwrapped
+  differential phase.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dispmap &lt;unw&gt; &lt;hgt&gt; &lt;SLC_par&gt;
+  &lt;ISP_par&gt; &lt;disp_map&gt; [mode] [loff]
+  [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;unw&gt;</td>
+
+        <td>(input) unwrapped phase (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;hgt&gt;</td>
+
+        <td>(input) height map (float) or - to select constant
+        reference height 0.0</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of reference SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ISP_par&gt;</td>
+
+        <td>(input) ISP/offset parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;disp_map&gt;</td>
+
+        <td>(output) displacement map</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>flag indicating displacement map mode:<br>
+        &nbsp; default=0: along look vector [m] (+:towards
+        sensor)<br>
+        &nbsp; 1: vertical displacement [m] (+:increasing
+        height)<br>
+        &nbsp; 2: horizontal displacement [m] (+:decreasing ground
+        range)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset to starting line
+        (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of lines to process (default: 0=entire
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>dispmap 8560_9562.unw 8560_9562.hgt 8560.slc.par
+  8560_9562.off 8560_9562.disp 1</samp></p>
+
+  <p>Converts the unwrapped differential interferometric phase to a
+  vertical displacement (subsidence) map.</p>
+
+  <p><samp>dispmap 8560_9562.unw - 8560.slc.par 8560_9562.off
+  8560_9562.disp 1</samp></p>
+
+  <p>Converts the unwrapped differential interferometric phase to a
+  vertical displacement (subsidence) map. No heights are provided,
+  0.0 is used as reference height.</p>
+
+  <p><strong>DESCRIPTION<br></strong><br>
+  <span style="font-style: italic;">dispmap</span> converts the
+  unwrapped differential interferometric phase to a surface
+  deformation map. The differential interferometric phase
+  corresponds to the displacement along the SAR look vector. As a
+  consequence the 3-dimensional displacement of a surface element
+  cannot be completely described. Under the assumption of a
+  predefined surface displacement direction a conversion to
+  vertical or horizontal displacement is possible.</p>
+
+  <p>To convert the unwrapped phase to displacement along the look
+  vector in meters with positive signs corresponding to
+  displacement towards the sensor dispmap mode 0 is selected. For
+  this conversion no specific assumption on the surface deformation
+  is necessary. To map vertical displacement in meters with
+  positive signs corresponding to increasing surface height and
+  negative signs to subsidence dispmap mode 1 is selected. Vertical
+  displacement can often be assumed in the case of subsidence.</p>
+
+  <p>To map the horizontal displacement component in ground range
+  direction in meters with positive signs corresponding to
+  decreasing ground range, select mode 2.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  Terrain heights are required for the conversion of the unwrapped
+  phase to the displacement vectors. As an option the height file
+  can be avoided and a surface reference height 0f 0.0 m is used
+  for the conversion. The effect of the terrain height on the
+  result may in many cases be neglected in comparison to other
+  error sources.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Nov-2012.
+</body>
+</html>

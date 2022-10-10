@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: radcal_pwr_stat</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2003 Gamma Remote Sensing --><!-- uw 20-Feb-2003 -->
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Software Package (ISP): Reference
+  Manual</h1>
+  <hr>
+
+  <h1>radcal_pwr_stat</h1>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/radcal_pwr_stat.c">radcal_pwr_stat.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  rad_pwr_stat - radiometrically calibrate a stack of SLC images
+  using points with low temporal variablility.<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>radcal_pwr_stat &lt;SLC_tab&gt; &lt;SLC_par&gt;
+  &lt;plist&gt; [MSR_cal] [PWR_cal] [roff] [loff] [nr] [nl]
+  [plist_out]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_tab&gt;</td>
+
+        <td>(input) two column list of the SLC filenames and SLC
+        parameter filenames of the uncalibrated SLC images</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_tab_cal&gt;</td>
+
+        <td>(input) two column list of the SLC filenames and SLC
+        parameter filenames of the calibrated SLC images (enter -
+        for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list for the point to use for calibraton
+        (int, enter - to use the data to determine the calibration
+        points)</td>
+      </tr>
+
+      <tr>
+        <td>[MSR_cal]</td>
+
+        <td>mean/sigma ratio for point target selection for
+        relative calibration between scenes:&nbsp;&nbsp;&nbsp;
+        1.500</td>
+      </tr>
+
+      <tr>
+        <td>[PWR_cal]</td>
+
+        <td>intensity threshold ratio for point target selection
+        for relative calibration between scenes:&nbsp;&nbsp;&nbsp;
+        1.000</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>offset to starting range of section to analyze (default
+        -: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line of section to analyze (default
+        -: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to analyze (default -: to end of
+        line)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of azimuth lines to analyze (default -: to end
+        of file)</td>
+      </tr>
+
+      <tr>
+        <td>[plist_out]<br></td>
+
+        <td>point list of points used to determine calibration
+        using MSR_cal and PWR_cal thresholds<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>radcal_pwr_stat SLC_tab SLC_tab_cal - 1.5 1.0 - - - -
+  plist_cal</samp></p>
+
+  <p>Performs relative calibration of the SLCs listed in SLC_tab
+  and writes the calibrated output to the SLCs listed in
+  SLC_tab_cal. The data are used to determine points with low
+  temporal variablity.&nbsp; These points are then used to
+  determine relative calibration scale factors for the SLC images.
+  The coordinates of these points are written to the output point
+  list plist_cal.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  radcal_pwr_stat detects points with low temporal variability in
+  the image stack&nbsp; and uses these points to perform relative
+  radiometric calibration. The assumption is that points with low
+  temporal variablity are radiometrically stable and can be used
+  for relative calibration. The temporal variability is measured by
+  the ratio of the temporal mean to sigma ratio, where sigma is the
+  standard deviation of the backscatter intensity.<br></p>
+
+  <p>Alternately the user can provide a list of point coordinates
+  using the plist parameter. An important condition for a
+  successful use of radcal_pwr_stat is accurate co-registration of
+  the SLCs.</p>
+
+  <p>The sum of all the point intensities in the list is evaluated
+  for each SLC at the point coordinates. The ratio of the SLC sum
+  for the points&nbsp; to the average power at the points of all
+  the layers is evaluated for each SLC to calculate a radiometric
+  scale factor.&nbsp; The square root of this scale factor is then
+  applied to the SLC real and imaginary components and the output
+  is written to the&nbsp; SLC listed in the SLC_tab_cal.&nbsp;
+  There must be the same number of entries in the SLC_tab_cal as in
+  the SLC_tab.<br></p>
+
+  <p>The physical basis for the methodology used is that point
+  targets (i.e. SAR image resolution cells for which the scattering
+  is dominated by a target which is small in size as compared to
+  the size of the resolution cell) do not exhibit the speckle
+  observed for extended targets. For a point target almost the same
+  backscattering intensity is found when observing from slightly
+  different directions. For an extended target the backscattering
+  will strongly fluctuate if the change in direction corresponds to
+  an offset of the order of the critical baseline known in
+  interferometry. For point targets which remain unchanged over
+  time it is expected that the temporal variability is small
+  relative to the temporal average. For extended targets with a
+  fully developped speckle behavior it is expected that the
+  temporal variability is of the order of the temporal average.</p>
+
+  <p>radcal_pwr_stat uses the Mean to Standard deviation Ratio
+  (MSR) as the (inverse) measure of the temporal variability. For
+  fully developed speckle the MSR should be 1.0. Lower temporal
+  variability corresponds to higher MSR values, so that 1.5 is good
+  place to start.&nbsp; As a second criteria for calibration point
+  selection is given by the PWR_cal threshold that sets an minimum
+  SLC intensity to accept a point as a candidate.&nbsp; For very
+  small sets of SLC the intensity criteria may still be useful
+  while the MSR criteria may get more unreliable due to poor
+  statistics. To get reliable statistics with temporal variability
+  a sufficient number of scenes is required with a minimum of about
+  20.&nbsp;<br></p>
+
+  <p>Instead of the full area of the SLC a sub-section can be
+  selected using the roff, loff, nr, and nl command line
+  parameters.</p>
+
+  <p>It is also possible to use this program iteratively and it
+  should cause the relative calibration factors to converge. To
+  iterate the relative calibration use the calibrated output SLCs
+  as the input data stack. Then determine a new set of points with
+  low temporal variablity. There should be more points than
+  initially were found because the scenes are hopefully better
+  radiometrically calibrated. The calibration factors determined by
+  radcal_pwr_stat should should rapidly converge to 1.<br></p>
+
+  <p>The calibration factor stored in the SLC parameter file is
+  updated for the applied relative scaling.<br></p>
+
+  <p>The file names of the co-registered SLC are provided in a text
+  file (ascii) with each line containing one SLC file name in the
+  first column and the SLC parameter file name in the second
+  column. A possibility to generate this text file is to use a
+  command <a href="../../DIFF/html/mk_tab.html">mk_tab</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="../../DIFF/html/mk_tab.html">mk_tab</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 19-Jun-2012.
+</body>
+</html>

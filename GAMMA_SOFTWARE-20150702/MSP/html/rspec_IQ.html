@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>MSP Reference Manual: rspec_IQ</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>rspec_IQ, rspec_real</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/rspec_IQ.c">rspec_IQ.c</a>, <a href=
+  "../src/rspec_IQ.c">rspec_real.c</a></i></p>
+
+  <p><strong>NAME<br></strong> <em>rspec_IQ</em> - Calculate range
+  spectrum from uncompressed raw data (IQ data).<br>
+  <em>rspec_real</em> - Calculate range spectrum from uncompressed
+  raw data (video offset data).</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>rspec_IQ &lt;SAR_par&gt; &lt;PROC_par&gt;
+  &lt;signal_data&gt; &lt;range_spec&gt; [loff] [nlspec] [nrfft]
+  [roff] [pltflg]<br></code></p>
+
+  <table style="width: 836px; height: 460px;" border="1"
+  cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) MSP SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;PROC_par&gt;</td>
+
+        <td>(input) MSP processing parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input)&nbsp; SAR raw data (IQ format data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;range_spec&gt;</td>
+
+        <td>(output) range spectrum data file (text
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset echoes from start of raw data file (enter - for
+        default: PROC_par)</td>
+      </tr>
+
+      <tr>
+        <td>[nlspec]</td>
+
+        <td>number of lines to estimate spectrum (enter - for
+        default: 4096)<br></td>
+      </tr>
+
+      <tr>
+        <td>[nrfft]</td>
+
+        <td>range FFT size (enter - for default: 4096)</td>
+      </tr>
+
+      <tr>
+        <td>[roff]</td>
+
+        <td>range offset in samples (enter - for default:
+        PROC_par)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[pltflg]</td>
+
+        <td style="vertical-align: top;">range spectrum plotting
+        flag:<br>
+        &nbsp;&nbsp; 0: none (default)<br>
+        &nbsp;&nbsp; 1: output plot in PNG format<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><code>rspec_real &lt;sSAR_par&gt; &lt;PROC_par&gt;
+  &lt;signal_data&gt; &lt;range_spec&gt; [loff] [nlspec]
+  [nrfft]</code></p>
+
+  <table style="width: 745px; height: 312px;" border="1"
+  cellpadding="7" cellspacing="1">
+    <tbody>
+      <tr>
+        <td>&lt;SAR_par&gt;</td>
+
+        <td>(input) MSP SAR sensor parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;proc_par&gt;</td>
+
+        <td>(input) MSP processing parameter File</td>
+      </tr>
+
+      <tr>
+        <td>&lt;signal_data&gt;</td>
+
+        <td>(input) SAR raw data (offset video data)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;range_spec&gt;</td>
+
+        <td>(output) range spectrum data file (text
+        format)<br></td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>number of lines offset (default: PROC_par parameter
+        value)</td>
+      </tr>
+
+      <tr>
+        <td>[nlspec]</td>
+
+        <td>number of lines to estimate spectrum (default:512)</td>
+      </tr>
+
+      <tr>
+        <td>[nrfft]</td>
+
+        <td>range FFT size (default=2048)</td>
+      </tr>
+    </tbody>
+  </table><br>
+
+  <p><strong>EXAMPLES</strong><br clear="all">
+  <samp>rspec_IQ ERS1_ESA.par p19990521.slc.par .raw 19990521.rspec
+  - - - - 2<br>
+  rspec_real SIRC.par p19941009.slc.par 19941009.raw 19941009.rspec
+  6000 1024 4096</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  The range power spectrum is calculated from the SAR raw data (IQ
+  data for rspec_IQ, offset video data for rspec_real) using the
+  FFT to calculate individual spectra that are averaged to generate
+  the periodogram.&nbsp; The size of the FFT and number of&nbsp;
+  range spectra that are averaged in the periodogram can be
+  specified on the command line.&nbsp; The user can also specify
+  the starting range sample number and an offset in echos from the
+  start of the file.<br></p>
+
+  <p>These programs estimate the image SNR by comparing the average
+  spectrum power over the chirp bandwidth to the average noise
+  level outside of the chirp. This SNR estimate is stored in the
+  <em>SNR_range_spectrum</em> parameter in the MSP processing
+  parameter file. This is used later for compensation of the range
+  antenna pattern gain correction in the azimuth compression
+  program <a href="az_proc.html">az_proc</a>. The data segment used
+  for the estimation can be specified by the user by setting the
+  offset in lines relative to the beginning of the file.<br></p>
+
+  <p>Plotting of the range spectrum is controlled by the
+  <span style="font-style: italic;">pltflg</span> command line
+  parameter. When the <span style=
+  "font-style: italic;">pltflg</span> is 1, the range spectrum plot
+  is stored in PNG image format.&nbsp; A sample range spectrum plot
+  is shown below.&nbsp;&nbsp; If radar interference is present,
+  then it can appear as spikes in the spectrum plot.&nbsp;<br></p>
+
+  <p><img style="width: 640px; height: 480px;" alt=
+  "range spectrum plot" title="range spectrum plot" src=
+  "19990915.rspec.png"> <samp><br></samp></p>
+
+  <p>A program such as Gnuplot can be used to plot the values
+  stored in the text file of&nbsp; <span style=
+  "font-style: italic;">rspec_real.</span>&nbsp; The plot is of
+  relative power in dB versus frequency in MHz.<br></p>
+
+  <p><code>echo "plot '19990915.rspec' u 1:2 with lines lc 3"
+  |gnuplot</code><br></p>
+
+  <p><strong>SEE ALSO<br></strong> <a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>, <a href=
+  "azsp_IQ.html">azsp_IQ</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 4-Feb-2015<br>
+  .
+</body>
+</html>

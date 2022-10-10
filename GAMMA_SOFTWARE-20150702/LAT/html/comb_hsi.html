@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: comb_hsi</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>comb_hsi</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/comb_hsi.c"><i>comb_hsi.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  comb_hsi - Combines hue/saturation from one image file with the
+  intensity from a second image file. The format of the input and
+  output data can be either SUN raster or BMP format.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>comb_hsi &lt;ras1&gt; &lt;ras2&gt;
+  &lt;ras_out&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;ras1&gt;</td>
+
+      <td>input 8-bit SUN raster/BMP image file (HUE+ SATURATION)
+      (SUN raster: *.ras, BMP image format: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras2&gt;</td>
+
+      <td>input 8-bit SUN raster/BMP image file (INTENSITY) (SUN
+      raster: *.ras, BMP image format: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>output 24-bit SUN raster/BMP image file (INTENSITY) (SUN
+      raster: *.ras, BMP image format: *.bmp)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>comb_hsi cc123.ras pwr_ave.ras cc123_pwr.ras</samp></p>
+
+  <p>Combines the color of the multi-temporal coherence (24-bit SUN
+  raster cc123.ras) with the average intensity (8-bit SUN raster
+  pwr_ave.ras).</p>
+
+  <p><samp>comb_hsi 1868_1911.landuse.ras pwr_ave.ras
+  landuse_pwr.ras</samp></p>
+
+  <p>Combines the color of the landuse classification from the
+  8-bit SUN raster 1868_1911.landuse.ras with the average intensity
+  from the 8-bit SUN/BMP raster file pwr_ave.ras.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code comb_hsi.c in $LAT_HOME/src. For compilation adjust
+  and use Makefile: Executable version comb_hsi in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>comb_hsi</em> supports the visualization of data by
+  combination of 2 image files in SUN raster or BMP format. The
+  hue/saturation/intensity (HSI) of the output image correspond to
+  the hue/saturation of the first and the intesnity of the second
+  input image.</p>
+
+  <p>Input images can have an image depths of 8 or 24 bits. The
+  color tables of the input data are used to map the DN values in
+  the file to RGB values. The hue and saturation values of the
+  first input image are combined with the intensity of the second
+  input image, converted back to RGB and written to the output
+  file.</p>
+
+  <p>The output image files have 24 bit depth. The program
+  shareware program <em>xv</em> or the LAT program <a href=
+  "ras_ras.html"><em>ras_ras.c</em></a> may be used to convert
+  image formats between SUN raster and BMP.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  A large variety of programs for the generation of the two input
+  SUN rasterfiles are available. (see for example <a href=
+  "LAT_reference_manual.html">LAT_reference_manual</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  It is asssumed that the 2 input image files are co-registered and
+  of the same dimensions. No multi-looking, image flipping, or
+  image sub-section selection functions are available in the
+  program.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

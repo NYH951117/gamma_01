@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: par_PRI</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Create Parameter File for PRI images</h2>
+
+  <p>ANSI-C programs: <a href="../src/par_PRI.c">par_PRI.c</a>,
+  <a href="../src/par_PRI.c">par_PRI_ESRIN_JERS.c</a></p>
+
+  <p><strong>NAME</strong><br>
+  par_PRI - creates the ISP image parameter file from the CEOS
+  leader provided with ESA PRI products from ERS-1 and ERS-2. The
+  PRI data are also reformated.</p>
+
+  <p>par_PRI_ESRIN_JERS - creates the ISP image parameter file from
+  the CEOS leader provided with ESA PRI products from JERS-1. The
+  PRI data are also reformated</p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code><b>par_PRI_ESRIN_JERS
+  &lt;CEOS_leader&gt;&lt;PRI_par&gt;&lt;CEOS_dat&gt;&lt;PRI&gt;</b></code></p>
+
+  <p><code><b>par_PRI
+  &lt;CEOS_leader&gt;&lt;PRI_par&gt;&lt;CEOS_dat&gt;&lt;PRI&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;CEOS_leader&gt;</td>
+
+      <td>CEOS Leader file File provided by the ESA PAF with the
+      PRI data</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PRI_par&gt;</td>
+
+      <td>ISP image parameter file for the PRI intensity image
+      data</td>
+    </tr>
+
+    <tr>
+      <td>&lt;CEOS_dat &gt;</td>
+
+      <td>CEOS data file (example: DAT_01.001)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PRI&gt;</td>
+
+      <td>PRI data with file and line headers removed
+      (example:YYYYMMDD.pri)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>par_PRI LEA_01.001 19960422.pri.par DAT_01.001
+  19960422.pri</samp><br></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em par_pri="">and <em par_pri_esrin_jers="">read the CEOS leader
+  file and extract information to create the ISP image parameter
+  file. These programs also remove the file header line and remove
+  header bytes from the input data. The program supports both VMP-
+  and PGS-processed PRI data.</em></em></p>
+
+  <p><em par_pri="">The parameter file for the ground-range images
+  (PRI data are in ground-range/azimuth geometry and not in slant
+  range/azimuth geometry) has the same format as the SLC/MLI
+  parameter files used in the ISP. The indicated near center and
+  far swath ranges correspond to ground-ranges, though, and not to
+  slant ranges.</em></p>
+
+  <p><em par_pri="">The PRI data can be radiometrically calibrated
+  and converted from the ESA provided short integer format to the
+  normal float format used in the ISP using the program <a href=
+  "radcal_PRI.html">radcal_PRI</a>. The image data can be converted
+  to slant-range geometry using the program <a href=
+  "GRD_to_SR.html">GRD_to_SR&lt;/&gt;</a></em></p><em par_pri=
+  ""><a href="GRD_to_SR.html">.</a></em>
+
+  <p><em par_pri=""><strong>SEE ALSO</strong><br>
+  <a href="ISP_users_guide.html">Users Guide</a>, <a href=
+  "radcal_PRI.html">radcal_PRI</a>, <a href=
+  "GRD_to_SR.html">GRD_to_SR&lt;/&gt;,</a> <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,</em></p>
+  <hr>
+
+  <p><em par_pri=""><a href="copyright.html">&copy;</a> Copyrights
+  for <a href="ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 28-May-2008.</em></p>
+</body>
+</html>

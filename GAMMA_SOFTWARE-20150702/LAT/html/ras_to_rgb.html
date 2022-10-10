@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: ras_to_rgb</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ras_to_rgb</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ras_to_rgb.c"><i>ras_to_rgb.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  ras_to_rgb - Combines 3 SUN or BMPraster images into a single
+  red/green/blue (RGB) 24-bit composite raster image.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_to_rgb &lt;red_channel&gt; &lt;green_channel&gt;
+  &lt;blue_channel&gt; &lt;output&gt; [LR]
+  [null_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;red_channel&gt;</td>
+
+        <td>input 8-bit SUN or BMP format raster image to be used
+        for the red channel<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;green_channel&gt;</td>
+
+        <td>input 8-bit SUN or BMP format raster image to be used
+        for the green channel&nbsp;<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;blue_channel&gt;</td>
+
+        <td>input 8-bit SUN or BMP format raster image to be for
+        the blue channel&nbsp;<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;output&gt;</td>
+
+        <td>output 24-bit SUN or BMP format RGB raster image</td>
+      </tr>
+
+      <tr>
+        <td>[LR]<br></td>
+
+        <td>image mirror flag:<br>
+        &nbsp; 1: normal (default)<br>
+        &nbsp;-1: mirror image&nbsp;<br></td>
+      </tr>
+
+      <tr>
+        <td>[null_flag]</td>
+
+        <td>zero value flag:<br>
+        &nbsp; 0: same as other data (default)<br>
+        &nbsp; 1: if one channel is 0, set to (0,0,0)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>ras_to_rgb 19990421_19990422.cc_ad.ras
+  19990421.mli_frost.ras 19990421_19990422.change.ras
+  19990421_19990422.rgb.ras 1 0</samp></p>
+
+  <p>Combines the adaptively estimated coherence, the Frost
+  filtered backscatter intensity, and the backscatter change into a
+  24-bit RGB composite raster image.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>ras_to_rgb</em> supports merging 3 seperate 8-bit images into
+  a single 24-bit red/green/blue (RGB) composite image in SUN
+  raster or BMP format. This program accepts input images coding a
+  single parameter in a grey scale. Images containing the merged
+  coherence (as color) and intensity (as brightness), or phase (as
+  color) and the intensity (as brightness) are not useful as
+  inputs. Images appropriate as input for <em>ras_to_rgb</em> may
+  be generated using the programs such as <em>ras_linear</em> and
+  <em>ras_dB</em>.</p>
+
+  <p>The display of multiple channels is very important for the
+  interpretation of the results. A texture image or a soil moisture
+  map, for example, show little land features making the
+  orientation in such an image very difficult. In combination with
+  a backscatter or coherence image this problem is solved and the
+  phase or soil moisture information may be associated to surface
+  features. Sometimes it is an advantage to set the values of all
+  input channels to NULL if the value of one channel is NULL. As an
+  example multi-temporal images are may be mentionned. Missing data
+  on a part of one input image may result in a confusing result if
+  the values for those areas with the missing data are not set too
+  NULL. The setting to NULL can be selected by setting the
+  null_flag to 1.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ras_to_hsi.html">ras_to_hsi</a>, <a href=
+  "display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Sep-2011.
+</body>
+</html>

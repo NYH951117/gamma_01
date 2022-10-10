@@ -1,0 +1,265 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <!-- Software documentation in hypertext language (html), Copyright 2002 Gamma Remote Sensing --><!-- uw020924 -->
+
+  <title>DIFF&amp;GEO Reference Manual: create_dem_par</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>create_dem_par</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/create_dem_par.c">create_dem_par.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  create_dem_par - Create DEM/map projection parameter file used by
+  DIFF&amp;GEO package</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>create_dem_par &lt;DEM_par&gt; [SLC_par] [terra_alt]
+  [delta_y] [delta_x]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>&nbsp;(input/output) DIFF/GEO DEM parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[SLC_par]</td>
+
+        <td>(input) ISP SLC/MLI image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>terra_alt&nbsp;</td>
+
+        <td>nominal terrain altitude, default: 0.0 m.</td>
+      </tr>
+
+      <tr>
+        <td>delta_y</td>
+
+        <td>DEM Y&nbsp; line spacing for a new DEM_par file<br>
+        &nbsp;&nbsp; geographical coordinates (EQA projection
+        latitude) default: -5.00e-04 deg.<br>
+        &nbsp; &nbsp;all other map projections default: -50.000
+        m.</td>
+      </tr>
+
+      <tr>
+        <td>delta_x</td>
+
+        <td>DEM X sample spacing for a new DEM_par file<br>
+        &nbsp; &nbsp;geographical coordinates (EQA projection
+        longitude) default:&nbsp; 5.00e-04 deg.<br>
+        &nbsp;&nbsp; all other map projections default:&nbsp;
+        50.000 m.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>create_dem_par Landers_EQA.dem_par
+  19990421.slc.par</samp></p>
+
+  <p>Generates a DEM_parameter file, default posting is -5.0e-4
+  degrees (northing) and 5.0e-4 degrees easting if EQA
+  geoegraphical projection is selected. The default terrain
+  altitude for calculation of the image bounds is 0.0 meters.</p>
+
+  <p><code>create_dem_par Landers_UTM.dem_par
+  19990421.slc.par&nbsp;500.0 -25.0 25.0</code></p>
+
+  <p>Generates a DEM_parameter file, default posting is -25 meters
+  northing&nbsp; and 25 meters&nbsp;easting if <span style=
+  "font-family: monospace;">any projection other than EQA selected.
+  The default terrain altitude for calculation of the image bounds
+  is 500.0 meters.</span></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-weight: bold;">create_dem_par</span> supports
+  the interactive creation of a DEM/map parameter file (a) for an
+  existing digital elevation model (DEM), or (b) for the definition
+  of a new map geometry&nbsp;to be used, for example, for ellipsoid
+  corrected geocoding and terrain corrected geocoding.</p>
+
+  <p>The DEM parameter file characterizes:<br>
+  - the ellipsoid<br>
+  - the Datum shift of this ellipsoid relative to WGS84<br>
+  - the map projection type<br>
+  - the parameters required to specify the map projection<br>
+  - the definition of the selected DEM/map section (corner
+  coordinates, spacing, DEM/map dimensions)</p>
+
+  <p><span style="font-weight: bold;">create_dem_par</span> tries
+  to combine high flexibility with strong user support. On one hand
+  the user has the option to define each of the required
+  parameters. On the other hand often used ellipsoids, Datum
+  shifts, and projection parameter sets are proposed to the user.
+  This allows the user, to specify the national coordinates used by
+  a specific country without having to search for the detailed
+  parameter values elsewhere.</p>
+
+  <p>The supported&nbsp; DEM projections are :</p>
+
+  <table style="width: 1067px; height: 450px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Projection</strong></td>
+      </tr>
+
+      <tr>
+        <td>EQA</td>
+
+        <td>Equiangular</td>
+      </tr>
+
+      <tr>
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>OMCH</td>
+
+        <td>Oblique Mercator (Switzerland)</td>
+      </tr>
+
+      <tr>
+        <td>LCC</td>
+
+        <td>Lambert Conformal Conic (France)</td>
+      </tr>
+
+      <tr>
+        <td>TM</td>
+
+        <td>Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>PS</td>
+
+        <td>Polar Stereographic</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">LCC2<br></td>
+
+        <td style="vertical-align: top;">Lambert Conformal Conic of
+        Belgium, Madagaskar<br></td>
+      </tr>
+
+      <tr>
+        <td>PC</td>
+
+        <td>Polyconic Projection</td>
+      </tr>
+
+      <tr>
+        <td>AEAC</td>
+
+        <td>Albers Equal Area Conic</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">SCH<br></td>
+
+        <td style="vertical-align: top;">Spherical geometry map
+        projection<br>
+        (see "Zebker et. al, "Geodetically Accurate INSAR Data
+        Processor", <span style="font-style: italic;">Trans.
+        Geoscience and Remote Sensing,</span> pp.4309-4321, vol.
+        49, no. 12, Dec., 2010)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The user is interactively queried&nbsp; for the required DEM
+  parameters. &nbsp;The format of the DEM parameter file depends on
+  the coordinate system of the DEM. Different projections require
+  different parameters values. The exact definitions and formats of
+  the individual parameters are specified in <a href=
+  "DEM_par.html">dem_par</a>. &nbsp;The DEM data itself can be
+  either&nbsp;&nbsp;4-byte/value floating point
+  or&nbsp;2-byte/value short integer format.</p>
+
+  <p>First the user is asked to select one of the above mentioned
+  DEM/map coordinate systems. Then a country name such as <i>United
+  Kingdom</i>, <i>USA</i>, <i>Germany</i>, or <i>other</i> allows
+  to search the lists for specific parameter sets for the selected
+  countries. If the desired parameters are not found in the lists
+  the user may want to select <i>other</i> to define the
+  parameters. Based on the indicated country name a list of Datums
+  and Ellipsoids are offered (containing at least WGS84). The user
+  can select one of the Datum/Ellipsoid sets by indicating the
+  corresponding row number.</p>
+
+  <p>Next the projection parameters are specified. Again the user
+  may enter a country name (typically the same as specified before)
+  or <i>other</i> to either select a projection parameter set out
+  of a list proposed for the selected country or to specify these
+  parameters without such a list. After the specification of the
+  ellipsoid, Datum, and projection parameters the remaining
+  parameters including the DEM/map name, the DEM data format, the
+  DEM height offset, the DEM height scale factor, the DEM/map width
+  and number of lines, the North-West corner coordinates
+  (easting/northing resp. longitude/latitude), and the pixel
+  spacing &nbsp;(posting) in the two directions. The posting in the
+  north direction is always &lt; 0.0 and east posting must always
+  be &gt; 0.0. . Data line order must be from North to&nbsp; South,
+  &nbsp;and sample order from West to East.&nbsp;</p>
+
+  <p>When creating a DEM/map parameter file an SLC/MLI image
+  parameter file may be specified. In this case the bounds of the
+  DEM map are proposed the enclose the image if the DEM_par does
+  not yet exist. A additional border is added all around the
+  map&nbsp; to ensure that the image is enclosed, even if there are
+  large variations in terrain height. &nbsp;This border is
+  5000m&nbsp; or .05 deg in width depending on the projection
+  coordinates. The width and height of the enclosing DEM are
+  calculated from the image bounds. In the case of EQA coordinates,
+  the default line and sample spacing&nbsp; is 0.0005 deg. and for
+  all other projections the default spacing is by default 50
+  meters. &nbsp;The y line spacing and x sampling coordinate
+  spacing must be specified on the command line for new DEM
+  parameter files.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  To specify a DEM/map parameter file with country, not contained
+  in the list, specify "other". To specify custom ellipsoid
+  parameters, enter 0 for the ellipsoid number.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DEM_par.html">dem_par</a>, <a href=
+  "datums.h.html">datums.h</a>, <a href=
+  "ellipsoids.h.html">ellipsoids.h</a>, <a href=
+  "projection_params.h.html">projection_params.h</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Mar-2013.
+</body>
+</html>

@@ -1,0 +1,123 @@
+#!/usr/bin/perl
+use FileHandle;
+use File::Basename;
+use Getopt::Long;
+
+$sc = 1.0;	#display scale factor
+$exp = 0.35;	#display exponent
+
+#command line options parsing, the rest of the arguments are passed to @ARGV
+GetOptions ('e=f' => \$exp, 's=f' => \$sc);
+
+if (($#ARGV + 1) < 6){die <<EOS ;}
+*** $0
+*** Copyright 2014, Gamma Remote Sensing, v1.2 25-Feb-2014 clw ***
+*** Generate LOS displacement maps from unwrapped phase and create 24-bit raster images ***
+
+usage: $0 <DIFF_tab> <RMLI_image> <RMLI_par> <DISP_dir> <cycle> <disp_tab>
+
+    DIFF_tab    (input) list of unwrapped phase files
+    RMLI_image  intensity reference image for background, same width as input data in DIFF_tab (enter - for none) (float)
+    RMLI_par    (input) MLI parameter file that describes the image geometry and acquisition parameters
+    DISP_dir    directory for displacement data and raster images
+    cycle       color cycle in meters for raster images (default = .1 m/cycle)
+    disp_tab    (output) list of the output displacement files
+    -s scale    (option) set image display scale factor (default: $sc)   
+    -e exp      (option) set image display exponent (default: $exp)
+EOS
+
+$diff_tab =  $ARGV[0];
+open(DIFF_TAB, "<$ARGV[0]") or die "\nERROR $0: table of displacement or unwrapped phase files does not exist: $ARGV[0]\n\n";
+
+$rmli = $ARGV[1];
+$rmli_par = $ARGV[2];
+$disp_dir = $ARGV[3];
+$cycle =  $ARGV[4];
+$disp_tab = $ARGV[5];
+
+print "DIFF_tab: $diff_tab\n";
+print "RMLI image: $rmli\n";
+print "RMLI parameter file: $rmli_par\n";
+print "output list of displacement files: $disp_tab";
+
+-e $rmli or die "ERROR $0: RMLI reference image file does not exist: $rmli\n";
+-e $rmli_par or die "ERROR $0: RMLI parameter file does not exist: $rmli_par\n";
+
+($sc > 0.0) or die "\nERROR $0: display scale factor <= 0.0 : $sc\n";
+($exp > 0.0) or die "\nERROR $0: display exponent <= 0.0 : $exp\n";
+
+@width = extract_param($rmli_par, "range_samples:");
+@freq = extract_param($rmli_par, "radar_frequency:");
+
+unless (-d $disp_dir) {
+  print "creating DISP_dir directory for displacement data: $disp_dir\n";
+  $exit = system("mkdir $disp_dir");
+  $exit == 0 or die "ERROR $0: non-zero exit status: mkdir $disp_dir\n"
+}
+
+open(DTAB,">$disp_tab") or die "ERROR $0: cannot create list of output data files: $disp_tab\n\n";
+
+$log = "$disp_dir/mk_dispmap_2d.log";
+print "$0 log file: $log\n";
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+print LOG "$0 @ARGV\n\n";	#print command line that was use
+
+print "\ndisplacement output directory: $disp_dir\n";
+print "units/color cycle: $cycle\n";
+print "display intensity scale factor: $sc\n";
+print "display exponent: $exp\n\n";
+print "image width (samples): $width[1]\n";
+print "radar frequency (Hz): $freq[1]\n\n";
+
+print LOG "displacement output directory: $disp_dir\n";
+print LOG "units/color cycle: $cycle\n";
+print LOG "display intensity scale factor: $sc\n";
+print LOG "display exponent: $exp\n\n";
+print LOG "image width (samples): $width[1]\n";
+print LOG "radar frequency (Hz): $freq[1]\n\n";
+close LOG;
+
+LINE: while (<DIFF_TAB>) {	#read lines of processing list file
+  chomp $_;			#remove new line from record
+  next LINE if /^$/;		#skip blank lines in processing list
+  next LINE if /^#/;		#skip comments in processing list
+  @fields = split;		#extract the scene identifier and other parameters on the line if present
+  $diff_unw = $fields[0];
+  -e $diff_unw or die "ERROR $0: DIFF unwrapped phase file does not exist: $diff_unw\n";
+  my ($d1, $dir1, $ext1) = fileparse($diff_unw, qr/\.[^.]*/); #extension is the last bit after the last period
+  $disp = "$disp_dir/$d1.disp";
+  $disp_ras = $disp.".bmp";
+  print "displacement file: $disp\n";
+  execute("dispmap $diff_unw - $rmli_par - $disp 0 ",$log);
+  execute("rasdt_pwr24 $disp $rmli $width[1] 1 1 0 1 1 $cycle $sc $exp 1 $disp_ras",$log);
+  print DTAB "$disp\n";
+  printf "\n";
+}
+print "output list of displacement data: $disp_tab";
+close DTAB;
+exit (0);
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log  command: $command\n";}
+  else {open(LOG,">$log") or die "ERROR $0 : cannot open log file: $log  command: $command\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

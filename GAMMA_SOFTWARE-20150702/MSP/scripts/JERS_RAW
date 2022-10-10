@@ -1,0 +1,49 @@
+#! /bin/csh -fe
+if ($#argv < 3)then
+  echo "READ JERS multi-scene CEOS format raw data tape from NASDA 1-Feb-98 clw"
+  echo "usage: JERS_RAW  <orbit> <device> <data_set>"
+  echo "       orbit     orbit number"
+  echo "       device    EXABYTE tape device name; example: /dev/rmt/0mn (use a no rewind device)"
+  echo "       data_set  data set number on the tape (example: enter 1 for first product)" 
+  exit
+endif
+
+set NAME = $1
+set EXABYTE = $2
+set DATASET = $3
+
+set FILES_PER_SET = 6
+
+setenv TAPE  $EXABYTE
+
+echo "rewinding 8mm tape..."
+mt rew
+echo "Reading JERS RAW data tape"
+echo "extracting data set $DATASET"
+
+if($DATASET > 1) then
+  set nfiles = `echo $DATASET $FILES_PER_SET | awk '{print $2*($1 - 1)}'`
+  echo "skipping forward $nfiles files"
+  mt fsf $nfiles
+endif
+
+echo "Reading NASDA ASCII header file: $NAME.hdr"
+echo "dd bs=4096 if=$EXABYTE of=$NAME.hdr"
+dd bs=4096 if=$EXABYTE of=$NAME.hdr
+
+echo "Reading CEOS data set volume directory file: $NAME.vdf"
+echo "dd bs=360 if=$EXABYTE of=$NAME.vdf"
+dd bs=360 if=$EXABYTE of=$NAME.vdf
+
+echo "Reading CEOS leader file: $NAME.ldr"
+echo "dd bs=16384 if=$EXABYTE of=$NAME.ldr"
+dd bs=16384 if=$EXABYTE of=$NAME.ldr
+
+echo "Reading ESA raw data file: $NAME.raw"
+echo "dd bs=12700 if=$EXABYTE conv=sync of=$NAME.raw"
+dd bs=12700 if=$EXABYTE conv=sync of=$NAME.raw
+
+echo "skipping forward 2 files"
+mt fsf 2
+ 
+echo "JERS_RAW completed"

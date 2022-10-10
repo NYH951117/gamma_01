@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: dop_mlcc</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>dop_mlcc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dop_mlcc.c">dop_mlcc.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>dop_mlcc</em> - Doppler ambiguity
+  estimation from SAR raw data using the MLCC algorithm</p>
+
+  <p><strong>SYNOPSIS</strong><br clear="all">
+  <code>dop_mlcc &lt;SAR_param&gt; &lt;PROC_param&gt;
+  &lt;signal_data&gt; [output_plot] [loff] [nlines]</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_param&gt;</td>
+
+      <td>(input) SAR sensor parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_param&gt;</td>
+
+      <td>(input) MSP Processing Parameter File</td>
+    </tr>
+
+    <tr>
+      <td>&lt;signal_data&gt;</td>
+
+      <td>(input) uncompressed raw SAR signal data (I/Q
+      complex)</td>
+    </tr>
+
+    <tr>
+      <td>[output_plot]</td>
+
+      <td>(output) plot file of the MLCC phase differences</td>
+    </tr>
+
+    <tr>
+      <td>[loff]</td>
+
+      <td>number of lines offset (enter - for default=parameter
+      file value)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to process</td>
+    </tr>
+  </table><br>
+
+  <p><strong>EXAMPLES</strong><br clear="all">
+  <samp>dop_mlcc JERS_1.par p921106.slc.par 921106.raw
+  921106.mlcc<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  The Doppler centroid is a necessary parameter for SAR processing.
+  Due to the fact that the radar is a sampled data system, i.e. the
+  SAR acquires echoes at the rate of the pulse repetition frequency
+  (PRF), the Doppler spectrum is aliased modulo the PRF. This means
+  that some other method must be used to determine an unambiguous
+  value of the Doppler centroid apart from simple fourier analysis
+  of the azimuth spectrum.</p>
+
+  <p>The raw SAR data (IQ complex data)can be used to estimate the
+  ambiguity number of the Doppler centroid using the methods
+  described by Wong and Cumming (A Combined SAR Doppler Centroid
+  Estimation Scheme based upon Signal Phase, <em>IEEE Trans.
+  Geosci. Remote Sensing</em>, Vol. 34, No. 3, May 1996, pp.
+  696-707.) The signal phase from different complex range looks is
+  used to obtain an unambiguous estimate of the Doppler centroid.
+  This value is stored in the Processing Parameter file with the
+  DAR_doppler keyword. The programs <a href=
+  "doppler.html">doppler</a> and <a href="azsp_IQ.html">azsp_IQ</a>
+  can use the unambiguous Doppler estimate to determine the Doppler
+  ambiguity number and add it to the accurate, but ambiguous
+  estimate.</p>
+
+  <p>The Multi-Look Cross Correlation (MLCC) algorithm is the most
+  robust and measures the difference in Doppler centroid as a
+  function of frequency. The correlation method of centroid
+  estimation is implemented as in <a href=
+  "doppler.html">doppler</a> for two segments of the range
+  spectrum. The rate of change of Doppler with respect to frequency
+  yields an unambiguous estimate of the Doppler centroid. See
+  discussion in the <a href="MSP_users_guide.html">Users Guide</a>.
+  The data segment used for the estimation can be specified by the
+  user by setting the offset in lines relative to the beginning of
+  the file.</p>
+
+  <p>The MLCC plots the Doppler in radians of phase shift between
+  range lines versus the slant range pixel. If the average of the
+  correlation coefficient between range pulses is PI/2, then the
+  centroid is PRF/2 + N*PRF where N is the number of ambiguities in
+  the Doppler centroid. The phase of the correlation is plotted for
+  both the upper and lower segments of the range bandwidth. The
+  last column is the difference between the Doppler centroid
+  estimates of the upper and lower band range bandwidth. This
+  difference can be used to determine a noisy estimate of the
+  unambiguous Doppler centroid. The avarage value of the difference
+  is used to determine the unambiguous estimate of the Doppler
+  centroid.</p>
+
+  <h3>MLCC output file format</h3>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <th>Column</th>
+
+      <th>Parameter</th>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          1
+        </center>
+      </td>
+
+      <td>range sample number</td>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          2
+        </center>
+      </td>
+
+      <td>line to line corrlation phase dp1 for lower half of the
+      range spectrum in units of radians. Doppler centroid = fd1 =
+      dp1*PRF/(2*PI)</td>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          3
+        </center>
+      </td>
+
+      <td>line to line corrlation phase dp2 for upper half of the
+      range spectrum in units of radians. Doppler centroid = fd2 =
+      dp2*PRF/(2*PI)</td>
+    </tr>
+
+    <tr>
+      <td>
+        <center>
+          4
+        </center>
+      </td>
+
+      <td>difference of line to line correlation in units of
+      radians (=dp3). DAR_dop = (dp2-dp1)*PRF/(2*PI) unambiguous
+      Doppler centroid estimate: DAR_dop = -f_c*PRF*dp3/(2*PI*df)
+      where df = f_adc/2 and f_adc is the range sampling frequency
+      and f_c is the radar carrier frequency.</td>
+    </tr>
+  </table><br>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "dop_ambig.html">dop_ambig</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">Sensor parameter file</a>, <a href=
+  "proc_par.html">MSP Processing Parameter File</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 13-May-2003.
+</body>
+</html>

@@ -1,0 +1,620 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing --><!-- uw040922 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: DEM_par</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>DEM_par</h2>
+
+  <p><i>DEM parameter file (for structure definition see <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>)</i></p>
+
+  <p><strong>NAME</strong><br>
+  DEM_par - Digital Elevation Model (DEM) parameter file (text
+  format) used by Gamma DIFF&amp;GEO software.<br>
+  This can also contain a description of the projection used for
+  image or parameter data<br></p>
+
+  <p><strong>EXAMPLE and PARAMETER DEFINITIONS</strong><br>
+  The format of the DEM parameter file is different for different
+  DEM projections. Supported DEM projections are:</p>
+
+  <table style="width: 978px; height: 517px;" border="1"
+  cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Projection</strong></td>
+      </tr>
+
+      <tr>
+        <td>EQA</td>
+
+        <td>Equiangular</td>
+      </tr>
+
+      <tr>
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>TM</td>
+
+        <td>Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>OMCH</td>
+
+        <td>Oblique Mercator (Switzerland)</td>
+      </tr>
+
+      <tr>
+        <td>LCC</td>
+
+        <td>Lambert Conformal Conic (France)</td>
+      </tr>
+
+      <tr>
+        <td>PS</td>
+
+        <td>Polar Stereographic</td>
+      </tr>
+
+      <tr>
+        <td>SCH</td>
+
+        <td>Spherical geometry map projection<br>
+        (see "Zebker et. al, "Geodetically Accurate INSAR Data
+        Processor", <span style="font-style: italic;">Trans.
+        Geoscience and Remote Sensing,</span> pp.4309-4321, vol.
+        49, no. 12, Dec., 2010)</td>
+      </tr>
+
+      <tr>
+        <td>PC</td>
+
+        <td>Polyconic Projection</td>
+      </tr>
+
+      <tr>
+        <td>AEAC</td>
+
+        <td>Albers Equal Area Conic</td>
+      </tr>
+
+      <tr>
+        <td>LCC2</td>
+
+        <td>Lambert Conformal Conic Projection (Secant solution,
+        Belgium)</td>
+      </tr>
+
+      <tr>
+        <td>OM</td>
+
+        <td>Oblique Mercator</td>
+      </tr>
+
+      <tr>
+        <td>HOM</td>
+
+        <td>Hotine Oblique Mercator</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The parameter definitions are not the same for the different
+  coordinates, but most parameters are common to all
+  projections.</p>
+
+  <p>The parameters contained in the DEM/map parameter file are
+  structured into:<br>
+  - general parameters<br>
+  - ellipsoid parameters<br>
+  - datum parameters<br>
+  - projection parameters.</p>
+
+  <p><strong>Part 1: General Parameters</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>title</td>
+
+        <td>Death Valley UTM DEM</td>
+
+        <td>Title, name, identification for DEM</td>
+      </tr>
+
+      <tr>
+        <td>DEM_projection</td>
+
+        <td>UTM</td>
+
+        <td>Universal Transverse Mercator</td>
+      </tr>
+
+      <tr>
+        <td>data_format</td>
+
+        <td>REAL*4</td>
+
+        <td>DEM data format; valid formats are REAL*4 (4-byte
+        floating point) and INTEGER*2 (2-byte, short integer)</td>
+      </tr>
+
+      <tr>
+        <td>DEM_hgt_offset</td>
+
+        <td>0.00000</td>
+
+        <td>Height offset in units</td>
+      </tr>
+
+      <tr>
+        <td>DEM_scale</td>
+
+        <td>1.0</td>
+
+        <td>Height scale used in DEM in meter/unit</td>
+      </tr>
+
+      <tr>
+        <td>width</td>
+
+        <td>2000</td>
+
+        <td>DEM width in pixels</td>
+      </tr>
+
+      <tr>
+        <td>nlines</td>
+
+        <td>2000</td>
+
+        <td>DEM number of lines</td>
+      </tr>
+
+      <tr>
+        <td>corner_north</td>
+
+        <td>4095800.000</td>
+
+        <td>Northing of first DEM pixel (m)</td>
+      </tr>
+
+      <tr>
+        <td>corner_east</td>
+
+        <td>477300.000</td>
+
+        <td>Easting of first DEM pixel (m)</td>
+      </tr>
+
+      <tr>
+        <td>post_north</td>
+
+        <td>-100.0000000</td>
+
+        <td>DEM posting (pixel spacing) North direction; negative
+        numbers indicate that DEM lines are listed from North to
+        South</td>
+      </tr>
+
+      <tr>
+        <td>post_east</td>
+
+        <td>100.0000000</td>
+
+        <td>DEM posting (pixel spacing) East direction; negative
+        numbers indicate that DEM</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In the case of EQA coordinates the last four lines are
+  replaced by:<br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>corner_lat</td>
+
+        <td>37.0000000</td>
+
+        <td>Latitude of first DEM pixel (decimal degrees)</td>
+      </tr>
+
+      <tr>
+        <td>corner_lon</td>
+
+        <td>-117.2500000</td>
+
+        <td>Longitude of first DEM pixel (decimal degrees, values
+        between -180 and 180)</td>
+      </tr>
+
+      <tr>
+        <td>post_lat</td>
+
+        <td>-8.3333000e-04</td>
+
+        <td>DEM posting (pixel spacing) in latitude; negative
+        numbers indicate that DEM pixels are listed from North to
+        South</td>
+      </tr>
+
+      <tr>
+        <td>post_lon</td>
+
+        <td>8.3333000e-04</td>
+
+        <td>DEM posting (pixel spacing) in longitude; negative
+        numbers indicate that DEM pixels are listed from East to
+        West</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In the case of PS coordinates the following parameter is
+  added:<br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>PS_secant_lat</td>
+
+        <td>71.0000000</td>
+
+        <td>latitude of the secant plane with no distortion, +/-71
+        degrees for N. or S. hemispheres respectively</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Part 2: Ellipsoid Parameters</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>ellipsoid_name:</td>
+
+        <td>Airy 1830</td>
+
+        <td>Ellipsoid name (from list or specified by user)</td>
+      </tr>
+
+      <tr>
+        <td>ellipsoid_ra</td>
+
+        <td>6377563.396 m</td>
+
+        <td>Ellipsoid semi-major axis in meter</td>
+      </tr>
+
+      <tr>
+        <td>ellipsoid_reciprocal_flattening</td>
+
+        <td>299.3249646</td>
+
+        <td>Ellipsoid reciprocal flattening (i.e. 1/f)</td>
+      </tr>
+    </tbody>
+  </table>Notice, other ellipsoid parameters, such as the ellipsoid
+  semi-minor axis, are calculated from the two specified
+  parameters.
+
+  <p><strong>Part 3: Datum Parameters</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>datum_name:</td>
+
+        <td>United Kingdom National</td>
+
+        <td>Datum name (from list or specified by user)</td>
+      </tr>
+
+      <tr>
+        <td>datum_shift_dx</td>
+
+        <td>370.300 m</td>
+
+        <td>Datum shift in x direction (Cartesian coordinates)
+        relative to WGS84</td>
+      </tr>
+
+      <tr>
+        <td>datum_shift_dy</td>
+
+        <td>-111.060 m</td>
+
+        <td>Datum shift in y direction (Cartesian coordinates)
+        relative to WGS84</td>
+      </tr>
+
+      <tr>
+        <td>datum_shift_dz</td>
+
+        <td>431.170 m</td>
+
+        <td>Datum shift in z direction (Cartesian coordinates)
+        relative to WGS84</td>
+      </tr>
+
+      <tr>
+        <td>datum_scale_m</td>
+
+        <td>0.00000e+00</td>
+
+        <td>Datum shift scale m parameter, (1+datum_scale_m) is the
+        scale factor</td>
+      </tr>
+
+      <tr>
+        <td>datum_rotation_alpha</td>
+
+        <td>0.00000e+00 arc-sec</td>
+
+        <td>Datum rotation angle alpha (around x axis) in
+        arc-seconds</td>
+      </tr>
+
+      <tr>
+        <td>datum_rotation_beta</td>
+
+        <td>0.00000e+00 arc-sec</td>
+
+        <td>Datum rotation angle beta (around y axis) in
+        arc-seconds</td>
+      </tr>
+
+      <tr>
+        <td>datum_rotation_gamma</td>
+
+        <td>0.00000e+00 arc-sec</td>
+
+        <td>Datum rotation angle gamma (around z axis) in
+        arc-seconds</td>
+      </tr>
+
+      <tr>
+        <td>datum_country_list</td>
+
+        <td>United Kingdom, England, Great Britain</td>
+
+        <td>Datum country list (included in datums.h list for
+        parameter set selection</td>
+      </tr>
+    </tbody>
+  </table>Notice, with the Datum Shift definition used the
+  datum_shift_dx, datum_shift_dy, datum_shift_dz, indicate the
+  coordinates of the origin of the local ellipsoid relative to the
+  WGS84 Datum (in Cartesian coordinates). Both 3 and 7 Parameter
+  Datum definitions are supported.
+
+  <p><strong>Part 4: Projection Parameters for UTM, TM, OMCH, LCC,
+  PS, PC, AEAC, LCC2, OM, HOM coordinates</strong><br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>projection_name</td>
+
+        <td>TM - United Kingdom, England</td>
+
+        <td>Projection name (from list or specified by user)</td>
+      </tr>
+
+      <tr>
+        <td>projection_zone</td>
+
+        <td>0</td>
+
+        <td>Zone number (0 in the case of one single zone)</td>
+      </tr>
+
+      <tr>
+        <td>false_easting</td>
+
+        <td>400000.000 m</td>
+
+        <td>False Easting [m]</td>
+      </tr>
+
+      <tr>
+        <td>false_northing</td>
+
+        <td>-100000.000 m</td>
+
+        <td>False Northing [m]</td>
+      </tr>
+
+      <tr>
+        <td>projection_k0</td>
+
+        <td>0.9996013</td>
+
+        <td>Scale factor k0 used by the projection</td>
+      </tr>
+
+      <tr>
+        <td>center_longitude</td>
+
+        <td>-2.0000000 decimal degrees</td>
+
+        <td>Center longitude in decimal degrees (-180...180)</td>
+      </tr>
+
+      <tr>
+        <td>center_latitude</td>
+
+        <td>49.0000000 decimal degrees</td>
+
+        <td>Center latitude in decimal degrees (-90...90)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>In the case of SCH projection, the following projection
+  keywords are used:<br></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td><strong>Keyword</strong></td>
+
+        <td><strong>Example</strong></td>
+
+        <td><strong>Definition</strong></td>
+      </tr>
+
+      <tr>
+        <td>SCH_peg_lat</td>
+
+        <td><br></td>
+
+        <td>SCH peg point latitude (degrees)</td>
+      </tr>
+
+      <tr>
+        <td>SCH_peg_lon</td>
+
+        <td><br></td>
+
+        <td>SCH peg point longitude (degrees)</td>
+      </tr>
+
+      <tr>
+        <td>SCH_heading</td>
+
+        <td><br></td>
+
+        <td>SCH heading (degrees)</td>
+      </tr>
+
+      <tr>
+        <td>SCH_corner_s</td>
+
+        <td><br></td>
+
+        <td>SCH corner offset from peg point s (m)</td>
+      </tr>
+
+      <tr>
+        <td>SCH_corner_c</td>
+
+        <td><br></td>
+
+        <td>SCH corner offset from peg point c (m)</td>
+      </tr>
+
+      <tr>
+        <td>SCH_post_s</td>
+
+        <td><br></td>
+
+        <td>SCH posting along track s (m)</td>
+      </tr>
+
+      <tr>
+        <td>SCH_post_c</td>
+
+        <td><br></td>
+
+        <td>SCH posting along track c (m)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">The DEM_par</span> contains
+  parameter values to describe the elliposoid, datum and projection
+  of DEM and map data.&nbsp; The DEM_par file is generated using
+  the program <a href="create_dem_par.html">create_dem_par</a>. The
+  user is interactively asked for the input used to describe a DEM
+  or map. A variety of projections are supported.</p>
+
+  <p>The data structures contained in the DEM_par are defined in
+  the in DIFF type definition file <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>. The data values are
+  stored as keyword: value pairs.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="DIFF_users_guide.html">Users Guide</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a>, <a href=
+  "create_dem_par.html">create_dem_par</a><br></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 29-Aug-2011.</p>
+</body>
+</html>

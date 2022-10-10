@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: geocode</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2001 Gamma Remote Sensing -->
+  <!-- uw010412 -->
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>geocode</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/geocode.c"><i>geocode.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  geocode - Forward transformation with a geocoding look-up table.
+  For each image point defined in coordinate system A, the lookup
+  table contains the corresponding coordinates in system B. The
+  program geocode is used to resample the data in coordinate system
+  A into the coordinates of system B.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>geocode &lt;gc_map&gt; &lt;data_in&gt; &lt;width_in&gt;
+  &lt;data_out&gt; &lt;width_out&gt; [nlines_out] [interp_mode]
+  [dtype] [lr_in] [lr_out] [n_ovr] [rad_max] [nintr]</b></code></p>
+
+  <table cellpadding="7" border="1">
+    <tbody>
+      <tr>
+        <td>&lt;gc_map&gt;</td>
+
+        <td>(input) lookup table containing pairs of real-valued
+        output data coordinates (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_in&gt;</td>
+
+        <td>(input) data file (format as specified by format_flag
+        parameter)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width_in&gt;</td>
+
+        <td>width of input data file and lookup table</td>
+      </tr>
+
+      <tr>
+        <td>&lt;data_out&gt;</td>
+
+        <td>output data file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;width_out&gt;</td>
+
+        <td>width of output data file</td>
+      </tr>
+
+      <tr>
+        <td>[nlines_out]</td>
+
+        <td>number of lines of output data file (default=0: all
+        lines up to highest value)</td>
+      </tr>
+
+      <tr>
+        <td>[interp_mode]</td>
+
+        <td>interpolation mode<br>
+        &nbsp;&nbsp; 0: 1/dist (default)<br>
+        &nbsp;&nbsp; 1: nearest neighbor<br>
+        &nbsp;&nbsp; 2: SQR(1/dist)<br>
+        &nbsp;&nbsp; 3: constant<br>
+        &nbsp;&nbsp;&nbsp; 4: Gauss weighting<br></td>
+      </tr>
+
+      <tr>
+        <td>[dtype]</td>
+
+        <td>input/output data type<br>
+        &nbsp;&nbsp; 0: FLOAT (default)<br>
+        &nbsp;&nbsp; 1: FCOMPLEX<br>
+        &nbsp;&nbsp; 2: SUN raster/BMP 8 or 24 bit image<br>
+        &nbsp;&nbsp; 3: UNSIGNED CHAR<br>
+        &nbsp;&nbsp; 4: SHORT<br>
+        &nbsp;&nbsp; 5: SCOMPLEX<br>
+        &nbsp;&nbsp; 6: DOUBLE<br></td>
+      </tr>
+
+      <tr>
+        <td>[lr_in]</td>
+
+        <td>input SUN raster/BMP format left/write flipped flag
+        (default = 1: not flipped, -1: flipped)</td>
+      </tr>
+
+      <tr>
+        <td>[lr_out]</td>
+
+        <td>output SUN raster/BMP format file left/write flipped
+        flag (default = 1: not flipped, -1: flipped)</td>
+      </tr>
+
+      <tr>
+        <td>[n_ovr]</td>
+
+        <td>interpolation oversampling factor (default = 2)</td>
+      </tr>
+
+      <tr>
+        <td>[rad_max]</td>
+
+        <td>rad_max maximum interpolation search radius (default =
+        4*n_ovr: 8)</td>
+      </tr>
+
+      <tr>
+        <td>[nintr]</td>
+
+        <td>number of points required for interpolation when not
+        nearest neighbor (default = 4)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>geocode 8560_8059.UTM_to_RDC 8560_8059.utm.dtm 1422
+  8560_8059.rdc_hgt 1696 880 0 0</samp></p>
+
+  <p>Transformation (from UTM to SAR coordinates) of DEM file of
+  format float into Range/Doppler Coordinates (SAR)</p>
+
+  <p><samp>geocode 8560_8059.UTM_to_SAR ls_map 1422
+  8560_8059.ls_map 1696 880 1 3</samp></p>
+
+  <p>Transformation (from UTM to SAR coordinates) of layover/shadow
+  map (of format unsigned char) using nearest neighbor resampling
+  algorithm into SAR coordinates.</p>
+
+  <p><samp>geocode 8560_8059_2.SAR_to_UTM 8560_8059.hgt 1696
+  8560_8059.utm.hgt 1422</samp></p>
+
+  <p>Transformation of interferometric DEM data in SAR
+  range/Doppler coordinates to UTM The lookup table
+  8560_8059.SAR_to_UTM is generated using <a href=
+  "gc_insar.html">gc_insar</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <strong>geocode</strong> conducts forward transformation using
+  the geocoding lookup table (complex valued lookup table with
+  dimension of input data, with the real parts corresponding to the
+  output column and the imaginary part to the output row). For each
+  image point defined in coordinate system A, the lookup table
+  contains the corresponding coordinates in system B. The program
+  geocode is used to resample the data in coordinate system A into
+  the coordinates of system B.</p>
+
+  <p>As an example, program <a href="gc_map.html">gc_map</a> can be
+  used to calculate the SAR range/Doppler image coordinates
+  corresponding to a regularly spaced map grid in UTM and output
+  these values in the form of a lookup table. For each UTM
+  coordinate on the grid the lookup table contains the
+  corresponding slant range pixel and azimuth pixel values in SAR
+  coordinates (as real valued numbers). The interpolation necessary
+  to determine the transformed values at the output pixel locations
+  is based on irregularly spaced data. Note also that the input
+  data and lookup table have the same dimensions (rows and
+  columns). When gc_map computes the lookup table it can also
+  compute a simulated SAR image in the map coordinate system.
+  Transformation of this image into SAR coordinates requires
+  running geocode. This transformed image can then be compared with
+  the actual SAR image to determine small offsets that can be
+  corrected using <a href="gc_map_fine.html">gc_map_fine</a></p>
+
+  <p>Valid input/output data formats are float, fcomplex (pairs of
+  4-byte floating point numbers), unsigned char, and SUN
+  raster/BMP, and short complex (pairs of short integers)
+  format.</p>
+
+  <p>The interpolation of the irregularly sampled data is
+  implemented using nearest neighbor or convolutional interpolation
+  weighting of the samples. Different weighting functions are
+  selectable including 1/distance, 1/distance**2, and Gaussian. In
+  the case of complex-valued data, the real and imaginary part are
+  interpolated independently. In the case of unsigned char and SUN
+  raster/BMP images, only the nearest neighbor algorithm is
+  available.</p>
+
+  <p>For raster images (SUN Raster or BMP format) input and output
+  data may be flipped left to right. This supports the forward
+  transformation of left/right flipped raster images in SAR
+  geometry.</p>
+
+  <p>The required geocoding lookup table is created using either
+  the program <a href="gc_map.html">gc_map</a> (based on a DEM in
+  map geometry) or <a href="gc_insar.html">gc_insar</a> (using a
+  height map in SAR geometry, as obtained with SAR
+  interferometry).</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Similar results can be obtained by inverting the lookup table
+  itself using <a href="gc_map_inversion.html">gc_map_inversion</a>
+  and then use <a href="geocode_back.html">geocode_back</a> to
+  generate the output product. The inverse lookup table can then be
+  reused for multiple data sets. The backward transformation is
+  faster because the input data are equally spaced.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="gc_map.html">gc_map</a>, <a href=
+  "gc_map.html">gc_map_grd</a>, <a href="gec_map.html">gec_map</a>,
+  <a href="gec_map.html">gec_map_grd</a>, <a href=
+  "gc_insar.html">gc_insar</a>, <a href=
+  "geocode_back.html">geocode_back</a>, <a href=
+  "gc_map_inversion.html">gc_map_inversion</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 30-Jun-2015.
+</body>
+</html>

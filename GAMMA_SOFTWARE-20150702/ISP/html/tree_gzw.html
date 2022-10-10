@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: tree_gzw</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>tree_gzw</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/tree_gzw.c"><i>tree_gzw.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <a href="tree_gzw.html">tree_gzw</a> Uses residues and neutrons
+  (from the unwrapping flag file) and constructs a tree-like
+  structure of branch cuts to guide unwrapping</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>tree_gzw &lt;flagfile&gt; &lt;width&gt; [mbl] [xmin]
+  [xmax] [ymin] [ymax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;flagfile&gt;</td>
+
+      <td>phase unwrapping flag filename</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[mbl]</td>
+
+      <td>maximum branch length (default = <b>64</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmin]</td>
+
+      <td>offset to starting range pixel (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[xmax]</td>
+
+      <td>offset last range pixel (default = <b>width-1</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymin]</td>
+
+      <td>offset to starting azimuth row, relative to start
+      (default = <b>0</b>)</td>
+    </tr>
+
+    <tr>
+      <td>[ymax]</td>
+
+      <td>offset to last azimuth row, relative to start (default =
+      <b>nlines-1</b>)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>tree_gzw 1352_1610.flag 2500 64</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  reads the flagfile and uses residues and neutrons to construct a
+  tree-like structure of branch cuts connecting residues and
+  neutrons. Phase discontinuities are localized to the branch cuts.
+  This program is rapid and gives a conservative unwrapping of the
+  phase, since branch cuts are allowed to cross thereby excluding
+  some regions. The addition of intensity based neutrons using the
+  program <a href="neutron.html">neutron</a>. Neutrons function to
+  guide the growth of the trees such that they preferentially fall
+  in regions of layover. Keeping the maximum branch length to a
+  minimum for a particular tree, prevents growth of long branches
+  that exclude large areas of the scene from being unwrapped. The
+  trees are written into the unwrapping flag file. Other programs
+  (<em>grasses</em>) add further information to the flag file. For
+  each pixel a flag of 8 bits is stored. The meaning of the
+  individual bits is explained in the <em>typedef_ISP.h</em> file.
+  The information contained in the unwrapping flag file can be
+  displayed with the programs <em>disflag</em> and
+  <em>rastree</em>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "neutron.html">neutron</a>, <a href=
+  "corr_flag.html">corr_flag</a>, <a href=
+  "tree_cc.html">tree_cc</a>, <a href=
+  "ISP_display.html">disflag</a>, <a href=
+  "ISP_display.html">rastree</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 31-Jan-2000.</p>
+</body>
+</html>

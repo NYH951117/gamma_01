@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Documentation: Makefile</title>
+</head>
+
+<body>
+  <h1>GAMMA MSP:</h1>
+  <hr align="left">
+
+  <h2>Makefile</h2>
+
+  <p><i>Makefiles for Compiling the MSP: <a href=
+  "../src/Makefile">Makefile</a></i>, <i><a href=
+  "../src/makefile_shared">makefile_shared</a></i>.</p>
+
+  <p><u>Adapting the makefiles to your platform</u></p>
+
+  <p>Compilation of the MSP is carried out using the make
+  utility.&nbsp;If you will be using shared object libraries, then
+  see the section below describing this option. The makefiles
+  contain options for different operating system platforms. The MSP
+  has been compiled on SUN (SOLARIS 2.X), HP (HP-UX 10.X), SGI
+  (IRIX 6.X), LINUX, and with the Cygwin package under Windows
+  9x/NT/2000 (<a href=
+  "http://sourceware.cygwin.com/">http://sourceware.cygwin.com</a>).
+  Prior to compilation, the edit the makefile you want to use and
+  add options for your system. The makefile <i>makefile_shared</i>
+  is for compilation with shared object libraries for UNIX/LINUX
+  only. Comments in a makefile begin with a # character and are
+  ignored.</p>
+
+  <p>The workstation/PC CPUs represent numbers in either big endian
+  or little endian byte order. This byte ordering determines if the
+  most or least significant byte of a number comes first. Intel
+  compatible CPUs such as the Pentium and DEC Alpha are little
+  endian, while SUN SPARC, HP PA-RISC, SGI, and IBM CPUs are big
+  endian. The Gamma software is written such that the default byte
+  order for data can be selected to be big or little endian,
+  independently of the particular CPU. This makes it possible to
+  interchange data without byte swapping in a mixed CPU processing
+  environment. The default byte order is big endian on all
+  platforms.</p>
+
+  <p>The default endian of the CPU is big endian in the Gamma
+  software. You must add the compile flag -DCPU_LITTLE_END if using
+  a PC or AlPHA platforms. If native byte order for the PC is
+  desired in output files instead of big endian, then add the
+  additional compile flag -DLITTLE_END. When compiling with Cygwin
+  under Windows 9x/NT/2000 add the additional flag -DMSDOS and if
+  using LINUX add the -DLINUX flag</p>
+
+  <p>We also recommend installation of the FFTW FFT libraries
+  compiled for single precision on your platform. These libraries
+  provide a significant improvement in performance. Programs are
+  compiled with the -DFFTW flag to enable use of the FFTW
+  libraries. These libraries must be downloaded from <a href=
+  "http://www.fftw.org/">http://www.fftw.org</a>. If you do not
+  want to use the FFTW, then remove the -DFFTW flag from the
+  CFLAGS. See the <a href="MSP_installation.html">MSP installation
+  guide</a> for more details on the FFTW installation.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "/MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 26-Apr-2000.
+</body>
+</html>

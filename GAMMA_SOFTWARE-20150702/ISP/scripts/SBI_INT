@@ -1,0 +1,159 @@
+#! /bin/csh -fe
+
+echo "SBI_int: Script to generate Azimuth Split-beam Interferogram from an coregistered interferometric SLC pair v1.0 25-Nov-2011 uw/clw"
+echo " "
+if ($#argv < 8)then
+  echo "usage: SBI_int <RSLC1> <SLC_par1> <RSLC2> <SLC_par2> <sbi_int> <off> <sbi_pwr> <par_out> [norm_sq] [rlks] [azlks] [iwflg] [cflg]"
+  echo "       RSLC1       (input) master single-look complex image (fcomplex or scomplex)"
+  echo "       RSLC_par1   (input) SLC ISP image parameter file of RSLC1"
+  echo "       RSLC2       (input) co-registered slave SLC image (fcomplex or scomplex)"
+  echo "       RSLC_par2   (input) SLC ISP image parameter file of RSLC2"
+  echo "       sbi_int     (output) multi-look split-beam interferogram (fcomplex)"
+  echo "       off         (output) ISP offset parameter file for multi-look split-beam interferogram (ascii)"
+  echo "       sbi_pwr     (output) multi-look reference backscatter intensity image (float)"
+  echo "       par_out     (output) SLC/MLI ISP image parameter file of sbi_pwr"
+  echo "       norm_sq     normalized squint difference parameter (default: 0.5)"
+  echo "       rlks        number of range looks in output split-beam interferogram (default: 1)"
+  echo "       azlks       number of azimuth looks in output split-beam interferogram (default: 1)"
+  echo "       iwflg       inverse weighting flag:"
+  echo "                     0: do not remove azimuth processing spectral window  (default)"
+  echo "                     1: apply inverse of azimuth compression processing window"
+  echo "       cflg        flag to indicate if intermediate data (e.g. filtered slc) are deleted"
+  echo "                     0: intermediate data are deleted (default)"
+  echo "                     1: intermediate data are NOT deleted"
+  echo " "
+  echo "      file names for band-pass filtered SLC are generated autimatically"
+  echo "      by adding the letter  b / f  for the backward / foward looking beam"
+  echo " "
+  exit
+endif
+
+# define input parameters
+set SLC1 = $1
+set par1 = $2
+set SLC2 = $3
+set par2 = $4
+set int = $5
+set off = $6
+set pwr = $7
+set par_out = $8
+
+set SLC1b = "$SLC1""b"
+set SLC1f = "$SLC1""f"
+set par1b = "$par1""b"
+set par1f = "$par1""f"
+set SLC2b = "$SLC2""b"
+set SLC2f = "$SLC2""f"
+set par2b = "$par2""b"
+set par2f = "$par2""f"
+#set offb = "$off""b"
+#set offf = "$off""f"
+
+set norm_sq = 0.5  ### normalized squint difference parameter (default: 0.5)
+if ($#argv >= 9) then
+  set norm_sq = $9
+endif
+
+set rlks = 1  ### default value for range looks to take for output split-beam interferogram
+if ($#argv >= 10) then
+  set rlks = $10
+endif
+
+set azlks = 1  ### default value for azimuth looks to take for output split-beam interferogram
+if ($#argv >= 11) then
+  set azlks = $11
+endif
+
+set iwflg = 0	### default value for inverse weighting flag: 0: do not remove azimuth processing spectral window
+                ###                                           1: apply inverse of azimuth compression processing window
+if ($#argv >= 12) then
+  set iwflg = $12
+endif
+
+set cflg = 0	### default value for flag to indicate if intermediate data are deleted: 0: delete
+                ###                                           1: intermediate data are NOT deleted
+if ($#argv >= 13) then
+  set cflg = $13
+endif
+
+
+echo "test if required input files exist"
+if (-e "$1" == 0) then 
+  echo "ERROR: (input) RSLC1 data file ($1) does not exist"; exit(-1)
+endif 
+if (-e "$2" == 0) then 
+  echo "ERROR: (input) RSLC_par1 parameter file ($2) does not exist"; exit(-1)
+endif 
+if (-e "$3" == 0) then 
+  echo "ERROR: (input) RSLC2 data file ($3) does not exist"; exit(-1)
+endif 
+if (-e "$4" == 0) then 
+  echo "ERROR: (input) RSLC_par2 parameter file ($4) does not exist"; exit(-1)
+endif 
+
+
+# azimuth band-pass filtering
+echo "sbi_filt $SLC1 $par1 $par2 $SLC1f $par1f  $SLC1b $par1b $norm_sq $iwflg"
+sbi_filt $SLC1 $par1 $par2 $SLC1f $par1f  $SLC1b $par1b $norm_sq $iwflg
+echo "sbi_filt $SLC2 $par2 $par1 $SLC2f $par2f  $SLC2b $par2b $norm_sq $iwflg"
+sbi_filt $SLC2 $par2 $par1 $SLC2f $par2f  $SLC2b $par2b $norm_sq $iwflg
+
+echo "create_offset $par1b $par2b $off.1 1 1 1" 
+echo '  ' | awk '{printf "\n\n\n\n\n\n\n"}' | create_offset $par1b $par2b $off.1 1 1 1
+
+echo "base_orbit $par1f $par2f $int.basef"
+base_orbit $par1f $par2f $int.basef
+echo "base_orbit $par1b $par2b $int.baseb"
+base_orbit $par1b $par2b $int.baseb
+
+# SLC width and number of lines
+set width1 = `awk '$1 == "range_samples:" {print $2}' $par1`
+set nlines1 = `awk '$1 == "azimuth_lines:" {print $2}' $par1`
+echo "SLC width and number of lines: $width1 $nlines1" 
+
+echo "SLC_intf $SLC1f $SLC2f $par1f $par2f $off.1 $int.1f 1 1 0 $nlines1 1 0 0 0"
+SLC_intf $SLC1f $SLC2f $par1f $par2f $off.1 $int.1f 1 1 0 $nlines1 1 0 0 0
+echo "SLC_intf $SLC1b $SLC2b $par1b $par2b $off.1 $int.1b 1 1 0 $nlines1 1 0 0 0"
+SLC_intf $SLC1b $SLC2b $par1b $par2b $off.1 $int.1b 1 1 0 $nlines1 1 0 0 0
+
+echo "comb_interfs $int.1f $int.1b $int.basef $int.baseb 1 -1 $width1 $int.1 $int.base 1."
+comb_interfs $int.1f $int.1b $int.basef $int.baseb 1 -1 $width1 $int.1 $int.base 1.
+
+echo "multi_cpx $int.1 $off.1 $int $off $rlks $azlks 0 $nlines1"
+multi_cpx $int.1 $off.1 $int $off $rlks $azlks 0 $nlines1
+
+echo "multi_look $SLC1 $par1 $pwr $par_out $rlks $azlks 0 $nlines1 0.000001"
+multi_look $SLC1 $par1 $pwr $par_out $rlks $azlks 0 $nlines1 0.000001
+
+if ( "$cflg" == "0" ) then
+  echo " deleting the intermediate results data files"
+  if ( -e "$SLC1f" ) /bin/rm $SLC1f
+  if ( -e "$SLC1b" ) /bin/rm $SLC1b
+  if ( -e "$SLC2f" ) /bin/rm $SLC2f
+  if ( -e "$SLC2b" ) /bin/rm $SLC2b
+  if ( -e "$off.1" ) /bin/rm $off.1
+  if ( -e "$int.basef" ) /bin/rm $int.basef
+  if ( -e "$int.baseb" ) /bin/rm $int.baseb
+  if ( -e "$int.1f" ) /bin/rm $int.1f
+  if ( -e "$int.1b" ) /bin/rm $int.1b
+  if ( -e "$int.1" ) /bin/rm $int.1
+endif 
+
+# mulit-look width and number of lines
+set width = `awk '$1 == "range_samples:" {print $2}' $par_out`
+set nlines = `awk '$1 == "azimuth_lines:" {print $2}' $par_out`
+echo " "
+echo "multi-look width and number of lines: $width $nlines"
+echo " "
+echo "to display the multi-look split-beam interferogram you can use:"
+echo "dismph_pwr24 $int $pwr $width 1 1 $nlines 1. .35"
+echo " "
+echo "to adaptively filter and unwrap the multi-look split-beam interferogram you can use:"
+echo "adf $int $int.sm $int.cc $width 0.5 32 7 2 0 $nlines 0.7"
+echo "#dismph_pwr24 $int.sm $pwr $width 1 1 $nlines 1. .35"
+echo "mcf $int.sm - - $int.unw $width 1"
+echo "disdt_pwr24 $int.unw $pwr $width 1 1 $nlines 1. 1. .35"
+echo " "
+echo "end of SBI_INT"
+
+exit

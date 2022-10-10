@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<!-- Software documentation in hypertext language (html), Copyright 1997 Gamma Remote Sensing -->
+<!-- uw961216 -->
+
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: line_interp</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>line_interp</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/line_interp.c">line_interp.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  line_interp - Line interpolation algorithm.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>line_interp &lt;input file&gt; &lt;output file&gt;
+  &lt;width&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;input file&gt;</td>
+
+      <td>input data containing 0.0 values (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;output file&gt;</td>
+
+      <td>output data with 0.0 values replaced (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>line_interp 1352_1610.hgt 1352_1610.hgt_interp
+  2500</samp></p>Replaces 0.0 values of input file using simple
+  line interpolator.
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code line_interp.c in ./src. For compilation adjust and
+  use Makefile: Executable version line_interp in ../bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses ISP type definition file <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  line_interp reads the input data line by line and replaces 0.0
+  values with values determined by a single line interpolation.</p>
+
+  <p>The algorithm is fast, but has its limitations because only
+  one data line is used for the interpolation.</p>
+
+  <p>NULL values (0.0) are replaced by linear interpolation between
+  the last valid data values before and after the gap.</p>
+
+  <p>NULL values (0.0) at the beginning or at the end of a line are
+  replaced with the first and last valid data point of the line,
+  respectively.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "restore_float.html">restore_float</a> .</p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  None.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 1997.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 6-Jan-1997.</p>
+</body>
+</html>

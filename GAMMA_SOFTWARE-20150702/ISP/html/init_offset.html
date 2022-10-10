@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: init_offset</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/init_offset.c"><i>init_offset.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  init_offset - This program computes the initial range and azimuth
+  offset (range and azimuth offset of SLC-2 relative to SLC-1). SLC
+  data can be stored either as pairs of 4-byte (real) (fcomplex) or
+  2-byte short (scomplex) values Data processed by ESA are provided
+  in scomplex format.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>init_offset &lt;SLC-1&gt; &lt;SLC-2&gt; &lt;SLC1_par&gt;
+  &lt;SLC2_par&gt; &lt;OFF_par&gt; [rlks][azlks] [rpos] [azpos]
+  [offr] [offaz] [thres] [cflag]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) single-look complex image 1 (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) single-look complex image 2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1.par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2.par&gt;</td>
+
+        <td>(input) SLC-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>ISP offset/processing parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>number of range looks (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>number of azimuth looks (default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[rpos]</td>
+
+        <td>center of patch in range (samples) (enter - for
+        default: image center file)</td>
+      </tr>
+
+      <tr>
+        <td>[azpos]</td>
+
+        <td>center of patch in azimuth (lines) (enter - for
+        default: image center) file)</td>
+      </tr>
+
+      <tr>
+        <td>[offr]</td>
+
+        <td>initial range offset (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[offaz]</td>
+
+        <td>initial azimuth offset (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>correlation SNR threshold (default = OFF_par)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[rwin]<br></td>
+
+        <td style="vertical-align: top;">range window size
+        (default: 512)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[azwin]<br></td>
+
+        <td style="vertical-align: top;">azimuth window size
+        (default: 512)<br></td>
+      </tr>
+
+      <tr>
+        <td>[cflag]</td>
+
+        <td>copy offsets to the range and azimuth offset
+        polynomials in the OFF_par<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 0: no<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; 1: yes (default)&nbsp;</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><samp>init_offset 1352.slc 1610.slc 1352.par 1610.par
+  1352_1610.off 1 1</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  init_offset reads the single look complex SAR images SLC-1 and
+  SLC-2, the corresponding SLC parameter files <em>SLC-1.par</em>
+  and <em>SLC-2.par</em> and the ISP offset/processing parameter
+  file. For a multi-look intensity image at a user defined
+  location, the two-dimensional cross correlation function is
+  calculated and the peak of the correlation function yields the
+  initial offset of SLC-2 relative to SLC-1.</p>
+
+  <p>Confidence in the offset estimate is measured by comparing the
+  height of the correlation peak relative to the average level of
+  the correlation function to yield an correlation SNR. SNR values
+  greater than 6.0 indicate coregistration better than 1 pixel. The
+  default threshold is read from the OFF_par.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  In order to avoid ambiguity problems and still to achieve an
+  accurate estimates init_offset is first run with multi-looking,
+  followed by a second run at single look resolution:</p>
+
+  <p><code><b>init_offset 8059.slc 8560.slc 8059.par 8560.par
+  8059_8560.off 1 1</b></code></p>
+
+  <p>The offset estimate is written to 8059_8560.off. In the second
+  run the first estimate (as stored in 8059_8560.off) is used as
+  initial guess.</p>
+
+  <p>An alternative approach for the initial offset estimation
+  based on the orbit data provided in the SLC paramter files is
+  included in the ISP program <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>. Especially in the
+  case of large registration offsets or any kind of problems with
+  the registration the (additional) use of init_offset_orbit is
+  recommended.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>, <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>, <a href=
+  "create_offset.html">create_offset</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 8-Apr-2011.</p>
+</body>
+</html>

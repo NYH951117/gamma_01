@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: wolf</title>
+  <meta charset="utf-8">
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>wolf</h2>
+
+  <p><i>ANSI-C program: <a title="wolf " href=
+  "../src/stokes.c">wolf.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  wolf:&nbsp; Calculate Wolf coherence matrix from H and V
+  polarized SLC images</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>wolf &lt;SLC-1&gt; &lt;SLC-2&gt; &lt;SLC1_par&gt;
+  &lt;SLC2_par&gt; &lt;J&gt; &lt;J_par&gt; &lt;rlks&gt;
+  &lt;azlks&gt; [loff] [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) HH, VV, RH, LH single-look complex image
+        (scomplex or fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) HV, VH, RV, LV single-look complex image
+        coregistered with SLC-1 (scomplex or fcomplex format)<br>
+        <br>
+        NOTE: 1. SLC images must be a co-pol and cross-pol pair
+        with the same transmit polarization<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        and linear receive polarization (HH, HV), (VV, VH), (RH,
+        RV), or (LH, LV)<br>
+        <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2. SCOMPLEX SLC data are scaled by .001 before calculations
+        are performed<br>
+        <br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC image parameter file of SLC-2 coregistered
+        with SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;J&gt;</td>
+
+        <td>(output) root file name of coherence matrix elements
+        (e.g. scene_id): .j11, .j22, (float), .j12 (fcomplex)<br>
+        NOTE: expressed in the H,V polarization basis, the
+        coherence matrix elements are given by:<br>
+        <br>
+        &nbsp; J11: &lt;E_h E_h* &gt;<br>
+        &nbsp; J12: &lt;E_h E_v*&gt;<br>
+        &nbsp; J21: &lt;E_v E_h*&gt;<br>
+        &nbsp; J22: &lt;E_v E_v*&gt;</td>
+      </tr>
+
+      <tr>
+        <td>&lt;J_par&gt;</td>
+
+        <td>(output) image parameter file associated with the
+        coherence parameter data files (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks used to calculate coherence</td>
+      </tr>
+
+      <tr>
+        <td>&lt;azlks&gt;</td>
+
+        <td>number of azimuth looks used to calculate
+        coherence</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line (default: 0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (enter - for default:
+        entire file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>wolf 20080415_HH.slc 20080415_HV.slc 20080415_HH.slc.par
+  20080415_HV.slc.par 20080415_HH_HV 20080415_HH_HV.mli.par 2
+  4</samp></p>
+
+  <p style="text-align: left;">This calculates the 4 coherence
+  matrix elements J11,&nbsp; J12,&nbsp; J21, and J22&nbsp; and
+  stores them in the files 20080415_HH_HV.j11, 20080415_HH_HV.j12,
+  20080415_HH_HV.j21, 20080415_HH_HV.j22</p>
+
+  <p><strong>DESCRIPTION</strong></p>
+
+  <p style="text-align: justify;">The Wolf coherence matrix
+  describes the polarization state of an electromagnetic field [1]
+  and are related to the Stokes parameters see <a href=
+  "http://en.wikipedia.org/wiki/Stokes_parameters">http://en.wikipedia.org/wiki/Stokes_parameters</a>.
+  The Stokes parameters can be calculated from the Wolf coherence
+  matrix and the opposite is also true [2].</p>
+
+  <p style="text-align: justify;">The program <span style=
+  "font-style: italic;">wolf</span> calculates the following terms
+  given linear polarized H and V SLC radar data as input:</p>J11:
+  &lt;E_h E_h* &gt;<br>
+  J12: &lt;E_h E_v*&gt;<br>
+  J21: &lt;E_v E_h*&gt;<br>
+  J22: &lt;E_v E_v*&gt;<br>
+  <br>
+  Where &lt;&gt; denotes a spatial average over a window. The user
+  specifies the averaging window dimensions rlks and azlks.<br>
+  The output files J11 and J12 are real valued and the elements J12
+  and J21 are complex valued.<br>
+  <br>
+  The user can also specify the offset to the starting line and the
+  number of lines for calculation.<br>
+
+  <p>[1] Max Born and Emil Wolf, Principles of Optics (7th ed),
+  Chapter 10, Pergamon Press, 1999.</p>
+
+  <p>[2] S.R. Cloude, Polarisation: Applications in Remote Sensing,
+  Chapter 2, Oxford University Press, Oxford, 2010.<br></p>
+
+  <p><strong>SEE ALSO</strong></p><a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "stokes.html">stokes</a>,&nbsp; <a href=
+  "stokes_qm.html">stokes_qm</a>
+  <hr>
+  <a href="copyright.html">&#169;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change 6-Jul-2013
+</body>
+</html>

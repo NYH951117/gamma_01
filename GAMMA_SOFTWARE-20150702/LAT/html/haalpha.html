@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>LAT Reference Manual: haalpha</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>haalpha</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/haalpha.c">haalpha.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  haalpha - Calculation of entropy, anisotropy, alpha and three
+  eigenvalues from the Pauli decomposition of the scattering
+  matrix.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>haalpha &lt;pauli1&gt; &lt;pauli2&gt; &lt;pauli3&gt;
+  &lt;SLC_par&gt; &lt;anisotropy&gt; &lt;alpha&gt; &lt;entropy&gt;
+  &lt;lambda1&gt; &lt;lambda2&gt; &lt;lambda3&gt; &lt;MLI_par&gt;
+  [rlks] [azlks] [loff] [nlines]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;pauli1&gt;</td>
+
+        <td>(input) SLC image with Pauli 1 (Shh + Svv) component
+        (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pauli2&gt;</td>
+
+        <td>(input) SLC image with Pauli 2 (Shh - Svv) component
+        (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pauli3&gt;</td>
+
+        <td>(input) SLC image with Pauli 3 (Shv + Svh) component
+        (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) SLC ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;anisotropy&gt;</td>
+
+        <td>(output) multi-look intensity image with anisotropy
+        component (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;alpha&gt;</td>
+
+        <td>(output) multi-look intensity image with alpha
+        component (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;entropy&gt;</td>
+
+        <td>(output) multi-look intensity image with entropy
+        component (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lambda1&gt;</td>
+
+        <td>(output) multi-look intensity image with eigenvalue #1
+        (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lambda2&gt;</td>
+
+        <td>(output) multi-look intensity image with eigenvalue #2
+        (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lambda1&gt;</td>
+
+        <td>(output) multi-look intensity image with eigenvalue #3
+        (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI_par&gt;</td>
+
+        <td>(output) MLI ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>number of range looks</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>number of azimuth looks</td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting range (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (default=entire
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>haalpha 20090501.p1 20090501.p2 20090501.p3
+  20090501.slc.par 20090501.A 20090501.alpha 20090501.H 20090501.l1
+  20090501.l2 20090501.l3 20090501.mli.par 2 4 0 -</samp></p>
+
+  <p>The program returns the anisotropy (*.A), alpha (*.alpha) and
+  entropy (*.H) decomposition of the scattering matrix starting
+  from the Pauli components (*.p1, *.p2 and *.p3). The program also
+  generates the 3 eigenvalue components of the target
+  decomposition. In this example multi-look factors of 2 and 4 have
+  been used to obtain roughly square pixels on the ground.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  haalpha computes the entropy (H), anisotropy (A) and alpha
+  components of the Cloude-Pottier decomposition (Cloude and
+  Pottier, 1997), as well as the three components in terms of
+  eigenvalues. The entropy and anisotropy images have values
+  between 0 and 1. The image of the alpha component has values
+  between 0 and 90 degrees. The program requires the representation
+  of the scattering matrix in the form of the Pauli components,
+  which can be obtained from the original dataset of
+  full-polarimetric SLC data by applying the program <a href=
+  "lin_comb_cpx.html">lin_comb_cpx</a>. Combination of H and A is
+  possible with the programs <a href="product.html">product</a> and
+  <a href="lin_comb.html">lin_comb</a>.<br>
+  <br>
+  The input binary files of type FCOMPLEX. The output binary files
+  are of type FLOAT.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a>MS</a> last change
+  13-Apr-2013.</p>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: ras_linear</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>ras_cpt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ras_cpt.c">ras_cpt.c</a></i></p>
+
+  <p><b>NAME</b><br>
+  ras_cpt - Generate a rasterfile of height values using a color
+  map file</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <tt>ras_cpt &lt;hgt&gt; &lt;width&gt; &lt;cpt&gt; [color_model]
+  [start_hgt] [nlines] [pixavr] [pixavaz] [LR] [rasf]</tt><br>
+  &nbsp;</p>
+
+  <table border="1" cellpadding="7" cellspacing="2">
+    <tr>
+      <td>&lt;hgt&gt;</td>
+
+      <td>(input) data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>samples per row of input data</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cpt&gt;</td>
+
+      <td>(input) color map file (see below for format
+      information), *.cpt</td>
+    </tr>
+
+    <tr>
+      <td>[color_model]</td>
+
+      <td>color_model color model selection flag: (default=0)<br>
+      0: RGB color model<br>
+      1: HLS (double hexagon color model)<br>
+      2: HSV (single hexagon color model)</td>
+    </tr>
+
+    <tr>
+      <td>[start_hgt]</td>
+
+      <td>starting line of input data file (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to display (default=0: to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[pixavr]</td>
+
+      <td>number of pixels to average in range (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[pixavaz]</td>
+
+      <td>number of pixels to average in azimuth (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping flag, (default=1: normal, -1: mirror
+      image)</td>
+    </tr>
+
+    <tr>
+      <td>[rasf]</td>
+
+      <td>(output) raster image file (default=*.ras: SUN raster
+      format, *.bmp: BMP format)</td>
+    </tr>
+  </table>
+
+  <p><b>EXAMPLES</b><br>
+  <tt>ras_cpt niger.dem 450 GMT_topo.cpt 2 1</tt></p>
+
+  <p>Generates an (24-bit) SUN raster from the input height file
+  niger.dem using the color map defined in GMT_topo.cpt. The values
+  in GMT_topo.cpt are HSV.</p>
+
+  <p><b>DESCRIPTION</b><br>
+  <i>ras_cpt</i> generates an 24-bit SUN raster or BMP format image
+  from a real-valued input data file (float) using an external
+  color map file. The color map file is a text file with the start
+  class-value, 3 color components for the start value, the stop
+  class-value with 3 color components (same format as in e.g. in
+  GMT. GMT cpt files can be used without modification. Take care to
+  use the corresponding color mode when you call the program).</p>
+
+  <p>Example color map (cpt) file:</p>
+  <pre>
+<tt>
+#       $Id: GMT_topo.cpt,v 1.1.1.1 2000/12/28 01:23:45 gmt Exp $
+#
+# Colormap using in Teconic Maps (Anderson, Sandwell, Wessel)
+# Designed by D. Sandwell, Scripps
+# COLOR_MODEL = HSV
+-7000   290     0.45    0.85    -6500   265     0.45    0.85
+-6500   265     0.40    0.90    -6000   240     0.40    0.90
+-6000   240     0.40    0.90    -5500   220     0.40    0.90
+-5500   220     0.40    0.90    -5000   199     0.40    0.90
+-5000   199     0.40    0.90    -4500   175     0.40    0.95
+-4500   175     0.40    0.95    -4000   150     0.45    0.95
+-4000   150     0.45    0.95    -3500   125     0.45    0.95
+-3500   125     0.45    0.95    -3000   99      0.45    0.95
+-3000   99      0.45    0.95    -2500   75      0.45    0.95
+-2500   75      0.45    0.95    -2000   50      0.45    0.95
+-2000   50      0.45    0.95    -1500   25      0.45    0.95
+-1500   25      0.45    0.95    -500    10      0.35    0.85
+-500    0       0.25    0.85    0       0       0.25    0.80
+0       195     0.35    0.70    200     160     0.40    0.70
+200     160     0.40    0.70    400     125     0.45    0.70
+400     125     0.45    0.70    600     99      0.45    0.80
+600     99      0.45    0.80    1000    75      0.45    0.80
+1000    75      0.45    0.80    1500    50      0.35    0.90
+1500    50      0.35    0.90    3500    25      0.10    1.00
+3500    25      0.05    1       7000    0       0.00    1.00
+B       290     0.45    1.0
+F       0       0.00    1.0
+
+</tt>
+</pre>Lines starting with # are ignored. The special records
+starting with F, B, N indicate the colors for the foreground (F),
+background (B) and for 0.0, indicating no value, (N). Foreground
+color is not applicable in this program. The background color is
+used for any not otherwise assigned colored values. If a value
+falls within several different records the last record in the cpt
+file is dominant. I F, B, N records are not provided the color
+values are set to 0.
+
+  <p><b>OPTIONS</b><br>
+  Multi-looking and the selection of a reduced number of lines may
+  be applied. For the generation of a corresponding color scale
+  ras_cpt_scale may be used.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  awi, <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 22-Nov-2005
+</body>
+</html>

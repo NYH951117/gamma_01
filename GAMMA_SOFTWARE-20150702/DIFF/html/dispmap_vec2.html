@@ -1,0 +1,263 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing --><!-- uw040811 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: dispmap_vec2</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>dispmap_vec2</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dispmap_vec2.c">dispmap_vec2.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  dispmap_vec2 - Calculation of displacement vector field from 2
+  measured components (asc./desc.).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>dispmap_vec2 &lt;DEM_par&gt; &lt;DEM&gt;
+  &lt;dispmap1&gt; &lt;lv_theta1&gt; &lt;lv_phi1&gt;
+  &lt;dispmap2&gt; &lt;lv_theta2&gt; &lt;lv_phi2&gt;
+  &lt;dv_norm&gt; [dv_theta] [dv_phi] [dv_x] [dv_y] [dv_z] [mode]
+  [ax_north] [ax_east]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DEM_par&gt;</td>
+
+        <td>(input) DEM/MAP parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;DEM&gt;</td>
+
+        <td>(input) DEM data file (or constant height value)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dispmap1&gt;</td>
+
+        <td>(input) 1. displacement observation (along look-vector
+        1) (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lv_theta1&gt;</td>
+
+        <td>(input) look-vector 1 elevation angle (file of float or
+        constant value in deg.)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lv_phi1&gt;</td>
+
+        <td>(input) look-vector 1 orientation angle (file of float
+        or constant value in deg.)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dispmap2&gt;</td>
+
+        <td>(input) 2. displacement observation (along look-vector
+        1) (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lv_theta2&gt;</td>
+
+        <td>(input) look-vector 2 elevation angle (file of float or
+        constant value in deg.)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lv_phi2&gt;</td>
+
+        <td>(input) look-vector 2 orientation angle (file of float
+        or constant value in deg.)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;dv_norm&gt;</td>
+
+        <td>(output) norm of 3-dim displacement vector (file of
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>[dv_theta]</td>
+
+        <td>(output) elevation angle of 3-dim displacement vector
+        (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>[dv_phi]</td>
+
+        <td>(output) orientation angle of 3-dim displacement vector
+        (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>[dv_x]</td>
+
+        <td>(output) easting component of 3-dim displacement vector
+        (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>[dv_y]</td>
+
+        <td>(output) northing component of 3-dim displacement
+        vector (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>[dv_z]</td>
+
+        <td>(output) vertical component of 3-dim displacement
+        vector (file of float)</td>
+      </tr>
+
+      <tr>
+        <td>[mask_angle]</td>
+
+        <td>cutoff angle in degrees between the look and normal
+        vectors to mask inaccurate areas (default=2)</td>
+      </tr>
+
+      <tr>
+        <td>[mode]</td>
+
+        <td>displacement model mode<br>
+        &nbsp; &nbsp;0: displacement along terrain surface
+        (default)<br>
+        &nbsp; &nbsp;1: displacement towards center axis</td>
+      </tr>
+
+      <tr>
+        <td>[ax_north]</td>
+
+        <td>displacement center axis northing/latitude</td>
+      </tr>
+
+      <tr>
+        <td>[ax_east]</td>
+
+        <td>displacement center axis easting/longitude</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>dispmap_vec2 aoi.dem_par aoi.dem aoi.disp1 aoi.lv_theta1
+  aoi.lv_phi1 aoi.disp2 aoi.lv_theta2 aoi.lv_phi2 aoi.disp_norm
+  aoi.disp_theta aoi.disp_phi</samp></p>
+
+  <p>Calculates the 3D displacement field based on the 2 indicated
+  DINSAR based line-of-sight displacement component (from ascending
+  and descending orbits) and the assumption that the displacement
+  is along the terrain surface. The output displacement field is
+  expressed through the norm, the elevation angle (theta) and the
+  orientation angle (phi).</p>
+
+  <p><samp>dispmap_vec2 aoi.dem_par aoi.dem aoi.disp1 aoi.lv_theta1
+  aoi.lv_phi1 aoi.disp2 aoi.lv_theta2 aoi.lv_phi2 aoi.disp_norm - -
+  aoi.disp_x aoi.disp_y aoi.disp_z 2 1 186050 2465870</samp></p>
+
+  <p>Calculates the 3D displacement field based on the 2 indicated
+  DINSAR based line-of-sight displacement component (from ascending
+  and descending orbits) and the assumption that the displacement
+  is towards a vertical axis located at the coordinate (186050
+  2465870). The output displacement field is expressed through the
+  easting (x), northing (y) and vertical (z) components.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  dispmap_vec2 calculates the displacement vector field based on
+  two indicated DINSAR based components and an additional
+  assumption on the displacement direction field.</p>
+
+  <p>The two indicated DINSAR based components correspond typically
+  to an ascending and a descending orbit based result, so that the
+  directions of the two observed compontents differ significantly.
+  The use of two indipendent observations (two interferograms)
+  acquired in the same satellite track is not adequate.</p>
+
+  <p>Based on the two motion components observed with
+  interferometry the 3D motion vector field cannot be determined,
+  an additional constraint is required. Two such additional
+  constraints are supported by the program. The first one is thast
+  the motion shall be in the terrain surface plain. This constraint
+  seems adequate in the case of glacier motion. The second
+  constraint is that the motion vector points towards a central
+  axis. This is an adequate assumption for concentric deformation
+  pattern as may occur under certain circumstances in the case of
+  subsidence and for volcanic deformation.</p>
+
+  <p>The dimensions of the image files and the map projection which
+  is the reference are defined in the DEM/map parameter file. The
+  DEM is required for the caluclation of the terrain surface
+  plain.</p>
+
+  <p>Differential interferometry permits to estimate the
+  deformation component in the SAR look direction. This DINSAR
+  based information is specified through the displacement component
+  in the look direction and the direction angles (elevation theta
+  and orientation phi) in the map geometry. The look vector
+  direction angles can be determined using the program <a href=
+  "look_vector.html">look_vector</a>. DINSAR based information
+  needs to be provided for two observations in different
+  directions, typically corresponding to ascending and descending
+  track acquisitions.</p>
+
+  <p>Apart from the two components (and related directions)
+  provided the additional condition constraints one more dimension,
+  permitting to calculate the 3D motioin field.</p>
+
+  <p>The output displacement vector is available as displacement
+  norm, elevation and orientation angles, or as easting (x),
+  northing (y) and vertical (up) components, stored in separate
+  binary files (float).</p>
+
+  <p>The elevation angle is defined as the angle between the
+  horizontal surface and the look vector with positive angles
+  indicating sensor positions above the surface. The orientation
+  angle is defined as the angle between the East direction and the
+  projection of the look vector on the horizontal surface plan. The
+  orientation angle increases towards north, with the North
+  direction corresponding to PI/2 (and south to -PI/2). Both angles
+  are expresed in radian.</p>
+
+  <p>Warning: the interferometric observation is only sensitive to
+  motion in the SAR look vector directions. For other directions
+  the sensitivity is reduced which will lead to higher errors. The
+  ascending and descending components may be far from perpendicular
+  to each other. In the case of ERS, for example, both observation
+  directions will be at quite steep angles (about 23 deg. from the
+  normal). As a result horizontal motion in East-West direction is
+  measured at much more accurate than North-South motion.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="dispmap_vec.html">dispmap_vec</a>, <a href=
+  "look_vector.html">look_vector</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2008.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Jan-2008.</p>
+</body>
+</html>

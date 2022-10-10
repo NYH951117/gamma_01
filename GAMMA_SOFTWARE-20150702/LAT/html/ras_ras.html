@@ -1,0 +1,162 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: ras_ras</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>ras_ras</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/ras_ras.c"><i>ras_ras.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  ras_ras - Multilooking and left/right flipping of images in SUN
+  raster of BMP image format</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_ras &lt;ras_in&gt; &lt;ras_out&gt; &lt;col_looks&gt;
+  &lt;row_looks&gt; [LR] [red_lin/log] [green_lin/log]
+  [blue_lin/log]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;ras_in&gt;</td>
+
+      <td>input SUN raster or BMP format image (8 or 24
+      bits/pixel)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>output SUN raster or BMP format image (8 or 24
+      bits/pixel)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;col_looks&gt;</td>
+
+      <td>number of column looks to use in multilooking</td>
+    </tr>
+
+    <tr>
+      <td>&lt;row_looks&gt;</td>
+
+      <td>number of row looks to use in multilooking</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping flag (default: 1=normal, -1=mirror
+      image)</td>
+    </tr>
+
+    <tr>
+      <td>[red_lin/log]</td>
+
+      <td>lin/log scale red channel (default=0: linear scale data,
+      1: log scale data)</td>
+    </tr>
+
+    <tr>
+      <td>[green_lin/log]</td>
+
+      <td>lin/log scale green channel (default=0: linear scale
+      data, 1: log scale data)</td>
+    </tr>
+
+    <tr>
+      <td>[blue_lin/log]</td>
+
+      <td>lin/log scale blue channel (default=0: linear scale data,
+      1: log scale data)</td>
+    </tr>
+
+    <tr>
+      <td>[force24]</td>
+
+      <td>force 24 bits/sample output</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>ras_ras 1825_1868.pwr1.ras 1825_1868.pwr1.3x3.ras 3 3
+  -1</samp><br>
+  3x3 multilooking of 8-bit SUN raster file (grey scale image).</p>
+
+  <p><samp>ras_ras 1825_1868.flt.ras 1825_1868.flt.ras 1 1
+  -1</samp><br>
+  Left/right flipping of 8-bit SUN raster file (image with color
+  table).</p>
+
+  <p><samp>ras_ras 1825_1868.rgb.bmp 1825_1868.rgb.5x5.bmp 5 5 1 0
+  1 0</samp><br>
+  5x5 multilooking of 24-bit BMP image file. For the second (green
+  channel) logarithmic scale has been selected.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code ras_ras.c in $LAT_HOME/src. For compilation adjust
+  and use Makefile: Executable version ras_ras in $LAT_HOME/bin</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>ras_ras</em> reads input images with 8-bit or 24-bit format
+  (SUN raster or BMP format), interprets the color table (if
+  necessary), applies multi-looking in column and row directions,
+  and finally writes out the multi-looked image. Left/right
+  flipping of the image may be applied.</p>
+
+  <p>The lin/log flags allow to indicate that the data of a
+  specific channel of the images was generated using logarithmic
+  (dB) scaleing. When this option is selected the lograithmically
+  scaled values are converted back to linear scale prior to the
+  multi-looking. The multilooked values are again converted back to
+  logarithmic scale prior to being written out.</p>
+
+  <p>Notice that 24-bit output images are generated when
+  multi-looking 8-bit input images with color tables that are not
+  greyscale .An eample for this case is the multilooking of images
+  containing interferometric phase and image intensity.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  None.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong><br>
+  May also be used to convert between formats and change an 8-bit
+  image into a 24-bit/pixel image.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

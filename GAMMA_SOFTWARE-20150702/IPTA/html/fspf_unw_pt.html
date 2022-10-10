@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: fspf_unw_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>fspf_unw_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/fspf_unw_pt.c">fspf_unw_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  fspf_unw_pt - Fast spatial filter and phase unwrapping for point
+  data (single record or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>fspf_unw_pt &lt;plist&gt; &lt;pmask&gt; &lt;SLC_par&gt;
+  &lt;pdata_in&gt; &lt;pdata_out&gt; &lt;ref_pt_nr&gt; [rec_num]
+  [r_max] [spf_type] [wgt_mode]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_out&gt;</td>
+
+        <td>(output) spatially filtered unwrapped phase values for
+        point data stack (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ref_pt_nr&gt;</td>
+
+        <td>(input) reference point number which phase is used as a
+        reference in phase unwrapping</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata_in and pdata_out to process
+        (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum radius (range samples, default: 64 )</td>
+      </tr>
+
+      <tr>
+        <td>[spf_type]</td>
+
+        <td>spatial filter type<br>
+        &nbsp;&nbsp;&nbsp; 0: uniform average (default for fcomplex
+        and scomplex data)<br>
+        &nbsp;&nbsp;&nbsp; 1: triangular weighted average: 1 -
+        (r/r_max)<br>
+        &nbsp;&nbsp;&nbsp; 2: quadratic weighted average: 1 -
+        (r/r_max)**2<br>
+        &nbsp;&nbsp;&nbsp; 3: Gaussian weighted average:
+        exp(-2.*(r**2/r_max**2))<br></td>
+      </tr>
+
+      <tr>
+        <td>[wgt_mode]</td>
+
+        <td>weighting mode for phase unwrapping<br>
+        &nbsp;&nbsp;&nbsp; 0: uniform weighting (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: weights according to intensity of
+        filtered complex interferogram<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>fspf_unw_pt pt pmask1 08256.rslc.par pdiff punw1.spf 321 14
+  2 500 2 1</samp></p>Conducts a fast spatial filtering and phase
+  unwrapping of record 14 of the input point data stack pdiff
+  (fcomplex). Points within a radius of 500 SLC range samples are
+  taken into account for the the spatial filtering of each point.
+  The spatial filter type chosen is a quadratic weighted average (1
+  - (r/r_max)**2). The phase of point number 321 is taken as a
+  reference for phase unwrapping. For the MCF phase unwrapping the
+  input unwrapped phase values are weighted according to the
+  intensity of the filtered complex interferogram. The unwrapped
+  phase values are written to the point data stack punw1.spf
+  (float).<samp>fspf_unw_pt pt pmask1 08256.rslc.par pdiff
+  punw1.spf 321 - 2 500 2</samp>
+
+  <p>Same as above except that (1) the filtering and phase
+  unwrapping is performed for all data records of the point stack
+  and that (2) the unwrapped phase values receive a uniform
+  weighting for the MCF phase unwrapping procedure.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code fspf_unw_pt.c in ./IPTA/src, executable version
+  fspf_unw_pt in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the estimation of orbital phase trends and long-wavelength
+  atmospheric path delays complex valued point data layers need to
+  be spatial filtered with large filter windows followed by
+  unwrapping using the minimum cost flow algorithm. This can be
+  done using spf_pt and mcf_pt, but this sequence is very slow for
+  large filter windows. Applying similar filtering as supported in
+  fspf_pt followed by unwrapping of the multi-looked filtered data
+  using the minimum cost flow algorithm computationally much more
+  efficient. fspf_unw_pt is of interest in the estimation of
+  residual (unwrapped) orbital phases and long-wavelength
+  atmospheric phases for the complex valued point differential
+  interferograms of from rewrapped residual phases from a
+  regression analysis.<br></p>
+
+  <p>fspf_unw_pt combines fast spatial filtering and Minimum Cost
+  flow (MCF) phase unwrapping of the filtered complex interferogram
+  for point data stacks. Either one or all records can be filtered
+  and unwrapped. The filter size used can be indicated through the
+  spatial radius (indicated in range samples). The filtering done
+  before the phase unwrapping corresponds to the program <a href=
+  "fspf_pt.html">fspf_pt</a>. The phase unwrapping, however, is
+  then done in the multilook geometry.<br></p>
+
+  <p>Together with the point list a point mask file can be
+  indicated to consider or ignore specific points. "-" can be
+  indicated instead a pmask file to consider all points of the
+  list. fspf_unw_pt provides fast spatial filtering and phase
+  unwrapping of large point lists.<br></p>
+
+  <p>Either one record or all records can be filtered and
+  unwrapped. To select all records in the stack enter "-" for the
+  record number. Different format types (0:fcomplex 1:scomplex
+  2:float, default -: float) are supported. The format of the
+  output point data stack with the filtered values has the same
+  type as the input point data stack.<br></p>
+
+  <p>The SLC parameter file associated with the point list
+  coordinate geometry is required to calculate the ground distances
+  between pairs of points. Such distances are calculated using the
+  ground range sampling (calculated from slant range sampling and
+  incidence angle) and the azimuth spacing. The maximum search area
+  radius is indicated in SLC range samples. Only valid points, i.e.
+  points with a non-zero value in the mask are considered. For
+  points with a zero in the mask the output is set to the NULL
+  value.<br></p>
+
+  <p>For the spatial filtering constant weights, a linearly
+  decreasing ramp (linear with ground distance), a quadratic, or a
+  Gaussian distance-weighed average can be selected. Points with
+  NULL values in the input data are not considered in the search
+  for the nearest points (they are not counted as points in the
+  filtering).<br></p>
+
+  <p>The minimum cost flow (MCF) algorithm is used to minimize the
+  total cost associated with phase discontinuities in the scene
+  associated with noise, and layover. The user may supplies weights
+  in the form of intensity values of the spatially filtered complex
+  interferogram by setting the weighting mode flag to 1. The
+  weights are used to calculate where discontinuities (i.e. network
+  flow) are preferred. Regions of low weight have low costs for
+  phase jumps whereas areas of high cost tend to exclude such
+  discontinuies in the unwrapped phase. See also <a href=
+  "mcf_pt.html">mcf_pt</a> for more information on MCF phase
+  unwrapping.<br></p><strong>OPTIONS</strong><br>
+  none.
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="fspf_pt.html">fspf_pt</a>, <a href=
+  "spf_pt.html">spf_pt</a>, <a href="mcf_pt.html">mcf_pt</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 28-Nov-2011.</p>
+</body>
+</html>

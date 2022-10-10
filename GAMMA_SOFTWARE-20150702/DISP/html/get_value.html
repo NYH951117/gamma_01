@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DISP Reference Manual: get_value</title>
+</head>
+
+<body>
+  <h1>Gamma DISP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>get_value</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/get_value.c">get_value.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  get_value - search a keyword based parameter using a key and copy
+  the value to <span style="font-style: italic;">stdout.</span></p>
+
+  <p><strong>SYNOPSIS</strong></p>
+
+  <p><code>get_value &lt;PAR_in&gt; &lt;keyword&gt;</code></p>
+
+  <table border="1" cellpadding="7" cellspacing="2">
+    <tbody>
+      <tr>
+        <td>&lt;PAR_in&gt;</td>
+
+        <td>input keyword:value based parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;keyword&gt;</td>
+
+        <td>search keyword of keyword:value pair</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong><strong>EXAMPLE</strong></strong></p>
+
+  <p><code>get_value 05263.slc.par image_format</code></p>
+
+  <p>searches the keyword:value&nbsp; pairs in <span style=
+  "font-style: italic;">05263.slc.par</span>
+  for&nbsp;</p><em>image_format:&nbsp; SCOMPLEX</em>
+
+  <p>and outputs the value SCOMPLEX to <span style=
+  "font-style: italic;">stdout.</span></p>
+
+  <p><strong>DESCRIPTION</strong> <em>get_value</em> reads the
+  input <em>keyword: value</em> organized parameter file a line at
+  a time searching for the <em>keyword</em>. A semicolon is used to
+  denote the end of a keyword and a newline denotes the end of a
+  line. If the <em>keyword</em> is found then the <em>value</em> is
+  printed to standard output..</p>
+  <hr align="left">
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a>, and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change &nbsp;10-Apr-2006.</p>
+</body>
+</html>

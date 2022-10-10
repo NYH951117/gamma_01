@@ -1,0 +1,66 @@
+#!/usr/bin/perl
+use Getopt::Long;
+
+if (($#ARGV + 1) < 5){die <<EOS;}
+*** $0
+*** Generate ITAB file to process interferograms with either single or sequential reference SLC ***
+*** Copyright 2015, Gamma Remote Sensing, v1.9 11-Apr-2015 clw ******
+
+usage: $0 <itab> <max> <step> <stride> <offset>
+  itab    (output) ITAB file with 4 columns, text format
+            1: ref. SLC index from SLC_tab
+            2: second SLC index of the interferometric pair
+            3: ITAB file line counter
+            4: Active flag (0: not included  1: included in time-series analysis)
+  max     number of SLCs in the SLC_tab
+  step    difference in SLC index between the reference and second SLC for each interferogram (default: 1)
+  stride  increment of the index of the starting SLC, if stride is 0, then reference will not change, and the index of the second SLC will increase by step
+  start    index of the first SLC used in generating the itab,  (start >= 1)
+
+  -r ref  index of the reference SLC when stride is 0, default is the start index
+  -a      do not generate itab records where the ref. SLC and second SLC have the same index
+ 
+  NOTE: itab records refer to line numbers of the entries in the SLC_tab
+    
+EOS
+
+$itab = $ARGV[0];
+$max = $ARGV[1];
+$step = $ARGV[2];
+$stride = $ARGV[3];
+$start = $ARGV[4];
+$refx = $start;
+$aflg = 0;
+
+GetOptions ('r=i' => \$refx, 'a' => \$aflg);
+($refx >= 1 && $refx <= $max) or  die "\nERROR $0: reference index must be between 1 and $max: $refx\n";
+
+open(ITAB, ">$itab") or die "ERROR $0: cannot create itab file: $itab\n\n";
+print "ITAB file: $ARGV[0]\n"; 
+
+$step =~ /\d+$/ && $step > 0 or die "ERROR $0: invalid step: $step\n"; 
+$max =~ /\d+$/ && $max >= $step or die "ERROR $0: invalid maximum SLC number: $max\n";
+$stride =~ /\d+$/ && $stride >= 0 or die "ERROR $0: invalid stride: $stride\n";
+$start >= 1 or die "ERROR $0: starting SLC index must be >= 1\n";
+
+$ic = 1;
+if ($stride == 0) {
+  print "reference SLC index: $refx\n";
+  for ($n=0;  $n <= $max - $start; $n += $step) {
+    next if ($aflg and $refx eq $start + $n);
+    printf "%4d %4d %4d %4d\n",  $refx, $start + $n, $ic, 1;
+    printf ITAB "%4d %4d %4d %4d\n",  $refx, $start + $n, $ic, 1;
+    $ic++;
+  }
+}
+else {
+  for ($n= 0; $n <= ($max - $start - 1); $n += $stride) {
+    if (($n + $start + $step) <= $max) {
+      next if ($aflg and  $n + $start eq $n + $step + $start);
+      printf "%4d %4d %4d %4d\n", $n + $start, $n + $step + $start, $ic, 1;
+      printf ITAB "%4d %4d %4d %4d\n", $n + $start, $n + $start + $step, $ic, 1;
+      $ic++;
+    }
+  }
+}  
+exit 0;

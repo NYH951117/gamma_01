@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: data2pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>data2pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/data2pt.c">data2pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  data2pt - raster to vector format conversion (extract values from
+  a 2-D data file at specified point locations)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>data2pt &lt;f_in&gt; &lt;par_in&gt; &lt;plist&gt;
+  &lt;SLC_par&gt; &lt;pdata&gt; &lt;rec_num&gt;
+  &lt;type&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;f_in&gt;</td>
+
+      <td>(input) 2-D image data file (various types
+      supported)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;par_in&gt;</td>
+
+      <td>(input) SLC/MLI parameter file of 2-D image data
+      file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(input) point list for sampling (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) SLC parameter file of point list coordinates</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata&gt;</td>
+
+      <td>(output) point data stack (same type as f_in)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num&gt;</td>
+
+      <td>record number in output point data stack (starting with
+      1)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;type&gt;</td>
+
+      <td>data type (0:fcomplex 1:scomplex 2:float 3:int 4:short
+      5:byte 6:SUN/BMP raster)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>data2pt 08560.rslc 20491.rslc.par testsite.plist
+  20491.rslc.par testsite.pslc 4 1</samp></p>
+
+  <p>Extracts complex SLC values (scomplex) at the point list
+  (testsite.plist) coordinates from the registered SLC 08560.rslc
+  and writes the values as record number 4 to the output point data
+  stack testsite.pslc (scomplex). The geometry of the registered
+  SLC is defined by the SLC parameter file, which is identical to
+  the SLC parameter file for the point list
+  coordinates.</p><samp>data2pt ave20.rmli 20491.rmli.par
+  testsite.plist 20491.rslc.par testsite.ave20.pmli 1 2</samp>
+
+  <p>Extracts values (float) at the point list (testsite.plist)
+  coordinates from the averaged backscatter intensity image
+  (ave20.rmli) and writes the values as record number 1 to the
+  output data stack testsite.ave20.pmli (float), a stack with just
+  a single record. The geometry of the real valued image ave20.rmli
+  is defined by the MLI parameter file, 20491.rmli.par, which
+  resulted from the SLC parameter file for the point list
+  coordinates (20491.rslc.par) by multi-looking.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code data2pt.c in ./IPTA/src, executable version data2pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The use of point data stacks is an important element of the IPTA.
+  Registered SLC data and interferometric data products at the
+  selected points are stored in such point data stacks with each
+  record corresponding to an SLC image or an interferogram pair.
+  Other image data, such as for example a height map, sampled at
+  the point list coordinates, is stored in a corresponding stack
+  but with just a single record.</p>
+
+  <p>data2pt supports the conversion of image data from the
+  "normal" 2-D raster image format to the IPTA vector data
+  format.</p>
+
+  <p>For the input image (in the "normal" 2-D raster image format)
+  the geometry is specified in a SLC/MLI parameter file. The
+  geometry of the input image can be different from the geometry of
+  the point list coordinates which is defined in a separate SLC
+  parameter file.</p>
+
+  <p>The input image can either be in the SLC geometry used for the
+  point list coordinates or in a multi-looked geometry (relative to
+  the same SLC geometry, without offsets in range and azimuth).</p>
+
+  <p>data2pt extracts values at the pixel which is the nearest
+  neighbor to the point list coordinate (int) indicated in the
+  point list.</p>
+
+  <p>The extracted values (in binary vector data format) are
+  written to the point data stack at the indicated record number.
+  The record numbers start with 1. The number of records
+  corresponds to the highest record number. Stacks with just a
+  single record are used in the case of data files as the terrain
+  height.</p>
+
+  <p>If a new stack name is indicated the stack is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack
+  size.</p>
+
+  <p>Different data types (fcomplex, scomplex, float, int, short,
+  byte, SUN/BMP raster) are supported. The data type of the input
+  2-D data and the output point data stack are assumed to be
+  identical.</p>
+
+  <p>When generating an SLC stack a corresponding stack with the
+  SLC parameters should be generated using the IPTA program
+  <a href="SLC_par_pt.html">SLC_par_pt</a>.</p>
+
+  <p>One of the supported data types is SUN/BMP raster. This type
+  is mainly used in the generation of data stacks of masks values
+  (uchar). To generate a record in a data stacks of masks values a
+  SUN rasterfile (8-bit or 24bit) can be generated and displayed.
+  Classification or image tools (e.g. XV) can then be used to set
+  the area to be masked out (=ignored) to black (0,0,0). Such a
+  SUN/BMP rasterfile with black areas can then be written to the
+  selected record of the data stack of mask values. The unsigned
+  character written to the data stack of mask values corresponds to
+  the grey value (= (red value + green value + blue value)/3 ) of
+  the 8-bit or 24-bit input SUN/BMP rasterfile.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="xpt_slc.html">xpt_slc</a>, <a href=
+  "SLC_par_pt.html">SLC_par_pt</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

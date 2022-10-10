@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: stat_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>stat_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/stat_pt.c">stat_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  stat_pt - calculate mean and sigma of float data (single record
+  or all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>stat_pt &lt;plist&gt; &lt;pmask&gt; &lt;pdata_in&gt;
+  &lt;stat&gt; [rec_num]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;stat&gt;</td>
+
+        <td>&nbsp;(output) text file with layer, mean and sigma of
+        point values</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata_in&nbsp; to process (default -:
+        all records)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>stat_pt plist pmsk1 pres3 res3.stat
+  -<br></samp></p>determines the mean and standard deviation of
+  each layer in the pres3 data statck<br>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code stat_pt.c in ./IPTA/src, executable version stat_pt
+  in ./IPTA/bin</p><strong>DESCRIPTION</strong><br>
+  stat_pt is useful for determining the average and standard
+  deviation of individual layers in a stack of residual phase
+  values. All plints that have non-zero mask values are used in<br>
+  the estimate. Either single layers or all layers can be
+  processed.&nbsp; In this way the level of residual phase due to
+  uncompensated atmosphere, deformation, or baseline error can be
+  evaluated. Based on this evaluation some layers may be removed
+  from consideration&nbsp; in developing the complete deformation
+  model.
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 26-Jan-2005.</p>
+</body>
+</html>

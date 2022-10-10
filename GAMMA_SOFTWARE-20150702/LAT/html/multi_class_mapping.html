@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>LAT Reference Manual: multi_class_mapping</title>
+</head>
+
+<body>
+  <h1>Gamma LAT: Reference Manual</h1>
+  <hr>
+
+  <h2>multi_class_mapping</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/multi_class_mapping.c"><i>multi_class_mapping.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>multi_class_mapping</em> - Mapping of multiple classes based
+  on co-registered multiple input files.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>multi_class_mapping &lt;nfiles&gt; &lt;f1&gt; &lt;f2&gt;
+  ... &lt;classf&gt; &lt;ras_out&gt; &lt;width&gt; [start] [nlines]
+  [pixav_x] [pixav_y] [LR] [color_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;nfiles&gt;</td>
+
+      <td>number of input data files</td>
+    </tr>
+
+    <tr>
+      <td>&lt;f1&gt;</td>
+
+      <td>1. input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;f2&gt;</td>
+
+      <td>2. input data file (float)</td>
+    </tr>
+
+    <tr>
+      <td>...</td>
+
+      <td>further input files (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;classf&gt;</td>
+
+      <td>Classification table:ASCII file with decison
+      thresholds:<br>
+      each line contains thresholds for one class.<br>
+      For each class lower and upper thresholds are requested,<br>
+      in addition color table values.</td>
+    </tr>
+
+    <tr>
+      <td>&lt;ras_out&gt;</td>
+
+      <td>output 8-bit SUN raster, BMP format image file (SUN
+      raster file: *.ras, BMP file: *.bmp)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;width&gt;</td>
+
+      <td>number of samples/row</td>
+    </tr>
+
+    <tr>
+      <td>[start]</td>
+
+      <td>starting line (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[nlines]</td>
+
+      <td>number of lines to display (default: 0=to end of
+      file)</td>
+    </tr>
+
+    <tr>
+      <td>[pixav_x]</td>
+
+      <td>number of pixels to average in range (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[pixav_y]</td>
+
+      <td>number of pixels to average in azimuth (default=1)</td>
+    </tr>
+
+    <tr>
+      <td>[LR]</td>
+
+      <td>left/right flipping flag (default: 1=normal, -1=mirror
+      image)</td>
+    </tr>
+
+    <tr>
+      <td>[color_flag]</td>
+
+      <td>flag indicating if a color table is defined in file
+      classf<br>
+      (default=0: no col table defined; 1: color table
+      defined)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>multi_class_mapping 2 1825_1868.cc 1825_1868.pwr1
+  1825_1868.class.par 1825_1868.landuse.ras 2500 1 0 1 1
+  -1</samp></p>
+
+  <p>Generates a classification based on the 2 input data files and
+  the decision intervals and the color table listed in the
+  classification table 1825_1868.class.par. To classify the 5
+  classes: water, layover, forest, agriculture, and urban, the
+  classification table (ASCII text file 1825_1868.class.par), may
+  look like this for example:</p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>0.0</td>
+
+      <td>0.2</td>
+
+      <td>0.0</td>
+
+      <td>0.01</td>
+
+      <td>0</td>
+
+      <td>0</td>
+
+      <td>255</td>
+    </tr>
+
+    <tr>
+      <td>0.0</td>
+
+      <td>0.2</td>
+
+      <td>0.2</td>
+
+      <td>100.</td>
+
+      <td>255</td>
+
+      <td>255</td>
+
+      <td>0</td>
+    </tr>
+
+    <tr>
+      <td>0.2</td>
+
+      <td>0.4</td>
+
+      <td>0.05</td>
+
+      <td>0.2</td>
+
+      <td>0</td>
+
+      <td>255</td>
+
+      <td>0</td>
+    </tr>
+
+    <tr>
+      <td>0.4</td>
+
+      <td>1.0</td>
+
+      <td>0.02</td>
+
+      <td>0.2</td>
+
+      <td>128</td>
+
+      <td>255</td>
+
+      <td>128</td>
+    </tr>
+
+    <tr>
+      <td>0.4</td>
+
+      <td>1.0</td>
+
+      <td>0.2</td>
+
+      <td>100.</td>
+
+      <td>255</td>
+
+      <td>0</td>
+
+      <td>0</td>
+    </tr>
+  </table>
+
+  <p>The first and second column define the lower and upper limit
+  for the value of the first input data file (in this case the
+  coherence). The third and fourth column define the lower and
+  upper limit for the value of the second input data file (in this
+  case the backscattering coefficient). Columns 5 to 7 define the
+  color table values (RGB: red, green, blue, ranging from 0 to
+  255). Each row corresponds to a different class.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code multi_class_mapping.c in $LAT_HOME./src. For
+  compilation adjust and use Makefile: Executable of
+  <em>multi_class_mapping</em> resides in $LAT_HOME/bin.</p>
+
+  <p><strong>AVAILABILITY</strong><br>
+  Uses display programs definition file <a href=
+  "display.h.html">display.h,</a> SUN raster file definition file
+  <a href="rasterfile.h.html">rasterfile.h</a>, and BMP format
+  definition file, <a href="bmp_image.h.html">bmp_image.h</a>.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>multi_class</em>_mapping provides a simple classification
+  algorithm. Multiple input data sets are read and a classification
+  based on decision intervals listed in the classification table is
+  performed. The number of classes to classify is determined by the
+  number of rows in the classification table.For each input data
+  set (files of type float) and class a decision interval is
+  defined in the classification table, i.e. a pixel belongs to a
+  certain class if its values are within the specified interval for
+  all input data sets.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  The output image may be left/right flipped to generate a geometry
+  corresponding better to the natural geometry.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="display.h.html">display.h</a>, <a href=
+  "rasterfile.h.html">rasterfile.h</a>, <a href=
+  "bmp_image.h.html">bmp_image.h</a></p>
+
+  <p><strong>DIAGNOSTICS</strong><br>
+  All messages are generally self-explanatory.</p>
+
+  <p><strong>NOTES</strong></p>
+
+  <ol>
+    <li>No filtering, averaging or multi-looking is performed by
+    multi_class_mapping. These processing steps are often
+    esssential for the performence of a classification algorithm.
+    Such processing steps have to be performed prior to useingof
+    the classification with multi_class_mapping. For each class
+    color table values may be specified in the classification
+    table.</li>
+
+    <li>The classification algorithm determines if a pixel belongs
+    to a certain class until a positive result is found. As a
+    result a pixel who qualifies for several classes will fall in
+    the class first defined in the classification table.
+      <hr>
+    </li>
+  </ol>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "LAT_documentation.html">Documentation</a>, <a href=
+  "LAT_users_guide.html">Users Guide</a> and <a href=
+  "LAT_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 24-Jan-2000.</p>
+</body>
+</html>

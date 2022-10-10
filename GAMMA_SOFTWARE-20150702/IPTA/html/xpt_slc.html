@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: xpt_slc</title>
+  <!-- Software documentation in hypertext language (html), Copyright 2004 Gamma Remote Sensing -->
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>xpt_slc</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/xpt_slc.c">xpt_slc.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  xpt_slc - extract interpolated point target SLC values for point
+  list locations</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>xpt_slc &lt;SLC&gt; &lt;SLC_par&gt; &lt;plist&gt;
+  &lt;pmask&gt; &lt;pxpt&gt; &lt;ppos&gt; &lt;rec_num&gt;
+  &lt;type&gt; [scale]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>(input) SLC file (fcomplex or scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of SLC file and point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list for sampling (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pxpt&gt;</td>
+
+        <td>(output) point data stack of interpolated SLC values
+        (fcomplex or scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(output) point data stack of interpolated point target
+        positions (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>record number in output point data stack (starting with
+        1)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>SLC and pSLC data type<br>
+        &nbsp;&nbsp;&nbsp; 0: FCOMPLEX<br>
+        &nbsp;&nbsp;&nbsp; 1: SCOMPLEX<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[win]<br></td>
+
+        <td style="vertical-align: top;">maximum search window
+        offset (samples) (integer, default: 1)<br></td>
+      </tr>
+
+      <tr>
+        <td>[scale]</td>
+
+        <td>scale factor to multiply the complex output point
+        values (enter - for default:&nbsp; 0.5)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>xpt_slc 08560.rslc 20491.rslc.par plist pslc ppos 4 1 2 2
+  0.5</samp></p>
+
+  <p>Extracts interpolated point target SLC values (scomplex) at
+  coordinates near the point list (plist) coordinates from the
+  registered SLC 08560.rslc and writes the values as record number
+  4 to the output point data stack pslc (scomplex). The geometry of
+  the registered SLC is defined by the SLC parameter file of the
+  reference SLC used in the registration, which is identical to the
+  SLC parameter file for the point list coordinates. The search
+  window is set to be 2 pixels on either side of the indicated peak
+  to ensure that the peak is captured.&nbsp; An amplitude scaling
+  factor of 0.5 is indicated to assure that the real and imaginary
+  parts of the interpolated SLC values remain in the short integer
+  value range.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  The use of point data stacks is an important element of the IPTA.
+  Registered SLC data and interferometric data products at the
+  selected points are stored in such point data stacks with each
+  record corresponding to an SLC image or an interferogram pair.
+  Other image data, such as for example a height map, sampled at
+  the point list coordinates, is stored in a corresponding stack
+  but with just a single record.</p>
+
+  <p><span style="font-style: italic;">xpt_slc</span> supports the
+  conversion of SLC data from the "normal" 2-D raster image format
+  to the IPTA vector data format. For the input SLC (in the
+  "normal" 2-D raster image format) the geometry is specified in a
+  SLC parameter file. The geometry of the input SLC has to be the
+  same as the geometry of the point list coordinates. <span style=
+  "font-style: italic;">xpt_slc</span> extracts values at locations
+  near the point list coordinates given as integers. Both the exact
+  peak location and value are determined by oversampling the data
+  and using a quadratic spline in range and azimuth. The
+  interpolated peak SLC value and the real-valued coordinates
+  (range and azimuth) of the peak location (in binary vector data
+  format) are written to the corresponding point data stacks at the
+  indicated record number. The record numbers begin with 1. The
+  number of records corresponds to the highest record number.</p>
+
+  <p>If no peak can be found at the point location, then the value
+  of the SLC at the coordinates of the input position in the input
+  point list is copied to the ouput SLC sample values. The
+  coordinates of the point in the input list are copied to the
+  output point position list.</p>
+
+  <p>If a new stack name is indicated a new stack file is created.
+  Indicating a record number larger than the highest record number
+  of the indicated stack results in an increase of the stack size.
+  The data type of the input SLC data (fcomplex or scomplex) and of
+  the output SLC point data stack are identical The format of the
+  peak positions data stack is fcomplex with the real part
+  corresponding to the real valued range coordinate and the
+  imaginary part to the real valued azimuth coordinates. When
+  generating an SLC stack a corresponding stack with the SLC
+  parameters should be generated using the IPTA program <a href=
+  "SLC_par_pt.html">SLC_par_pt</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="data2pt.html">xpt_slc</a>, <a href=
+  "SLC_par_pt.html">SLC_par_pt</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2010.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 23-Sep-2010.
+</body>
+</html>

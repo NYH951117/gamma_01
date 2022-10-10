@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <!-- Software documentation in hypertext language (html), Copyright 2015 Gamma Remote Sensing --><!-- uw20150625 -->
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF&amp;GEO Reference Manual: S1_coreg_overlap</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF&amp;GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>S1_coreg_overlap</h2>
+
+  <p><i>C-shell script: <a href=
+  "../scripts/S1_coreg_overlap">S1_coreg_overlap</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-weight: bold;">S1_coreg_overlap -</span> Script
+  to determine a co-registration offset based on the burst overlap
+  applying a "spectral diversity method".</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>S1_coreg_overlap &lt;RSLC1_tab&gt; &lt;RSLC2_tab&gt;
+  &lt;pair&gt; &lt;off&gt; &lt;off_out&gt; [cc_thresh]
+  [fraction_thresh] [ph_stdev_thresh] [cleaning]
+  [RSLC3_tab]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;&lt;RSLC1_tab&gt;&gt;</td>
+
+        <td>(input) 3 column list of TOPS master image (SLC,
+        SLC_par, TOPS_par; row order IW1, IW2, IW3)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;RSLC2_tab&gt;</td>
+
+        <td>(input) 3 column list of TOPS slave image (SLC,
+        SLC_par, TOPS_par; row order IW1, IW2, IW3)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pair&gt;</td>
+
+        <td>(input) ID used for InSAR (e.g. 20141003_20141015)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;off&gt;</td>
+
+        <td>(input) offset parameter file (with refinement offset
+        polynomials)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;off_out&gt;</td>
+
+        <td>(output) corrected offset parameter file (with
+        refinement offset polynomials)</td>
+      </tr>
+
+      <tr>
+        <td>[cc_thresh]</td>
+
+        <td>coherence threshold used (default = 0.8)</td>
+      </tr>
+
+      <tr>
+        <td>[fraction_thresh]</td>
+
+        <td>minimum valid fraction of unwrapped phase values used
+        (default = 0.01)</td>
+      </tr>
+
+      <tr>
+        <td>[ph_stdev_thresh]</td>
+
+        <td>phase standard deviation threshold (default = 0.8
+        radian)</td>
+      </tr>
+
+      <tr>
+        <td>[cleaning]</td>
+
+        <td>flag to indicate if intermediate files are deleted
+        (default=1 --&gt; deleted, 0: not deleted)</td>
+      </tr>
+
+      <tr>
+        <td>[RSLC3_tab]</td>
+
+        <td>(input) 3 column list of already available
+        co-registered TOPS slave image to use for overlap
+        interferograms</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>S1_coreg_overlap 20141003.SLC_tab 20141015.RSLC_tab
+  20141003_20141015 20141003_20141015.off 20141003_20141015.off_out
+  0.7 0.02 0.8 1</samp></p>
+
+  <p>Determines a co-registration azimuth offset refinement based
+  on the burst overlap regions, applying a "spectral diversity
+  method". The updated azimuth offset refinement is written out to
+  the output offset parameter file (20141003_20141015.off_out).</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>S1_coreg_overlap</em> is used in the S1 IWS co-registration
+  procedure or to assess the co-registration quality of
+  co-registered S1 IWS SLCs.</p>
+
+  <p>As input a pair (master and slave) of two already almost
+  perfectly co-registered Sentinel-1 (S1) Interferometric Wide
+  Swath (IWS) burst SLC are provided. These burst SLCs consist of
+  the sub-swath burst SLCs for one or several sub-swaths as defined
+  in the SLC_tabs provided for the reference (e.g.
+  20141003.SLC_tab) and the slave (20141015.RSLC_tab). For each
+  sub-swath the SLC_tab contains one line with the burst SLC name
+  (e.g 20141015.IW1.rslc), the name of the SLC parameter file of
+  the burst SLC (e.g 20141015.IW1.rslc.par), and the related TOPS
+  parameter file (e.g. 20141015.IW1.rslc.TOPS_par). In this IW1 is
+  used to indicate that it is for the first sub-swath (IW1) and
+  rslc is used to express that it is an already co-registered slave
+  burst SLC.</p>
+
+  <p>The indicated pair parameter (e.g. 20141003_20141015) is used
+  in the naming of the intermediate files automatically generated
+  by the program.</p>
+
+  <p>Then an input and an output offset parameter file need to be
+  indicated. The input offset parameter file is the file that was
+  used in the co-registration of the burst SLC pair (as used when
+  resampling the slave burst SLC using the program
+  SLC_interp_S1_TOPS). The input offset parameter file can already
+  contain offset polynomials e.g. as determined in a refinement
+  using intensity matching or in a previous iteration using
+  S1_coreg_overlap. The output offset parameter file corresponds to
+  a copy of the input offset parameter file with an update to the
+  constant value of the azimuth offset polynomial.</p>
+
+  <p>To apply the refined azimuth offset refinement you need to
+  rerun the slave burst SLC resampling, but using the output offset
+  parameter file instead of the input offset parameter file (when
+  running the the program SLC_interp_S1_TOPS).</p>
+
+  <p><em>S1_coreg_overlap</em> applies a spectral diversity method
+  to all the available burst overlap regions of all the available
+  sub-swaths. For this it determines for each burst overlap regions
+  which sections of the earlier and later burst are overlapping.
+  For each overlap region these two sections are copied out of both
+  the master and slave burst SLC, resulting in four small SLC
+  sections of identical size. Single look interferograms are then
+  calculated for the pair of SLC sections (master and slave) of the
+  earlier burst, and for the pair of SLC sections (master and
+  slave) of the later burst. Next the phase difference between
+  these two single look interferograms is calculated to get the
+  "double-difference" interferogram. This complex valued
+  interferogram is then multi-looked and unwrapped. Before the
+  unwrapping a coherence measure is calculated and used as
+  weighting function in the minimum-cost-flow unwrapping (mcf) and
+  to be used for the thresholding of potentially unreliable low
+  coherence areas.</p>
+
+  <p>For each burst overlap region an average unwrapped
+  double-difference phase is calcualted. Only values with coherence
+  values above the incidated coherence threshold are considered.
+  Besides the average phase the program also calculates the phase
+  standard deviation as an additional quality measure. Except for
+  phase noise and phase caused by azimuth displacement a constant
+  phase is expected. A significantly increased phase standard
+  deviation is therefore a clear indication for the presence of
+  unwrapping errors (which may occur considering that the high
+  coherence areas may be spatially separated). Our experience shows
+  that low phase standard deviation values (e.g. &lt; 0.8 radian)
+  are a quite reliable indication for a reliable average unwrapped
+  double difference phase.</p>
+
+  <p>Besides the coherence and the phase standard deviation the
+  program also consideres the fraction of the available non-zero
+  pixels of the overlap region that was successully unwrapped. If
+  this area is too small (e.g. smaller than a few percent) for a
+  given overlap region then the average phase estimated for this
+  overlap region is not further considered.</p>
+
+  <p>Such average double difference phases are estimated for each
+  burst overlap region available. The averages for the individual
+  overlap regions are then averaged using the a weighting factor
+  calculated based on the validity fraction and the phase standard
+  deviation.</p>
+
+  <p>This "global" phase offset between the earlier and later burst
+  interferograms is then converted to an azimuth offset correction,
+  considering the azimuth phase ramp present in the TOPS mode
+  data.</p>
+
+  <p>The determined azimuth offset correction, is used to update
+  the constant value of the azimuth offset polynomial (taken from
+  the input offset parameter file and written after updating to the
+  output offset parameter file.</p>
+
+  <p>Besides the updating of the azimuth offset polynomial the
+  program provides a wealth of quality information on the
+  estimation process, including coherence and phase statistics.</p>
+
+  <p><em>S1_coreg_overlap</em> generates a large amount of
+  intermediate files, including interferograms, coherence maps,
+  coherence masks, unwrapped phases, etc. for every available burst
+  overlap regions. Normally, these many intermediate files are
+  directly deleted at the end of the program without looking at it
+  in detail. In cases where the co-registration refinement result
+  does not converge or where the quality number give indications of
+  problems it is recommended not to deleted the intermediate files
+  and check them carefully to be able to optimize the tresholds
+  used. Deleting or not deleting the intermediate files is done by
+  setting the cleaning flag to 1 (which is the default and which
+  means the files are deleted) or to 0 to keep the intermediate
+  files.</p>
+
+  <p>The factor for the scaling of the double difference phase
+  offset determined to an azimuth offset in SLC pixels is around
+  -0.016 azimuth SLC pixel per radian. This sensitivity also means
+  that there can be a phase ambiguity problem for higher azimuth
+  co-registration errors. A double difference interferometric phase
+  of a full phase cycle (2PI) is reached for an azimuth
+  co-registration error close to 0.1 azimuth SLC pixel.</p>
+
+  <p><strong>OPTIONS</strong><br></p>
+
+  <p>Using <em>S1_coreg_overlap</em> to refine the co-registration
+  for a slave acquired with a long temporal separation from the
+  master scene may result in generally reduced coherence. As a way
+  to optimize the coherence it is possible to indicate in addition
+  to the master burst SLC a second already co-registered SLC
+  (possibly one close in time to the slave considered). The program
+  uses then this second scene to calculate the double-difference
+  interfergrams, while the master geometry is the one of the true
+  master.</p>
+
+  <p>In cases where <em>S1_coreg_overlap</em> it may be necessary
+  to start from already better co-registered burst SLCs. An initial
+  quality of around 0.01 azimuth pixel should be achieved before
+  running <em>S1_coreg_overlap</em>. Ways to achive this accuracy
+  are matching techniques or to consider the overlap between the
+  sub-swaths, as supported in the program <a href=
+  "S1_coreg_subswath_overlap.html">S1_coreg_subswath_overlap</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href=
+  "S1_coreg_subswath_overlap.html">S1_coreg_subswath_overlap</a>,
+  <a href="S1_poly_overlap.html">S1_poly_overlap</a>, <a href=
+  "S1_coreg_TOPS.html">S1_coreg_TOPS</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "typedef_DIFF.h.html">typedef_DIFF.h</a> .</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "Sentinel-1_users_guide.pdf">Sentinel-1 Users Guide</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2015.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 25-Jun-2015</p>
+</body>
+</html>

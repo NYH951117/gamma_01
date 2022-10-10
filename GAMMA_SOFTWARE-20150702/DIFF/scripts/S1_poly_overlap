@@ -1,0 +1,269 @@
+#! /bin/csh -f
+
+echo "S1_poly_overlap: Script to determine polygons for overlap regions in Sentinel-1 TOPS data v1.0 26-Jan-2015 uw"
+echo " "
+if ($#argv < 4)then
+  echo "usage: S1_poly_overlap <SLC_tab> <rlks> <azlks> <poly> [overlap_type]"
+  echo "       SLC_tab       (input) 3 column list of TOPS burst SLC (SLC, SLC_par, TOPS_par; row order IW1, IW2, IW3)"
+  echo "       rlks          (input) range looks to consider (default=1 (SLC))"
+  echo "       azlks         (input) azimuth looks to consider (default=1 (SLC))"
+  echo "       poly          (output) polygon file for overlap regions (ASCII)"
+  echo "       overlap_type  overlap type selection: default = 1: azimuth overlap,  2: range overlap)"
+  echo " "
+  exit
+endif
+
+
+# read input parameters from command line
+set RSLC1_tab = $1
+set rlks = $2
+set azlks = $3
+set poly = $4
+
+set overlap_type = "1"
+if ($#argv >= 5) set overlap_type = $5
+
+if (  "$overlap_type" == "1" )then
+  echo "generate polygons for azimuth overlaps"
+else
+  if (  "$overlap_type" == "2" )then
+    echo "generate polygons for range overlaps not yet supported"
+    exit  
+  else
+    echo "ERROR: overlap_type    $overlap_type     not supported"
+    exit  
+  endif
+endif
+
+# determine number of rows of RSLC1_tab file
+set tmp=`echo "$RSLC1_tab"  | awk '(NR>=1){print NF}' $1 `
+set nrows=`echo "$tmp" | awk '(NR==1){print NF}'`
+
+# determine number of colums of RSLC1_tab file
+set ncols=`echo "$RSLC1_tab"  | awk '(NR==1){print NF}' $1`
+echo "$RSLC1_tab nrows: $nrows   ncols: $ncols"
+
+# read burst SLC filenames from first line of $RSLC1_tab
+set RSLC1_IW1_slc=`awk '(NR==1){print $1}' $RSLC1_tab`
+set RSLC1_IW1_par=`awk '(NR==1){print $2}' $RSLC1_tab`
+set RSLC1_IW1_TOPS=`awk '(NR==1){print $3}' $RSLC1_tab`
+echo "RSLC1_IW1: $RSLC1_IW1_slc $RSLC1_IW1_par $RSLC1_IW1_TOPS"
+
+# read burst SLC filenames from second line of $RSLC1_tab
+if ( "$nrows" > "1" ) then
+  set RSLC1_IW2_slc=`awk '(NR==2){print $1}' $RSLC1_tab`
+  set RSLC1_IW2_par=`awk '(NR==2){print $2}' $RSLC1_tab`
+  set RSLC1_IW2_TOPS=`awk '(NR==2){print $3}' $RSLC1_tab`
+  echo "RSLC1_IW2: $RSLC1_IW2_slc $RSLC1_IW2_par $RSLC1_IW2_TOPS"
+endif
+
+# read burst SLC filenames from thrid line of $RSLC1_tab
+if ( "$nrows" > "2" ) then
+  set RSLC1_IW3_slc=`awk '(NR==3){print $1}' $RSLC1_tab`
+  set RSLC1_IW3_par=`awk '(NR==3){print $2}' $RSLC1_tab`
+  set RSLC1_IW3_TOPS=`awk '(NR==3){print $3}' $RSLC1_tab`
+  echo "RSLC1_IW3: $RSLC1_IW3_slc $RSLC1_IW3_par $RSLC1_IW3_TOPS"
+endif
+
+
+# set some parameters used
+
+# determine lines offset between start of burst1 and start of burst2
+set azimuth_line_time = `awk '$1 == "azimuth_line_time:" {print $2}' $RSLC1_IW1_par`      
+set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW1_TOPS`      
+set burst_start_time_2 = `awk '$1 == "burst_start_time_2:" {print $2}' $RSLC1_IW1_TOPS`      
+set lines_offset_float = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%f", (($2-$1)/$3)}'`
+set lines_offset = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%d", (0.5+($2-$1)/$3)}'`
+echo "lines_offset: $lines_offset_float $lines_offset"   # lines offset between start of burst1 and start of burst2
+
+# determine lines offset between start of burst1 of IW1 and start of corresponding burst of IW2
+set azimuth_line_time = `awk '$1 == "azimuth_line_time:" {print $2}' $RSLC1_IW1_par`      
+set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW1_TOPS`      
+set burst_start_time_2 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW2_TOPS`      
+set lines_offset_float1 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%f", (($2-$1)/$3)}'`
+set lines_offset1 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%d", (0.5+($2-$1)/$3)}'`
+echo "lines_offset1: $lines_offset_float1 $lines_offset1"   # lines offset between start of burst1 and start of burst2
+if ( "$lines_offset1" < "0" ) then  # burst 1 of IW2 starts before burst 1 of IW1
+  set azimuth_line_time = `awk '$1 == "azimuth_line_time:" {print $2}' $RSLC1_IW1_par`      
+  set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW1_TOPS`      
+  set burst_start_time_2 = `awk '$1 == "burst_start_time_2:" {print $2}' $RSLC1_IW2_TOPS`      
+  set lines_offset_float1 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%f", (($2-$1)/$3)}'`
+  set lines_offset1 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%d", (0.5+($2-$1)/$3)}'`
+  echo "lines_offset1: $lines_offset_float1 $lines_offset1"   # lines offset between start of burst1 and start of burst2
+endif
+
+# determine lines offset between start of burst1 of IW1 and start of corresponding burst of IW3
+set azimuth_line_time = `awk '$1 == "azimuth_line_time:" {print $2}' $RSLC1_IW1_par`      
+set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW1_TOPS`      
+set burst_start_time_2 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW3_TOPS`      
+set lines_offset_float2 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%f", (($2-$1)/$3)}'`
+set lines_offset2 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%d", (0.5+($2-$1)/$3)}'`
+echo "lines_offset2: $lines_offset_float2 $lines_offset2"   # lines offset between start of burst1 and start of burst2
+if ( "$lines_offset1" < "0" ) then  # burst 1 of IW2 starts before burst 1 of IW1
+  set azimuth_line_time = `awk '$1 == "azimuth_line_time:" {print $2}' $RSLC1_IW1_par`      
+  set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW1_TOPS`      
+  set burst_start_time_2 = `awk '$1 == "burst_start_time_2:" {print $2}' $RSLC1_IW3_TOPS`      
+  set lines_offset_float2 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%f", (($2-$1)/$3)}'`
+  set lines_offset2 = `echo "$burst_start_time_1 $burst_start_time_2 $azimuth_line_time" | awk '{printf "%d", (0.5+($2-$1)/$3)}'`
+  echo "lines_offset2: $lines_offset_float2 $lines_offset2"   # lines offset between start of burst1 and start of burst2
+endif
+
+
+##########################################
+# determine burst overlap regions within each sub-swath
+
+set number_of_swaths = "$nrows"
+
+set burst_start_time_1_swath1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW1_TOPS`      
+set start_time = `awk '$1 == "start_time:" {print $2}' $RSLC1_IW1_par`      
+set azimuth_line_time = `awk '$1 == "azimuth_line_time:" {print $2}' $RSLC1_IW1_par`      
+set rows_offset1 = "0"
+echo "start_time_IW1:   $start_time"
+if ( "$nrows" > "1" ) then
+  set start_time_tmp = `awk '$1 == "start_time:" {print $2}' $RSLC1_IW2_par`      
+  set rows_offset2 = `echo "$start_time_tmp $start_time $azimuth_line_time" | awk '{printf "%d", ($1-$2)/$3}'`
+  if ( "$rows_offset2" < "0" ) then
+    set start_time =   $start_time_tmp
+    set rows_offset1 = `echo "$rows_offset2" | awk '{printf "%d", -$1}'`
+  endif
+endif
+if ( "$nrows" > "2" ) then
+  set start_time_tmp = `awk '$1 == "start_time:" {print $2}' $RSLC1_IW3_par`      
+  set rows_offset3 = `echo "$start_time_tmp $start_time $azimuth_line_time" | awk '{printf "%d", ($1-$2)/$3}'`
+  if ( "$rows_offset3" < "0" ) then
+    set start_time =  "$start_time_tmp"
+    set rows_offset1 = `echo "$rows_offset3" | awk '{printf "%d", -$1}'`
+  endif
+endif
+
+echo "rows_offset1: $rows_offset1"
+echo "start_time:   $start_time"
+
+# calculate range offsets and overlaps
+
+if ( "$nrows" > "1" ) then
+  set range_samples = `awk '$1 == "range_samples:" {print $2}' $RSLC1_IW1_par`      
+  set last_valid_sample_1_swath1 = `awk '$1 == "burst_win_1:" {print $7}' $RSLC1_IW1_TOPS`      
+  set first_valid_sample_1_swath2 = `awk '$1 == "burst_win_1:" {print $6}' $RSLC1_IW2_TOPS`
+  set cols_offset1 = `echo "$rlks $last_valid_sample_1_swath1 $first_valid_sample_1_swath2" | awk '{printf "%d", ($2-$3)}'`
+  set mli_cols_offset1 = `echo "$rlks $last_valid_sample_1_swath1 $first_valid_sample_1_swath2" | awk '{printf "%d", ($2-$3)/$1}'`
+  set cols_overlap1 = `echo "$rlks $range_samples $cols_offset1" | awk '{printf "%d", ($2-$3)}'`
+  set mli_cols_overlap1 = `echo "$rlks $range_samples $cols_offset1" | awk '{printf "%d", ($2-$3)/$1}'`
+  echo "range overlap 1: range_samples: $range_samples; cols_offset1: $cols_offset1; mli_cols_offset1: $mli_cols_offset1" 
+  echo "range overlap 1: cols_overlap1: $cols_overlap1; mli_cols_overlap1: $mli_cols_overlap1" 
+
+  set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW2_TOPS`      
+  set rows_offset2 = `echo "$burst_start_time_1 $start_time $azimuth_line_time" | awk '{printf "%d", ($1-$2)/$3}'`
+endif
+
+if ( "$nrows" > "2" ) then
+  set range_samples = `awk '$1 == "range_samples:" {print $2}' $RSLC1_IW2_par`      
+  set last_valid_sample_1_swath1 = `awk '$1 == "burst_win_1:" {print $7}' $RSLC1_IW2_TOPS`      
+  set first_valid_sample_1_swath2 = `awk '$1 == "burst_win_1:" {print $6}' $RSLC1_IW3_TOPS`
+  set cols_offset2a = `echo "$rlks $last_valid_sample_1_swath1 $first_valid_sample_1_swath2 $cols_offset1" | awk '{printf "%d", ($2-$3)}'`
+  set cols_offset2 = `echo "$rlks $cols_offset2a $cols_offset1" | awk '{printf "%d", ($2+$3)}'`
+  set mli_cols_offset2 = `echo "$rlks $cols_offset2a $cols_offset1" | awk '{printf "%d", ($2+$3)/$1}'`
+  set cols_overlap2 = `echo "$rlks $range_samples $cols_offset2a" | awk '{printf "%d", ($2-$3)}'`
+  set mli_cols_overlap2 = `echo "$rlks $range_samples $cols_offset2a" | awk '{printf "%d", ($2-$3)/$1}'`
+  echo "range overlap 2: range_samples: $range_samples; cols_offset2: $cols_offset2; mli_cols_offset2: $mli_cols_offset2" 
+  echo "range overlap 2: cols_overlap2: $cols_overlap2; mli_cols_overlap2: $mli_cols_overlap2" 
+
+  set burst_start_time_1 = `awk '$1 == "burst_start_time_1:" {print $2}' $RSLC1_IW3_TOPS`      
+  set rows_offset3 = `echo "$burst_start_time_1 $start_time $azimuth_line_time" | awk '{printf "%d", ($1-$2)/$3}'`
+endif
+
+# calculate azimuth overlaps
+if ( -e "$poly" ) then
+ /bin/rm $poly
+endif
+
+set j="1"  # swath number
+while ( "$j" <= "$number_of_swaths" )
+
+  if ("$j" == "1" ) then
+    set number_of_bursts = `awk '$1 == "number_of_bursts:" {print $2}' $RSLC1_IW1_TOPS`      
+    set lines_per_burst = `awk '$1 == "lines_per_burst:" {print $2}' $RSLC1_IW1_TOPS`      
+    set lines_overlap = `echo "$lines_per_burst $lines_offset" | awk '{printf "%d", $1-$2}'`
+    set range_samples = `awk '$1 == "range_samples:" {print $2}' $RSLC1_IW1_par`      
+    set cols_offset = "0"
+    set cols_overlap = "0"
+    set rows_offset = "$rows_offset1"
+  endif  
+  if ("$j" == "2" ) then
+    set number_of_bursts = `awk '$1 == "number_of_bursts:" {print $2}' $RSLC1_IW2_TOPS`      
+    set lines_per_burst = `awk '$1 == "lines_per_burst:" {print $2}' $RSLC1_IW2_TOPS`      
+    set lines_overlap = `echo "$lines_per_burst $lines_offset" | awk '{printf "%d", $1-$2}'`
+    set range_samples = `awk '$1 == "range_samples:" {print $2}' $RSLC1_IW2_par`      
+    set cols_offset = "$cols_offset1"
+    set cols_overlap = "$cols_overlap1"
+    set rows_offset = "$rows_offset2"
+  endif  
+  if ("$j" == "3" ) then
+    set number_of_bursts = `awk '$1 == "number_of_bursts:" {print $2}' $RSLC1_IW3_TOPS`      
+    set lines_per_burst = `awk '$1 == "lines_per_burst:" {print $2}' $RSLC1_IW3_TOPS`      
+    set lines_overlap = `echo "$lines_per_burst $lines_offset" | awk '{printf "%d", $1-$2}'`
+    set range_samples = `awk '$1 == "range_samples:" {print $2}' $RSLC1_IW3_par`      
+    set cols_offset = "$cols_offset2"
+    set cols_overlap = "$cols_overlap2"
+    set rows_offset = "$rows_offset3"
+  endif  
+
+  echo "j: $j;  range_samples: $range_samples;  cols_offset: $cols_offset; cols_overlap: $cols_overlap"
+
+  set i="1"  # burst number
+  while ( "$i" < "$number_of_bursts" )
+    # echo "i,j: $i,$j"
+    # define polygon for azimuth overlap between i and i+1 (in sub-swath j)
+    set r1 = `echo "$rlks $cols_offset" | awk '{printf "%d", ($2/$1)+1}'`
+    set r2 = `echo "$rlks $cols_offset $range_samples" | awk '{printf "%d", (($2+$3)/$1)+1}'`
+    if (0) then # entire overlap areas
+      set az1 = `echo "$i $azlks $lines_offset $lines_overlap $rows_offset" | awk '{printf "%d", ($1*$3+$5)/$2}'`
+      set az2 = `echo "$i $azlks $lines_offset $lines_overlap $rows_offset" | awk '{printf "%d", ($1*$3+$4+$5)/$2}'`
+    else   # valid overlap area only
+      if ("$j" == "1" ) then
+        set first_valid_line_2 = `awk '$1 == "first_valid_line_2:" {print $2}' $RSLC1_IW1_TOPS`
+        set last_valid_line_1 = `awk '$1 == "last_valid_line_1:" {print $2}' $RSLC1_IW1_TOPS`
+        set lines_per_burst = `awk '$1 == "lines_per_burst:" {print $2}' $RSLC1_IW1_TOPS`      
+      endif      
+      if ("$j" == "2" ) then
+        set first_valid_line_2 = `awk '$1 == "first_valid_line_2:" {print $2}' $RSLC1_IW2_TOPS`
+        set last_valid_line_1 = `awk '$1 == "last_valid_line_1:" {print $2}' $RSLC1_IW2_TOPS`
+        set lines_per_burst = `awk '$1 == "lines_per_burst:" {print $2}' $RSLC1_IW2_TOPS`      
+      endif      
+      if ("$j" == "3" ) then
+        set first_valid_line_2 = `awk '$1 == "first_valid_line_2:" {print $2}' $RSLC1_IW3_TOPS`
+        set last_valid_line_1 = `awk '$1 == "last_valid_line_1:" {print $2}' $RSLC1_IW3_TOPS`
+        set lines_per_burst = `awk '$1 == "lines_per_burst:" {print $2}' $RSLC1_IW3_TOPS`      
+      endif  
+      # echo "test1:  last_valid_line_1 lines_per_burst $last_valid_line_1 $lines_per_burst" 
+      set az1 = `echo "$i $azlks $lines_offset $lines_overlap $rows_offset $first_valid_line_2" | awk '{printf "%d", ($1*$3+$5+$6-3)/$2}'`
+      set az2 = `echo "$i $azlks $lines_offset $lines_overlap $rows_offset $last_valid_line_1 $lines_per_burst" | awk '{printf "%d", ($1*$3+$4+$5+$6-$7+3)/$2}'`
+    endif
+
+    echo "i,j: $i,$j  mli_cols: $r1 to $r2   mli_rows: $az1 to $az2"
+
+    if ( ("$i == "1") &&  ("$j == "1") ) then
+      echo "  $r1  $az1   1" > $poly
+    else       
+      echo "  $r1  $az1   1" >> $poly
+    endif
+    echo "  $r2  $az1	2" >> $poly
+    echo "  $r2  $az2	3" >> $poly
+    echo "  $r1  $az2	4" >> $poly
+    echo "" >> $poly
+    
+        
+    set i = `echo "$i" | awk '{printf "%d", $1+1}'`
+  end
+
+  set j = `echo "$j" | awk '{printf "%d", $1+1}'`
+end
+
+echo "azimuth overlap polygon file: $poly"
+
+#######################################
+
+
+exit
+
+

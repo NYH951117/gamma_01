@@ -1,0 +1,216 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: fspf_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>fspf_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/fspf_pt.c">fspf_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  fspf_pt - Fast spatial filter for point data (single record or
+  all records)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>fspf_pt &lt;plist&gt; &lt;pmask&gt; &lt;SLC_par&gt;
+  &lt;pdata_in&gt; &lt;pdata_out&gt; [rec_num] [type] [r_max]
+  [spf_type] [msk_flag]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(input) SLC parameter file of point list
+        coordinates</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_in&gt;</td>
+
+        <td>(input) point data stack (various types supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata_out&gt;</td>
+
+        <td>(output) spatially filtered point data stack (same type
+        as pdata_in)</td>
+      </tr>
+
+      <tr>
+        <td>[rec_num]</td>
+
+        <td>record number in pdata_in and pdata_out to process
+        (default -: all records)</td>
+      </tr>
+
+      <tr>
+        <td>[type]</td>
+
+        <td>data type (0:fcomplex 1:scomplex 2:float, default -:
+        float)</td>
+      </tr>
+
+      <tr>
+        <td>[r_max]</td>
+
+        <td>maximum radius (range samples, default: 64 )</td>
+      </tr>
+
+      <tr>
+        <td>[spf_type]</td>
+
+        <td>spatial filter type<br>
+        &nbsp;&nbsp;&nbsp; 0: uniform average (default for fcomplex
+        and scomplex data)<br>
+        &nbsp;&nbsp;&nbsp; 1: triangular weighted average: 1 -
+        (r/r_max)<br>
+        &nbsp;&nbsp;&nbsp; 2: quadratic weighted average: 1 -
+        (r/r_max)**2<br>
+        &nbsp;&nbsp;&nbsp; 3: Gaussian weighted average:
+        exp(-2.*(r**2/r_max**2))<br>
+        &nbsp;&nbsp;&nbsp; 4: linear least-squares (default for
+        float data)<br></td>
+      </tr>
+
+      <tr>
+        <td>[msk_flag]</td>
+
+        <td>output mask flag<br>
+        &nbsp;&nbsp;&nbsp; 0: output only for points specified in
+        the point mask (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: expand filtered data to entire point
+        list<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>fspf_pt pt pmask1 08256.rslc.par pdiff0 pdiff0.spf 14 0 500
+  2 1</samp></p>Conducts a fast spatial filtering of record 14 of
+  the point data stack pdiff0 (fcomplex). Points within a radius of
+  500 SLC range samples are taken into account for the the spatial
+  filtering of each point. The data type of the input and output
+  data set is fcomplex. The spatial filter type chosen is a
+  quadratic weighted average (1 - (r/r_max)**2). After the
+  filtering operation the solution is expanded to the entire point
+  list.<samp>fspf_pt pt pmask1 08256.rslc.par punw1 punw1.spf - 2
+  500 2</samp>
+
+  <p>Same as above except that (1) the filtering is performed for
+  all data records of the point stack and that (2) the solution is
+  not expanded to the entire point list and that (3) data type is
+  float.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code fspf_pt.c in ./IPTA/src, executable version fspf_pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  In the estimation of orbital phase trends and long-wavelength
+  atmospheric path delays spatial filtering with large filter
+  windows is frequently applied in an IPTA processing. Using spf_pt
+  such filtering is supported, but in the case of very large
+  windows it is very slow. The main objective of the program
+  fspf_pt is to provide a useful alternative for such filtering
+  which is computationally much more efficient. fspf_pt can be used
+  for both complex valued point interferograms (e.g. pdiff obtained
+  after subtracting of the simulated topographic phase, or
+  re-wrapped residual phases from a regression analysis) or float
+  data (residual phases, atmospheric path delays).<br></p>
+
+  <p>fspf_pt supports a fast spatial filtering of point data
+  stacks. Either one or all records can be filtered. The points to
+  be considered in the filtering can be indicated through the
+  spatial radius (indicated in range samples).<br></p>
+
+  <p>The functionality of fspf_pt is essentially similar (except
+  reference point bias removal) to <a href=
+  "spf_pt.html">spf_pt</a>, however, the spatial filtering is
+  performed for large filter windows within a much shorter program
+  execution time. The speedup is obtained via a two-step approach
+  consisting of an unweighted multilooking and a weighted spatial
+  filtering of the multilooked data.<br></p>
+
+  <p>Using fspf_pt with small window sizes is not recommended (use
+  <a href="spf_pt.html">spf_pt</a> instead).<br></p>
+
+  <p>If a point mask is indicated only the values listed in the
+  mask as valid points are considered in the filtering.
+  Nevertheless, filtered (interpolated) values can be written out
+  to all other points, as well, if the output mask flag is set to
+  1.<br></p>
+
+  <p>Either one record or all records can be filtered. To select
+  all records in the stack enter "-" for the record number.
+  Different format types (0:fcomplex 1:scomplex 2:float, default -:
+  float) are supported. The format of the output point data stack
+  with the filtered values has the same type as the input point
+  data stack.<br></p>
+
+  <p>The SLC parameter file associated with the point list
+  coordinate geometry is required to calculate ground distances
+  between pairs of points. Such distances are calculated using the
+  ground range sampling (calculated from slant range sampling and
+  incidence angle) and the azimuth spacing. The maximum search area
+  radius is indicated in SLC range samples. Only valid points, i.e.
+  points with a non-zero value in the mask are considered. For
+  points with a zero in the mask the output is set to the NULL
+  value, unless the output mask flag is set to 1.<br></p>
+
+  <p>For the spatial filtering constant weights, a linearly
+  decreasing ramp (linear with ground distance), a quadratic, or a
+  Gaussian distance-weighed average can be selected. Points with
+  NULL values in the input data are not considered in the
+  filtering. For float data values, filtering based upon a
+  least-squares planar fit to the data values is the default
+  filtering method (spf_type = 4). This gives a better estimate of
+  the filtered data when the data points are not uniformly
+  distributed over the search region, e.g. at the edges of
+  data.<br></p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="fspf_unw_pt.html">fspf_unw_pt</a>, <a href=
+  "spf_pt.html">spf_pt</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href="othmar_frey.html">OF</a>,
+  last change 28-Nov-2011.</p>
+</body>
+</html>

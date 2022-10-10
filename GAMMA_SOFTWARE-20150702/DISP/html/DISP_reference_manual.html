@@ -1,0 +1,1118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+
+  <title>DISP Reference Manual: DISP programs</title>
+</head>
+
+<body>
+  <h1>GAMMA Display Software (DISP):</h1>
+
+  <h2>DISP Reference Manual:</h2>
+  <hr align="left">
+
+  <h2>Table of Contents</h2>
+
+  <p><a href="#overview">DISP Overview</a></p>
+
+  <p><a href="#gtk">Screen display programs based on GTK
+  (DISP/src)</a></p>
+
+  <p><a href="#raster">Raster file generation programs
+  (DISP/src)</a></p>
+
+  <p><a href="#xml">Vector and XML file generation programs
+  (DISP/src)</a></p>
+
+  <p><a href="#util">Utility Programs<br></a></p>
+
+  <p><a href="#application">Application of DISP programs to Gamma
+  Data Products</a></p>
+  <hr align="left">
+
+  <h2><a name="overview" id="overview"></a>DISP Overview</h2>
+
+  <p>The Display software consists of programs for screen display
+  of data files produced by the gamma software based upon the GTK
+  toolkit (http://www.gtk.org), programs for generating raster
+  images in the SUN raster or BMP format, vector and XML format,
+  and utility programs for working with images and data.</p>
+
+  <p>The screen display and raster generation programs are parallel
+  in terms of functionality. For example the program for screen
+  display of detected intensity images is called <em>dispwr</em>,
+  while the program for generation of a raster images of the same
+  data set is called <em>raspwr</em>. The raster images can be
+  displayed using either the <em>disras</em> program that is part
+  of the DISP package or other image file viewer such as
+  <em>xv</em> or <em>Photoshop</em>.</p>
+
+  <p>The directory tree for the software in the DISP is as
+  follows:</p>
+
+  <p>./DISP main directory<br>
+  ./DISP/bin executables for DISP package./DISP/lib<br>
+  ./DISP/src ANSI C source files for DISP package<br>
+  ./DISP/html HTML documentation</p>
+
+  <p>The following files give information on the structure and<br>
+  installation of the DISP:</p>
+
+  <p>./DISP/README_DISP<br>
+  ./DISP/CHANGES_DISP change log for programs in the DISP</p>
+
+  <h2><a name="gtk" id="gtk"></a>Screen display programs based on
+  GTK (DISP/src)</h2>
+
+  <p>Screen display programs in the DISP are based upon the GTK
+  libraries for creation of graphic user interfaces. These programs
+  are all command line driven. To see the parameters need for
+  display of a particular type of file, simply type the program
+  name on the command line. A listing of the parameter names will
+  be printed out as shown below for the program
+  <em>dismph</em>:</p>
+  <pre>
+*** DISP dismph: display of magnitude/phase of complex image ***
+*** Copyright 2012, Gamma Remote Sensing, v1.4 23-Sep-2012 clw ***<br>usage: dismph &lt;cpx&gt; &lt;width&gt; [start] [nlines] [scale] [exp] [data_type]
+</pre>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <td>input parameters:</td>
+
+        <td><br></td>
+      </tr>
+
+      <tr>
+        <td>cpx</td>
+
+        <td>(input) complex data (FCOMPLEX or SCOMPLEX format)</td>
+      </tr>
+
+      <tr>
+        <td>width</td>
+
+        <td>complex samples per line</td>
+      </tr>
+
+      <tr>
+        <td>start</td>
+
+        <td>starting line to display (default=1))</td>
+      </tr>
+
+      <tr>
+        <td>nlines</td>
+
+        <td>number of lines to display (default=0: to end of
+        file)</td>
+      </tr>
+
+      <tr>
+        <td>scale</td>
+
+        <td>display scale factor (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>exp</td>
+
+        <td>display exponent (default=.35)</td>
+      </tr>
+
+      <tr>
+        <td>data_type</td>
+
+        <td>input data type (default=0)<br>
+        &nbsp;&nbsp; 0: FCOMPLEX (default)<br>
+        &nbsp;&nbsp; 1: SCOMPLEX</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>Parameters surrounded with rectangular brackets are optional.
+  The information required for display is the name of the file and
+  the number of samples/row of the image. By default the entire
+  image is displayed, but options are available for the starting
+  line (starting at 1) and the number of lines to display. Images
+  are scaled using a relative linear multiplier and an exponent
+  such that the pixel value displayed on the screen is given by</p>
+
+  <p><em>pixel_DN = relative_scale*sc*(data**exp)</em></p>
+
+  <p>The data value for complex images is the sum of the squares of
+  the real and imaginary components. The absolute scale factor
+  <em>sc</em> is determined from the average intensity of the
+  entire image estimated by summing samples distributed over the
+  image. An exponent of .5 should be chosen if the screen intensity
+  is to be proportional to the magnitude of the complex data.
+  Multilook SAR images are assumed to be proportional to the
+  intensity or power of the backscatter when displayed using
+  programs such as <em>dispwr</em>. Below is a listing of the
+  available display programs.</p>
+
+  <h3>Display Data Types</h3>In the Gamma software most real valued
+  image data files are using float (4-byte floating point) format.
+  Complex numbers, consisting of a real and an imaginary part, are
+  either stored in fcomplex (pairs of float, 8 bytes in total) or
+  scomplex (pairs of 2-byte short integer, 4 bytes in total)
+  format. scomplex format is mainly used for Single Look Complex
+  (SLC) data in order to save space. The programs <em>disSLC</em> ,
+  <em>rasSLC</em> , and <em>dis2SLC</em> accept options that
+  specify the data format.<br>
+
+  <p>A number of the display programs are designed to merge the
+  contents of two data files in the display. For example,
+  <em>dismph_pwr</em> combines the intensity of one file with the
+  phase from another. The data are packed such that there are 4
+  bits of phase information and 4 bits of intensity information for
+  each pixel on the display screen. This program is particularly
+  useful when looking at interferograms, where the intensity
+  derived from one of the SAR images and the phase from the complex
+  interferogram.</p>
+
+  <p>Relevant phase unwrapping information is stored in a so called
+  flag file containing one byte per interferogram sample. This byte
+  contains information on residues, cuts, tree branches, the
+  progress of the unwrapping etc. There are programs (<em>disflag,
+  distree</em>) that display phase unwrapping flag files.</p>
+
+  <h3>DISP Screen Display programs</h3>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <th>Program</th>
+
+        <th>Screen Display Function</th>
+      </tr>
+
+      <tr>
+        <td>dis2SLC</td>
+
+        <td>2 complex images, flip between images (intensity only
+        display). Supports both short integer complex and floating
+        point complex data, flip between images for rapid
+        comparison.</td>
+      </tr>
+
+      <tr>
+        <td>dis2byte</td>
+
+        <td>2 unsigned byte/sample image files, grey scale
+        intensity display, flip between images for rapid
+        comparison</td>
+      </tr>
+
+      <tr>
+        <td>dis2cc</td>
+
+        <td>2 correlation files, color display of correlation, flip
+        between images</td>
+      </tr>
+
+      <tr>
+        <td>dis2hgt</td>
+
+        <td>2 DEM height files, height displayed as a periodic
+        color cycle, flip between images</td>
+      </tr>
+
+      <tr>
+        <td>dis2mph</td>
+
+        <td>2 complex files as magnitude/phase (flip between
+        images) intensity and phase coded as a periodic color
+        cycle</td>
+      </tr>
+
+      <tr>
+        <td>dis2pwr</td>
+
+        <td>2 intensity files, grey scale intensity display, flip
+        between images. Supports both short integer or floating
+        point data</td>
+      </tr>
+
+      <tr>
+        <td>dis2ras</td>
+
+        <td>2 SUN or BMP raster format image files, flip between
+        images</td>
+      </tr>
+
+      <tr>
+        <td>dis2rmg</td>
+
+        <td>2 unwrapped phase files, intensity display + phase
+        (color), flip between images</td>
+      </tr>
+
+      <tr>
+        <td>disSLC</td>
+
+        <td>SLC data, supports both short integer complex (ESA
+        format) and floating point complex formats, intensity
+        display with grey scale</td>
+      </tr>
+
+      <tr>
+        <td>dis_dB</td>
+
+        <td>real valued data displayed using logarithmic scaling
+        with grey scale, dynamic range can be specified as minimum
+        and maximum dB values</td>
+      </tr>
+
+      <tr>
+        <td>dis_linear</td>
+
+        <td>real valued data displayed using linear scaling with
+        grey scale, dynamic range can be set as minimum and maximum
+        (minimum value can be negative)</td>
+      </tr>
+
+      <tr>
+        <td>disbyte</td>
+
+        <td>unsigned byte data with scaling (default scale factor =
+        1.0) such that pixel_DN = scale*data</td>
+      </tr>
+
+      <tr>
+        <td>discc</td>
+
+        <td>interferometric correlation in color combined with the
+        the image intensity</td>
+      </tr>
+
+      <tr>
+        <td>disdem_par</td>
+
+        <td>DEM displayed in shaded relief, cursor position
+        easting/northing and latitude, longitude, easting, and
+        northing are calculated</td>
+      </tr>
+
+      <tr>
+        <td><a href="disdt_pwr24.html">disdt_pwr24</a></td>
+
+        <td>display deformation or height (float format using
+        a&nbsp; background grayscale image similar to
+        rasdt_pwr24&nbsp; (24 bit display)</td>
+      </tr>
+
+      <tr>
+        <td>disflag</td>
+
+        <td>phase unwrapping flags (residues, cuts, neutrons, low
+        SNR, unwrapped regions) in various combinations</td>
+      </tr>
+
+      <tr>
+        <td>dishgt</td>
+
+        <td>DEM heights and image intensity, height displayed with
+        a periodic color cycle</td>
+      </tr>
+
+      <tr>
+        <td>dismph</td>
+
+        <td>floating point complex (FCOMPLEX) or short integer
+        complex (SCOMPLEX) data displayed using intensity and phase
+        represented by a periodic color cycle</td>
+      </tr>
+
+      <tr>
+        <td>dismph_pk</td>
+
+        <td>display of magnitude/phase of complex image (FCOMPLEX
+        or SCOMPLEX), scale relative to the peak value</td>
+      </tr>
+
+      <tr>
+        <td>dismph_fft</td>
+
+        <td>displays short integer complex or floating point
+        complex images using intensity and phase represented by a
+        periodic color cycle. A second window displays the 2D FFT
+        of window selected using the cursor to locate the window
+        center.</td>
+      </tr>
+
+      <tr>
+        <td>dismph_pwr</td>
+
+        <td>merged display of complex phase (color) and image
+        intensity from a second file</td>
+      </tr>
+
+      <tr>
+        <td><a href="dismph_pwr24.html">dismph_pwr24</a></td>
+
+        <td>display fcomplex file using a background grayscale
+        image, similar to rasmph_pwr24 (24 bit display)</td>
+      </tr>
+
+      <tr>
+        <td>dismph_ub</td>
+
+        <td>Display complex byte format (IQ) SAR raw data as
+        magnitude and phase</td>
+      </tr>
+
+      <tr>
+        <td>dispwr</td>
+
+        <td>intensity images displayed using grey scale, supports
+        floating point or unsigned short integer formats</td>
+      </tr>
+
+      <tr>
+        <td>disras</td>
+
+        <td>raster images (8 or 24 bits/pixel) in Sun raster or BMP
+        format</td>
+      </tr>
+
+      <tr>
+        <td>disras_dem_par</td>
+
+        <td>raster images (8 or 24 bits/pixel) in Sun raster or BMP
+        format. DEM parameters used to determine cursor latitude,
+        longitude, easting, and northing</td>
+      </tr>
+
+      <tr>
+        <td>disrmg</td>
+
+        <td>merged display of unwrapped phase displayed as a
+        perodic color cycle and image intensity from a second
+        file</td>
+      </tr>
+
+      <tr>
+        <td>disshd</td>
+
+        <td>DEM heights displayed as a shaded relief grey
+        scale</td>
+      </tr>
+
+      <tr>
+        <td>distree</td>
+
+        <td>phase unwrapping flags, unwrapped phase and phase
+        unwrapping tree structure and flags</td>
+      </tr>
+
+      <tr>
+        <td><a href="gcp_ras.html">gcp_ras</a></td>
+
+        <td>display and enter ground control points using a Sun
+        raster or BMP format image</td>
+      </tr>
+
+      <tr>
+        <td>polyras</td>
+
+        <td>display SUN raster or BMP image and select polygonal
+        regions for classification applications</td>
+      </tr>
+
+      <tr>
+        <td>tree_edit</td>
+
+        <td>display phase unwrapping flag file and SUN raster or
+        BMP image and edit phase unwrapping cuts, neutrons, and low
+        SNR regions</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The display program pops up as a single window as shown in the
+  figure below. In this example, the program <em>dismph_pwr</em>
+  was used to display a backscatter image combined with the phase
+  of a complex interferogram. The intensity of the image is from
+  the backscatter file and the colors are proportional to phase.
+  The color cycle is periodic just as the phase is periodic,
+  covering the range 0 to 2PI (or equivalently from 0 to 360.0
+  degrees), such that a phase of 0 (0 degrees) has the same color
+  as a phase of 2PI (360 degrees). Unwrapped phase images and DEM
+  data can also be displayed using a similar scheme. In these cases
+  one cycle of the color wheel is equivalent to a height or phase
+  increment that can be specified by the user on the command
+  line.</p>
+
+  <p style="text-align: center;"><img src="disp_screenshot.jpg"
+  alt="dismph_pwr screenshot" align="bottom" border="0" height=
+  "453" width="718"></p>
+
+  <p>This screen shot shows the basic elements of the display
+  programs. There is an image display window, a zoom window, zoom
+  window position, data values at the zoom window center, and color
+  table selection radio bar. Clicking with the left mouse button
+  within the main image window will cause a zoomed version to
+  appear in the zoom window at right. Holding the left button while
+  moving will cause the zoom window display to track the
+  cursor.</p>
+
+  <p>Color tables are selected by clicking the desired radio
+  button. Options included the default color table for the image
+  (user), 4 or 8-bit grayscale (grey, lower 4 bits), mag/phase (4
+  bits intensity, 4 bits color), and phase only (upper 4 bits). The
+  user color table button selects the color table supplied with
+  image. The last two color tables are specifically for looking at
+  images that are coded as 4 bits intensity and 4 bits phase such
+  as complex data in the program <em>dismph</em>. Clicking the
+  center mouse button will switch color tables between the
+  magnitude/phase and phase color tables on the radio button
+  bar.</p>
+
+  <p>For a number of data types there are programs to display two
+  images simultaneously: <em>dis2SLC, dis2cc, dis2hgt, dis2mph,
+  dis2pwr, dis2ras, and dis2rmg</em>. For these programs, clicking
+  the center button will rapidly flip between the images. When the
+  user clicks the left mouse button, data values from both files
+  are extracted from the original files and printed out in the
+  display. Finally, typing the letter "q" (for quit) on the
+  keyboard will immediately exit any of the display programs with
+  the exception of <em>gcp_ras</em>.</p>
+
+  <h2><a name="raster" id="raster"></a>Raster file generation
+  programs (DISP/src)</h2>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <th>Program</th>
+
+        <th>Function</th>
+      </tr>
+
+      <tr>
+        <td>rasSLC</td>
+
+        <td>intensity of complex valued SAR data (fcomplex or
+        scomplex)</td>
+      </tr>
+
+      <tr>
+        <td>ras8_color_scale</td>
+
+        <td>generate color scale for 8-bit rasterfile generated
+        with program ras8_float</td>
+      </tr>
+
+      <tr>
+        <td><a href="ras8_float.html">ras8_float</a></td>
+
+        <td>generate 8-bit raster file from one or two float images
+        with user defined scaling and color model</td>
+      </tr>
+
+      <tr>
+        <td><a href="ras24_float.html">ras24_float</a></td>
+
+        <td>generate 24-bit raster file from three float images
+        (RGB, HLS, or HSV color model)</td>
+      </tr>
+
+      <tr>
+        <td><a href="ras_dB.html">ras_dB</a></td>
+
+        <td>intensity (float) using logarithmic dB scaling</td>
+      </tr>
+
+      <tr>
+        <td><a href="ras_linear.html">ras_linear</a></td>
+
+        <td>intensity (float) using linear scaling</td>
+      </tr>
+
+      <tr>
+        <td>rasbyte</td>
+
+        <td>unsigned byte data (uchar) using linear scaling
+        (pixel_DN = scale*data)</td>
+      </tr>
+
+      <tr>
+        <td>rascc</td>
+
+        <td>correlation coefficient (float, linear scaling, -&gt;
+        color) and intensity (float, power-law scaling, -&gt;
+        brightness)</td>
+      </tr>
+
+      <tr>
+        <td>rashgt</td>
+
+        <td>height (float, linear scaling, -&gt; color) and
+        intensity (float, power-law scaling, -&gt; brightness)</td>
+      </tr>
+
+      <tr>
+        <td><a href="ras_cpt.html">ras_cpt</a></td>
+
+        <td>generate raster image of float data using a color map
+        file</td>
+      </tr>
+
+      <tr>
+        <td><a href="rasdt_pwr24.html">rasdt_pwr24</a></td>
+
+        <td>24-bit SUN/BMP raster file of float parameter (e.g.
+        deformation) + intensity image</td>
+      </tr>
+
+      <tr>
+        <td>rashgt_shd</td>
+
+        <td>height-1 (float, linear scaling, -&gt; color) and
+        height-2 (float, shaded relief, -&gt; brightness)</td>
+      </tr>
+
+      <tr>
+        <td>rasmph</td>
+
+        <td>phase (color) and magnitude (brightness) of FCOMPLEX or
+        SCOMPLEX data (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>rasmph_pwr</td>
+
+        <td>8-bit SUN/BMP raster file of complex magnitude +
+        intensity image<br>
+        Optional: greyscale display of regions with correlation
+        below a specified threshold</td>
+      </tr>
+
+      <tr>
+        <td><a href="rasmph_pwr24.html">rasmph_pwr24</a></td>
+
+        <td>24-bit SUN/BMP raster file of complex magnitude +
+        intensity image</td>
+      </tr>
+
+      <tr>
+        <td>raspwr</td>
+
+        <td>intensity (float or short, power-law scaling, -&gt;
+        brightness)</td>
+      </tr>
+
+      <tr>
+        <td>ras3pwr</td>
+
+        <td>generate 24-bit RGB raster image of 3 intensity files
+        (float format)</td>
+      </tr>
+
+      <tr>
+        <td>rasrmg</td>
+
+        <td>phase (color) of unwrapped phase data (float) and
+        intensity (float, power-law scaling, -&gt; brightness)<br>
+        optional: greyscale display of regions with correlation
+        below a specified threshold</td>
+      </tr>
+
+      <tr>
+        <td>rasshd</td>
+
+        <td>shaded relief map generated from height data file
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>rastree</td>
+
+        <td>combined display of unwrapped phase (float), phase from
+        interferogram (fcomplex), and phase unwrapping tree
+        structure and flags</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The raster file generation programs (ras*) generate raster
+  image files in either Sun raster or BMP format. By default SUN
+  raster images are produced. BMP format images are produced by
+  giving an output file name with the <em>bmp</em> extension (e.g.
+  power1.bmp) and Sun raster images by the <em>ras</em> extension
+  (e.g. power1.ras). If no name is given then a default output file
+  name is created with the <em>ras</em> extension combined with the
+  input file name. The command line options for each of the raster
+  programs can be viewed by typing the name of the program and
+  hitting return:</p><code>*** DISP raspwr: generate rasterfile of
+  intensity image using power-law scale ***<br>
+  *** Copyright 2000, Gamma Remote Sensing, v2.1 15-Jun-2000 clw
+  ***<br>
+  <br>
+  usage: raspwr &lt;pwr&gt; &lt;width&gt; [start] [nlines] [pixavr]
+  [pixavaz] [scale] [exp] [LR] [rasf] [format] [hdrsz]</code>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <td><code>input parameters:</code></td>
+
+        <td><br></td>
+      </tr>
+
+      <tr>
+        <td><code>image</code></td>
+
+        <td><code>intensity image (float)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>width</code></td>
+
+        <td><code>samples per row<br></code></td>
+      </tr>
+
+      <tr>
+        <td><code>start</code></td>
+
+        <td><code>starting line to display (default=1)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>nlines</code></td>
+
+        <td><code>number lines to display (default=0: to end of
+        file)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>pixavr</code></td>
+
+        <td><code>number of pixels to average in range
+        (default=1)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>pixavaz</code></td>
+
+        <td><code>number of pixels to average in azimuth
+        (default=1)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>scale</code></td>
+
+        <td><code>scale display factor (default=1.0)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>exp</code></td>
+
+        <td><code>display exponent (default=.35)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>LR</code></td>
+
+        <td><code>left/right mirror image flag, (1: normal
+        (default), -1: mirror image)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>rasf</code></td>
+
+        <td><code>(output) image filename, enter - for default,
+        extension determines the format:<br>
+        &nbsp;&nbsp; *.bmp BMP format<br>
+        &nbsp;&nbsp; *.ras Sun raster format (default)</code></td>
+      </tr>
+
+      <tr>
+        <td><code>format</code></td>
+
+        <td><code>input data type (default=0)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: FLOAT<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: SHORT INTEGER</code></td>
+      </tr>
+
+      <tr>
+        <td><code>hdrsz</code></td>
+
+        <td><code>line header size in bytes (default=0, ESA PAF for
+        PRI products=12)</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>The parameters are very similar with the analogous screen
+  display programs with the exception of the pixavr and pixavaz
+  parameters that allow averaging of the image data prior to
+  detection, scaling and display. The extension of the output file
+  (*.ras, or *.bmp) determines the format. The program will not
+  accept any other extension.</p>
+
+  <h2><a name="xml" id="xml"></a>Vector and XML file generation
+  programs (DISP/src)</h2>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <th>Program</th>
+
+        <th>Function</th>
+      </tr>
+
+      <tr>
+        <td><a href="kml_map.html">kml_map</a></td>
+
+        <td>creates kml file for data visualisation in Google
+        Earth</td>
+      </tr>
+
+      <tr>
+        <td><a href="kml_pt.html">kml_pt</a></td>
+
+        <td>creates kml file for ascii table data (e.g. from IPTA)
+        visualization in Google Earth</td>
+      </tr>
+
+      <tr>
+        <td><a href="replace_values.html">replace_values</a></td>
+
+        <td>Replace value(s) of input data file with indicated
+        value or values extracted from a second input data file
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td><a href="svg_arrow.html">svg_arrow</a></td>
+
+        <td>compute arrows and draw over an image and store as svg
+        file</td>
+      </tr>
+
+      <tr>
+        <td><a href="svg_map.html">svg_map</a></td>
+
+        <td>creates map with scales of an image in svg format</td>
+      </tr>
+
+      <tr>
+        <td><a href="svg_poly.html">svg_poly</a></td>
+
+        <td>draw polygons over an image and store as svg file</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><a name="util" id="util"></a>Utility programs</h2>
+
+  <p>There are several utility programs for changing the format of
+  data and for extraction of data from a larger data set.
+  <span style="font-style: italic;">ascii2float</span> and
+  <span style="font-style: italic;">float2ascii</span> are programs
+  for conversion of text format numerical data to floating point
+  format and back.<br></p>
+
+  <p>The program <span style="font-style: italic;">cp_data</span>
+  is used to extract a segment of file in any data format.&nbsp;
+  This program is byte oriented so that the user must know the
+  number of bytes/line. Complex data has 8 bytes per sample,
+  floating point data 4, integer 4, and short integer 2.</p>
+
+  <p>The program <span style=
+  "font-style: italic;">swap_bytes</span> is used to change the
+  byte order between little endian and big endian data with 2, 4,
+  and 8 bytes per sample.<br></p>
+
+  <p>Programs <span style="font-style: italic;">real_to_cpx</span>
+  and <span style="font-style: italic;">cpx_to_real</span> are used
+  to manipulate complex valued data and extra the real part,
+  imaginary part, amplitude, and phase.<br></p>
+
+  <p>Use the programs <span style=
+  "font-style: italic;">data2geotiff</span> and <span style=
+  "font-style: italic;">data2tiff</span> to convert the Gamma image
+  data files to TIFF format. The geotiff format can be read using
+  programs in the Geospatial Data Abstraction Library&nbsp; (GDAL)
+  <a href="http://www.gdal.org/">www.gdal.org</a>.<br></p>
+
+  <p>The program <span style="font-style: italic;">flip</span> is
+  used to flip binary data (float, fcomplex, scomplex, uchar, and
+  short) left/right and top/down.</p>
+
+  <p>The programs <span style=
+  "font-style: italic;">set_value</span> and <span style=
+  "font-style: italic;">get_value</span> are used for the reading
+  and modifying values in the Gamma keyword:value parameter
+  files.<br></p>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <th>Program</th>
+
+        <th>Utility Program Function</th>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "ascii2float.html">ascii2float</a><br></td>
+
+        <td style="vertical-align: top;">Convert text format data
+        to float format<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="cp_data.html">cp_data</a></td>
+
+        <td>Copy a segment of one file into another</td>
+      </tr>
+
+      <tr>
+        <td><a href="cpd.html">cpd</a></td>
+
+        <td>Copy segments of FLOAT, FCOMPLEX and SCOMPLEX data
+        files</td>
+      </tr>
+
+      <tr>
+        <td><a href="cpx_math.html">cpx_math</a></td>
+
+        <td>Perform arithmetic operations on data files
+        (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td><a href="cpx_to_real.html">cpx_to_real</a></td>
+
+        <td>Convert complex data type to real</td>
+      </tr>
+
+      <tr>
+        <td><a href="data2tiff.html">data2tiff</a></td>
+
+        <td>Export real and complex raster or image data into tiff
+        format</td>
+      </tr>
+
+      <tr>
+        <td><a href="data2geotiff.html">data2geotiff</a></td>
+
+        <td>Export real and complex raster or image data into
+        GeoTIFF format</td>
+      </tr>
+
+      <tr>
+        <td><a href="fill.html">fill</a></td>
+
+        <td>Fill gaps in data file 1 with values from data file
+        2</td>
+      </tr>
+
+      <tr>
+        <td><a href="flip.html">flip</a></td>
+
+        <td>Flip binary data (float, fcomplex, scomplex, uchar, and
+        short) right/left, top/bottom or both</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;"><a href=
+        "float2ascii.html">float2ascii</a><br></td>
+
+        <td style="vertical-align: top;">Convert float format data
+        to text format<br></td>
+      </tr>
+
+      <tr>
+        <td><a href="float_math.html">float_math</a></td>
+
+        <td>Perform arithmetic operations on data files
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td><a href="get_value.html">get_value</a></td>
+
+        <td>Extract value from a keyword:value based parameter
+        file</td>
+      </tr>
+
+      <tr>
+        <td><a href="real_to_cpx.html">real_to_cpx</a></td>
+
+        <td>Convert 2 real data sets into a single fcomplex format
+        file. The input data can be interpreted as either real and
+        imaginary parts or as magnitude and phase.</td>
+      </tr>
+
+      <tr>
+        <td><a href="set_value.html">set_value</a></td>
+
+        <td>Set new value in a keyword based parameter file</td>
+      </tr>
+
+      <tr>
+        <td><a href="swap_bytes.html">swap_bytes</a></td>
+
+        <td>Swap byte-order for binary data files</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2><a name="application" id="make"></a>Application of DISP
+  programs to Gamma Data Products</h2>
+
+  <p>The DISP programs for screen display and raster file
+  generation are quite general and can also support the display of
+  data files not made by Gamma processing software. The main
+  purpose of these programs is, however, to support the
+  visualization of image data processed with Gamma Software. A list
+  describing which DISP programs are applicable for the different
+  data sets is given below:</p>
+
+  <table cellpadding="7" cellspacing="1" border="1">
+    <tbody>
+      <tr>
+        <th>File Extension</th>
+
+        <th>Data Type</th>
+
+        <th>DISP Programs</th>
+      </tr>
+
+      <tr>
+        <td>raw<br></td>
+
+        <td>raw SAR data</td>
+
+        <td>disbyte, dis2byte, dismph_ub, rasbyte</td>
+      </tr>
+
+      <tr>
+        <td>mli, rmli</td>
+
+        <td>detected intensity images (both short integer and
+        floating point)</td>
+
+        <td>dispwr, dis_dB, dis_linear, dis2pwr, raspwr,ras_dB,
+        ras_linear</td>
+      </tr>
+
+      <tr>
+        <td>slc, rslc</td>
+
+        <td>single look complex images (SCOMPLEX or FCOMPLEX data
+        type)</td>
+
+        <td>disSLC, dis2SLC, rasSLC, dismph_fft, dismph,
+        dismph_pwr</td>
+      </tr>
+
+      <tr>
+        <td>int, diff<br></td>
+
+        <td>complex interferograms and differential
+        interferograms<br></td>
+
+        <td>dismph, dis2mph, dismph_fft, rasmph, rasmph_pwr,&nbsp;
+        dismph_pwr24, rasmph_pwr24<br></td>
+      </tr>
+
+      <tr>
+        <td>cc</td>
+
+        <td>interferometric coherence<br></td>
+
+        <td>discc, dis2cc, rascc, ras_linear</td>
+      </tr>
+
+      <tr>
+        <td>hgt<br></td>
+
+        <td>terrain height data (DEM)</td>
+
+        <td>dishgt, dis2hgt, disshd, rashgt, rashgt, rashgt_shd,
+        disdt_pwr24, rasdt_pwr24<br></td>
+      </tr>
+
+      <tr>
+        <td>dem</td>
+
+        <td>DEM data in a map projection coordinate
+        system(DEM)</td>
+
+        <td>disdem_par</td>
+      </tr>
+
+      <tr>
+        <td>unw</td>
+
+        <td>unwrapped phase</td>
+
+        <td>disrmg, dis2rmg, rasrmg, distree, rastree,
+        disdt_pwr24</td>
+      </tr>
+
+      <tr>
+        <td>flag</td>
+
+        <td>branch cut phase unwrapping flags</td>
+
+        <td>disflag, distree, rastree,tree_edit</td>
+      </tr>
+
+      <tr>
+        <td>ras, bmp</td>
+
+        <td>SUN or BMP format both 8 and 24 bits/sample</td>
+
+        <td>disras, dis2ras, polyras, gcp_ras</td>
+      </tr>
+
+      <tr>
+        <td>ras, bmp</td>
+
+        <td>SUN or BMP format both 8 and 24 bits/sample in a map
+        projection coordinate system.</td>
+
+        <td>disras_dem_par</td>
+      </tr>
+
+      <tr>
+        <td>kml</td>
+
+        <td>kml (Keyhole Markup Language) file, data for display in
+        Google Earth</td>
+
+        <td>kml_map</td>
+      </tr>
+
+      <tr>
+        <td>svg</td>
+
+        <td>svg Scalable Vectors Graphic file</td>
+
+        <td>svg_arrow, svg_map, svg_poly</td>
+      </tr>
+    </tbody>
+  </table>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DISP_documentation.html">Documentation</a> and <a href=
+  "DISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, awi, last change 26-Jun-2015.
+</body>
+</html>

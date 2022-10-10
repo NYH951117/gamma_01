@@ -1,0 +1,691 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: def_mod_pt, multi_def_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>def_mod_pt</h2>
+
+  <p><i>ANSI-C programs: <a href=
+  "../src/def_mod_pt.c">def_mod_pt.c</a> and <a href=
+  "../src/multi_def_pt.c">multi_def_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">def_mod_pt</span> - estimation
+  of linear deformation, delta height and residual phase over an
+  area<br>
+  <span style="font-style: italic;">multi_def_pt</span> -
+  multi-patch estimation of linear deformation, delta height and
+  residual phase</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>def_mod_pt &lt;plist&gt; &lt;pmask&gt; &lt;pSLC_par&gt;
+  &lt;ppos&gt; &lt;itab&gt; &lt;pbase&gt; &lt;bflag&gt;
+  &lt;pdiff&gt; &lt;pdiff_type&gt; &lt;np_ref&gt; &lt;pres&gt;
+  &lt;pdh&gt; &lt;pdef&gt; &lt;punw&gt; &lt;psigma&gt;
+  &lt;pmask_out&gt; [dh_max] [def_min] [def_max] [sigma_max]
+  [model] [bmax] [dtmax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2&nbsp;itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of baseline parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bflag&gt;</td>
+
+        <td>baseline flag (0:initial baseline 1:precision
+        baseline)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff&gt;</td>
+
+        <td>(input) point data stack of differential interferograms
+        (fcomplex or float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff_type&gt;</td>
+
+        <td>type of pdiff (0: float(unwrapped) default=1:
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;np_ref&gt;</td>
+
+        <td>phase reference point number (beginning from 0, enter -
+        to set the reference phase to 0.0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pres&gt;</td>
+
+        <td>(output) point data stack of residual unmodeled phase
+        (float, atmospheric phase, non-linear deformation, baseline
+        error)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdh&gt;</td>
+
+        <td>(output) point data stack of height correction value
+        (m, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdef&gt;</td>
+
+        <td>(output) point data stack of linear deformation rate
+        (m/year, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw&gt;</td>
+
+        <td>(output) point data stack of unwrapped phase of pdiff
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;psigma&gt;</td>
+
+        <td>(output) point data stack of phase standard deviation
+        from fit (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask_out&gt;</td>
+
+        <td>(output) point data stack of mask values indicating
+        accepted points (uchar)</td>
+      </tr>
+
+      <tr>
+        <td>[dh_max]</td>
+
+        <td>maximum height correction for initial fit (m, enter -
+        for default: 60.)</td>
+      </tr>
+
+      <tr>
+        <td>[def_min]</td>
+
+        <td>minimum deformation rate difference for initial fit
+        (m/year, enter - for default: -0.01)</td>
+      </tr>
+
+      <tr>
+        <td>[def_max]</td>
+
+        <td>maximum deformation rate difference for initial fit
+        (m/year, enter - for default: +0.01)</td>
+      </tr>
+
+      <tr>
+        <td>[sigma_max]</td>
+
+        <td>threshold for phase standard deviation to set mask to
+        valid: (enter - for default: 1.2)</td>
+      </tr>
+
+      <tr>
+        <td>[model]</td>
+
+        <td>phase regression model:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: a0 + a1*bperp[i]&nbsp;&nbsp;&nbsp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: a0 + a1*bperp[i] + a2*delta_t[i]) (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3: a1*bperp[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4: a1*bperp[i] + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5: a0 + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6: a2*delta_t[i]</td>
+      </tr>
+
+      <tr>
+        <td>[bmax]</td>
+
+        <td>maximum perp. baseline (m) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+
+      <tr>
+        <td>[dtmax]</td>
+
+        <td>maximum time interval (days) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><code><b>multi_def_pt &lt;plist&gt; &lt;pmask&gt;
+  &lt;pSLC_par&gt; &lt;ppos&gt; &lt;itab&gt; &lt;pbase&gt;
+  &lt;bflag&gt; &lt;pdiff&gt; &lt;pdiff_type&gt; &lt;np_ref&gt;
+  &lt;pres&gt; &lt;pdh&gt; &lt;pdef&gt; &lt;punw&gt; &lt;psigma&gt;
+  &lt;pmask_out&gt; [dh_max] [def_min] [def_max] [rpatch]
+  [sigma_max] [sigma_max2] [model] [bmax] [dtmax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask_in&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pSLC_par&gt;</td>
+
+        <td>(input) stack of SLC/MLI parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ppos&gt;</td>
+
+        <td>(input) point data stack of interpolated point target
+        positions (fcomplex, enter - to use plist coordinates)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input) table associating interferogram stack records
+        with pairs of SLC stack records (ascii)<br>
+        (line entries are: pSLC_rec1 pSLC_rec2 itab_rec_num
+        switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pbase&gt;</td>
+
+        <td>(input) stack of baseline parameters (binary)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;bflag&gt;</td>
+
+        <td>baseline flag (0:initial baseline 1:precision
+        baseline)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff&gt;</td>
+
+        <td>(input) point data stack of differential interferograms
+        (fcomplex or float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdiff_type&gt;</td>
+
+        <td>type of pdiff (0: float(unwrapped) default=1:
+        fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;np_ref&gt;</td>
+
+        <td>phase reference point number (beginning with 0)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pres&gt;</td>
+
+        <td>(output) point data stack of residual unmodeled phase
+        (float, atmospheric phase, non-linear deformation, baseline
+        error)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdh&gt;</td>
+
+        <td>(output) point data stack of height correction value
+        (m, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdef&gt;</td>
+
+        <td>(output) point data stack of linear deformation rate
+        (m/year, float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;punw&gt;</td>
+
+        <td>(output) point data stack of unwrapped phase of pdiff
+        (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;psigma&gt;</td>
+
+        <td>(output) point data stack of phase standard deviation
+        from fit (float)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask_out&gt;</td>
+
+        <td>(output) point data stack of mask values indicating
+        accepted points (uchar)</td>
+      </tr>
+
+      <tr>
+        <td>[dh_max]</td>
+
+        <td>maximum height correction for initial fit (m, enter -
+        for default: 60.)</td>
+      </tr>
+
+      <tr>
+        <td>[def_min]</td>
+
+        <td>minimum deformation rate difference for initial fit
+        (m/year, enter - for default: -0.01)</td>
+      </tr>
+
+      <tr>
+        <td>[def_max]</td>
+
+        <td>maximum deformation rate difference for initial fit
+        (m/year, enter - for default: +0.01)</td>
+      </tr>
+
+      <tr>
+        <td>[rpatch]</td>
+
+        <td>patch size in range pixels (enter - for default:
+        100)</td>
+      </tr>
+
+      <tr>
+        <td>[sigma_max]</td>
+
+        <td>threshold for phase standard deviation to set mask to
+        valid: (enter - for default: 1.2)</td>
+      </tr>
+
+      <tr>
+        <td>[sigma_max2]</td>
+
+        <td>threshold for phase std. deviation for patch to patch
+        fit: (enter - for default: .75)</td>
+      </tr>
+
+      <tr>
+        <td>[model]</td>
+
+        <td>phase regression model:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: a0 + a1*bperp[i]&nbsp;&nbsp;&nbsp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        2: a0 + a1*bperp[i] + a2*delta_t[i]) (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        3: a1*bperp[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        4: a1*bperp[i] + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        5: a0 + a2*delta_t[i]<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        6: a2*delta_t[i]</td>
+      </tr>
+
+      <tr>
+        <td>[bmax]</td>
+
+        <td>maximum perp. baseline (m) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[patch_ref_mod]<br></td>
+
+        <td style="vertical-align: top;">&nbsp;patch reference
+        search mode:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: accept first point with sigma &lt; sigma_max2
+        (default)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: search all the points in the patch to find the point
+        with the lowest sigma &lt; sigma_max2<br></td>
+      </tr>
+
+      <tr>
+        <td>[dtmax]</td>
+
+        <td>maximum time interval (days) considered, (-1 = all
+        records, default=-1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>def_mod_pt&nbsp;plist&nbsp;pmask&nbsp;pSLC_par
+  -&nbsp;itab&nbsp;pbase 1&nbsp;pdiff 1
+  814&nbsp;pres&nbsp;pdh&nbsp;pdef&nbsp;punw&nbsp;psigma&nbsp;pmask2
+  20. -0.005 0.005 1.2 2</samp></p>
+
+  <p>Conducts a point-wise investigation of the baseline and time
+  dependence of the interferometric phase (relative to the phase of
+  the reference point) and estimates height corrections, linear
+  deformation rates, residual phases, and a quality measure for the
+  regression.</p>
+
+  <p><samp>multi_def_pt&nbsp;plist&nbsp;pmask&nbsp;pSLC_par -
+  itab&nbsp;pbase 1&nbsp;pdiff 1
+  814&nbsp;pres&nbsp;pdh&nbsp;pdef&nbsp;punw&nbsp;psigma&nbsp;pmask2
+  20. -0.005 0.005 100 1.2 2</samp></p>
+
+  <p>Conducts a point-wise investigation of the baseline and time
+  dependence of the interferometric phase (relative to the phase of
+  the reference point) and estimates height corrections, linear
+  deformation rates, residual phases, and a quality measure for the
+  regression using a multi-patch approach with a patch size of 100
+  range pixels.</p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p><span style=
+  "font-style: italic; color: blue;">def_mod_pt</span> and
+  <span style=
+  "color: blue; font-style: italic;">multi_def_pt</span> conduct an
+  investigation of the baseline and time dependence of the
+  interferometric phase (relative to the interferometric phase of
+  the indicated reference point) and estimates various parameters
+  conducting a regression analysis using either a one dimensional
+  (linear dependence on perpendicular baseline component) or two
+  dimensional (linear dependences on perpendicular baseline
+  component and linear deformation rate) linear regression
+  function. In this regression analysis it is accounted for that
+  wrapped phases are provided in the case of a complex valued
+  interferogram. The slopes of the regression functions determined
+  are directly related to the relative height correction, also
+  called delta height value, and the linear deformation rate.</p>
+
+  <p>The standard deviation from the regression function serves as
+  a quality measure for the regression function and the derived
+  parameters. The standard deviation of the phase from the
+  regression funnction is expressed in radian. The residual phase,
+  this is the deviation from the regression function, contains
+  phase terms related to the atmospheric phase delay, baseline
+  errors, non-linear deformation, and signal noise. The residual
+  phase is written to an output file for further investigation.</p>
+
+  <p>For the stack of differential interferograms unwrapped
+  interferometric phases are derived and written out to a stack of
+  unwrapped phases. As input to def_mod_pt and multi_def_pt
+  interferometric data in point data format is required. This input
+  is further discussed in the following.</p>
+
+  <p>The point coordinates are defined in a point list. Optionally,
+  a point data stack of interpolated point target positions can be
+  provided. If not provided, the point coordinates of the point
+  list are used. Furthermore, a mask can be provided to indicate
+  for each point if it shall be considered (mask value 1) or not
+  (mask value 0). The interferometric pairs are defined in the
+  itab, a table associating interferogram stack records with pairs
+  of SLC stack records (ascii). Acquisition times and other SLC
+  parameters are provided in the stack of SLC/MLI parameters
+  (binary) and baseline parameters in the stack of baseline
+  parameters (binary). The differential interferogram is provided
+  in another point data stack. Complex valued or unwrapped
+  differential interferograms can be provided (but the same type
+  for all records). Typically, a simulated interferometric phase
+  images were subtracted in the calculation of the stack of
+  differential interferograms. Early on in an IPTA investigation
+  initial simulated phases may contain only the topographic and
+  orbital phase terms calculated from an initial DEM and initial
+  baseline estimates from orbit data. Later on improved height
+  values, precision baselines, atmospheric corrections, linear
+  deformation trends etc. may be considered.</p>
+
+  <p>On the command line a number of parameters can be indicated to
+  configure and optimize the regression analysis. These parameters
+  are discussed in the following paragraphs.<br></p>
+
+  <p>For the interferometric baselines the user can select if
+  either initial estimate or the precision estimate shall be used.
+  The point number of the reference point must be entered;
+  <span style="font-style: italic; color: blue;">def_mod_pt</span>
+  also allows to set - instead of a reference point number to set
+  the reference phase to 0.0 . The index of the reference point can
+  be determined by using <a href=
+  "dis_ipta.html">dis_ipta</a>.&nbsp; To minimize spatial distances
+  it is usually adequate to select a reference point near the
+  center of the area of interest.&nbsp; It is, however, often
+  preferred to select a point known to be stable or known to be a
+  reference point of a leveling network, as reference. To identify
+  the point number of a point at or near the desired coordinate the
+  programs <a href="dis_ipta.html">dis_ipta</a> or <a href=
+  "prox_pt.html">prox_pt</a> can be used.</p>
+
+  <p>In the case of the wrapped phase values the regression
+  analysis is done in two steps. The best regression function among
+  a predefined set of functions is determined. In a second step the
+  least squares analysis is conducted. The predefined regression
+  functions for the first step are derived based on the indicated
+  maximum height correction and maximum deformation rate difference
+  values indicated. Indicating larger values means that more
+  predefined regression functions are tested which will make the
+  process slower. Indicating a too small value may result in
+  failure to resolve the regression for a point with a high height
+  correction or deformation rate value. It has to be kept in mind
+  that the height correction and deformation rates are relative to
+  the reference point. Consequently, the regression analysis is
+  generally more robust for points near the reference point.</p>
+
+  <p>The records considered in the regression analysis can be
+  constrained to short perpendicular baselines and short time
+  intervals.</p>
+
+  <p>As phase regression models there are several options:</p>
+
+  <p>&nbsp; 1. 1-d model depending on height differentials include
+  a phase constant<br>
+  &nbsp; 2. 2-d model depending on both height differentials,
+  deformation rate including a phase constant<br>
+  &nbsp; 3. 1-d model depending on height differentials without a
+  phase constant<br>
+  &nbsp; 4. 2-d model depending on both height differentials,
+  deformation rate without a phase constant<br>
+  &nbsp; 5. 1-d model depending of deformation rate and phase
+  constant<br>
+  &nbsp; 6. 1-d model depending on deformation rate without phase
+  constant&nbsp;<br></p>
+
+  <p>Each of these three models can include an optional phase
+  constant parameter. The phase constant is required if a single
+  SLC used as the reference for all interferograms. If there are
+  different SLCs are used as the reference for the for the
+  interferograms in the stack the phase constant is 0.0 and does
+  not need to be estimated. Use of the one-dimensional regression
+  models constrains the regression and gives better results for
+  small stacks or early on in the analysis when large height
+  corrections are expected.</p>
+
+  <p>The output of <span style=
+  "font-style: italic; color: blue;">def_mod_pt</span> and
+  <span style=
+  "font-style: italic; color: blue;">multi_def_pt</span> includes
+  the determined regression functions, the phase residuals from the
+  regression, the phase standard deviation from the regression, the
+  unwrapped differential interferometric phase, and a mask
+  indicating points for which the quality of the regression is
+  above the indicated threshold.</p>
+
+  <p>The slope of the phase to baseline dependence is used to
+  calculate a height correction value. This height correction value
+  is the height correction of the current point under the
+  assumption that the height of the reference point is correct. The
+  height corrections are indicated in meter (m). Corrected heights
+  can be calculated by adding the height model and the height
+  corrections. It is important to note that this improvement is
+  done relative to the selected reference point. The accuracy of
+  the height of a specific point depends on the accuracy of the
+  height of the reference point plus the error in the height
+  correction (and not only the second term).</p>
+
+  <p>The slope of the phase to time dependence is used to calculate
+  a linear deformation rate. This linear deformation rate is the
+  deformation rate of the current point relative to the reference
+  point. The deformation rates are indicated in meter per year
+  (m/year). It is important to note that the linear deformation
+  rate is in addition to the deformation model which may already be
+  considered in the calculation of the differential
+  interferogram.</p>
+
+  <p>The regression calculates the delta height, deformation rate,
+  and phase constant that minimizes the least-squared difference
+  between the phase model and the observed unwrapped phase
+  values.&nbsp; The residual phase is the difference between the
+  phase values and the regression model. The residual phase
+  includes terms related to atmospheric delay, non-linear
+  deformation, baseline errors, and signal noise and is therefore
+  not called "atmospheric phase" as this may be mis-leading.</p>
+
+  <p>For each point the standard deviation of the (unwrapped)
+  phases from the regression function is calculated and used as
+  measure for the quality of the regression. An optional output
+  mask file can be generated indicating points with a quality above
+  an indicated minimum threshold. Such a mask can be used to only
+  disply or further process data of "reliable" or "good"
+  points.<br>
+  <br>
+  We also calculate the covariance matrix that provides the scale
+  factors relating the standard deviation of the phase error
+  distribution to the estimation uncertainty of the height
+  correction (pdh_err), the estimation uncertainty of the
+  deformation rate (pdef_err), and estimation uncertainty of the
+  phase offset (ppc_err). If the actual deformation is not linear
+  then the estimated errors&nbsp; will be higher than they actually
+  are.</p>
+
+  <p>Furthermore, the unwrapped interferometric phases are
+  determined and can be written to an output point data stack. The
+  unwrapped differential phases can be added to the phase model
+  which was subtracted to retrieve the unwrapped phases of the
+  original interferograms. These phases together with the improved
+  height values can be used for example in the estimation of
+  precision baselines using <span style=
+  "font-style: italic; color: blue;">base_ls_pt</span>.</p>
+
+  <p><span style=
+  "font-style: italic; color: blue;">multi_def_pt</span> conducts
+  the same type of regression analysis as <span style=
+  "font-style: italic; color: blue;">def_mod_pt</span>, but using a
+  multi-patch strategy. The image area is divided into different
+  patches. For each patch a new local reference point is determined
+  and used in the regression analysis. The use of this local
+  reference point has the advantage that distances to this
+  reference point can be kept short. Over short distances the
+  residual phase terms caused by the atmospheric path delay, and
+  inaccurate baselines remain small. Furthermore the relative
+  deformation rates remain smaller.&nbsp; Overall the approach with
+  the local references is more robust. Region growing is used to
+  adjust the height corrections and deformation rates estimated
+  over the grid of patches so that they are always relative to the
+  global reference point. This permits investigating large areas
+  while still having the advantage of a local reference.<br></p>
+
+  <p>There are two modes for finding the local reference point. The
+  first approach is to find the first point that has a residual
+  phase standard deviation sigma that is less than the specified
+  threshold sigma_max2. The other approach is to search all the
+  points in the patch for the point that has the lowest value<br>
+  of sigma and is also less than sigma_max2. The second approach
+  requires more computation, but is generally more robust.<br></p>
+
+  <p>As compared to <span style=
+  "font-style: italic; color: blue;">def_mod_pt,
+  multi_def_pt</span> has an additional parameter, the patch size
+  in range pixels. The patch size in azimuth pisels is calculated
+  from the range pixels by setting the azimuth patch size to a
+  value corresponding to the ground-range patch size.</p>
+
+  <p>Individual regression analyses can be carried out for
+  interactiviely selected point pairs (one point is the reference),
+  using the program <span style=
+  "color: blue; font-style: italic;">dis_ipta</span>. The
+  regression algorithms used in <span style=
+  "font-style: italic; color: blue;">dis_ipta, def_mod_pt</span>
+  and <span style=
+  "color: blue; font-style: italic;">multi_def_pt</span> are
+  identidcal.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_ls_pt.html">base_ls_pt</a>, <a href=
+  "dis_ipta.html">dis_ipta</a>,<a href="prox_pt.html">prox_pt</a>,
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href=
+  "tazio_strozzi.html">TS</a>,<a href="othmar_frey.html">OF</a>,
+  last change 14-Dec-2011.
+</body>
+</html>

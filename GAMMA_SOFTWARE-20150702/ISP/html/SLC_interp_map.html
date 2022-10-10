@@ -1,0 +1,210 @@
+<!DOCTYPE doctype PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<html>
+<head>
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: SLC_interp_map</title>
+</head>
+
+<body>
+  &nbsp;
+
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_interp_map</h2><i>ANSI-C program:</i> <i><a href=
+  "../src/SLC_interp_map.c">SLC_interp_map.c</a></i>
+
+  <p><b>NAME</b><br>
+  SLC_interp_map - SLC resampling using 2-D SINC interpolation.
+  Resampling offsets include non-linear terms.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <b><tt>SLC_interp &lt;SLC-2&gt; &lt;SLC1_par&gt; &lt;SLC2_par&gt;
+  &lt;OFF_par&gt; &lt;SLC-2R&gt; &lt;SLC2R_par&gt; &lt;OFF_par2&gt;
+  &lt;coffs_sm&gt; [loff] [nlines]</tt></b><br>
+  &nbsp;</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) SLC-2 image to be resampled to the geometry of
+        the reference SLC-1 image</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2R&gt;</td>
+
+        <td>(output) SLC-2 resampled into the reference geometry of
+        SLC-1 (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(output) ISP image parameter file for resampled
+        SLC-2R</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par2&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file used to
+        measure residual range and azimuth offsets</td>
+      </tr>
+
+      <tr>
+        <td>&lt;coffs_sm&gt;</td>
+
+        <td>(input) smoothed residual range and azimuth offsets
+        (fcomplex) between the resampled SLC-2 and the
+        SLC-1<br></td>
+      </tr>
+
+      <tr>
+        <td>[loff]</td>
+
+        <td>offset to starting line of interferogram (relative to
+        SLC-1) (default=0)</td>
+      </tr>
+
+      <tr>
+        <td>[nlines]</td>
+
+        <td>number of SLC lines to process (default=to end of
+        file)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>SLC_interp_map 1610.slc 1352.slc.par 1610.slc.par
+  1352_1610.off 1610.rslc 1610.rslc.par refine.off
+  refine.coffs_sm</tt></p>
+
+  <p><b>DESCRIPTION</b><br>
+  <a href="SLC_interp_map.html">SLC_interp_map</a> registers SLC-2
+  to the reference SLC-1 geometry. The range and azimuth offsets
+  are calculated as the sum of&nbsp; the contributions from the
+  polynomials stored in the ISP <i>OFF_par</i> and the local
+  residual offsets in the <i>coffs</i> file.&nbsp; These residual
+  offsets are measured between the reference SLC and SLC-2 that has
+  been resampled to the geometry of SLC-1 using the polynomials
+  alone. This map contains the non-linear residual offsets between
+  SLC-1 and SLC-2.&nbsp; The sum of these residual offsets and the
+  offset contribution determined from the polynomials are the
+  offsets&nbsp; used to resample the SLC-2. This program is needed
+  only in situations were there are&nbsp; non-linear deformations
+  in the scene such as due to glacier motion, or large
+  earthquakes.</p>
+
+  <p>Processing of data using <a href=
+  "SLC_interp_map.html">SLC_interp_map</a> requires first
+  generating an SLC resampled to the reference geometry of SLC-1
+  using <a href="SLC_interp.html">SLC_interp</a>. Offsets are then
+  measured using a dense grid between the resampled SLC and SLC-1.
+  These measurements contain information on the non-linear offset
+  function between the SLCs due to scene deformation (e.g.
+  earthquake or glacier motion). Taking this deformation into
+  account when forming the interferogram improves the
+  interferometric correlation.</p>
+
+  <p>A new offset parameter file for the refinement has to be
+  created using <a href="create_offset.html">create_offset</a> with
+  0 initial offsets. The typical number of offset measurements in
+  range and azimuth for the residual map is 700 x 700. These
+  offsets must then be culled using <a href=
+  "offset_fit.html">offset_fit</a>. The range size of the search
+  window should be between 32 to 64&nbsp; and the azimuth window
+  size in the range of 64 to 128.&nbsp; Later culling of the
+  offsets in <a href="offset_fit.html">offset_fit</a> should limit
+  the range of the residual&nbsp; range and azimuth offsets to the
+  level of the maximum expected deformation. The threshold SNR
+  should be set in the range between 5 and 7.<br></p>
+
+  <p><a href="SLC_interp_map.html">SLC_interp_map</a> has been
+  updated to adapt to changes in the Doppler centroid along-track.
+  This is especially applicable to the processing of long strips
+  (&gt;200 km) of Radarsat data where the Doppler centroid changes
+  by more than 100 Hz/frame.</p>
+
+  <p>After processing with&nbsp; <a href=
+  "offset_fit.html">offset_fit</a>,&nbsp; the culled offset file
+  (coffs) should be smoothed and filled using program <a href=
+  "interp_ad.html">interp_ad</a>. This program fills the holes in
+  the offset map by adaptive&nbsp; interpolation and smooths the
+  data to reduce noise.</p>
+
+  <p>An 2D SINC interpolator is used in resampling the complex
+  valued data. The registration uses the bilinear coregistration
+  offset polynomials for range and azimuth offset (as a function of
+  range and azimuth) of the ISP offset/processing parameter file.
+  To determine the offset polynomials use the programs <a href=
+  "offset_pwr.html">offset_pwr</a>,&nbsp;<a href=
+  "offset_SLC.html">offset_SLC</a>, and <a href=
+  "offset_fit.html">offset_fit</a> are used. No spectral filtering
+  is applied during the registration. Such filtering is applied
+  during calculation of the interferogram with program <a href=
+  "SLC_intf.html">SLC_intf</a>.</p>
+
+  <p>No multi-look intensity images are produced from the two SLC
+  images. Coregistered multi-look intensity images in the identical
+  geometry as the interferogram can be generated from the
+  co-registered SLC images using the program <a href=
+  "multi_look.html">multi_look</a>. The parameters <b>[lbegin]</b>
+  and <b>[nltot]</b> should nominally not be changed from the
+  default values since the starting line and number of lines are
+  not recorded in the SLC-1 parameter file. The primary intent of
+  <a href="SLC_interp.html">SLC_interp</a> is to resample the SLC-2
+  image to the geometry of SLC-1. If a only an interferogram from a
+  segment of the SLC images is desired, then use the program
+  <a href="SLC_copy.html">SLC_copy</a> to extract the segment from
+  SLC-1, before using processing<a href="SLC_intf.html"></a>.</p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="SLC_interp.html">SLC_interp</a>,<a href=
+  "SLC_intf.html">SLC_intf,</a><a href=
+  "SLC_copy.html">SLC_copy</a>, <a href=
+  "offset_pwr.html">offset_pwr</a>,<a href=
+  "offset_SLC.html">offset_SLC</a>, <a href=
+  "offset_fit.html">offset_fit</a>,<a href=
+  "interp_ad.html">interp_ad</a>, <a href=
+  "multi_look.html">multi_look</a>,<a href=
+  "interf_SLC.html">interf_SLC</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>,<a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "OFF_par.html">OFF_par</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 29-Nov-2003.
+</body>
+</html>

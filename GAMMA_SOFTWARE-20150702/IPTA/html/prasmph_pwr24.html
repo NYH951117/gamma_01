@@ -1,0 +1,229 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: prasmph_pwr24,
+  prasmph_pwr24_map</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>prasmph_pwr24, prasmph_pwr24_map</h2>
+
+  <p><i>csh-shell scripts: <a href=
+  "../scripts/prasmph_pwr24">prasmph_pwr24</a>, <a href=
+  "../scripts/prasmph_pwr24_map">prasmph_pwr24_map</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  prasmph_pwr24 - generate SUN rasterfile for point data (fcomplex,
+  phase using color cycle and a background grayscale image)<br>
+  prasmph_pwr24_map - generate SUN rasterfile in map geometry for
+  point data (fcomplex, phase using color cycle and a background
+  grayscale image)</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>prasmph_pwr24 &lt;plist&gt; &lt;pmask&gt;
+  &lt;SLC_par&gt; &lt;pdiff&gt; &lt;rec_num&gt; &lt;par_out&gt;
+  &lt;mli&gt; [radius]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(input) point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar,
+      pmask[i]=0 excludes point i, enter - if not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;SLC_par&gt;</td>
+
+      <td>(input) SLC parameter file of point list coordinates</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata&gt;</td>
+
+      <td>(input) point data stack (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num&gt;</td>
+
+      <td>record number to process (default -: all records)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;par_out&gt;</td>
+
+      <td>(input) SLC/MLI parameter file of 2-D output image data
+      file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mli&gt;</td>
+
+      <td>(input) 2-D image data file used as output image
+      intensity</td>
+    </tr>
+
+    <tr>
+      <td>[radius]</td>
+
+      <td>interpolation window radius used default: 4.00)</td>
+    </tr>
+  </table>
+
+  <p><code><b>prasmph_pwr24_map &lt;plist_map&gt; &lt;pmask&gt;
+  &lt;DEM_par&gt; &lt;pdiff&gt; &lt;rec_num&gt; &lt;mli&gt;
+  [radius]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist_map&gt;</td>
+
+      <td>(input) point list containing map coordinates (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar,
+      pmask[i]=0 excludes point i, enter - if not available)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;DEM_par&gt;</td>
+
+      <td>(input) DIFF/GEO DEM parameter file</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pdata&gt;</td>
+
+      <td>(input) point data stack (float)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;rec_num&gt;</td>
+
+      <td>record number to process (default -: all records)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;mli&gt;</td>
+
+      <td>(input) 2-D image data file used as output image
+      intensity</td>
+    </tr>
+
+    <tr>
+      <td>[radius]</td>
+
+      <td>interpolation window radius used default: 4.00)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>prasmph_pwr24 testsite.plist testsite.pmask 08256.rslc.par
+  testsite.pdiff 5 08256.rmli.par average.rmli 3</samp></p>
+
+  <p>Generates an 24-bit SUN rasterfile of the phases (in radian)
+  of the fcomplex differential interferogram provided as record 5
+  of the point data stack, using the average backscatter intensity
+  image for the image brightness and a colors with a cycle
+  corresponding to 2PI radian phase.</p>
+
+  <p><samp>prasmph_pwr24 testsite.plist testsite.pmask
+  08256.rslc.par testsite.pdiff - 08256.rmli.par average.rmli
+  3</samp></p>
+
+  <p>Generates 24-bit SUN rasterfiles of the phases (in radian) of
+  the fcomplex differential interferogram provided (all records) of
+  the point data stack, using the average backscatter intensity
+  image for the image brightness and a colors with a cycle
+  corresponding to 2PI radian phase.</p>
+
+  <p><samp>prasmph_pwr24_map testsite.plist_map testsite.pmask
+  testsite.dem_par testsite.pdiff 5 average.rmli 3</samp></p>
+
+  <p>Generates an 24-bit SUN rasterfile in map geometry of the
+  phases (in radian) of the fcomplex differential interferogram
+  provided as record 5 of the point data stack, using the average
+  backscatter intensity image for the image brightness and a colors
+  with a cycle corresponding to 2PI radian phase.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  prasmph_pwr24 and prasmph_pwr24_map are csh scripts in
+  ./IPTA/scripts.</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  prasmph_pwr24 supports the generation of 24-bit SUN/BMP raster
+  files for complex valued (fcomplex) point data (stack of single
+  or mutliple records) displayed in color and the image brightness
+  corresponding to a backscatter intensity image.</p>
+
+  <p>In a first step the point data is transformed to a 2
+  dimensional image (using the program pt2data) which is
+  subsequently used to generate a SUN rasterfile (using the program
+  rasdt24_pwr.</p>
+
+  <p>This is done either for one record or for all records. To
+  select all records "-" is indicated instead of a record
+  number.</p>
+
+  <p>The name of the output SUN rasterfile is generated from the
+  name of the input data stack, the record number and .ras (e.g.
+  testsite.pdiff.05.ras).</p>
+
+  <p>The (multi-look) geometry used for the display is the one
+  defined in the SLC/MLI parameter file. For the image brightness
+  the 2D image provided is used (which is already in the 2D
+  multi-look geometry).</p>
+
+  <p>prasmph_pwr24_map supports the generation of 24-bit SUN/BMP
+  raster files in map geometry for complex valued (fcomplex) point
+  data (stack of single or mutliple records) displayed in color and
+  the image brightness corresponding to a backscatter intensity
+  image. The functionality corresponds to the one of prasmph_pwr24
+  with the exception that the point list indicated contains the map
+  coordinates (pixel numbers), as obtained using the program
+  <a href="pt2geo.html">pt2geo</a> and the DEM/MAP parameter file
+  is indicated instead of the SLC/MLI parameter files. The actual
+  point data stack is the same as used by prasmph_pwr24.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  Additional characteristics of the resampling to 2D and the SUN
+  rasterfile generation can be modified by editing the shell
+  script.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="pt2data.html">pt2data</a>, <a href="pt2d.html">pt2d</a>,
+  <a href="pt2geo.html">pt2geo</a>, <a href=
+  "rasmph_pwr24.html">rasmph_pwr24</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2004.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 5-Apr-2004.</p>
+</body>
+</html>

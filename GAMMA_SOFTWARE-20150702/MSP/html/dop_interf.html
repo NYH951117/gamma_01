@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>MSP Reference Manual: dop_interf</title>
+</head>
+
+<body>
+  <h1>Gamma MSP: Reference Manual</h1>
+  <hr align="left">
+
+  <h2>dop_interf</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/dop_interf.c">dop_interf.c</a></i></p>
+
+  <p><strong>NAME<br></strong><em>dop_interf</em> - Optimize for
+  interferometry the MSP Doppler function and processing bandwidth
+  for a pair of images.</p>
+
+  <p><strong>SYNOPSIS<br></strong><code>dop_interf
+  &lt;SAR_PAR_1_in&gt; &lt;PROC_PAR_1_in&gt; &lt;PROC_PAR_2_in&gt;
+  &lt;PROC_PAR_1_out&gt; &lt;PROC_PAR_2_out&gt;
+  &lt;doppler&gt;</code></p>
+
+  <table border="1" cellspacing="1" cellpadding="7">
+    <tr>
+      <td>&lt;SAR_PAR_1_in&gt;</td>
+
+      <td>MSP Sensor/raw data parameter file 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par_1_in&gt;</td>
+
+      <td>input MSP processing parameter file for scene 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par_2_in&gt;</td>
+
+      <td>input MSP processing parameter file for scene 2</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par_1_out&gt;</td>
+
+      <td>output MSP processing parameter file for scene 1</td>
+    </tr>
+
+    <tr>
+      <td>&lt;PROC_par_2_out&gt;</td>
+
+      <td>output MSP processing parameter file for scene 2</td>
+    </tr>
+
+    <tr>
+      <td>&lt;doppler&gt;</td>
+
+      <td>output doppler function as a function of range sample
+      number (plot file)</td>
+    </tr>
+  </table><br>
+  <br>
+
+  <p><strong>EXAMPLE</strong><br clear="all">
+  <samp>dop_interf ERS1_ESA.par p8560.slc.par p9562.slc. par
+  p8560_int.slc.par p9562_int.slc.par 8560_9562.dop</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br clear="all">
+  This program averages the Doppler polynomials from two passes
+  over the same scene to obtain a Doppler centroid for processing
+  the two scenes that improves the correlation. Under the
+  assumption that the tracks flown by the SAR sensor are parallel,
+  processing these scenes using the average of the Doppler
+  centroids for the two passes and reducing the processing
+  bandwidth to the region of the spectrum overlap will raise the
+  correlation in the generated interferogram. Only the Doppler
+  bandwidth common to the two passes should be used for generating
+  the SLC images. This program is particularly useful for
+  processing data from ERS tandem pairs where ERS-1 and ERS-2 have
+  significantly different Doppler centroids when imaging the same
+  scene.</p>
+
+  <p><strong>SEE ALSO<br></strong><a href=
+  "MSP_users_guide.html">Users Guide</a>, <a href=
+  "typedef_MSP.h.html">typedef_MSP.h</a>, <a href=
+  "sar_par.html">Sensor parameter file</a>, <a href=
+  "proc_par.html">MSP Processing Parameter file</a>.</p>
+  <hr align="left">
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "MSP_documentation.html">Documentation</a>, <a href=
+  "MSP_users_guide.html">Users Guide</a> and <a href=
+  "MSP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2000.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 15-Feb-2000.
+</body>
+</html>

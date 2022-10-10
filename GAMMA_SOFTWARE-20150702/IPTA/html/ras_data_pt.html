@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: ras_data_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>ras_data_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/ras_data_pt.c">ras_data_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  &nbsp;ras_data_pt: draw data values at point list locations on a
+  SUN/BMP raster image</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>ras_data_pt.exe &lt;plist&gt; &lt;pmask&gt;
+  &lt;pdata1&gt; &lt;rec_num&gt; &lt;nrec&gt; &lt;ras_in&gt;
+  &lt;ras_out&gt; &lt;type&gt; &lt;rlks&gt; &lt;azlks&gt; [cycle]
+  [bx]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;plist&gt;</td>
+
+        <td>(input) point list (int)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pmask&gt;</td>
+
+        <td>(input) point data stack of mask values (uchar, set to
+        - to accept all points)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;pdata&gt;</td>
+
+        <td>(input) point data stack (various formats
+        supported)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rec_num&gt;</td>
+
+        <td>starting record number in pdata, starting with 1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;nrec&gt;</td>
+
+        <td>number of records to display (enter -&nbsp; for
+        remainder of stack)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_in&gt;</td>
+
+        <td>(input) raster image (SUN raster or BMP format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;ras_out&gt;</td>
+
+        <td>(output) output raster file name template, example:
+        diff0/pdiff0</td>
+      </tr>
+
+      <tr>
+        <td>&lt;type&gt;</td>
+
+        <td>pdata type (0:fcomplex&nbsp; 2:float)</td>
+      </tr>
+
+      <tr>
+        <td>[rlks]</td>
+
+        <td>range looks of raster image relative to point
+        coordinates&nbsp;&nbsp; (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[azlks]</td>
+
+        <td>azimuth looks of raster image relative to point
+        coordinates (default=1.0)</td>
+      </tr>
+
+      <tr>
+        <td>[cycle]</td>
+
+        <td>data value per color cycle (default = TWO_PI)</td>
+      </tr>
+
+      <tr>
+        <td>[bx]</td>
+
+        <td>size of square in pixels, set to 1 for single points
+        (default: 1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong></p>
+
+  <p><code>ras_data_pt pt_lh pmsk0 pdiff3u 1 -
+  rmli_2_3/rmli_2_3.ave.ras diff3u/pdiff3u 2 2 3 12.56
+  1<br></code></p>
+
+  <p><code>display all the layers of the float data stack pdiff3u
+  using</code> <code>rmli_2_3/rmli_2_3.ave.ras as the backdrop.
+  There are 2 range looks and 3 azimuth looks for the backdrop
+  image relative to the SLC. The color wrap is 12.56. Output images
+  are in the diff3u directory (created beforehand). File names are
+  pdiff3u_001.ras, pdiff3u_002.ras...</code></p>
+
+  <p><code>ras_data_pt&nbsp; pt_map_lh pmsk3 pdef4 1 1&nbsp;
+  rmli_2_3/rmli_2_3_utm.ave.ras&nbsp; def4_map/pdef4_map 2 1 1 .2
+  1</code></p>
+
+  <p><code>Display a single layer point data file pdef4 using 1
+  look in range and azimuth. The image rmli_2_3_utm.ave.ras is the
+  backdrop. Point data are displayed with a color cycle fo .2. The
+  output raster image file is called pdef4_map_001.ras</code><br>
+  <br>
+  <strong>INSTALLATION</strong><br>
+  Source code ras_data_pt in ./IPTA/src, executable version
+  ras_data_pt&nbsp; in ./IPTA_v1.x/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <span style="font-style: italic;">ras_data_pt</span>supports
+  generation of &nbsp;8-bit SUN/BMP raster images of real or
+  complex-valued data stack values. The data values are displayed
+  as the color of a rectangle, located at the point positions
+  specified in the plist.&nbsp; The&nbsp; intensity of the
+  rectangle&nbsp; is constant at all&nbsp; points. The point data
+  are displayed as a rectangle with size specified on the command
+  line (default = 1). The wrap of the color scale is specified by
+  the command line "cycle"&nbsp; parameter. &nbsp;The &nbsp;number
+  of looks &nbsp;in range and azimuth of the background image
+  relative to the point coordinates in the point list is specified
+  by the rlks and azlks parameters. The type parameter specifies if
+  the input data stack values are float or complex. If complex, the
+  phase of the complex number is displayed in the color of
+  &nbsp;the rectangle.</p>
+
+  <p>This program displays the data stack values very rapidly since
+  there is no recalculation of the background raster image,
+  &nbsp;or generation of a raster version of the point data prior
+  to display. The point data values are directly displayed on the
+  background image.&nbsp;</p>
+
+  <p>The root name of the output image series is specified on the
+  command line. The out image series are numbered sequentially
+  starting with the value of the rec_num command line
+  parameter.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>, <a href=
+  "ras_data_pt.html">ras_data_pt.c</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 10-Aug-2005.
+</body>
+</html>

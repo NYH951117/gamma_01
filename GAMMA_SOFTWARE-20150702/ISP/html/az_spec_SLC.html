@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: az_spec_SLC</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>az_spec_SLC</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/az_spec_SLC.c">az_spec_SL</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  az_spec_SLC - computes azimuth doppler spectrum and Doppler
+  centroid from SLC data.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>az_spec_SLC &lt;SLC&gt; &lt;SLC_par&gt; &lt;spectrum&gt;
+  [roff] [namb]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC&gt;</td>
+
+        <td>single-look complex (SLC) SAR data file (fcomplex or
+        scomplex SLC format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>SLC parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;spectrum&gt;</td>
+
+        <td>output Doppler spectrum (text format)</td>
+      </tr>
+
+      <tr>
+        <td>[roff];</td>
+
+        <td>range sample offset to center of estimation window
+        (enter - for default=center_swath)</td>
+      </tr>
+
+      <tr>
+        <td>[namb];</td>
+
+        <td>number of multiples of the PRF to add to the estimated
+        centroid (default=0)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLES</strong><br>
+  <samp>az_spec_SLC 19990915.slc 19990915.slc.par
+  19990915.az_spec</samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>az_spec_SLC</em> reads SLC data (both fcomplex and scomplex
+  format) and the ISP SLC image parameter file. and computes the
+  azimuth Doppler spectrum and the Doppler centroid from SLC data.
+  The azimuth Doppler spectrum is written to a text file for
+  plotting using gnuplot. During execution the user is queried if
+  the Doppler centroid currently in the SLC parameter file (should
+  be replaced by the estimate derived from the SLC data.<br></p>
+
+  <p>To plot the azimuth spectrum in PNG format:<br></p>
+
+  <p><code>&nbsp;</code><code>echo "set term png; set output
+  '19990915.az_spec.</code><code>png';set grid; set xlabel 'Hz';
+  set ylabel 'Relative Power'; set title 'Azimuth Spectrum'; plot
+  '19990915.az_spec</code><code>' with lines lw .5
+  "|gnuplot</code><br></p>
+
+  <p>This program &nbsp; estimates the constant component of the
+  Doppler centroid. The Doppler centroid of data produced by
+  Radarsat-1 or JERS-1 vary from near to far range. The user can
+  vary the position of the estimate from near to far range using
+  the <em>roff</em> command line parameter. Estimating the centroid
+  in the near and far range can be used to confirm the slope and
+  centroid values contained in the SLC metadata. The <em>namb</em>
+  option can be used to add a number of multiples of the PRF to
+  centroid estimate.&nbsp;<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>.</p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2012.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 16-Jun-2012.</p>
+</body>
+</html>

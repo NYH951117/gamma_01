@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: prox_pt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>prox_pt</h2>
+
+  <p><i>ANSI-C program: <a href=
+  "../src/prox_pt.c">prox_pt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  prox_pt - generate point list of elements in an existing point
+  list which are close to a particular location</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>prox_pt &lt;plist_in&gt; &lt;pmask&gt; &lt;cr&gt;
+  &lt;cl&gt; &lt;dr&gt; &lt;dl&gt; &lt;np_max&gt;
+  &lt;plist_out&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist_in&gt;</td>
+
+      <td>(input) point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;pmask&gt;</td>
+
+      <td>(input) point data stack of mask values (uchar, set to -
+      to accept all points)</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cr&gt;</td>
+
+      <td>area center range coordinate</td>
+    </tr>
+
+    <tr>
+      <td>&lt;cl&gt;</td>
+
+      <td>area center azimuth line number</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dr&gt;</td>
+
+      <td>area range search width (cr-dr,cr+dr), enter - for the
+      entire image width</td>
+    </tr>
+
+    <tr>
+      <td>&lt;dl&gt;</td>
+
+      <td>area azimuth line number search window (cl-dl,cl+dl),
+      enter - for all lines</td>
+    </tr>
+
+    <tr>
+      <td>&lt;np_max&gt;</td>
+
+      <td>maximum number of nearest points to include, enter - for
+      all</td>
+    </tr>
+
+    <tr>
+      <td>&lt;plist_out&gt;</td>
+
+      <td>(output) point list of nearest points in indicated area
+      (int)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>prox_pt testsite.plist testsite.pmask 214 712 50 250 20
+  testsite.plist1</samp></p>
+
+  <p>Reads the input point list and generates a small point list of
+  points near coordinate (214,712) with maximum 20 points.</p>
+
+  <p><samp>prox_pt testsite.plist - 214 712 - - 20
+  testsite.plist2</samp></p>
+
+  <p>Reads the input point list and generates a small point list of
+  the 20 nearest points of coordinate (214,712).</p>
+
+  <p><samp>prox_pt testsite.plist testsite.pmask 214 712 50 250 -
+  testsite.plist3</samp></p>
+
+  <p>Reads the input point list and generates a small point list of
+  all points within the indicated range pixels (50) and azimuth
+  lines (250) of coordinate (214,712).</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code prox_pt.c in ./IPTA/src, executable version prox_pt
+  in ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  For an existing point list prox_pt generates a new point list of
+  those valid points which are located close to an indicated
+  coordinate.</p>
+
+  <p>For the center of the search the range and azimuth coordinate
+  (relative to the reference SLC geometry) are indicated. The
+  search area can further be limited by indicating a mask file and
+  maximum distances in range pixels and azimuth lines.</p>
+
+  <p>prox_pt searches all valid points of the input point list in
+  the indicated search area, orders these by increasing distance
+  from the area center, and writes out the nearest points up to the
+  indicated maximum number.</p>
+
+  <p>Point lists for small areas are of interest for a detail
+  analysis, for example in the vicinity of targets of interest (a
+  factory, a house, a bridge, a dam, a mine, a construction site,
+  ...).</p>
+
+  <p>Other programs to generate new point lists are image2pt,
+  merge_pt, mkgrid, pwr_stat, and sp_stat.</p>
+
+  <p>Programs to validate existing point lists are qc_pt and
+  expand_pt.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="expand_pt.html">expand_pt</a>, <a href=
+  "merge_pt.html">merge_pt</a>, <a href=
+  "image2pt.html">image2pt</a>, <a href="mkgrid.html">mkgrid</a>,
+  <a href="pwr_stat.html">pwr_stat</a>, <a href=
+  "qc_pt.html">qc_pt</a>, <a href="sp_stat.html">sp_stat</a>,
+  <a href="SLC_par.html">SLC_par</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

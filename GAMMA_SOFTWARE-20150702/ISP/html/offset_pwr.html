@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: offset_pwr</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_pwr</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/offset_pwr.c"><i>offset_pwr.c</i></a></p>
+
+  <p><em>offset_pwr</em> estimates the range and azimuth
+  registration offset fields using cross correlation optimization
+  of the detected SLC data (rather than the fringe visibility
+  algorithm used in <em>offset_SLC</em>). <em>offset_pwr</em> is
+  used for SLC data that is either stored as pairs of floats
+  (fcomplex) or pairs of short integers (scomplex).</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>offset_pwr offset_pwr &lt;SLC1&gt; &lt;SLC2&gt;
+  &lt;SLC1_par&gt; &lt;SLC2_par&gt; &lt;OFF_par&gt; &lt;offs&gt;
+  &lt;snr&gt; [rwin] [azwin] [offsets] [n_ovr] [nr] [naz] [thres]
+  [c_ovr] [pflag] [pltflg]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) single-look complex image 1 (reference)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2&gt;</td>
+
+        <td>(input) single-look complex image 2</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC-1 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>(input) SLC-2 ISP image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(input) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;offs&gt;</td>
+
+        <td>(output) offset estimates (FCOMPLEX)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;snr&gt;</td>
+
+        <td>(output) offset estimation SNR (FLOAT)</td>
+      </tr>
+
+      <tr>
+        <td>[rwin]</td>
+
+        <td>search window size (range pixels, (enter - for default
+        from offset parameter file))</td>
+      </tr>
+
+      <tr>
+        <td>[azwin]</td>
+
+        <td>search window size (azimuth pixels, (enter - for
+        default from offset parameter file))</td>
+      </tr>
+
+      <tr>
+        <td>[offsets]</td>
+
+        <td>(output) range and azimuth offsets and SNR data in text
+        format, enter - for no output</td>
+      </tr>
+
+      <tr>
+        <td>[n_ovr]</td>
+
+        <td>SLC oversampling factor (integer, (1,2,4), default:
+        2)</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of offset estimates in range direction (enter -
+        for default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[naz]</td>
+
+        <td>number of offset estimates in azimuth direction (enter
+        - for default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[thres]</td>
+
+        <td>offset estimation quality threshold (enter - for
+        default from offset parameter file)</td>
+      </tr>
+
+      <tr>
+        <td>[c_ovr]</td>
+
+        <td>correlation function oversampling factor (integer&nbsp;
+        (1,2,4) default: 4)</td>
+      </tr>
+
+      <tr>
+        <td>[pflag]</td>
+
+        <td>print flag:<br>
+        &nbsp;&nbsp; 0: print offset summary<br>
+        &nbsp;&nbsp; 1: print all offset data</td>
+      </tr>
+
+      <tr>
+        <td>[pltflg]</td>
+
+        <td>&nbsp;plotting flag:<br>
+        &nbsp;&nbsp;&nbsp; 0: none (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: output plots in PNG format<br>
+        &nbsp;&nbsp;&nbsp; 2: screen output and PNG format
+        plots<br>
+        &nbsp;&nbsp;&nbsp; 3: output plots in PDF format<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>offset_pwr 19960421.slc 19960422.slc 19960421.slc.par
+  19960422.slc.par 19960421_19960422.off 19960421_19960422.offs
+  19960421_19960422.snr 64 64 19960421_19960422.offsets 2 32 64
+  7.0</samp></p>
+
+  <p>estimates range and azimuth registration offsets (offsets of
+  19960421.slc relative to 19960422.slc) using the
+  cross-correlation algorithm over a grid of 32 range locations and
+  64 azimuth locates. Each of the patches is 64x64 pixels. The SLC
+  oversampling factor is set to 2.</p>
+
+  <p>&nbsp;<code>offset_pwr 19960421.slc 19960422.slc
+  19960421.slc.par 19960422.slc.par 19960421_19960422.off offs snr
+  64 64 offsets 2 8 8 7.0 4 1 2</code></p>
+
+  <p>In this example offsets are calculated on an 8 x 8 grid in the
+  geometry of SLC-1. The offset measurements are printed to the
+  screen and plots are generated for each point and displayed on
+  the screen.<code><br></code></p>
+
+  <p><b>DESCRIPTION</b></p>
+
+  <p><em>offset_pwr</em> estimates the range and azimuth
+  registration offset fields using cross correlation optimization
+  of the detected SLC data. This cross correlation optimization
+  algorithm rapidly generates the offset fields by correlating
+  image chips. The image chips dimensions can be specified on the
+  command line and can vary in the range of 16 to 512 depending on
+  the interferogram correlation. The coordinates of the image
+  section selected to be processed are relative to SLC-1.</p>
+
+  <p>The number of image chips used in range and azimuth, the range
+  and azimuth sizes of the image chips used in the search, and the
+  signal to noise (SNR) threshhold to accept an estimate may be
+  entered on the command line. Default values are taken from the
+  ISP offset/interferogram parameter file. Recommended values are
+  suggested as default values in the program
+  <em>create_offset</em>. For the SNR threshold, values of 7.0 and
+  larger are recommended.</p>
+
+  <p>The range and azimuth offset estimates are written to a binary
+  data file (fcomplex format) with the offsets coded as pairs of
+  floating point numbers (range offset, azimuth offset). This
+  algorithm is somewhat less accurate than the fringe visibility
+  method, but has the advantage that it is faster than the
+  coherence optimization method and more robust in the presence of
+  low correlation.</p>
+
+  <p>A disadvantage of this algorithm is that some estimates can be
+  very far off and still show high SNR, especially in urban
+  regions. In other words the SNR values used as qualtiy measure
+  for the reliability of each individual estimate are not always
+  reliable itself. Usually, such blunders can be effectively
+  removed later on based on its high deviation from the global fit
+  (a feature supported by the <em>offset_fit</em> program which is
+  used to calculate the registration offset polynomial based on the
+  offset and SNR estimates).</p>
+
+  <p>For most cases a SNR threshold of 7.0 for the acceptance of an
+  offset leads to good results. In cases of low correlation the
+  selection of a larger estimation window may be the better choice
+  than the reduction of the threshold. If the number of valid
+  offsets is 0 then the program exists with an error.</p>
+
+  <p>Oversampling of the SLC images is supported. The minimum SLC
+  oversampling factor should be selected to be 2. Using no SLC
+  oversampling results in aliasing of the 2D correlation function
+  used to determine offset.&nbsp; Nominal oversampling factor is
+  2,&nbsp; and&nbsp; if the precision measurement of the offset
+  field is desired, increasing this value to&nbsp; 4.The location
+  of the correlation maximum is estimated using a two-dimensional
+  quadratic least squares fit.</p>
+
+  <p><b>OPTIONS</b><br>
+  The offset estimation programs use already existing range and
+  azimuth offset polynomials found in the ISP offset/interferogram
+  parameter file to improve its initial registration offset guess.
+  An iterative use of this feature allows to optimize the
+  efficiency and accuracy of the registration offset estimation.
+  After an initial offset estimation from the orbit parameters
+  (<a href="init_offset_orbit.html">init_offset_orbit</a>) or the
+  data itself (<a href="init_offset.html">init_offset</a>, a first
+  offset polynomial is determined based on estimates calculated
+  with <a href="offset_pwr.html">offset_pwr</a> which is efficient
+  using large search windows. With these quite accurate
+  registration polynomials <a href=
+  "offset_SLC_tracking.html">offset_SLC_tracking</a> or <a href=
+  "offset_pwr_tracking.html">offset_pwr_tracking</a> can then be
+  run efficiently on many locations throughout the image, using
+  small search windows.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>, <a href=
+  "offset_fit.html">offset_fit</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>, <a href=
+  "offset_SLC_tracking.html">offset_SLC_tracking</a>, <a href=
+  "offset_pwr_tracking.html">offset_pwr_tracking</a>, <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>, <a href=
+  "init_offset.html">init_offset</a>, <a href=
+  "create_offset.html">create_offset</a></p>
+  <hr>
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2014.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 21-Aug-2014.</p>
+</body>
+</html>

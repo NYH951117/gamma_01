@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+  <meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+
+  <title>ISP Reference Manual: base_ls</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>base_ls</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/base_ls.c"><i>base_ls.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">base_ls</span> - Least-squares
+  estimation of interferometric baseline based on the Ground
+  Control Point (GCP) data.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>base_ls &lt;SLC_par&gt; &lt;OFF_par&gt; &lt;gcp_ph&gt;
+  &lt;baseline&gt; [ph_flag] [bc_flag] [bn_flag] [bcdot_flag]
+  [bndot_flag] [bperp_min] [SLC2R_par]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>ISP parameter file of the reference SLC</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;gcp_ph&gt;</td>
+
+        <td>ground control point data + extracted unwrapped
+        phase&nbsp;values&nbsp;(text format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;baseline&gt;</td>
+
+        <td>baseline parameter file</td>
+      </tr>
+
+      <tr>
+        <td>[ph_flag]</td>
+
+        <td>restore range phase ramp (default=0: do not restore 1:
+        restore)</td>
+      </tr>
+
+      <tr>
+        <td>[bc_flag]</td>
+
+        <td>cross-track baseline component estimate (0:orbit
+        derived 1:estimate from data, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[bn_flag]</td>
+
+        <td>normal baseline component estimate (0:orbit derived
+        1:estimate from data, default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[bcdot_flag]</td>
+
+        <td>cross-track baseline rate estimate (0:orbit derived
+        1:estimate from data, default=1)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[bndot_flag]</td>
+
+        <td style="vertical-align: top;">normal baseline component
+        estimate (0:orbit derived 1:estimate from data,
+        default=1)</td>
+      </tr>
+
+      <tr>
+        <td>[bperp_min]</td>
+
+        <td>minimum perpendicular baseline required for L.S.
+        estimation (m, default= 10.)</td>
+      </tr>
+
+      <tr>
+        <td>[SLC2R_par]</td>
+
+        <td>(input) parameter file of resampled SLC, required if
+        SLC-2 frequency differs from SLC-1</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>base_ls 1352.slc.par 1352_1610.off 1352_1610.gcp_data
+  1352_1610.base 1 1 1 1 0<br></samp></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>base_ls</em> computes a precise estimate of the
+  interferometric baseline using ground control points of known x
+  and y image coordinates, the corresponding terrain height, and
+  the corresponding unwrapped interferometric phase. A non-linear
+  least-squares solution algorithm is used to determine the
+  baseline parameter values. The baseline model uses Track,
+  Cross-Track, and Normal (TCN) coordinates. At each point along
+  the SAR track of the reference image the TCN basis is
+  recalculated.&nbsp;</p>
+
+  <p>The computed baseline (in TCN coordinates) is written to the
+  baseline file and is used to calculate heights and for
+  differential interferometry. Statistics for quality control of
+  the least-squares fit are computed and displayed. It is possible
+  to estimate the baseline from either the original or flattened
+  unwrapped interferometric phases. The command line parameter
+  <em>ph_flag</em> specifies if the unwrapped phase reflects the
+  original interferogram or has been flattened by removal of the
+  phase trend using a smooth spherical earth model. &nbsp;If the
+  unwrapped phase is from a differential interferogram created by
+  subtraction of a phase model generated using the DIFF/GEO program
+  <span style="font-style: italic;">phase_sim</span>, then the
+  simulated phase must be added back to the unwrapped phase to give
+  the unflattened, uwrapped interferometric phase. Adding back the
+  phase can be done using the DIFF/GEO program <span style=
+  "font-style: italic;">sub_phase</span>.&nbsp;</p>
+
+  <p>For very short baselines the solution tends to get instable
+  because of the negligible influence of the topographic height on
+  the phase. To avoid problems a minimum perpendicular baseline
+  (e.g. 20m) can be set. For shorter baselines the precision
+  baseline is set to the initial baseline estimate. If the baseline
+  is very small, the program <a href="base_init.html">base_init</a>
+  can be used on the complex valued interferogram to estimate the
+  perpendicular baseline component given the orbital fringes. The
+  parallel baseline component can be esitmated from the offset
+  measurments.</p>
+
+  <p>The <span style="font-style: italic;">gcp_ph</span> data file
+  is created using the&nbsp; <a href=
+  "gcp_phase.html">gcp_phase</a>. It contains the height and
+  unwrapped phase&nbsp; information. The heights can be extracted
+  from a DEM in SAR coordinates matching the unwrapped phase
+  interferogram &nbsp;using the DIFF/GEO program <span style=
+  "font-style: italic;">extract_gcp</span>.</p>
+
+  <p>The user can specify the baseline components that <span style=
+  "font-style: italic;">base_ls</span> will estimate by setting the
+  appropriate&nbsp; flags on the command line. <span style=
+  "font-style: italic;">bc_flag</span> and <span style=
+  "font-style: italic;">bn_flag</span> refer to the cross-track and
+  normal baseline components while <span style=
+  "font-style: italic;">bcdot_flag</span> and <span style=
+  "font-style: italic;">bndot_flag</span> are the respective rates
+  of change in units of m/sec. If the data are very noisy, better
+  results may be obtained by reducing the number of estimated
+  parameters. Generally at least one bn_flag and bn_dot should be
+  selected. Adding the other components should reduce the residual
+  errors. If adding or removing a component causes only a very
+  small change in the error, that baseline component is
+  redundent.</p>
+
+  <p>If the two SLCs used to form the interferogram are from
+  sensors with different carrier frequencies (e.g. ERS and ENVISAT)
+  then the SLC parameter file of the second scene must be specified
+  on the command line.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "gcp_phase.html">gcp_phase</a>, <a href=
+  "base_orbit.html">base_orbit</a>,&nbsp;<a href=
+  "base_init.html">base_init</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyright for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 7-Sep-2005.
+</body>
+</html>

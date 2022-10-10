@@ -1,0 +1,170 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: RSAT2_SLC_preproc</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>RSAT2_SLC_preproc</h2>
+
+  <p><i>Perl script:</i> <a href=
+  "../scripts/RSAT2_SLC_preproc"><i>RSAT2_SLC_preproc</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  RSAT2_SLC_preproc -&nbsp;&nbsp; Preprocessing of a set of RSAT2
+  SLC images using <span style="font-weight: normal;"><a href=
+  "par_RSAT2_SLC.html">par_RSAT2_SLC</a></span></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>RSAT2_SLC_preproc &lt;SLC_list&gt; &lt;pol&gt;
+  &lt;out_dir&gt; &lt;log&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC_list&gt;</td>
+
+        <td>(input) parameter file with 2 entries/line<br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; 1. directory
+        (including path) containing RSAT2 SLC products
+        (RS2...SLC)<br>
+        &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp; 2. unique
+        scene identifier (date)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;pol&gt;</td>
+
+        <td>polarization to extract: HH, HV, VH, VV<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;out_dir&gt;<br></td>
+
+        <td style="vertical-align: top;">directory for output fixed
+        raw data files and processing parameter files<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;log&gt;<br></td>
+
+        <td style="vertical-align: top;">(output) processing log
+        file<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br>
+  <br></strong> <code style=
+  "color: fuchsia;"><samp>RSAT2_SLC_preproc RSAT2_SLC_list VV slc
+  RSAT2_SLC_preproc.log<br></samp></code></p>
+
+  <p><code><samp>where:<br></samp></code></p>
+
+  <p><code>&nbsp; RSAT2_SLC_list:&nbsp; &nbsp;&nbsp; Two column
+  list of the RSAT2 SLC prodcuts and the scene identifier, date
+  YYYYMMDD e.g. 20100505<br>
+  &nbsp;
+  VV:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Selected Polarization<br>
+  &nbsp;
+  slc:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Output directory for SLC products in Gamma format<br>
+  &nbsp;
+  log;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  Log file for the processing<br></code></p>
+
+  <p><strong>DESCRIPTION<br></strong></p>
+
+  <p><span style="font-weight: normal;">This script reads a set of
+  the RSAT2 SLC data in geotiff format and converts the data to
+  Gamma SLC format including an SLC image parameter file (<a href=
+  "ISP_file_formats.html">SLC_par</a>). The input is a two column
+  list of directories containing the SLC data,&nbsp; one directory
+  per product and an date identifier for the data set. An example
+  SLC_list is shown below:<br></span></p>
+
+  <p><span style="font-weight: normal;"><code><span style=
+  "color: fuchsia;">cat RSAT2_SLC_list</span><br>
+  RSAT2/RS2_OK11906_PK131225_DK126606_U4_20100505_011529_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100505<br>
+  RSAT2/RS2_OK11906_PK131226_DK126607_U4_20100529_011529_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100529<br>
+  RSAT2/RS2_OK11906_PK131227_DK126608_U4_20100622_011530_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100622<br>
+  RSAT2/RS2_OK11906_PK131228_DK126609_U4_20100716_011531_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100716<br>
+  RSAT2/RS2_OK11906_PK131229_DK126610_U4_20100809_011532_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100809<br>
+  RSAT2/RS2_OK11906_PK131230_DK126611_U4_20100902_011534_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100902<br>
+  RSAT2/RS2_OK11906_PK131231_DK152893_U4_20100926_011536_VV_SLC&nbsp;&nbsp;&nbsp;
+  20100926<br>
+  RSAT2/RS2_OK14364_PK156425_DK152894_U4_20101020_011537_VV_SLC&nbsp;&nbsp;&nbsp;
+  20101020<br>
+  RSAT2/RS2_OK14364_PK156426_DK152895_U4_20101113_011537_VV_SLC&nbsp;&nbsp;&nbsp;
+  20101113</code><br>
+  <br>
+  The SLC data directory for each product is created by using unzip
+  to decompress the product.&nbsp; Each product consists of a set
+  of data and meta data. The image metadata is in XML format and
+  the image in GEOTIFF format.&nbsp; If the scene is was acquired
+  with multiple polarizations then there will be more than one
+  GEOTIFF format image in the directory.<br></span></p>
+
+  <p><span style="font-weight: normal;">The user selects the
+  desired polarization with the second command line argument. The
+  script calls the program</span> <span style=
+  "font-weight: normal;"><a href=
+  "par_RSAT2_SLC.html">par_RSAT2_SLC</a></span> <span style=
+  "font-weight: normal;">for each of the SLCs with arguments
+  determined from the product name.</span> <span style=
+  "font-weight: normal;">The output SLC image has a name derived
+  from the specified identifier combined with the selected
+  polarization.&nbsp; In this example, the first two calls to
+  <a href="par_RSAT2_SLC.html">par_RSAT2_SLC</a> appear
+  as:<br></span></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">par_RSAT2_SLC
+  RSAT2/RS2_OK11906_PK131225_DK126606_U4_20100505_011529_VV_SLC/product.xml
+  RSAT2/RS2_OK11906_PK131225_DK126606_U4_20100505_011529_VV_SLC/lutSigma.xml
+  \<br>
+  RSAT2/RS2_OK11906_PK131225_DK126606_U4_20100505_011529_VV_SLC/imagery_VV.tif
+  VV slc/20100505_VV.slc.par
+  slc/20100505_VV.slc<br></span></code></p>
+
+  <p style="color: fuchsia;"><code><span style=
+  "font-weight: normal;">par_RSAT2_SLC
+  RSAT2/RS2_OK11906_PK131226_DK126607_U4_20100529_011529_VV_SLC/product.xml
+  RSAT2/RS2_OK11906_PK131226_DK126607_U4_20100529_011529_VV_SLC/lutSigma.xml
+  \<br>
+  RSAT2/RS2_OK11906_PK131226_DK126607_U4_20100529_011529_VV_SLC/imagery_VV.tif
+  VV slc/20100529_VV.slc.par
+  slc/20100529_VV.slc<br></span></code></p>and the output images
+  are <span style="font-weight: normal;">slc/20100505_VV.slc
+  and</span> <span style="font-weight: normal;">slc/20100529_VV.slc
+  withthe associated image parameter files.<br></span>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="../../DIFF/html/mk_tab.html"></a><a href=
+  "par_RSAT2_SLC.html">par_RSAT2_SLC</a><a href=
+  "SLC_copy.html"></a></p>
+  <hr>
+  <a href="SLC_copy.html"></a><a href="copyright.html">&copy;</a>
+  Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 5-Jul-2011.
+</body>
+</html>

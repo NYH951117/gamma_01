@@ -1,0 +1,43 @@
+IPTA scripts 24-Dec-2010 clw/uw
+-------------------------------
+The following scripts are considered integrated parts of the IPTA software. 
+These are fully documented in the HTML reference manual:
+
+base_calc	  calculate plot of baselines, baseline list and the interferogram table (itab) list for IPTA processing
+bpf_pt		  bandpass filtering for point data (float, fcomplex)
+pdis2dt		  alternating display of two point data sets (float, using color cycle)
+pdis2dt_map	  alternating display of two point data sets (float, using color cycle) in map geoemtry
+pdis2mph	  alternating display of two point data sets (fcomplex, phase using color cycle)
+pdis2mph_map	  alternating display of two point data sets (fcomplex, phase using color cycle) in map geoemtry
+pdisdt_pwr24	  display point data (float, using color cycle and a background grayscale image)
+pdisdt_pwr24_map  display point data (float, using color cycle and a background grayscale image) in map geoemtry
+pdismph_pwr24	  display point data (fcomplex, phase using color cycle and a  background grayscale image)
+pdismph_pwr24_map display point data (fcomplex, phase using color cycle and a  background grayscale image) in map geoemtry
+prasdt_pwr24	  generate SUN raster image for point data (float, using color cycle and a  background grayscale image)
+prasdt_pwr24_map  generate SUN raster image for point data (float, using color cycle and a  background grayscale image) in map geoemtry
+prasmph_pwr24	  generate SUN raster image for point data (fcomplex, phase using color cycle and a  background grayscale image)
+prasmph_pwr24_map generate SUN raster image for point data (fcomplex, phase using color cycle and a  background grayscale image) in map geoemtry
+MLI2pt            create processing parameter (pMLI_par) and MLI sample (pMLI) data stacks
+SLC2pt		  create processing parameter (pSLC_par) and SLC sample (pSLC) data stacks
+
+IPTA processing:
+----------------
+DEF_MOD_PT	two step regression analysis sequence (multi-patch - single-patch) adequate for differential 
+		interferograms with large scale effects (atmosphere, baseline errors) but still avoiding 
+		patching related effects by using a global reference in the second stage
+ave_all_pt	average all records in a stack of float data
+cp_base_2d_pt   copy baseline files into an IPTA baseline stack based on the entries in the RSLC_tab and itab
+                baselines have names of the form YYYYMMDD_YYYYMMDD.base which are the dates of SLC-1 and SLC-2
+extract_pbase   extract baselines from IPTA baseline stack into text format for 2D continuous processing
+mk_2d_im	generate 2-D images of point data using pt2data
+mk_2d_im_geo	generate 2-D images of point data using pt2d and a DEM parameter file
+ras2jpg		convert a set of SUN raster images to jpeg format 
+mk_base_init_pt estimate baseline correction using base_init for point based differential interferograms
+mk_d2pt		extract point data from a set of files at specified points and store in an IPTA data stack
+mk_diff2d_pt	extract a set of points from a stack of differential interferograms
+mk_data2d_pt	extract point values from a set of 2D raster float or fcomplex data files with common root filename
+mk_mli_all	generate a set of mli or resampled mli (rmli) images and optionally an image that is a sum of the individual images
+mk_msr_pt	generate a set of mean/sigma ratio images and point sets from the SLC image set
+mk_sp_all       evaluate spectral point characteristics for a stack of SLC images
+mk_xpt_all      evaluate peak position and peak values of SLC point scatterers
+SLC_ovr_all     range oversample a stack of SLC images by an integer factor using the ISP program SLC_ovr

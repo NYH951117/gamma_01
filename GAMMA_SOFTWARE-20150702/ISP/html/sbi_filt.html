@@ -1,0 +1,205 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>ISP Reference Manual: sbi_filt</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>sbi_filt.c<br></h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/sbi_filt.c"><i>sbi_filt.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>sbi_filt&nbsp;</em> Azimuth filtering of SLC data to support
+  split-beam interferometry to measure azimuth offsets</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>sbi_filt &lt;SLC-1&gt; &lt;SLC1_par&gt;
+  &lt;SLC2R_par&gt; &lt;SLCf&gt; &lt;SLCf_par&gt; &lt;SLCb&gt;
+  &lt;SLCb_par&gt; &lt;norm_sq&gt; [iwflg]<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) SLC-1, reference geometry (fcomplex or scomplex
+        format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) SLC parameter file of SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(input) SLC2 ISP image parameter file for the
+        co-registered image of the interferometric pair, used to
+        determine azimuth common-band for each output SLC (enter -
+        for none)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLCf&gt;</td>
+
+        <td>(output) single-look complex image (forward-looking,
+        fcomplex format)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLCf_par&gt;</td>
+
+        <td>(output) SLC parameter file (forward-looking)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLCb&gt;</td>
+
+        <td>(output) single-look complex image (backward-looking,
+        fcomplex format)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLCb_par&gt;</td>
+
+        <td>(output) SLC parameter file (backward-looking)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;norm_sq&gt;</td>
+
+        <td>squint between beams as a fraction of the azimuth
+        spectrum width (default: 0.5)</td>
+      </tr>
+
+      <tr>
+        <td>[iwflg]</td>
+
+        <td>inverse weighting flag:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        0: no compensation for azimuth spectrum weighting<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        1: compensate for the azimuth spectrum weighting
+        (default)<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE<br></strong><br>
+  <samp>sbi_filt 19991020.rslc 19991020.rslc.par 19991020.rslc.par
+  19991020f.rslc 19991020f.rslc.par 19991020b.rslc
+  19991020b.rslc.par .5&nbsp; 1<br></samp></p>
+
+  <p>The input SLC image is filtered to produce 2 SLC images,
+  19991020f.rslc is squinted forward and 19991020b.rslc is squinted
+  backward.<br></p>
+
+  <p><strong>DESCRIPTION</strong><br></p>
+
+  <p style="text-align: justify;"><em>sbi_filt</em> is used to
+  filter single look complex (SLC) SAR images, creating two SLC
+  images with different squint angles, one looking foreward and the
+  other backward.&nbsp; An interferometric pair of SLC images
+  processed in this way can then be used to create two
+  interferograms, with the first interferogram from the
+  forward-squinted beam and the second from the backward-squinted
+  beam. The difference in phase of these two interferograms can be
+  shown to be related to the along-track (azimuthal) displacement
+  as described by Bechor and Zebker (2006).<br></p>
+
+  <p style="text-align: justify;">The total azimuth spectral width
+  of the SLC is determined by the radar along-track sample rate
+  called the pulse repetition frequency or PRF.&nbsp; The squint of
+  the beam is determined by the radar orientation and latitude. The
+  expression for the doppler centroid as a function of squint angle
+  relative to look vector perpendicular to the velocity is given
+  by:</p>
+
+  <p style="text-align: center;"><img style=
+  "width: 168px; height: 48px;" alt="" src="doppler.png"></p>
+
+  <div style="text-align: justify;">
+    Squinting the beam away from broadside towards the direction of
+    travel gives a positive doppler, away from the direction of
+    travel gives a negative doppler shift. The frequency separation
+    in doppler between the looks determines the angular separation
+    between the two synthesized beams.<br>
+    <br>
+    The center of the SLC azimuth spectrum is called the doppler
+    centroid and can vary both along-track and perpendicular to the
+    track due to changes in the satellite latitude and orientation
+    during an orbit. Filtering of the SLC data is performed using a
+    pair of finite impulse response (linear phase) filters and
+    applied using frequency domain convolution. A different pair of
+    filters is calculated for&nbsp; every 256 range samples across
+    the track and every 2000 lines along-track. These filters track
+    the variation in the doppler centroid determined from the
+    doppler centroid polynomials in the SLC parameter file.<br>
+  </div>
+
+  <p style="text-align: justify;">The optimum separation between
+  the synthesized beams is approximately 0.6 times the antenna
+  beamwidth. This is equivalent to a difference of the doppler
+  centroid of the two beams of 1/2 PRF.The filters are specified by
+  the center frequency and bandwidth. The <span style=
+  "font-style: italic;">norm_sq</span> command line parameter
+  specifies the frequency separation of the center frequencies of
+  the two filters as a fraction of the PRF. The filter bandwidth is
+  calculated such that it is the maximum possible within the&nbsp;
+  processing bandwidth and is symmetrical with respect to the
+  chosen center frequency. The processing bandwidth of the SLC is
+  the fraction of the PRF bandwidth used to produce the SLC image.
+  Usually the processing bandwidth is in the range of 0.8 to 0.9
+  times the PRF in order to reduce azimuth ambiguities.<br></p>
+
+  <p style="text-align: justify;">An azimuth windowing function is
+  usually applied to the SAR radar data in order to reduce&nbsp;
+  azimuthal sidelobes. The program has the option to apply an
+  inverse weighting function of the spectrum that increases the
+  available bandwidth and resolution. Due to the reduced bandwidth
+  of the squinted images, this option significantly improves the
+  interferometric correlation of the interferograms produced from
+  the split-beam SLC data.</p>
+
+  <div style="text-align: justify;"></div>
+
+  <p style="text-align: justify;">The output SLC data are in
+  floating point complex (fcomplex) format, even if the input SLC
+  images are short complex (scomplex) format. The output filtered
+  SLC data are exactly coregistered with the input SLC. The doppler
+  polynomial information is updated to reflect the new doppler
+  centroid of the filtered data. This information is used by
+  <span style="font-style: italic;">sbi_offset</span> to convert
+  the interferometric phase of the split-beam interferogram into
+  along-track displacement.</p>
+
+  <p style="text-align: left;">Bechor, N., H. Zebker,&nbsp;
+  "Measuring two-dimensional movements using a single INSAR pair",
+  Geophsical Resarch Letters, Vol. 33, L16133, 2006,
+  doi:10.1029/2006GL026883<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href="OFF_par.html">OFF_par,</a>
+  <a href="sbi_offset.html">sbi_offset</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2011.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change&nbsp; 25-Nov-2011.
+</body>
+</html>

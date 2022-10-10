@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>DIFF/GEO Reference Manual: SLC_interp_lt_S1_TOPS</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GEO: Reference Manual</h1>
+  <hr>
+
+  <h2>SLC_interp_lt_S1_TOPS</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/SLC_interp_lt_S1_TOPS.c"><i>SLC_interp_lt_S1_TOPS.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  SLC_interp_lt_S1_TOPS - Resample TOPS (IW mode) SLC using a
+  lookup table and SLC offset polynomials for refinement</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>SLC_interp_lt_S1_TOPS &lt;SLC2_tab&gt; &lt;SLC2_par&gt;
+  &lt;SLC1_tab&gt; &lt;SLC1_par&gt; &lt;lookup_table&gt;
+  &lt;MLI1_par&gt; &lt;MLI2_par&gt; &lt;OFF_par&gt;
+  &lt;SLC2R_tab&gt; [SLC-2R] [SLC2R_par]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC2_tab&gt;</td>
+
+        <td>(input) 3 column list of TOPS SLC-2 swaths to be
+        resampled to the geometry of the reference SLC1 in row
+        order IW1, IW2, IW3:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        SLC_tab line entries:&nbsp;&nbsp; SLC&nbsp;&nbsp;&nbsp;
+        SLC_par&nbsp;&nbsp; TOPS_par</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2_par&gt;</td>
+
+        <td>SLC parameter file of TOPS SLC-2 mosaic, SLC-2 is
+        generated from the TOPS swaths listed in SLC2_tab</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_tab&gt;</td>
+
+        <td>(input) 3 column list of the reference TOPS SLC swaths
+        in row order IW1, IW2, IW3</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>&nbsp;SLC parameter file of the reference TOPS SLC-1
+        mosaic, SLC-1 is generated from the TOPS swaths listed in
+        SLC1_tab</td>
+      </tr>
+
+      <tr>
+        <td>&lt;lookup_table&gt;</td>
+
+        <td>(input) lookup_table relating mosaic images MLI-2 to
+        MLI-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI1_par&gt;</td>
+
+        <td>&nbsp;(input) SLC/MLI ISP image parameter file of
+        reference MLI (lookup table dimension)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;MLI2_par&gt;</td>
+
+        <td>&nbsp;(input) SLC/MLI ISP image parameter file of MLI2
+        (lookup table values)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>ISP offset and interferogram parameter file determined
+        from the TOPS SLC mosaics (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_tab&gt;</td>
+
+        <td>(input) 3 column list of the output resampled SLC-2
+        TOPS swaths in the order IW1, IW2, IW3</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_2R</td>
+
+        <td>(output) resampled mosaic generated from the swaths
+        listed in SLC2R_tab, coregisted to the TOPS SLC-1 mosaic
+        (enter - for none)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par</td>
+
+        <td>(output) SLC parameter file associated with the
+        resampled TOPS SLC-2R mosaic</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>SLC_interp_lt_S1_TOPS SLC_20140821_tab
+  slc/20140821_vv.slc.par SLC_20140809_tab slc/20140809_vv.slc.par
+  rslc_lt/20140809_20140821_iw1_vv.lt mli_5_1/20140809_vv.mli.par
+  mli_5_1/20140821_vv.mli.par rslc_lt/20140809_20140821.off
+  RSLC_LT_TOPS_tab rslc_lt/20140821_vv.rslc
+  rslc_lt/20140821_vv.rslc.par<br>
+  <br></samp></p>
+
+  <p>Use the lookup table <span style=
+  "color: #3333ff;">rslc_lt/20140809_20140821_iw1_vv.lt</span> to
+  resample the bursts listed in the TOPS SLC_tab file&nbsp;
+  <span style="color: #3333ff;">SLC_20140821_tab</span> to the
+  geometry of of the bursts in the SLCs listed in <span style=
+  "color: #3333ff;">SLC_20140809_tab</span>. The lookup table has
+  geometry defined by <span style=
+  "color: #3333ff;">mli_5_1/20140809_vv.mli.par</span>.&nbsp; File
+  <span style=
+  "color: #3333ff;">rslc_lt/20140809_20140821.off</span> is
+  provided for refinement of the lookup table indices using offset
+  polynomials. Output is in the set of RSLCs list in <span style=
+  "color: #3333ff;">RSLC_LT_TOPS_tab</span>. A mosaic of the SLC
+  bursts is generated and saved <span style=
+  "color: #3333ff;">rslc_lt/20140821_vv.rslc&nbsp;</span> with
+  parameter file&nbsp; rslc with parameter file <span style=
+  "color: #3333ff;">rslc_lt/20140821_vv.rslc.par</span></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>SLC_interp_lt_S1_TOPS</em> uses a lookup table generated
+  using the program&nbsp;<a href="rdc_trans.html">rdc_trans</a>
+  &nbsp;to resample one TOPS burst SLC into the geometry of a
+  reference TOPS burst SLC. The lookup table generated by
+  <span style="color: #3333ff;"><a href=
+  "rdc_trans.html">rdc_tran</a></span><a href=
+  "rdc_trans.html">s</a> can be smaller than the SLC because values
+  in the lookup table are interpolated to obtain the offsets for
+  each SLC point. Lookup-table geometry is defined by the MLI1_par
+  and the values within the lookup table are coordinates as defined
+  in the&nbsp; MLI2_par file of the second image. The lookup table
+  is generated in <a href="rdc_trans.html">rdc_trans</a> using DEM
+  data resampled to Radar range-doppler coordinates &nbsp;(RDC) as
+  defined in the MLI-1.par.&nbsp;</p>
+
+  <p>A slight offset between the resampled and reference SLCs
+  usually remains after an initial resampling due to a combination
+  of inaccuracies in DEM, orbit state vectors, and geocoding.
+  &nbsp;Hence SLC_interp_lt_S1_TOPS supports adding a offset
+  parameter file &nbsp;(OFF_par) that contains range and azimuth
+  offset polynomials determined between the mosaicked SLC1 and
+  SLC-2R in&nbsp; the initial resampling. The processing steps are
+  as follows:</p>1. Generate a DEM in SLC range-Doppler coordinates
+  using the DIFF/GEO tools from the mosaicked MLI image (see
+  <a href="DIFF_documentation.html">DIFF users guide</a>)<br>
+  The number of range and azimuth&nbsp; looks in the MLI image
+  should match the number of range and azimuth looks in the final
+  interferogram.<br>
+  2. Generate the lookup-table using DIFF/GEO program <span style=
+  "font-style: italic;">rdc_trans</span> for the geometry of the
+  mosaicked MLI images<br>
+  3. Refine lookup table values generated by <span style=
+  "font-style: italic;">rdc_trans</span>:
+
+  <ol>
+    <li>Use DIFF/GEO program <span style=
+    "font-style: italic;">geocode</span> to use the lookup table to
+    resample&nbsp; MLI-1 into the geometry of MLI-2</li>
+
+    <li>create DIFF/GEO offset parameter file DIFF_par
+    using&nbsp;<span style=
+    "font-style: italic;">create_diff_par</span></li>
+
+    <li>Measure offsets between resampled MLI-1and MLI-2
+    (<span style="font-style: italic;">offset_pwrm)</span></li>
+
+    <li>Estimate offset polynomial coefficients (<span style=
+    "font-style: italic;">offset_fitm</span>)</li>
+
+    <li>update lookup table values using offset polynomials in the
+    DIFF_par using <span style=
+    "font-style: italic;">gc_map_fine</span></li>
+  </ol>4. Calculate the initial resampling of SLC-2 into SLC-1
+  reference geometry using <span style=
+  "font-style: italic;">SLC_interp_lt_S1_TOPS</span> (without the
+  OFF_par secondary refinement data). The program also will
+  generate a mosaic of the resampled bursts that is like a normal
+  SLC. The real difference is that there are jumps in the doppler
+  centroid at the burst boundaries due to the nature of TOPS mode
+  data.<br>
+  5. Estimate lookup-table range and azimuth offset correction
+  polynomials by the following steps:
+
+  <ol>
+    <li>Measure offsets between the mosaicked SLC images SLC-2R and
+    SLC-1 using <span style="font-style: italic;">&nbsp;</span>ISP
+    program <span style="font-style: italic;">offset_pwr</span>.
+    (create OFF_par first using <span style=
+    "font-style: italic;">create_offset</span>)</li>
+
+    <li>Calculate range and azimuth offset polynomials for the
+    residual offsets using ISP program <span style=
+    "font-style: italic;">offset_fit</span> from offset data</li>
+  </ol>6. Rerun <span style=
+  "font-style: italic;">SLC_interp_lt_S1_TOPS</span>, now including
+  the OFF_par polynomial model refinement data. Note that the
+  refinement can be just a constant in range and azimuth because
+  the main variations due to topography have been corrected.<br>
+  7. The <span style="font-style: italic;">csh</span> script
+  <span style="font-style: italic;">S1_coreg_overlap</span> can and
+  should be used after this step to further improve the offset
+  polynomial<br>
+
+  <p>The programs <span style="font-style: italic;">create_offset,
+  offset_pwr,</span> and <span style=
+  "font-style: italic;">offset_fit</span> are part of the ISP
+  software package.&nbsp;</p>For an example of the processing
+  sequence using <span style=
+  "font-style: italic;">SLC_interp_lt_S1_TOPS</span> for Sentinel-1
+  data, see the <a href=
+  "Sentinel-1_users_guide_v1_0.pdf">Sentinel-1 users guide</a>.<br>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="rdc_trans.html">rdc_trans</a>&nbsp;</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF/GEO_documentation.html">DIFF/GEO Documentation</a>,
+  <a href="DIFF_users_guide.html">DIFF/GEO Users Guide</a> and
+  <a href="DIFF_reference_manual.html">DIFF/GEO Reference
+  Manual</a> by <a href="gamma.html">Gamma Remote Sensing</a>, 2014
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 9-Dec-2014.<br>
+</body>
+</html>

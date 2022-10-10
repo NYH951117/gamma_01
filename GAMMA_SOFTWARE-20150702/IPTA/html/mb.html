@@ -1,0 +1,496 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta content="text/html; charset=us-ascii" http-equiv=
+  "content-type">
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: mb</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+
+  <h2>mb</h2>
+
+  <p><i>ANSI-C programs:&nbsp;<a href="../src/mb.c"><span style=
+  "text-decoration: underline;">mb.c</span></a></i></p>
+
+  <p><strong>NAME</strong><br>
+  <span style="font-style: italic;">mb</span> - Calculate phase
+  time series from a set of multi-reference unwrapped continuous
+  interferograms (mb stands for multi-baseline (temporal and
+  spatial))</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  &nbsp;<code><b>mb &lt;DIFF_tab&gt; &lt;RMLI_tab&gt; &lt;itab&gt;
+  &lt;sigma&gt; &lt;itab_ts&gt; &lt;diff_ts&gt; &lt;sim_flg&gt;
+  &lt;sigma_ts&gt; &lt;hgt_flg&gt; &lt;hgt_out&gt; &lt;roff&gt;
+  &lt;loff&gt; &lt;nr&gt; &lt;nl&gt; &lt;gamma&gt;
+  &lt;MLI_ref_par&gt;<br></b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;DIFF_tab&gt;</td>
+
+        <td style="height: 38px;">(input) list of unwrapped
+        differential interferograms (including path) that match the
+        entries in the itab file (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;RMLI_tab&gt;</td>
+
+        <td>(input) list MLI images and parameter files that are
+        associated with the entries of the itab<br>
+        NOTE: the number of range and azimuth looks must match the
+        values used for the input interferograms</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab&gt;</td>
+
+        <td>(input)&nbsp;multi-reference table associating
+        interferogram stack records with pairs of SLC stack records
+        (text)<br>
+        (line entries are: pSLC_rec1&nbsp; pSLC_rec2
+        &nbsp;itab_rec_num &nbsp;switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sigma&gt;</td>
+
+        <td>(input) input values to calculate layer weights of the
+        multi-reference input data for use in the&nbsp;
+        least-squares solution. (enter - for all equal to 1.0)
+        (text)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;itab_ts&gt;</td>
+
+        <td>(output) single-reference table&nbsp;associating output
+        deformation stack records with pairs of SLCs (text).<br>
+        (line entries are: pSLC_rec1&nbsp; pSLC_rec2
+        &nbsp;itab_rec_num &nbsp;switch_flag)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;diff_ts&gt;</td>
+
+        <td>(output) ) root file name of unwrapped differential
+        phase time series for pairs listed in the <span style=
+        "font-style: italic;">itab_out</span> file.<br>
+        Output files are named:&nbsp; <span style=
+        "font-style: italic;">filename_001, filename_002...<br>
+        <br></span> NOTE: a <span style=
+        "font-style: italic;">TS_tab</span> file is created
+        containing the names of these output files: <span style=
+        "font-style: italic;">filename.tab<br></span></td>
+      </tr>
+
+      <tr>
+        <td>&lt;sim_flg&gt;</td>
+
+        <td>(input)&nbsp; simulate input DIFF interferograms
+        flag:&nbsp;file names of the simulated phases are the same
+        as those&nbsp;the DIFF_tab with _sim appended<br>
+        &nbsp;&nbsp;&nbsp; 0: no simulation of the input
+        interferograms using the solution (default)<br>
+        &nbsp;&nbsp;&nbsp; 1: simulate phase of input
+        interferograms using the solution phase history</td>
+      </tr>
+
+      <tr>
+        <td>&lt;sigma_ts&gt;</td>
+
+        <td>(output) standard deviation of the phase residuals
+        (enter -&nbsp; for none)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;hgt_flg&gt;<br></td>
+
+        <td style="vertical-align: top;">estimate interferometric
+        height corrections:<br>
+        &nbsp; &nbsp; 0: no estimation of height correction from
+        interferometric phase<br>
+        &nbsp;&nbsp;&nbsp; 1: estimate height corrections using
+        interferometric phase<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;hgt_out&gt;<br></td>
+
+        <td style="vertical-align: top;">(output) height
+        corrections estimated from the interferometric phase (enter
+        - for none)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">&lt;roff&gt;<br></td>
+
+        <td style="vertical-align: top;">range pixel offset to
+        center of the phase reference region<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;loff&gt;</td>
+
+        <td>line offset to center of the phase reference
+        region</td>
+      </tr>
+
+      <tr>
+        <td>[nr]</td>
+
+        <td>number of range pixels to average in the phase
+        reference region (enter - for default: 16)</td>
+      </tr>
+
+      <tr>
+        <td>[nl]</td>
+
+        <td>number of lines average in the phase reference region
+        (enter - for default: 16)</td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[gamma]<br></td>
+
+        <td style="vertical-align: top;">weighting factor for
+        smoothing of the first deformation velocity:&nbsp; (enter -
+        for default: 0.500)<br></td>
+      </tr>
+
+      <tr>
+        <td style="vertical-align: top;">[MLI_ref_par]<br></td>
+
+        <td style="vertical-align: top;">(input) MLI parameter file
+        of the image used for geometric coregistration (enter - for
+        none)<br></td>
+      </tr>
+    </tbody>
+  </table><strong><br>
+  EXAMPLE</strong> <samp><br>
+  mb DIFF_tab RMLI_tab itab_mb - itab_ts diff1_ts/diff1_ts 1
+  diff1_ts/sigma1_ts 1 hgt_out 50 280 9 9 1.0
+  rmli/2030404.rmli.par</samp><br>
+  <br>
+  calculates the time series of unwrapped phase using unwrapped
+  differential interferograms <span style="font-style: italic;">in
+  the DIFF_tab</span>. The output itab is <span style=
+  "font-style: italic;">itab_ts</span>, and the output &nbsp;time
+  series is a set of files starting with names <span style=
+  "font-style: italic;">diff_out_001,
+  diff_out_002....diff_out_n.&nbsp;</span> Simulated phase
+  calculated from the time series solution are placed in the same
+  directory as the files in the <span style=
+  "font-style: italic;">DIFF_tab</span> with <span style=
+  "font-style: italic;">_sim</span> appended. The standard
+  deviation of the solution&nbsp;<span style=
+  "font-style: italic;">sigma_out</span> is estimated using the
+  residuals of the time series phase minus the input
+  interferograms.&nbsp; Height corrections are calculated for each
+  point in the scene and stored in the file hgt_out. The reference
+  region is located at 50, 280 and is set to be 9x9 samples. The
+  smoothing parameter <span style=
+  "font-style: italic;">gamma</span> for the first-derivative of
+  the deformation is set by default to 0.5.&nbsp; The file
+  rmli/2030404.rmli.par describes the geometry of the reference
+  scene.<br>
+  <br>
+  A <span style="font-style: italic;">TS_tab</span> list is
+  generated containing the names of the output differential
+  interferograms generated by <span style=
+  "font-style: italic;">mb</span>.&nbsp;<br>
+
+  <p><strong>DESCRIPTION</strong><br>
+  This program&nbsp; solves for the time-series of the deformation
+  phase given a set of multi-reference unwrapped deformation
+  phases. An optional smoothing parameter on the deformation
+  history can be applied that constrains the abrupt changes in he
+  deformation rate. The program can calculate a height correction
+  relative to the DEM heights for each point in the scene given
+  that the smoothing parameter is &gt; 0.1.&nbsp;<br></p>
+
+  <p>The input set of deformation phases are typically over
+  specified such that more than one interferogram contains
+  information from each of the SLCs in the input data set and that
+  the observations can be linked together. Implicit is the idea
+  that the total deformation phase at time <span style=
+  "font-style: italic;">t<sub>2</sub></span> is the sum of
+  deformations from <span style=
+  "font-style: italic;">t<sub>0</sub></span> to <span style=
+  "font-style: italic;">t<sub>1</sub></span> and from <span style=
+  "font-style: italic;">t<sub>1</sub></span> to <span style=
+  "font-style: italic;">t<sub>2</sub></span>. &nbsp;Therefore the
+  total deformation phase at some time&nbsp; time <span style=
+  "font-style: italic;">t<sub>n</sub></span> can be expressed as a
+  linear combination of measurements in the input data if
+  <span style="font-style: italic;">t<sub>n</sub></span>&nbsp;
+  exists in the set of input deformation phases and the the set of
+  measurements is <span style=
+  "font-style: italic;">connected.</span></p>
+
+  <p>The program <span style="font-style: italic;">mb</span>
+  generates a times-series of unwrapped deformation phase given a
+  multi-temporal reference stack of unwrapped phases. The
+  deformation phase data are derived from pairs of SLC images
+  covering the time intervals of interest.&nbsp; <span style=
+  "font-style: italic;">mb</span> estimates the deformation phase
+  time-series&nbsp;using a weighted least-squares algorithm that
+  minimizes the sum of squared weighted residual phases. The
+  residuals are the differences between input&nbsp; phases (the
+  observations) and the differential phases derived from the
+  time-series solution. Smoothing of the time series solution is
+  acheived by introduction of constraints on the change in velocity
+  as described by Schmidt and Burgmann (Journal of Geophysical
+  Research,&nbsp; VOL. 108, NO. B9, 2416, doi:10.1029/2002JB002267,
+  2003). Higher values of gamma lead to smoother solutions. Values
+  of gamma =1 are moderately smoothed, while gamma=100 leads to an
+  essentially linear deformation curve.&nbsp; The use of the
+  smoothing parameter gamma can significanly reduce atmospheric
+  related variations in the solution. Rapid fluctuations in the
+  deformation phase are often related to atmosphere rather than
+  deformation.<br></p>
+
+  <p>We also include estimation of a DEM height correction
+  parameter (hgt_flg=1). The phase model includes a height related
+  term proportional to the derivative of the interferometric phase
+  with respect to height. This additional degree of freedom permits
+  calculation of a height correction for all the interferograms
+  that minimizes the phase residuals in a least-squares sense. If
+  the value of the smoothing parameter is set to 0, then the value
+  of the height correction will be very close to 0.0 since the
+  phase can then be fully attributed to motion of the surface or
+  atmosphere. Only when the smoothing parameter is &gt; 0 can
+  height corrections be calculated.&nbsp; The height corrections
+  are consistent over a range of values of the smoothing parameter
+  gamma &gt; 1. The network of measurements should not have phase
+  unwrapping errors or gaps when estimating the height
+  corrections.&nbsp; Larger values of gamma&nbsp; &gt; 1 up to 10,
+  will result in better height estimates especially when the
+  deformation is essentially linear.</p>
+
+  <p>Input to <span style="font-style: italic;">mb</span> is the
+  multi-reference <span style="font-style: italic;">itab</span>
+  file that provides information on the pairs of SLCs used to
+  create each of the interferogram layers in the <span style=
+  "font-style: italic;">diff_in</span> stack. Also input is the
+  stack of SLC parameters for the images referenced in the
+  <span style="font-style: italic;">itab</span>, and the
+  corresponding unwrapped deformation phases <span style=
+  "font-style: italic;">diff_in</span>. Typically the input
+  deformation phases are from differential&nbsp;interferograms with
+  the topographic and residual orbital phases removed.&nbsp;</p>
+
+  <p>An&nbsp; example of a multi-reference <span style=
+  "font-style: italic;">itab</span> is:</p>
+
+  <p><code>1&nbsp;&nbsp; 3&nbsp;&nbsp;&nbsp; 1&nbsp; 1<br>
+  1&nbsp;&nbsp; 4&nbsp;&nbsp;&nbsp; 2&nbsp; 1<br>
+  1&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 3&nbsp; 1<br>
+  3&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 4&nbsp; 1<br>
+  4&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 5&nbsp; 1<br>
+  4&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp; 6&nbsp; 1<br>
+  5&nbsp;&nbsp; 7&nbsp;&nbsp;&nbsp; 7&nbsp; 1<br>
+  5&nbsp;&nbsp; 9&nbsp;&nbsp;&nbsp; 8&nbsp; 1<br>
+  6&nbsp;&nbsp; 8&nbsp;&nbsp;&nbsp; 9&nbsp; 1<br>
+  6&nbsp; 10&nbsp;&nbsp; 10&nbsp; 1<br>
+  6&nbsp; 11&nbsp;&nbsp; 11&nbsp; 1<br>
+  &nbsp; ...<br>
+  22&nbsp; 25&nbsp;&nbsp; 35&nbsp; 1<br>
+  22&nbsp; 27&nbsp;&nbsp; 36&nbsp; 1<br>
+  23&nbsp; 27&nbsp;&nbsp; 37&nbsp; 1<br>
+  24&nbsp; 27&nbsp;&nbsp; 38&nbsp; 1<br>
+  25&nbsp; 27&nbsp;&nbsp; 39&nbsp; 1<br>
+  25&nbsp; 28&nbsp;&nbsp; 40&nbsp; 1</code></p>
+
+  <p>The entries in the multi-reference <span style=
+  "font-style: italic;">itab</span> were selected such that
+  they&nbsp;satisfy specific criteria with respect to perpendicular
+  baseline and time interval. The program&nbsp; <a href=
+  "base_calc.html">base_calc</a>, can be used to construct the
+  multi-reference <span style=
+  "font-style: italic;">&nbsp;itab</span> with entries that fulfill
+  baseline, and time interval criteria. Note that the minimum time
+  interval should be set to 1 day to avoid having
+  auto-interferograms that contain no phase information.</p>Gaps in
+  interferometric times series occur if there is no interferogram
+  connecting different dates in the input data set.&nbsp; In
+  &nbsp;a connected set of observations it is possible to
+  synthesize an interferogram for any set of dates covered by the
+  input measurements by taking a linear combination of the existing
+  interferograms. If this is not possible then the network is not
+  fully connected. The gap can be interpolated under the assumption
+  that the phase rate does not change discontinuously.&nbsp;
+  Setting the smoothing parameter gamma &gt; 0&nbsp; adds a cost
+  associated with a change in the deformation rate.&nbsp; The
+  least-squares minimization will then interpolate across the
+  gap.&nbsp; If no smoothing is performed, then the deformation
+  rate will be 0 across the gap and lead to errors in the total
+  deformation.
+
+  <p>An example of an input <span style=
+  "font-style: italic;">itab</span> with a temporal gap would
+  be:</p>
+
+  <p><code>1&nbsp;&nbsp; 2 &nbsp;&nbsp; 1&nbsp; 1<br>
+  1&nbsp;&nbsp; 3 &nbsp;&nbsp; 2&nbsp; 1<br>
+  4&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 3&nbsp; 1<br>
+  4 &nbsp; 6 &nbsp;&nbsp; 4&nbsp; 1</code></p>
+
+  <p>As can be seen by inspection&nbsp; there is no interferometric
+  phase information covering the period between the times when
+  SLC-3 and SLC-4 were acquired. There is no connection between the
+  interferometric data for acquisitions {1, 2, 3} and acquisitions
+  {4, 5, 6} and hence there is no change in the output&nbsp; time
+  series phase during the time interval from SLC-3 to SLC-4.</p>
+
+  <p>The output deformation phase time-series is calculated at each
+  acquisition time of SLCs used to create the input interferogram
+  stack. The solution is only available for times covered in the
+  input interferogram data set.&nbsp;The phase time-series values
+  are obtained by summing up the phase contribution for each time
+  interval from the start of the series. In the example, the output
+  single reference <span style=
+  "font-style: italic;">itab_out</span> has entries:</p>
+
+  <p><code>1&nbsp;&nbsp; 3 &nbsp;&nbsp; 1&nbsp; 1<br>
+  1&nbsp;&nbsp; 4 &nbsp;&nbsp; 2&nbsp; 1<br>
+  1&nbsp;&nbsp; 5&nbsp;&nbsp;&nbsp; 3&nbsp; 1<br>
+  1&nbsp;&nbsp; 6 &nbsp;&nbsp; 4&nbsp; 1<br>
+  ...<br>
+  1&nbsp; 27 &nbsp;&nbsp; 23&nbsp; 1<br>
+  1&nbsp;&nbsp;28 &nbsp;&nbsp; 24&nbsp; 1</code></p>
+
+  <p>Note that each differential interferogram in the output is
+  referenced to the time of the earliest scene in the
+  series.&nbsp;By definition, the deformation is set to 0 at the
+  initial epoch for the series.&nbsp; The phase series values can
+  be converted to deformation along the line of sight (LOS) using
+  the program <a href="dispmap.html">dispmap</a>. The IPTA script
+  <span style="font-style: italic;">disp2ras&nbsp;</span>can be
+  used to generate a set of Sun raster &nbsp;images of
+  &nbsp;displacement files in a text list of input files.&nbsp;</p>
+
+  <p>Observation of the time series requires creating a point data
+  stack. The point list on rectangular grid can be created using
+  <a href="mk_grid.html">mk_grid</a>. Points can then be extracted
+  using the IPTA script <span style=
+  "font-style: italic;">mk_d2pt</span> and displayed using <a href=
+  "dis_data.html">dis data</a><span style="font-style: italic;">.
+  &nbsp;</span></p>
+
+  <p>If phase values are desired for other times, these can be
+  obtained by linear&nbsp; interpolation using the program <a href=
+  "t_interp_pt.html">t_interp_pt</a> for the point data stack
+  derived from the continuous data.&nbsp;</p>
+
+  <p>The program <span style="font-style: italic;">mb</span> uses
+  Singular Value Decomposition (SVD) (see&nbsp; <a href=
+  "http://en.wikipedia.org/wiki/Singular_value_decomposition">http://en.wikipedia.org/wiki/Singular_value_decomposition</a>
+  ) to obtain the least-squares solution for the phase time-series.
+  As part of the screen output <span style=
+  "font-style: italic;">mb</span> generates a list of the singular
+  values of the design matrix constructed from the <span style=
+  "font-style: italic;">itab</span> and observation times. The
+  design matrix contains the coefficients of the set of linear
+  equations that express the relationships between the observed
+  phase data and the desired times series values. The number of
+  singular values is equal to the number of&nbsp; times in the
+  output time series. If a value is less than the largest singular
+  value/1.e5, the value is set to 0. A singuler value indicates
+  that the constraints in the design matrix are insufficient to
+  fully define the output time series. Setting the singular value
+  to zero forces the time-series output &nbsp;to remain constant
+  over the unconstrained gap in the input observations.&nbsp;</p>
+
+  <p><span style="font-style: italic;">mb&nbsp;</span>also
+  calculates the set of simulated deformation phase for each of the
+  input interferograms&nbsp; using&nbsp; the estimated deformation
+  phase-time series. Subtracting the simulated deformation phase
+  from the input interferogram using <span style=
+  "font-style: italic;">sub_phase</span> (from the DIFF/GEO
+  package) leaves a combination of&nbsp; residual baseline phase,
+  noise, and phase unwrapping errors. This suggests the use of
+  <span style="font-style: italic;">mb</span>&nbsp; for iterative
+  improvement of the processing results. &nbsp;</p>
+
+  <p>Redundancy in the the differential interferogram input data
+  reduces errors in the time-series due to phase errors due to
+  baseline, topographic phase correction, and interferometric
+  decorrelation. The effect of atmospheric phase on the other hand
+  is not reduced by this estimation procedure. The reason for this
+  is that the atmospheric phase cannot be distinguished from random
+  deformation since it is directly related to path delay.&nbsp; A
+  low-pass spatial filter such as&nbsp;<span style=
+  "font-style: italic;">bpf</span> for the ISP can be used to find
+  large-scale atmospheric related features in the simulated
+  interferograms and subtracted from the input multi-reference
+  data.<br></p>
+
+  <p>Individual interferogram layers in the input stack can be
+  switched on and off using the&nbsp;<span style=
+  "font-style: italic;">switch_flag</span> value (last column) in
+  the input itab. Setting the <span style=
+  "font-style: italic;">switch_flag</span> to 0 removes that
+  particular layer from the solution. Note that if a particular
+  acquisition occurs only in this layer, then it will not appear in
+  the solution. Also realize that removing a particular
+  interferogram has a good chance of destroying the connectivity of
+  the input interferogram network causing a gap in the output&nbsp;
+  time-series. However even if the the <span style=
+  "font-style: italic;">switch_flag</span> is set to 0 for a
+  particular layer, the deformation phase for that layer is
+  simulated when possible. The simulated phase can then be
+  subtracted from the input interferogram and help with unwrapping
+  that layer. &nbsp;If the unwrapped phase for a single point is
+  0.0 in a layer&nbsp; that is turned on (<span style=
+  "font-style: italic;">switch_flag</span> = 1), then no
+  time-series solution is generated for that point.</p>
+
+  <p>The output stack&nbsp;<span style=
+  "font-style: italic;">sigma_out</span> contains an estimate of
+  the standard deviation of time series phase values obtained from
+  the residuals simulated phases and the input observations. For
+  each point sigma is evaluated over the number of layers in the
+  input differential interferograms Contributions to the standard
+  deviation include interferometric decorrelation, residual
+  baseline error, and possibly phase unwrapping errors.</p>
+
+  <p>The program generates a list of the output time-series files
+  that is required by the program <a href=
+  "vu_disp2d.html">vu_disp2d</a>. The name of this file is the
+  route file name <span style=
+  "font-style: italic;">"diff_out".tab</span>.<br></p>
+
+  <p>To determine a linear deformation phase rate for the unwrapped
+  phase time-series, use the program <a href=
+  "ts_rate.html">ts_rate</a>.<br></p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="base_calc.html">base_calc</a>, <a href=
+  "ts_rate.html">ts_rate</a>, <a href=
+  "dispmap.html">dispmap</a>,&nbsp;<a href=
+  "dis_data.html">dis_data</a>, <a href="mk_grid.html">mk_grid</a>,
+  <a href="tpf_pt.html">tpf_pt</a>, <a href=
+  "t_interp_pt.html">t_interp_pt</a>, <a href=
+  "mb_pt.html">mb_pt</a>, <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>,<a href="tazio_strozzi.html">TS</a>,
+  last change 4-Jul-2013.
+</body>
+</html>

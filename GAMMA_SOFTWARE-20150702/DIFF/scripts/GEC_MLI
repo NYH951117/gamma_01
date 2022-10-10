@@ -1,0 +1,119 @@
+#! /bin/tcsh -fe
+###########################################################################
+###     GEC_MLI: script to run program sequence for ellipsoid corrected ###
+###              SAR geocoding of MLI image to UTM coordinates          ###                                
+###########################################################################
+### by Urs Wegmuller 010418
+###
+###########################################################################
+echo " "
+echo "GEC_MLI: ellipsoid corrected SAR geocoding of MLI image to UTM coordinates"
+if ($#argv < 5)then
+  echo " "
+  echo "usage: GEC_MLI <MLI> <MLI_par> <gec> <dem_par> <posting> [rlks] [azlks]"
+  echo "       MLI         (input) multi-look intensity (MLI) image in slant range geometry (float)"
+  echo "       MLI_par     (input) SLC/MLI parameter file of input MLI"
+  echo "       gec         (output) GEC geocoded output image in UTM map geometry (float)"
+  echo "       dem_par     (output) DEM/MAP parameter file for geocoded output image"
+  echo "       posting     Easting/Northing pixel spacing of output geocoded image (m)"
+  echo "       href        height reference (m) used for geocoding (default=100.m)"
+  echo "       rlks        range multi-looking factor (done prior to geocoding, default=1)"
+  echo "       azlks       azimuth multi-looking factor (done prior to geocoding, default=1)"
+  echo " "
+  echo "Remark: similar resolution of multi-looked image and geocoded image is recommended"
+  exit
+endif
+
+set MLI = $1
+set MLI_par = $2
+set gec = $3
+set dem_par = $4
+  if(-e "$dem_par")echo "WARNING: existing DEM/MAP parameter file is used: $dem_par"
+
+set posting = $5
+
+set href = 100.
+if ($#argv >= 6)set href = $6
+set rlks = 1
+if ($#argv >= 7)set rlks = $7
+set azlks = 1
+if ($#argv >= 8)set azlks = $8
+
+### define file names which are not defined on command line
+set map_to_rdc = "$MLI.utm_to_rdc" 		# initial geocoding lookup table
+
+#######################################################################################
+###   Create DEM/MAP parameter file (UTM, indicated postings)                       ###
+#######################################################################################
+
+if (1) then 
+       if(-e "$dem_par.tmp")/bin/rm $dem_par.tmp
+       echo "UTM WGS84 1    GEC_MLI REAL*4 0.000 1.00000 10000 10000 -$posting $posting " |\
+       awk '{printf "%s\n%s\n%s\n\n%s\n%s\n%s\n%s\n%s\n%s\n%s %s\n\n\n\n",$1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11}' |\
+       create_dem_par $dem_par.tmp $MLI_par 
+endif
+
+#######################################################################################
+###   Multi-looking in slant range geometry (prior to geocoding)                    ###
+#######################################################################################
+
+if (1) then 
+       if(-e "$MLI_par.tmp")/bin/rm $MLI_par.tmp
+       multi_look_MLI $MLI $MLI_par $MLI.tmp $MLI_par.tmp $rlks $azlks
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Initial Geocoding lookup table derivation:                       ###
+      #########################################
+if(1) then
+      echo ""
+      echo "Generation of geocoding lookup table"
+      nice gec_map $MLI_par.tmp - $dem_par.tmp $href $dem_par $map_to_rdc 1 1
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Resampling of multi-looked image from SAR to map geometry:        ###
+      #########################################################
+if(1) then
+      ### determine width of multi_looked MLI
+      set width =  `awk '$1 == "range_samples:" {print $2}' $MLI_par.tmp`      
+      echo "width of multi-looked image in slant range geometry: $width"
+      ### determine width and number of lines of geocoded image
+      set dem_width =  `awk '$1 == "width:"  {print $2}' $dem_par`      
+      set dem_nlines = `awk '$1 == "nlines:" {print $2}' $dem_par`      
+      echo "width of geocoded image: $dem_width"
+      echo "number of lines of geocoded image: $dem_nlines"
+      echo ""
+      echo "Resampling of multi-looked image from SAR to map geometry"
+      if(-e "$gec")/bin/rm $gec
+      nice geocode_back $MLI.tmp $width $map_to_rdc $gec $dem_width $dem_nlines 2 0
+endif
+
+###########################################################################
+#
+###########################################################################
+###   Generation of SUN rasterfile of GEC geocoded image:               ###
+      ###################################################
+if(1) then
+      ### determine width of geocoded image
+      set dem_width =  `awk '$1 == "width:"  {print $2}' $dem_par`      
+      echo ""
+      echo "Generation of SUN rasterfile of GEC geocoded image"
+      nice raspwr $gec $dem_width 1 0 1 1 1. .35 1 $gec.ras
+      echo ""
+      echo ""
+      echo "disras_dem_par $gec.ras $dem_par"
+      echo ""
+      echo "allows to display the rasterfile of the GEC geocoded image "
+      echo "together with the map coordinates at the cursor location."
+      echo ""
+endif
+
+echo End of GEC_MLI
+    
+###                                                                     ###
+###########################################################################

@@ -1,0 +1,198 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: par_* for ERS data</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>Programs for generation of SLC parameter files and image
+  files for ERS data</h2>
+
+  <p>ANSI-C programs: <a href=
+  "../src/par_ACS_ERS.c">par_ACS_ERS.c</a>, <a href=
+  "../src/par_ATLSCI_ERS.c">par_ATLSCI_ERS.c</a>, <a href=
+  "../src/par_ESA_ERS.c">par_ESA_ERS.c</a>, <a href=
+  "../src/par_PulSAR.c">par_PulSAR.c</a>, <a href=
+  "../src/par_RSI_ERS.c">par_RSI_ERS.c</a>.<br></p>
+  <hr style="width: 100%; height: 2px;">
+
+  <p><span style="font-style: italic;">par_ACS_ERS</span> - reads
+  the CEOS leader file and generates the SP SLC parameter file for
+  ERS data processed with the ESA ACS processor.<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_ACS_ERS &lt;CEOS_SAR_leader&gt;
+  &lt;SLC_par&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_SAR_leader&gt;</td>
+
+        <td>(input) CEOS leader file provided by processing
+        facility with SLC data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <hr style="width: 100%; height: 2px;">
+
+  <p><span style="font-style: italic;">par_ATLSCI_ERS</span> -
+  reads the CEOS leader file and the data file, and generates the
+  ISP SLC parameter file for data processed by the Atlantis SAR
+  processor<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_ATLSCI_ERS &lt;CEOS_leader&gt; &lt;CEOS_data&gt;
+  &lt;SLC_par&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file provided by processing
+        facility with SLC data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_data&gt;<br></td>
+
+        <td>(input) CEOS image data<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <hr style="width: 100%; height: 2px;">
+
+  <p><span style="font-style: italic;">par_ESA_ERS</span> - reads
+  the LEADER file and the image data file in CEOS format and
+  generates the ISP SLC parameter file and the corresponding image
+  data file in GAMMA format.<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_ESA_ERS &lt;CEOS_leader&gt; &lt;SLC_par&gt;
+  &lt;CEOS_DAT&gt; &lt;SLC&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) ERS CEOS SAR leader file<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file (example:
+        &lt;date&gt;.slc.par)<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;CEOS_DAT&gt;</td>
+
+        <td>&nbsp;(input) CEOS SLC data file (example:
+        DAT_01.001)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC&gt;<br></td>
+
+        <td>(output) SLC data with file and line headers removed
+        (example: &lt;date&gt;.slc)<br></td>
+      </tr>
+    </tbody>
+  </table><br>
+  <strong>DESCRIPTION</strong><br>
+  This progam has the capability to identify if the SLC data were
+  processed with the VMP, PGS, MSAR-PGS, or Kongsberg SPF
+  processors.&nbsp; The ISP image parameter file is generated from
+  parameters read from the CEOS leader file. Image data are
+  reformated with the header record and line headers removed.<br>
+  <br>
+  <hr style="width: 100%; height: 2px;">
+
+  <p><span style="font-style: italic;">par_PulSAR</span> - reads
+  the LEADER file and and generates the ISP SLC parameter file for
+  ERS data processed by the PulSAR processor<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_PulSAR &lt;CEOS_leader&gt;
+  &lt;SLC_par&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file provided by processing
+        facility with SLC data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file</td>
+      </tr>
+    </tbody>
+  </table><strong><br></strong>
+  <hr style="width: 100%; height: 2px;">
+
+  <p><span style="font-style: italic;">par_RSI_ERS</span> - reads
+  the LEADER file and and generates the ISP SLC parameter file for
+  ERS data processed by Radarsat International<br></p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>par_RSI_ERS &lt;CEOS_leader&gt;
+  &lt;SLC_par&gt;</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;CEOS_leader&gt;</td>
+
+        <td>(input) CEOS leader file provided by processing
+        facility with SLC data</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC_par&gt;</td>
+
+        <td>(output) ISP SLC parameter file</td>
+      </tr>
+    </tbody>
+  </table><br>
+  <hr style="width: 100%; height: 2px;">
+  <strong>SEE ALSO:</strong><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>
+  <hr>
+  Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a> 2010.&nbsp; <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, ms, last change 3-May-2010.<br>
+  <br>
+</body>
+</html>

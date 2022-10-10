@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+
+  <title>IPTA Reference Manual: npt</title>
+</head>
+
+<body>
+  <h1>GAMMA Interferometric Point Target Analysis Software (IPTA):
+  Reference Manual</h1>
+  <hr>
+  <!--===============================================-->
+
+  <h2>npt</h2>
+
+  <p><i>ANSI-C program: <a href="../src/npt.c">npt.c</a></i></p>
+
+  <p><strong>NAME</strong><br>
+  npt - determine number of points in a point list</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>npt &lt;plist&gt; [pmask]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tr>
+      <td>&lt;plist&gt;</td>
+
+      <td>(input) point list (int)</td>
+    </tr>
+
+    <tr>
+      <td>[pmask]</td>
+
+      <td>(input) point data stack of mask values (uchar,
+      pmask[i]=0 excludes point i)</td>
+    </tr>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <samp>npt testsite.plist testsite.pmask</samp></p>
+
+  <p>Reads the input point list, counts the number of points and
+  the number of valid points (point for which the mask value is
+  non-zero and writes these two numbers to standard output.</p>
+
+  <p><strong>INSTALLATION</strong><br>
+  Source code npt.c in ./IPTA/src, executable version npt in
+  ./IPTA/bin</p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  For an existing point list npt counts the number of points and
+  the number of valid points (point for which the mask value is
+  non-zero and writes these two numbers to standard output.</p>
+
+  <p>The number of points should correpsond to the point list file
+  size divided by 8 (as integer values are used for the range and
+  azimuth line coordinates of each point).</p>
+
+  <p>The number of valid points depends on the flags in the mask
+  file. A 0 in the mask file indicates that a point is not a valid
+  point.</p>
+
+  <p><strong>OPTIONS</strong><br>
+  none.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="ipta.h.html">ipta.h</a>.</p>
+  <hr>
+  <!--===============================================-->
+
+  <p><a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "IPTA_documentation.html">Documentation</a>, <a href=
+  "IPTA_users_guide.html">Users Guide</a> and <a href=
+  "IPTA_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2003.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, <a href=
+  "tazio_strozzi.html">TS</a>, last change 20-Feb-2003.</p>
+</body>
+</html>

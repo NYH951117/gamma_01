@@ -1,0 +1,223 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>DIFF/GEO Reference Manual: WSS_intf</title>
+</head>
+
+<body>
+  <h1>Gamma DIFF/GO: Reference Manual</h1>
+  <hr>
+
+  <h2>WSS_intf</h2>
+
+  <p><i>ANSI-C program:</i> <a href=
+  "../src/WSS_intf.c"><i>WSS_intf.c</i></a></p>
+
+  <p><strong>NAME</strong><br>
+  <em>WSS_intf</em> - calculate multi-look interferogram from ASAR
+  Wide-Swath SLC images.</p>
+
+  <p><strong>SYNOPSIS</strong><br>
+  <code><b>usage: WSS_intf &lt;SLC-1&gt; &lt;SLC-2R&gt;
+  &lt;SLC1_par&gt; &lt;SLC2R_par&gt; &lt;OFF_par&gt; &lt;interf&gt;
+  &lt;rlks&gt; [sps_flg] [azf_flg] [m_flg] [boff] [bstep]
+  [bmax]</b></code></p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;SLC-1&gt;</td>
+
+        <td>(input) reference ASAR Wide-Swath SLC image
+        (fcomplex)</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC-2R&gt;</td>
+
+        <td>(input) resampled ASAR Wide-Swath SLC image
+        co-registered to SLC-1</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC1_par&gt;</td>
+
+        <td>(input) ASAR Wide-Swath SLC image parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;SLC2R_par&gt;</td>
+
+        <td>(input) co-registered ASAR Wide-Swath SLC-2R image
+        parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par&gt;</td>
+
+        <td>(output) ISP offset/interferogram parameter file</td>
+      </tr>
+
+      <tr>
+        <td>&lt;interf&gt;</td>
+
+        <td>(output) interferogram from SLC-1 and SLC-2R&nbsp;</td>
+      </tr>
+
+      <tr>
+        <td>&lt;rlks&gt;</td>
+
+        <td>number of range looks (enter - for default: 1)</td>
+      </tr>
+
+      <tr>
+        <td>[sps_flg]</td>
+
+        <td>range spectral shift flag:<br>
+        &nbsp; 1: apply range spectral shift filter (default)<br>
+        &nbsp; 0: do not apply range spectral shift filter<br></td>
+      </tr>
+
+      <tr>
+        <td>[azf_flg]</td>
+
+        <td>azimuth common band filter flag:<br>
+        &nbsp; 1: apply azimuth common band filter (default)<br>
+        &nbsp; 0: do not apply azimuth common band filter</td>
+      </tr>
+
+      <tr>
+        <td>[m_flg]</td>
+
+        <td>output magnitude flag:<br>
+        &nbsp; 0: set output interferogram magnitude to 1.0 for
+        non-zero samples (default)<br>
+        &nbsp; 1: retain multi-burst interferometric magnitude</td>
+      </tr>
+
+      <tr>
+        <td>[boff]</td>
+
+        <td>offset to first burst to interfere (default = 0)</td>
+      </tr>
+
+      <tr>
+        <td>[bstep]</td>
+
+        <td>burst step (default = 1)</td>
+      </tr>
+
+      <tr>
+        <td>[bmax]</td>
+
+        <td>last burst to interfere (default = to end of
+        SLC-1)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>EXAMPLE</strong><br>
+  <code><samp>WSS_intf
+  20030921.VV.IS2.SLC&nbsp;</samp>20040208<samp>.VV.IS2.rslc
+  20030921.VV.IS2.SLC.par&nbsp;</samp>20040208<samp>.VV.IS2.rslc.par
+  20030921_20040208.VV.IS2.off&nbsp;</samp>20030921_20040208<samp>.IS2.int
+  1 1 1</samp></code></p>
+
+  <p><strong>DESCRIPTION</strong><br>
+  <em>WSS_intf</em> reads the two co-registered,&nbsp; ASAR
+  Wide-Swath SLC SAR images SLC-1 and SLC-2R, the corresponding SLC
+  parameter files SLC-1.par and SLC-2R.par and computes the
+  multi-look interferogram. &nbsp;The interferogram parameters are
+  written to the output ISP interferogram parameter (OFF_par) file
+  The complex (normalized) interferogram is defined by:</p>
+
+  <p>complex interferogram = <span style=
+  "font-style: italic;">&lt;S1 S2*&gt;/sqrt(&lt;S1 S1*&gt;&lt;S2
+  S2*&gt;</span>.</p>
+
+  <p><span style="font-style: italic;">S1</span> and <span style=
+  "font-style: italic;">S2</span> are the single look complex
+  values of SLC-1 and SLC-2, * stands for conjugate complex, i.e,
+  (a+jb)* = (a - jb),&nbsp;&lt; &gt; stands for the ensemble
+  average. For a multi-look interferogram pixel &lt; &gt; is
+  estimated by (coherent) averaging of the single look values.
+  &nbsp;Wide-Swath SLC data are special in that each point on the
+  ground is observed in nominally 3 bursts. Hence the number of
+  &nbsp;interferometric looks is at &nbsp;3 times the number of
+  interferometric range looks.</p>
+
+  <p>The argument of the complex interferogram corresponds to the
+  interferometric phase. Real and imaginary values of the complex
+  (normalized) interferogram are written as output to the
+  <span style="font-style: italic;">interf&nbsp;</span>
+  file<span style="font-style: italic;">.&nbsp;</span>If the
+  <span style="font-style: italic;">m_flg</span> command line
+  parameter is set to 0 (default), the magnitude of the multi-burst
+  interferogram is set to 1.0, &nbsp;otherwise the magnitude of the
+  complex interferogram corresponds to the interferometric
+  correlation derived from adding the SLC samples from the
+  overlapping bursts.</p>
+
+  <p>Range spectrum filtering is applied using the <span style=
+  "font-style: italic;">sps_flg</span> command line option. This
+  filtering takes into account the difference in center of the
+  reflectiveity spectrum recorded&nbsp; when viewing from different
+  incidence angles between SLC-2 and SLC-1 due to the baseline.
+  Only the range reflectivety spectrum interval common to the the
+  two SLC images is retained.&nbsp;</p>
+
+  <p>Azimuth common-band filtering is attenuates parts of the
+  azimuth spectrum of the SLCs based on the amount of burst
+  overlap. Differences in the burst timing between tracks changes
+  the location along the orbit where the burst is transmitted.
+  Differences in the timing between acquisitions leads to
+  stubstantial loss in the interferometric coherence.</p>
+
+  <p>Primarily for debugging purposes, the user can specify the
+  starting burst number, ending burst number and the step in bursts
+  for generation of the interferogram using the <span style=
+  "font-style: italic;">boff,</span>&nbsp; <span style=
+  "font-style: italic;">bstep</span>, and <span style=
+  "font-style: italic;">bmax&nbsp;</span> parameters. <span style=
+  "font-style: italic;">boff</span> is the offset to the first
+  burst to interfere, <span style=
+  "font-style: italic;">bstep</span> the interval between bursts,
+  and <span style="font-style: italic;">bmax</span> is the last
+  &nbsp;burst to interfere.</p>
+
+  <p>No multi-look intensity images are produced from the two SLC
+  images by <span style="font-style: italic;">WSS_intf</span>.
+  Coregistered multi-look intensity images in the identical
+  geometry as the interferogram can be generated from the
+  co-registered SLC images using the <a href=
+  "multi_SLC_WSS.html">multi_SLC_WSS</a> for ASAR Wide-Swath SLC
+  data.</p>
+
+  <p>Display of the images can be carried out by ISP programs for
+  complex and intensity data. Complex images can be displayed or
+  saved as SUN raster or BMP format files using the programs
+  <a href="ISP_display.html">dismph, dismph_pwr, rasmph,
+  rasmph_pwr</a>. Intensity images can be displayed using programs
+  <a href="ISP_display.html">dispwr, dis2pwr, raspwr</a>.</p>
+
+  <p><strong>SEE ALSO</strong><br>
+  <a href="multi_SLC_WSS.html">multi_SLC_WSS</a>, <a href=
+  "typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "SLC_par.html">SLC_par</a>, <a href=
+  "OFF_par.html">OFF_par</a></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "DIFF_documentation.html">Documentation</a>, <a href=
+  "DIFF_users_guide.html">Users Guide</a> and <a href=
+  "DIFF_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2006.<br>
+  <a href="urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change &nbsp;21-Apr-2006.
+</body>
+</html>

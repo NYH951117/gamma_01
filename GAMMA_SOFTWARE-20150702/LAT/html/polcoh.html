@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <title>LAT Reference Manual: polcoh</title>
+  </head>
+  <body>
+    <h1>Gamma LAT: Reference Manual</h1>
+    <hr>
+    <h2>polcoh</h2>
+    <p><i>ANSI-C program: <a title="polcovar" href="../src/polcoh.c">polcoh.c</a></i></p>
+    <p><strong>NAME</strong><br>
+      polcoh - Calculate coherence matrix T elements from Pauli decomposition
+      alpha, beta, gamma</p>
+    <p><strong>SYNOPSIS</strong><br>
+      <code><b>polcoh &lt;SLC-1&gt; &lt;SLC-2&gt; &lt;SLC-3&gt; &lt;SLC1_par&gt;
+          &lt;SLC2_par&gt; &lt;SLC3_par&gt; &lt;T&gt; &lt;T_par&gt; &lt;rlks&gt;
+          &lt;azlks&gt; [loff] [nlines] </b></code></p>
+    <table border="1" cellpadding="7">
+      <tbody>
+        <tr>
+          <td>&lt;SLC-1&gt;</td>
+          <td>(input) alpha single-look complex image (scomplex or fcomplex
+            format)</td>
+        </tr>
+        <tr>
+          <td>&lt;SLC-2&gt;</td>
+          <td>(input) beta single-look complex image (scomplex or fcomplex
+            format)<br>
+          </td>
+        </tr>
+        <tr>
+          <td>&lt;SLC-3&gt; </td>
+          <td>(input) gamma single-look complex image coregistered with SLC-1
+            (scomplex or fcomplex format)</td>
+        </tr>
+        <tr>
+          <td>&lt;SLC1_par&gt;</td>
+          <td>(input) alpha SLC image parameter file </td>
+        </tr>
+        <tr>
+          <td>&lt;SLC2_par&gt;</td>
+          <td>(input) beta SLC image parameter file of SLC-2 coregistered with
+            SLC-1</td>
+        </tr>
+        <tr>
+          <td>&lt;SLC3_par&gt;</td>
+          <td>(input) gamma SLC image parameter file&nbsp; of SLC-3 coregistered
+            with SLC-1</td>
+        </tr>
+        <tr>
+          <td>&lt;T&gt;</td>
+          <td>(output) root file name of coherence matrix elements (e.g.
+            scene_id)<br>
+            output files have extensions .t11, .t22, .t33 (float), .t12, .t13,
+            .t23 (fcomplex)</td>
+        </tr>
+        <tr>
+          <td>&lt;T_par&gt;</td>
+          <td>(output) MLI image parameter file associated with the coherence
+            matrix element data</td>
+        </tr>
+        <tr>
+          <td>&lt;rlks&gt;</td>
+          <td>number of range looks for the averaging window</td>
+        </tr>
+        <tr>
+          <td>&lt;azlks&gt;</td>
+          <td>number of azimuth looks for the averaging window</td>
+        </tr>
+        <tr>
+          <td>[loff]</td>
+          <td>offset to starting line (default: 0)</td>
+        </tr>
+        <tr>
+          <td>[nlines]</td>
+          <td>number of SLC lines to process (enter - for default: entire file)</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3><strong>EXAMPLE</strong></h3>
+    <p> <samp>polcoh slc/20080409_alpha.slc slc/20080409_beta.slc
+        slc/20080409_gamma.slc slc/20080409_alpha.slc.par
+        slc/20080409_beta.slc.par slc/20080409_gamma.slc.par COH/20080409_pauli
+        COV/20080409_pauli.coh_mli.par 3 6 </samp></p>
+    <p style="text-align: left;">This calculates the elements of the
+      polarimetric coherence matrix T11, T22, T33, T12, T13, T23 and stores them
+      in the files with the root file name COV/20080409_pauli and ending in
+      .t11, .t22, .t33, .t12, .t13, .t23.</p>
+    <h3><strong>DESCRIPTION </strong></h3>
+    The 3x3 coherence matrix [1] contains information on the averaged
+    polarimetric signature of the illuminated scene and is the basis for
+    polarimetric speckle filtering and classification. The coherence matrix
+    elements are derived from the second-order statistics of the&nbsp; <span style="font-style: italic; font-weight: bold;">k</span>-target
+    feature vector composed of the elements of the Pauli decomposition
+    calculated with the program <a title="pauli" href="file:///Users/cw/gamma_software/LAT/html/pauli.html">pauli</a>.<br>
+    <br>
+    <span style="font-weight: bold;"><span style="font-style: italic;">k</span>
+    </span>= 1/SQRT(2) [HH + VV,&nbsp; HH - VV,&nbsp; 2 HV]<sup>T</sup><br>
+    <br>
+    For monostatic radar data the coherence matrix elements are calculated from
+    the Pauli decomposition [1]&nbsp; that generates the 3D <span style="font-weight: bold; font-style: italic;">k</span>-target
+    vector.&nbsp; The coherence matrix is formed by the outer product of the <span
+      style="font-weight: bold; font-style: italic;">k</span>-feature
+    vector and the complex conjugate transpose of <span style="font-weight: bold; font-style: italic;">k</span>.
+    These 9 product terms are averaged over a spatial window that has dimensions
+    <span style="font-style: italic;">rlks</span> by <span style="font-style: italic;">azlks</span>.
+    Let the 3 terms of the k-target feature vector be denoted <span style="font-style: italic;">alpha,
+      beta, </span>and <span style="font-style: italic;">gamma</span>
+    respectively:<br>
+    <br>
+    &nbsp;<span style="font-weight: bold;"> k</span> = [<math title="alpha, beta,gamma"><mstyle
+        displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#945;</mi><mo>,</mo><mi>&#946;</mi><mo>,</mo><mi>&#947;</mi></mstyle></math>]<sup>T</sup><br>
+    <br>
+    The 3x3 covariance matrix <span style="font-weight: bold;">T</span> is
+    given by:<br>
+    &nbsp;<br>
+    <span style="font-weight: bold;">T</span> = &lt;<span style="font-weight: bold;">k
+      · k</span><sup>*T</sup>&gt;<br>
+    <br>
+    The &lt;&gt; operator denotes a spatial averaging over the window with
+    dimensions <span style="font-style: italic;">rlks</span> in range and <span
+      style="font-style: italic;">azlks</span>
+    in azimuth:<br>
+    <code>T11: &lt;</code><math title="alphaalpha"><mstyle displaystyle="true" fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#945;</mi><mi>&#945;</mi></mstyle></math><code></code><code><sub></sub><sup>*</sup>&gt;<br>
+      T22: </code><code><code>&lt;</code><code></code></code><math title="betabeta"><mstyle
+        displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#946;</mi><mi>&#946;</mi></mstyle></math><code></code><code><code></code><code><sub></sub><sup>*</sup>&gt;</code><br>
+      T33:</code><code><code></code><code><code> &lt;</code><code></code></code></code><math
+      title="gammagamma"><mstyle
+        displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#947;</mi><mi>&#947;</mi></mstyle></math><code><code></code></code><code><code><code></code><code><sub></sub><sup>*</sup>&gt;<br>
+          T12: </code></code></code><code><code><code><code>&lt;</code><code></code></code></code></code><math
+      title="alphabeta"><mstyle
+        displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#945;</mi><mi>&#946;</mi></mstyle></math><code><code><code></code></code></code><code><code><code><code></code><code><sub></sub><sup>*</sup>&gt;<br>
+          </code></code></code></code><code><code><code><code>T13: </code></code></code><code><code><code><code>&lt;</code></code></code></code></code><math
+      title="alphagamma"><mstyle
+        displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#945;</mi><mi>&#947;</mi></mstyle></math><code><code><code><code><code></code></code></code></code></code><code><code><code><code><code></code><code><sup>*</sup>&gt;<br>
+              T23:</code></code></code></code></code><code><code><code><code><code><code><code><code><code>
+                    </code></code></code><code><code><code><code>&lt;</code></code></code></code></code></code></code></code></code></code><math
+      title="betagamma"><mstyle
+        displaystyle="true"
+        fontfamily=""
+        mathcolor=""
+        mathsize=""><mi>&#946;</mi><mi>&#947;</mi></mstyle></math><code><code><code><code><code><code><code><code><code><code></code></code></code></code></code></code></code></code></code></code><code><code><code><code><code><code><code><code><code><code></code><code><sub></sub><sup>*</sup>&gt;</code></code></code></code></code></code></code></code></code>
+      <br>
+      <br>
+      T21 = T12*<br>
+      T31 = T13*<br>
+      T32 = T23* </code><br>
+    <br>
+    The coefficients on the diagonal T11, T22, and T33 are real-valued and are
+    proportional to the power in the each of the 3 channels. The span is defined
+    as the sum of&nbsp; the diagonal matrix elements of the T matrix and has the
+    same value as the span of the covariance matrix C calculated by <a title="polcovar"
+      href="polcovar.html">polcovar</a>.&nbsp;
+    and&nbsp; The off-diagonal elements are complex-valued. By construction, the
+    coherence matrix is Hermetian.<br>
+    <strong></strong><br>
+    [1] Lee, J. S., Eric Pottier, "Polarimetric Radar Imaging: from Basics to
+    Applications," Chapter 3, CRC Press, Boca Raton, 2008<br>
+    <span style="text-decoration: underline;"></span>
+    <p><strong>SEE ALSO </strong><br>
+      <a href="polcovar.html">polcovar</a>, <a title="pauli" href="pauli.html">pauli</a><a
+        href="polcoh.html"></a></p>
+    <hr><a href="copyright.html">©</a> Copyrights for <a href="LAT_documentation.html">Documentation</a>,
+    <a href="LAT_users_guide.html">Users Guide</a> and <a href="LAT_reference_manual.html">Reference
+      Manual</a> by <a href="gamma.html">Gamma Remote Sensing</a>, 2013.<br>
+    <a href="urs_wegmuller.html">UW</a>, <a href="charles_werner.html">CW</a>,<a>
+      MS</a> last change 5-Jul-2013
+  </body>
+</html>

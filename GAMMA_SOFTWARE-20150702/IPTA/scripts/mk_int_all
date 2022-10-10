@@ -1,0 +1,103 @@
+#!/usr/bin/perl
+use FileHandle;
+
+if (($#ARGV + 1) < 7){die <<EOS ;}
+*** IPTA script: $0
+*** Copyright 2005, Gamma Remote Sensing, v1.6 25-Mar-2005 clw ***
+*** create interferogram and baseline data stacks  ***
+
+usage: $0 <plist> <pmask> <pSLC_par> <itab> <pSLC> <pbase> <pint> [log]
+    plist    (input) point list (int)
+    pmask    (input) point data stack of mask values (uchar, set to - to accept all points)
+    pSLC_par (input) stack of SLC/MLI parameters for the resampled SLC data(binary)
+    itab     (input) table associating interferogram stack records with pairs of SLC stack records (text)
+    pSLC     (input) point data stack of interpolated SLC values (enter - for none, fcomplex or scomplex)
+    pbase    (output) stack of baseline parameters (enter - for none, binary)
+    pint     (output) point data stack of interferograms (enter - for none, fcomplex)
+    log      (output) mk_int_all log file
+           
+EOS
+
+$pt	  = $ARGV[0];
+$pmask    = $ARGV[1];
+$pSLC_par = $ARGV[2];
+$itab     = $ARGV[3];
+$pSLC     = $ARGV[4];
+$pbase    = $ARGV[5];
+$pint     = $ARGV[6];
+
+if($#ARGV >= 7){$log = $ARGV[7];}		#write to a specific log file if entered on the command line
+else{$log = "mk_int_all.log";}
+
+open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";
+LOG->autoflush;  
+$time = localtime;
+print LOG "$0  @ARGV\n";
+print LOG "start: $time  log file: $log\n";
+print "start: $time  log file: $log\n";
+open(ITAB, "<$itab") or die "ERROR $0: cannot open itab file: $itab\n";
+
+print "ITAB file: $itab\n";
+print LOG "ITAB file: $itab\n";
+
+(-e $pSLC_par) or die "SLC parameter file stack $SLC_par does not exist\n";
+
+$tmp_slc_par = "/tmp/slc.par";
+system("rm -f $tmp_slc_par");
+execute("SLC_par_pt $tmp_slc_par $pSLC_par 1 0 ",$log);
+
+@format = extract_param($tmp_slc_par,"image_format:");   #determine image format
+if (@format[1] eq "FCOMPLEX"){
+  $type = 0;
+  print "SLC type: FCOMPLEX\n\n";
+}
+elsif (@format[1] eq "SCOMPLEX"){
+  $type = 1;
+  print "SLC type: SCOMPLEX\n\n";
+}  
+else{ 
+  die "ERROR $0: input SLC is not fcomplex  or scomplex format: @format[1]\n";
+}
+
+system("rm -f $tmp_slc_par");
+
+if ($pbase !~ /-/){
+  (-e "$pbase") and system("rm -f $pbase");#if the baseline stack already exists, erase it
+  execute("base_orbit_pt $pSLC_par $itab - $pbase",$log);
+}
+
+if ($pint !~ /-/){
+  (-e "$pint") and system("rm -f $pint");	#if the interferogram stack already exists, erase it
+  (-e $pSLC) or die "SLC data stack $pSLC does not exist\n";
+  execute("intf_pt $pt $pmask $itab - $pSLC $pint $type",$log);
+}
+
+$time = localtime;
+print "\nprocessing end: $time\n";
+print LOG "\nprocessing end: $time\n";
+exit 0;
+
+sub execute{
+  my ($command, $log) = @_;  
+  if (-e $log){open(LOG,">>$log") or die "ERROR $0: cannot open log file: $log\n";}
+  else {open(LOG,">$log") or die "ERROR $0: cannot open log file: $log\n";} 
+  LOG->autoflush; 
+  print "$command\n";
+  print LOG ("\n${command}\n");
+  close LOG;  
+  $exit = system("$command 1>> $log");
+  $exit == 0 or die "ERROR $0: non-zero exit status: $command\n"
+}
+
+sub extract_param{
+  my ($infile,$keyword) = @_;
+  open(PAR_IN,$infile) || die "ERROR $0: cannot open parameter file: $infile\n";
+
+  while(<PAR_IN>){
+    chomp;
+    @tokens = split;
+    if($tokens[0] eq $keyword){close PAR_IN; return @tokens;}
+  }
+  close PAR_IN;
+  die "ERROR $0: keyword $keyword not found in file: $infile\n";
+}

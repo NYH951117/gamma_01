@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+  <meta name="generator" content=
+  "HTML Tidy for Linux (vers 25 March 2009), see www.w3.org">
+  <meta http-equiv="Content-Type" content=
+  "text/html; charset=us-ascii">
+
+  <title>ISP Reference Manual: offset_fit</title>
+</head>
+
+<body>
+  <h1>Gamma ISP: Reference Manual</h1>
+  <hr>
+
+  <h2>offset_add</h2><i>ANSI-C program: <a href=
+  "../src/offset_add.c">offset_add.c</a></i>
+
+  <p><i>offset_fit</i> adds offset polynomials from different
+  offset parameter files.</p>
+
+  <p><b>SYNOPSIS</b><br>
+  <b><tt>offset_add &lt;OFF_par1&gt; &lt;OFF_par2&gt;
+  &lt;OFF_par3&gt;</tt></b><br>
+  &nbsp;</p>
+
+  <table border="1" cellpadding="7">
+    <tbody>
+      <tr>
+        <td>&lt;OFF_par1&gt;</td>
+
+        <td>(input)&nbsp; ISP offset/interferogram parameter file
+        1<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par2&gt;</td>
+
+        <td>(input)&nbsp; ISP offset/interferogram parameter file
+        2<br></td>
+      </tr>
+
+      <tr>
+        <td>&lt;OFF_par3&gt;</td>
+
+        <td>(output) ISP offset/interferogram parameter file with
+        sums of the<br>
+        range and azimuth offset polynomials in OFF_par1 and
+        OFF_par2<br></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><b>EXAMPLE</b><br>
+  <tt>offset_add&nbsp; 1.off 2.off 3.off<br></tt></p>
+
+  <p>sums individually the range and azimuth polynomial
+  coefficients in ISP offset parameter files 1.off and 2.off and
+  writes the result to 3.off.<br></p>
+
+  <p><b>DESCRIPTION</b><br></p>
+
+  <p><i>offset_add</i> adds polynomial coefficeents of the range
+  and azimuth offset polynomials stored in OFF_par1 and OFF_par2
+  term by term. This is used in the refinement in the resampling of
+  SLCs. After an inital resampling has been performed, the offsets
+  are measured a second time between the resampled SLC and the
+  reference. A polynomial fit of these residuals is added using
+  offset_add to the original polynomial thereby mproving the fit.
+  this is most useful for images that have large relative
+  distortions. If these distortions are non-linear, then the
+  <a href="SLC_interp_map.html">SLC_interf_map</a> is
+  required.<br></p>
+
+  <p>The rest of the parameters in OFF_par3 are copied from
+  OFF_par1.&nbsp;<br></p>
+
+  <p><b>SEE ALSO</b><br>
+  <a href="typedef_ISP.h.html">typedef_ISP.h</a>, <a href=
+  "OFF_par.html">OFF_par</a>,<a href=
+  "offset_pwr.html">offset_pwr</a>, <a href=
+  "offset_SLC.html">offset_SLC</a>,<a href=
+  "offset_pwr_tracking.html">offset_pwr_tracking</a>, <a href=
+  "offset_SLC_tracking.html">offset_SLC_tracking</a>, <a href=
+  "init_offset_orbit.html">init_offset_orbit</a>, <a href=
+  "init_offset.html">init_offset</a>, <a href=
+  "create_offset.html">create_offset</a><br></p>
+  <hr>
+  <a href="copyright.html">&copy;</a> Copyrights for <a href=
+  "ISP_documentation.html">Documentation</a>, <a href=
+  "ISP_users_guide.html">Users Guide</a> and <a href=
+  "ISP_reference_manual.html">Reference Manual</a> by <a href=
+  "gamma.html">Gamma Remote Sensing</a>, 2005. <a href=
+  "urs_wegmuller.html">UW</a>, <a href=
+  "charles_werner.html">CW</a>, last change 14-Feb-2005.
+</body>
+</html>
